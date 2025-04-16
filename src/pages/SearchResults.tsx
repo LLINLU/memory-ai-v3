@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check, Filter, ArrowDownAZ } from "lucide-react";
 import { 
   Tabs, 
   TabsList, 
@@ -11,12 +11,16 @@ import {
   TabsContent 
 } from "@/components/ui/tabs";
 import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -106,35 +110,72 @@ const SearchResults = () => {
       
       {/* Results Count and Filters */}
       <div className="container mx-auto px-4 mb-6">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
           <h2 className="text-xl font-bold">32 Relevant Results</h2>
-          <div className="text-gray-500 text-sm">
-            22 Papers • 6 Implementation Examples • 4 Patents
-          </div>
-          <div className="flex items-center gap-4">
-            <Select defaultValue="relevance">
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Sort by:" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="relevance">Relevance</SelectItem>
-                <SelectItem value="date-desc">Date (Newest)</SelectItem>
-                <SelectItem value="date-asc">Date (Oldest)</SelectItem>
-                <SelectItem value="citations">Most Citations</SelectItem>
-              </SelectContent>
-            </Select>
+          
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center">
+              <span className="text-gray-600 mr-2">Filter by:</span>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="border rounded-md px-4 py-2 bg-gray-50 hover:bg-gray-100">
+                    Year: 2020-2024 <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="bg-white">
+                  <DropdownMenuItem>All Years</DropdownMenuItem>
+                  <DropdownMenuItem>2024</DropdownMenuItem>
+                  <DropdownMenuItem>2023</DropdownMenuItem>
+                  <DropdownMenuItem>2020-2022</DropdownMenuItem>
+                  <DropdownMenuItem>Before 2020</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="border rounded-md px-4 py-2 ml-2 bg-gray-50 hover:bg-gray-100">
+                    Relevance <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="bg-white">
+                  <DropdownMenuItem>High Relevance</DropdownMenuItem>
+                  <DropdownMenuItem>Medium Relevance</DropdownMenuItem>
+                  <DropdownMenuItem>Low Relevance</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="border rounded-md px-4 py-2 ml-2 bg-gray-50 hover:bg-gray-100">
+                    Citations <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="bg-white">
+                  <DropdownMenuItem>Any Citations</DropdownMenuItem>
+                  <DropdownMenuItem>10+ Citations</DropdownMenuItem>
+                  <DropdownMenuItem>50+ Citations</DropdownMenuItem>
+                  <DropdownMenuItem>100+ Citations</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
             
-            <Select defaultValue="all">
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filter:" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="papers">Papers Only</SelectItem>
-                <SelectItem value="implementations">Implementations Only</SelectItem>
-                <SelectItem value="patents">Patents Only</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center">
+              <span className="text-gray-600 mr-2">Sort by:</span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-md px-6 py-2">
+                    Newest First <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white">
+                  <DropdownMenuItem>Newest First</DropdownMenuItem>
+                  <DropdownMenuItem>Oldest First</DropdownMenuItem>
+                  <DropdownMenuItem>Most Relevant</DropdownMenuItem>
+                  <DropdownMenuItem>Most Citations</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
       </div>
@@ -142,17 +183,17 @@ const SearchResults = () => {
       {/* Results Tabs */}
       <div className="container mx-auto px-4">
         <Tabs defaultValue="papers" className="w-full" onValueChange={setActiveTab}>
-          <TabsList className="inline-flex mb-6 mx-auto">
-            <TabsTrigger value="papers" className={`${activeTab === "papers" ? "bg-blue-500 text-white" : "bg-gray-100"} rounded-none py-4 px-8 text-base`}>
+          <TabsList className="inline-flex mb-6">
+            <TabsTrigger value="papers" className={`${activeTab === "papers" ? "bg-blue-500 text-white" : "bg-gray-100"} rounded-md py-2 px-6 text-base`}>
               Papers
             </TabsTrigger>
-            <TabsTrigger value="implementations" className={`${activeTab === "implementations" ? "bg-blue-500 text-white" : "bg-gray-100"} rounded-none py-4 px-8 text-base`}>
+            <TabsTrigger value="implementations" className={`${activeTab === "implementations" ? "bg-blue-500 text-white" : "bg-gray-100"} rounded-md py-2 px-6 text-base`}>
               Implementations
             </TabsTrigger>
-            <TabsTrigger value="researchers" className={`${activeTab === "researchers" ? "bg-blue-500 text-white" : "bg-gray-100"} rounded-none py-4 px-8 text-base`}>
+            <TabsTrigger value="researchers" className={`${activeTab === "researchers" ? "bg-blue-500 text-white" : "bg-gray-100"} rounded-md py-2 px-6 text-base`}>
               Researchers
             </TabsTrigger>
-            <TabsTrigger value="patents" className={`${activeTab === "patents" ? "bg-blue-500 text-white" : "bg-gray-100"} rounded-none py-4 px-8 text-base`}>
+            <TabsTrigger value="patents" className={`${activeTab === "patents" ? "bg-blue-500 text-white" : "bg-gray-100"} rounded-md py-2 px-6 text-base`}>
               Patents
             </TabsTrigger>
           </TabsList>
