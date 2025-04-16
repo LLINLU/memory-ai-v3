@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import React, { useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -34,10 +33,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger
 } from "@/components/ui/collapsible";
+import { useNavigate } from "react-router-dom";
 
 const SearchResults = () => {
   const [activeTab, setActiveTab] = useState("papers");
   const [isOpen, setIsOpen] = useState(true);
+  const navigate = useNavigate();
   
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
@@ -111,7 +112,11 @@ const SearchResults = () => {
                   Retinal Imaging <Check size={16} className="ml-2 text-blue-500" />
                 </div>
                 <Button variant="outline" className="text-gray-500">+ More</Button>
-                <Button variant="outline" className="ml-auto text-blue-500 border-blue-500">
+                <Button 
+                  variant="outline" 
+                  className="ml-auto text-blue-500 border-blue-500"
+                  onClick={() => navigate('/technology-tree')}
+                >
                   Explore Technology Tree
                 </Button>
               </div>
