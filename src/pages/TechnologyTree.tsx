@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,6 @@ const TechnologyTree = () => {
   const navigate = useNavigate();
   const [selectedView, setSelectedView] = useState("tree");
   const [searchTerm, setSearchTerm] = useState("");
-  // Track the currently selected nodes at each level
   const [selectedPath, setSelectedPath] = useState({
     level1: "adaptive-optics",
     level2: "medical-applications",
@@ -24,7 +22,6 @@ const TechnologyTree = () => {
   };
 
   const handleNodeClick = (level: string, nodeId: string) => {
-    // Update the selected path based on the clicked node
     if (level === 'level1') {
       setSelectedPath({
         level1: nodeId,
@@ -45,7 +42,6 @@ const TechnologyTree = () => {
     }
   };
 
-  // Technology tree data
   const level1Items = [
     { id: "ophthalmology", name: "Ophthalmology", relevance: "98% relevance" },
     { id: "adaptive-optics", name: "Adaptive Optics", relevance: "95% relevance" },
@@ -90,7 +86,6 @@ const TechnologyTree = () => {
     ]
   };
 
-  // Determine which level 2 and level 3 items to show based on selected path
   const visibleLevel2Items = selectedPath.level1 ? level2Items[selectedPath.level1 as keyof typeof level2Items] || [] : [];
   const visibleLevel3Items = selectedPath.level2 ? level3Items[selectedPath.level2 as keyof typeof level3Items] || [] : [];
 
@@ -98,7 +93,6 @@ const TechnologyTree = () => {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      {/* Technology Tree Header */}
       <div className="container mx-auto px-4 mb-6">
         <div className="bg-blue-50 rounded-lg p-4 mb-4">
           <h2 className="text-2xl font-bold text-gray-800">Technology Tree</h2>
@@ -107,7 +101,6 @@ const TechnologyTree = () => {
           </p>
         </div>
 
-        {/* Search Input with Search Button */}
         <div className="bg-white rounded-lg border border-gray-200 p-4 flex items-center space-x-2 mb-4">
           <input
             type="text"
@@ -126,7 +119,6 @@ const TechnologyTree = () => {
           </Button>
         </div>
 
-        {/* Selected Path Section */}
         <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4">
           <div className="flex items-center flex-wrap gap-2">
             <span className="text-gray-700 font-medium">Selected path:</span>
@@ -156,7 +148,6 @@ const TechnologyTree = () => {
           </div>
         </div>
 
-        {/* Zoom Controls and View Toggle */}
         <div className="container mx-auto mb-4">
           <div className="flex items-center gap-4">
             <div className="flex items-center">
@@ -185,9 +176,7 @@ const TechnologyTree = () => {
           </div>
         </div>
         
-        {/* Visual Technology Tree - Visual Network Format */}
         <div className="container mx-auto mb-8">
-          {/* Level 1 Nodes - Arranged in a single row with overflow */}
           <div className="flex justify-start gap-4 mb-12 w-full overflow-x-auto pb-4">
             {level1Items.map((item) => (
               <div
@@ -207,7 +196,6 @@ const TechnologyTree = () => {
             ))}
           </div>
 
-          {/* Connection Lines */}
           {selectedPath.level1 && visibleLevel2Items.length > 0 && (
             <div className="relative h-24 mb-4">
               <div className="absolute left-1/2 h-full border-l-2 border-gray-400"></div>
@@ -215,7 +203,6 @@ const TechnologyTree = () => {
             </div>
           )}
 
-          {/* Level 2 Nodes - Also arranged in a single row with overflow */}
           {selectedPath.level1 && (
             <div className="flex justify-start gap-4 mb-6 w-full overflow-x-auto pb-4">
               {visibleLevel2Items.map((item) => (
@@ -237,21 +224,12 @@ const TechnologyTree = () => {
             </div>
           )}
 
-          {/* User Action Note */}
-          {selectedPath.level2 && (
-            <div className="text-center text-orange-500 font-medium mb-6 italic">
-              User clicks "{visibleLevel2Items.find(item => item.id === selectedPath.level2)?.name}"
-            </div>
-          )}
-
-          {/* Connection Lines */}
           {selectedPath.level2 && visibleLevel3Items.length > 0 && (
             <div className="relative h-12 mb-4">
               <div className="absolute left-1/2 h-full border-l-2 border-gray-400"></div>
             </div>
           )}
 
-          {/* Level 3 Nodes - Also arranged in a single row with overflow */}
           {selectedPath.level2 && (
             <div className="flex justify-start gap-4 mb-8 w-full overflow-x-auto pb-4">
               {visibleLevel3Items.map((item) => (
@@ -273,11 +251,9 @@ const TechnologyTree = () => {
             </div>
           )}
 
-          {/* Visual Divider */}
           <div className="w-full border-b border-dashed border-gray-300 my-8"></div>
         </div>
         
-        {/* Action Buttons */}
         <div className="container mx-auto px-4 pb-12">
           <div className="flex flex-col md:flex-row justify-between gap-4">
             <Button
