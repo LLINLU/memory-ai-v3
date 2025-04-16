@@ -141,7 +141,7 @@ const SearchResults = () => {
       {/* Results Tabs */}
       <div className="container mx-auto px-4">
         <Tabs defaultValue="papers" className="w-full" onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-6 mb-6">
+          <TabsList className="grid grid-cols-5 mb-6">
             <TabsTrigger value="papers" className={`${activeTab === "papers" ? "bg-blue-500 text-white" : "bg-gray-100"} rounded-none py-4 text-base`}>
               Papers
             </TabsTrigger>
@@ -154,13 +154,12 @@ const SearchResults = () => {
             <TabsTrigger value="patents" className={`${activeTab === "patents" ? "bg-blue-500 text-white" : "bg-gray-100"} rounded-none py-4 text-base`}>
               Patents
             </TabsTrigger>
-            <TabsTrigger value="tech-map" className={`${activeTab === "tech-map" ? "bg-blue-500 text-white" : "bg-gray-100"} rounded-none py-4 text-base`}>
-              Technology Map
-            </TabsTrigger>
             <TabsTrigger value="export" className={`${activeTab === "export" ? "bg-blue-500 text-white" : "bg-gray-100"} rounded-none py-4 text-base`}>
               Export
             </TabsTrigger>
           </TabsList>
+          
+          {/* Tabs Content */}
           
           <TabsContent value="papers" className="mt-0">
             <div className="space-y-6">
@@ -213,13 +212,6 @@ const SearchResults = () => {
             <div className="bg-white p-6 border border-gray-200 rounded-md">
               <h3 className="text-xl font-bold mb-4">Related Patents</h3>
               <p className="text-gray-600">Patent information will be displayed here.</p>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="tech-map" className="mt-0">
-            <div className="bg-white p-6 border border-gray-200 rounded-md">
-              <h3 className="text-xl font-bold mb-4">Technology Relationship Map</h3>
-              <p className="text-gray-600">Technology relationship visualization will be displayed here.</p>
             </div>
           </TabsContent>
           
