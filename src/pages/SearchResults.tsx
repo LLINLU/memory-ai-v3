@@ -54,7 +54,7 @@ const SearchResults = () => {
       <div className="container mx-auto px-4 mb-6">
         <div className="bg-blue-50 rounded-lg border border-blue-100 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">Search Criteria <span className="text-blue-500 text-sm font-normal cursor-pointer">(Edit)</span></h2>
+            <h2 className="text-xl font-semibold">Search Criteria</h2>
             <button className="text-gray-500">
               <ChevronDown size={20} />
             </button>
