@@ -83,7 +83,7 @@ const TechnologyTree = () => {
           </p>
         </div>
 
-        {/* Selected Path Section - MOVED BELOW Technology Tree Title */}
+        {/* Selected Path Section */}
         <div className="bg-white border border-gray-200 rounded-lg p-4 mt-4">
           <div className="flex items-center flex-wrap gap-2">
             <span className="text-gray-700 font-medium">Selected path:</span>
@@ -94,11 +94,9 @@ const TechnologyTree = () => {
             <span className="text-blue-500 font-medium">Retinal Imaging</span>
           </div>
         </div>
-      </div>
 
-      {/* Search Input with Search Button */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="bg-white rounded-lg border border-gray-200 p-4 flex items-center space-x-2">
+        {/* Search Input with Search Button */}
+        <div className="bg-white rounded-lg border border-gray-200 p-4 flex items-center space-x-2 mt-4">
           <input
             type="text"
             value={searchTerm}
