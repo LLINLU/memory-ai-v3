@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Input } from "@/components/ui/input";
@@ -28,9 +29,15 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger
+} from "@/components/ui/collapsible";
 
 const SearchResults = () => {
   const [activeTab, setActiveTab] = useState("papers");
+  const [isOpen, setIsOpen] = useState(true);
   
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
@@ -52,15 +59,21 @@ const SearchResults = () => {
       
       {/* Search Criteria */}
       <div className="container mx-auto px-4 mb-6 mt-6">
-        <div className="bg-blue-50 rounded-lg border border-blue-100 p-6">
+        <Collapsible 
+          open={isOpen} 
+          onOpenChange={setIsOpen}
+          className="bg-blue-50 rounded-lg border border-blue-100 p-6"
+        >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">Search Criteria</h2>
-            <button className="text-gray-500">
-              <ChevronDown size={20} />
-            </button>
+            <CollapsibleTrigger asChild>
+              <button className="text-gray-500 hover:bg-blue-100 rounded-full p-1 transition-colors">
+                <ChevronDown size={20} className={`transform transition-transform duration-200 ${isOpen ? '' : 'rotate-180'}`} />
+              </button>
+            </CollapsibleTrigger>
           </div>
           
-          <div className="space-y-4">
+          <CollapsibleContent className="space-y-4">
             <div className="flex items-center gap-4">
               <div className="w-32 font-medium">Domain:</div>
               <div className="flex-1">
@@ -103,8 +116,8 @@ const SearchResults = () => {
                 </Button>
               </div>
             </div>
-          </div>
-        </div>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
       
       {/* Results Count and Filters */}
