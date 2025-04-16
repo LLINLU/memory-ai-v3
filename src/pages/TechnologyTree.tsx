@@ -3,15 +3,14 @@ import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MinusIcon, PlusIcon, ArrowRight } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronDown, ChevronRight, MinusIcon, PlusIcon, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const TechnologyTree = () => {
   const navigate = useNavigate();
   const [selectedView, setSelectedView] = useState("tree");
-  const [selectedLevel1, setSelectedLevel1] = useState("adaptive-optics");
-  const [selectedLevel2, setSelectedLevel2] = useState("medical-applications");
-  const [selectedLevel3, setSelectedLevel3] = useState("retinal-imaging");
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
   
   // Define domain categories with their relevance data
   const level1Items = [
@@ -21,28 +20,52 @@ const TechnologyTree = () => {
     { id: "optical-engineering", name: "Optical Engineering", relevance: "75% relevance" }
   ];
   
-  const level2Items = [
-    { id: "wavefront-sensing", name: "Wavefront Sensing", info: "Related to selected" },
-    { id: "medical-applications", name: "Medical Applications", info: "22 papers • 6 implementations", selected: true },
-    { id: "deformable-mirrors", name: "Deformable Mirrors", info: "Related to selected" },
-    { id: "ocular-structure", name: "By Ocular Structure", info: "Alternative classification" }
-  ];
+  const level2Items = {
+    "ophthalmology": [
+      { id: "retinal-disorders", name: "Retinal Disorders", info: "35 papers • 8 implementations" },
+      { id: "glaucoma", name: "Glaucoma", info: "27 papers • 5 implementations" }
+    ],
+    "adaptive-optics": [
+      { id: "wavefront-sensing", name: "Wavefront Sensing", info: "Related to selected" },
+      { id: "medical-applications", name: "Medical Applications", info: "22 papers • 6 implementations", selected: true },
+      { id: "deformable-mirrors", name: "Deformable Mirrors", info: "Related to selected" },
+      { id: "ocular-structure", name: "By Ocular Structure", info: "Alternative classification" }
+    ],
+    "medical-imaging": [
+      { id: "mri-techniques", name: "MRI Techniques", info: "18 papers • 3 implementations" },
+      { id: "ct-scanning", name: "CT Scanning", info: "15 papers • 2 implementations" }
+    ],
+    "optical-engineering": [
+      { id: "lens-design", name: "Lens Design", info: "20 papers • 4 implementations" },
+      { id: "optical-materials", name: "Optical Materials", info: "16 papers • 3 implementations" }
+    ]
+  };
   
-  const level3Items = [
-    { id: "retinal-imaging", name: "Retinal Imaging", info: "32 papers • 9 implementations", selected: true }
-  ];
-
-  const handleLevel1Select = (id: string) => {
-    setSelectedLevel1(id);
+  const level3Items = {
+    "wavefront-sensing": [
+      { id: "shack-hartmann", name: "Shack-Hartmann Sensors", info: "12 papers • 3 implementations" }
+    ],
+    "medical-applications": [
+      { id: "retinal-imaging", name: "Retinal Imaging", info: "32 papers • 9 implementations", selected: true },
+      { id: "corneal-imaging", name: "Corneal Imaging", info: "18 papers • 4 implementations" }
+    ],
+    "deformable-mirrors": [
+      { id: "mems-technology", name: "MEMS Technology", info: "14 papers • 2 implementations" }
+    ],
+    "ocular-structure": [
+      { id: "anterior-segment", name: "Anterior Segment", info: "20 papers • 5 implementations" }
+    ]
   };
 
-  const handleLevel2Select = (id: string) => {
-    setSelectedLevel2(id);
+  const toggleExpand = (itemId: string) => {
+    setExpandedItems(prev => 
+      prev.includes(itemId) 
+        ? prev.filter(id => id !== itemId) 
+        : [...prev, itemId]
+    );
   };
 
-  const handleLevel3Select = (id: string) => {
-    setSelectedLevel3(id);
-  };
+  const isExpanded = (itemId: string) => expandedItems.includes(itemId);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -93,79 +116,75 @@ const TechnologyTree = () => {
         <div className="bg-blue-50 rounded-lg p-4">
           <h2 className="text-2xl font-bold text-gray-800">Technology Tree</h2>
           <p className="text-gray-600">
-            Navigate through the hierarchy: Level 1 (Main Domains) → Level 2 (Sub-domains) → Level 3 (Applications/Techniques)
+            Click on a domain to expand and see its sub-domains and specific techniques.
           </p>
         </div>
       </div>
       
-      {/* Technology Tree Levels */}
-      <div className="container mx-auto px-4 mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
-          {/* Level 1 - Main Domains */}
-          <div className="flex-1">
-            <div className="bg-blue-100 p-4 rounded-t-lg">
-              <h3 className="text-xl font-bold text-blue-600">Level 1</h3>
-              <p className="text-blue-600">Main Domains</p>
-            </div>
-            <div className="space-y-2 mt-2">
-              {level1Items.map((item) => (
-                <div 
-                  key={item.id} 
-                  className={`p-4 bg-blue-500 text-white rounded-lg cursor-pointer transition-all ${
-                    item.id === selectedLevel1 ? "ring-4 ring-yellow-400" : ""
-                  }`}
-                  onClick={() => handleLevel1Select(item.id)}
-                >
-                  <h4 className="text-center text-lg font-medium">{item.name}</h4>
-                  <p className="text-center text-sm text-blue-100">{item.relevance}</p>
+      {/* Technology Tree with Drill-down Format */}
+      <div className="container mx-auto px-4 mb-8">
+        <div className="space-y-4">
+          {level1Items.map((item) => (
+            <Collapsible 
+              key={item.id} 
+              open={isExpanded(item.id)} 
+              onOpenChange={() => toggleExpand(item.id)}
+              className="border border-gray-200 rounded-lg overflow-hidden"
+            >
+              <CollapsibleTrigger className="w-full">
+                <div className={`p-4 flex justify-between items-center bg-blue-500 text-white cursor-pointer ${item.selected ? "ring-2 ring-yellow-400" : ""}`}>
+                  <div className="flex items-center gap-2">
+                    {isExpanded(item.id) ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+                    <div>
+                      <h3 className="text-lg font-medium text-left">{item.name}</h3>
+                      <p className="text-sm text-blue-100 text-left">{item.relevance}</p>
+                    </div>
+                  </div>
                 </div>
-              ))}
-            </div>
-          </div>
-          
-          {/* Level 2 - Sub-domains */}
-          <div className="flex-1">
-            <div className="bg-blue-100 p-4 rounded-t-lg">
-              <h3 className="text-xl font-bold text-blue-600">Level 2</h3>
-              <p className="text-blue-600">Sub-domains</p>
-            </div>
-            <div className="space-y-2 mt-2">
-              {level2Items.map((item) => (
-                <div 
-                  key={item.id} 
-                  className={`p-4 bg-blue-500 text-white rounded-lg cursor-pointer transition-all ${
-                    item.id === selectedLevel2 ? "ring-4 ring-yellow-400" : ""
-                  }`}
-                  onClick={() => handleLevel2Select(item.id)}
-                >
-                  <h4 className="text-center text-lg font-medium">{item.name}</h4>
-                  <p className="text-center text-sm text-blue-100">{item.info}</p>
+              </CollapsibleTrigger>
+              
+              <CollapsibleContent>
+                <div className="pl-8 bg-blue-50">
+                  {level2Items[item.id as keyof typeof level2Items]?.map((subItem) => (
+                    <Collapsible 
+                      key={subItem.id} 
+                      open={isExpanded(subItem.id)}
+                      onOpenChange={() => toggleExpand(subItem.id)}
+                      className="border-t border-blue-200"
+                    >
+                      <CollapsibleTrigger className="w-full">
+                        <div className={`p-3 flex justify-between items-center bg-blue-100 text-blue-800 cursor-pointer ${subItem.selected ? "ring-2 ring-yellow-400" : ""}`}>
+                          <div className="flex items-center gap-2">
+                            {isExpanded(subItem.id) ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                            <div>
+                              <h4 className="text-md font-medium text-left">{subItem.name}</h4>
+                              <p className="text-sm text-blue-600 text-left">{subItem.info}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </CollapsibleTrigger>
+                      
+                      <CollapsibleContent>
+                        <div className="pl-8 bg-white">
+                          {level3Items[subItem.id as keyof typeof level3Items]?.map((technique) => (
+                            <div 
+                              key={technique.id} 
+                              className={`p-2 flex items-center border-t border-gray-100 ${technique.selected ? "bg-blue-50 ring-2 ring-inset ring-yellow-400" : ""}`}
+                            >
+                              <div className="ml-6">
+                                <h5 className="text-sm font-medium text-gray-800">{technique.name}</h5>
+                                <p className="text-xs text-gray-600">{technique.info}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
-          
-          {/* Level 3 - Applications/Techniques */}
-          <div className="flex-1">
-            <div className="bg-blue-100 p-4 rounded-t-lg">
-              <h3 className="text-xl font-bold text-blue-600">Level 3</h3>
-              <p className="text-blue-600">Specific Topics/Techniques</p>
-            </div>
-            <div className="space-y-2 mt-2">
-              {level3Items.map((item) => (
-                <div 
-                  key={item.id} 
-                  className={`p-4 bg-blue-200 text-gray-800 rounded-lg cursor-pointer transition-all ${
-                    item.id === selectedLevel3 ? "ring-4 ring-yellow-400" : ""
-                  }`}
-                  onClick={() => handleLevel3Select(item.id)}
-                >
-                  <h4 className="text-center text-lg font-medium">{item.name}</h4>
-                  <p className="text-center text-sm text-gray-600">{item.info}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+              </CollapsibleContent>
+            </Collapsible>
+          ))}
         </div>
       </div>
       
@@ -177,6 +196,8 @@ const TechnologyTree = () => {
             <span className="text-blue-500 font-medium">Adaptive Optics</span>
             <ArrowRight className="h-4 w-4 text-gray-500" />
             <span className="text-blue-500 font-medium">Medical Applications</span>
+            <ArrowRight className="h-4 w-4 text-gray-500" />
+            <span className="text-blue-500 font-medium">Retinal Imaging</span>
           </div>
         </div>
       </div>
