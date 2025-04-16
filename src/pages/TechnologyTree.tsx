@@ -17,8 +17,21 @@ const TechnologyTree = () => {
   });
 
   const handleSearch = () => {
+    const japaneseQuery = '補償光学の眼科分野への利用';
+    const englishQuery = 'Adaptive Optics in Ophthalmology';
+    
+    if (searchTerm === japaneseQuery || searchTerm === englishQuery) {
+      // Automatically select the relevant path
+      setSelectedPath({
+        level1: "adaptive-optics",
+        level2: "medical-applications",
+        level3: "retinal-imaging"
+      });
+      toast.success(`Found results for: ${searchTerm}`);
+    } else {
+      toast.info(`Searching for: ${searchTerm}`);
+    }
     console.log("Searching for:", searchTerm);
-    toast.info(`Searching for: ${searchTerm}`);
   };
 
   const handleNodeClick = (level: string, nodeId: string) => {
