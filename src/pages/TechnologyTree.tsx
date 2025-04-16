@@ -187,13 +187,13 @@ const TechnologyTree = () => {
         
         {/* Visual Technology Tree - Visual Network Format */}
         <div className="container mx-auto mb-8">
-          {/* Level 1 Nodes */}
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
+          {/* Level 1 Nodes - Arranged in a single row with overflow */}
+          <div className="flex justify-start gap-4 mb-12 w-full overflow-x-auto pb-4">
             {level1Items.map((item) => (
               <div
                 key={item.id}
                 className={`
-                  w-64 py-5 px-4 rounded-lg text-center cursor-pointer transition-all
+                  flex-shrink-0 w-64 py-5 px-4 rounded-lg text-center cursor-pointer transition-all
                   ${selectedPath.level1 === item.id 
                     ? 'bg-blue-500 text-white ring-4 ring-yellow-400' 
                     : 'bg-blue-400 text-white hover:bg-blue-500'
@@ -215,14 +215,14 @@ const TechnologyTree = () => {
             </div>
           )}
 
-          {/* Level 2 Nodes */}
+          {/* Level 2 Nodes - Also arranged in a single row with overflow */}
           {selectedPath.level1 && (
-            <div className="flex flex-wrap justify-center gap-4 mb-6">
+            <div className="flex justify-start gap-4 mb-6 w-full overflow-x-auto pb-4">
               {visibleLevel2Items.map((item) => (
                 <div
                   key={item.id}
                   className={`
-                    w-64 py-4 px-3 rounded-lg text-center cursor-pointer transition-all
+                    flex-shrink-0 w-64 py-4 px-3 rounded-lg text-center cursor-pointer transition-all
                     ${selectedPath.level2 === item.id 
                       ? 'bg-blue-500 text-white ring-4 ring-yellow-400' 
                       : 'bg-blue-400 text-white hover:bg-blue-500'
@@ -251,14 +251,14 @@ const TechnologyTree = () => {
             </div>
           )}
 
-          {/* Level 3 Nodes */}
+          {/* Level 3 Nodes - Also arranged in a single row with overflow */}
           {selectedPath.level2 && (
-            <div className="flex flex-wrap justify-center gap-4 mb-8">
+            <div className="flex justify-start gap-4 mb-8 w-full overflow-x-auto pb-4">
               {visibleLevel3Items.map((item) => (
                 <div
                   key={item.id}
                   className={`
-                    w-64 py-3 px-3 rounded-lg text-center cursor-pointer transition-all
+                    flex-shrink-0 w-64 py-3 px-3 rounded-lg text-center cursor-pointer transition-all
                     ${selectedPath.level3 === item.id 
                       ? 'bg-blue-500 text-white ring-4 ring-yellow-400' 
                       : 'bg-blue-400 text-white hover:bg-blue-500'
