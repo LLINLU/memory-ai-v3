@@ -119,14 +119,13 @@ const SearchResults = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="border rounded-md px-4 py-2 bg-gray-50 hover:bg-gray-100">
-                    Year: 2020-2024 <ChevronDown className="ml-2 h-4 w-4" />
+                    Past 5 years <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="bg-white">
-                  <DropdownMenuItem>All Years</DropdownMenuItem>
+                  <DropdownMenuItem>Past 5 years</DropdownMenuItem>
+                  <DropdownMenuItem>Past year</DropdownMenuItem>
                   <DropdownMenuItem>2024</DropdownMenuItem>
-                  <DropdownMenuItem>2023</DropdownMenuItem>
-                  <DropdownMenuItem>2020-2022</DropdownMenuItem>
                   <DropdownMenuItem>Before 2020</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
