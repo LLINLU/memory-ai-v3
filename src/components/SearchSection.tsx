@@ -30,16 +30,17 @@ export const SearchSection = () => {
       <h2 className="text-2xl font-bold text-center mb-6">Discover Research and Applications</h2>
       
       <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto mb-6">
-        <div className="relative w-full">
+        <div className="flex items-center space-x-2">
           <Input 
             type="text" 
             placeholder="Describe your research interest or technology domain..."
-            className="w-full h-12 pr-24 focus-visible:ring-blue-400 border-gray-300"
+            className="flex-grow h-12 pr-24 focus-visible:ring-blue-400 border-gray-300"
           />
           <Button 
             type="submit" 
-            className="absolute right-0 top-0 h-12 px-8 bg-blue-500 hover:bg-blue-600"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-8 h-12 rounded-md flex items-center justify-center"
           >
+            <Search className="mr-2 h-5 w-5" />
             Search
           </Button>
         </div>
