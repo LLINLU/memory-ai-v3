@@ -51,7 +51,7 @@ const SearchResults = () => {
       </div>
       
       {/* Search Criteria */}
-      <div className="container mx-auto px-4 mb-6">
+      <div className="container mx-auto px-4 mb-6 mt-6">
         <div className="bg-blue-50 rounded-lg border border-blue-100 p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">Search Criteria</h2>
