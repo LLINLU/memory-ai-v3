@@ -85,6 +85,11 @@ const TechnologyTree = () => {
   const visibleLevel2Items = selectedPath.level1 ? level2Items[selectedPath.level1 as keyof typeof level2Items] || [] : [];
   const visibleLevel3Items = selectedPath.level2 ? level3Items[selectedPath.level2 as keyof typeof level3Items] || [] : [];
 
+  // Get the selected card information for each level
+  const selectedLevel1Card = level1Items.find(item => item.id === selectedPath.level1);
+  const selectedLevel2Card = visibleLevel2Items.find(item => item.id === selectedPath.level2);
+  const selectedLevel3Card = visibleLevel3Items.find(item => item.id === selectedPath.level3);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
@@ -158,9 +163,9 @@ const TechnologyTree = () => {
         </div>
         
         {/* Technology Tree Content */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="flex flex-row gap-6 mb-8 relative">
           {/* Level 1 Column */}
-          <div className="bg-blue-50 p-4 rounded-lg">
+          <div className="w-1/3 bg-blue-50 p-4 rounded-lg">
             <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 1</h2>
             <h3 className="text-sm text-blue-600 mb-4">Main Domains</h3>
             
@@ -169,23 +174,29 @@ const TechnologyTree = () => {
                 <div
                   key={item.id}
                   className={`
-                    py-4 px-3 rounded-lg text-center cursor-pointer transition-all
+                    py-4 px-3 rounded-lg text-center cursor-pointer transition-all relative
                     ${selectedPath.level1 === item.id 
                       ? 'bg-blue-500 text-white ring-2 ring-yellow-400' 
                       : 'bg-blue-400 text-white hover:bg-blue-500'
                     }
                   `}
                   onClick={() => handleNodeClick('level1', item.id)}
+                  id={`level1-${item.id}`}
                 >
                   <h4 className="text-lg font-bold">{item.name}</h4>
                   <p className="text-xs mt-1">{item.relevance}</p>
+                  
+                  {/* Connection indicator for selected items */}
+                  {selectedPath.level1 === item.id && selectedPath.level2 && (
+                    <div className="absolute top-1/2 -right-6 w-6 h-0.5 bg-blue-600"></div>
+                  )}
                 </div>
               ))}
             </div>
           </div>
 
           {/* Level 2 Column */}
-          <div className="bg-blue-50 p-4 rounded-lg">
+          <div className="w-1/3 bg-blue-50 p-4 rounded-lg">
             <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 2</h2>
             <h3 className="text-sm text-blue-600 mb-4">Sub-domains</h3>
             
@@ -194,16 +205,22 @@ const TechnologyTree = () => {
                 <div
                   key={item.id}
                   className={`
-                    py-4 px-3 rounded-lg text-center cursor-pointer transition-all
+                    py-4 px-3 rounded-lg text-center cursor-pointer transition-all relative
                     ${selectedPath.level2 === item.id 
                       ? 'bg-blue-500 text-white ring-2 ring-yellow-400' 
                       : 'bg-blue-400 text-white hover:bg-blue-500'
                     }
                   `}
                   onClick={() => handleNodeClick('level2', item.id)}
+                  id={`level2-${item.id}`}
                 >
                   <h4 className="text-lg font-bold">{item.name}</h4>
                   <p className="text-xs mt-1">{item.info}</p>
+                  
+                  {/* Connection indicator for selected items */}
+                  {selectedPath.level2 === item.id && selectedPath.level3 && (
+                    <div className="absolute top-1/2 -right-6 w-6 h-0.5 bg-blue-600"></div>
+                  )}
                 </div>
               ))}
               {visibleLevel2Items.length === 0 && (
@@ -215,7 +232,7 @@ const TechnologyTree = () => {
           </div>
 
           {/* Level 3 Column */}
-          <div className="bg-blue-50 p-4 rounded-lg">
+          <div className="w-1/3 bg-blue-50 p-4 rounded-lg">
             <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 3</h2>
             <h3 className="text-sm text-blue-600 mb-4">Specific Topics/Techniques</h3>
             
@@ -231,6 +248,7 @@ const TechnologyTree = () => {
                     }
                   `}
                   onClick={() => handleNodeClick('level3', item.id)}
+                  id={`level3-${item.id}`}
                 >
                   <h4 className="text-lg font-bold">{item.name}</h4>
                   <p className="text-xs mt-1">{item.info}</p>
@@ -243,6 +261,29 @@ const TechnologyTree = () => {
               )}
             </div>
           </div>
+
+          {/* Connection Lines */}
+          {selectedPath.level1 && selectedPath.level2 && (
+            <div 
+              className="absolute h-0.5 bg-blue-600" 
+              style={{
+                left: 'calc(33.33% - 6px)', 
+                width: '6px',
+                top: `${document.getElementById(`level1-${selectedPath.level1}`)?.offsetTop + document.getElementById(`level1-${selectedPath.level1}`)?.offsetHeight / 2}px`
+              }}
+            />
+          )}
+          
+          {selectedPath.level2 && selectedPath.level3 && (
+            <div 
+              className="absolute h-0.5 bg-blue-600" 
+              style={{
+                left: 'calc(66.67% - 6px)', 
+                width: '6px',
+                top: `${document.getElementById(`level2-${selectedPath.level2}`)?.offsetTop + document.getElementById(`level2-${selectedPath.level2}`)?.offsetHeight / 2}px`
+              }}
+            />
+          )}
         </div>
 
         {/* Separator */}
