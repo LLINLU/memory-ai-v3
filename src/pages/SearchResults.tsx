@@ -1,6 +1,4 @@
-
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -45,13 +43,6 @@ const SearchResults = () => {
           <Button className="h-12 px-8 bg-blue-500 hover:bg-blue-600">
             Search
           </Button>
-        </div>
-      </div>
-      
-      {/* Breadcrumbs */}
-      <div className="container mx-auto px-4 py-4">
-        <div className="text-gray-500">
-          <Link to="/" className="hover:text-blue-500">Home</Link> &gt; Search Results
         </div>
       </div>
       
