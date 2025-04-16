@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Input } from "@/components/ui/input";
@@ -129,19 +128,6 @@ const SearchResults = () => {
                   <DropdownMenuItem>2023</DropdownMenuItem>
                   <DropdownMenuItem>2020-2022</DropdownMenuItem>
                   <DropdownMenuItem>Before 2020</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="border rounded-md px-4 py-2 ml-2 bg-gray-50 hover:bg-gray-100">
-                    Relevance <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="bg-white">
-                  <DropdownMenuItem>High Relevance</DropdownMenuItem>
-                  <DropdownMenuItem>Medium Relevance</DropdownMenuItem>
-                  <DropdownMenuItem>Low Relevance</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
               
