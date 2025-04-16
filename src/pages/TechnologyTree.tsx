@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -153,9 +152,8 @@ const TechnologyTree = () => {
           </div>
         </div>
         
-        <div className="container mx-auto mb-8 relative">
-          {/* Level 1 cards */}
-          <div className="flex justify-center gap-4 mb-12 w-full overflow-x-auto pb-4">
+        <div className="container mx-auto mb-8">
+          <div className="flex justify-start gap-4 mb-12 w-full overflow-x-auto pb-4">
             {level1Items.map((item) => (
               <div
                 key={item.id}
@@ -174,16 +172,15 @@ const TechnologyTree = () => {
             ))}
           </div>
 
-          {/* Connector line from selected level 1 card to level 2 cards */}
           {selectedPath.level1 && visibleLevel2Items.length > 0 && (
-            <div className="flex justify-center">
-              <div className="relative h-24 w-0.5 bg-gray-400"></div>
+            <div className="relative h-24 mb-4">
+              <div className="absolute left-1/2 h-full border-l-2 border-gray-400"></div>
+              <div className="absolute bottom-0 left-1/3 right-1/3 border-t-2 border-gray-400"></div>
             </div>
           )}
 
-          {/* Level 2 cards */}
           {selectedPath.level1 && (
-            <div className="flex justify-center gap-4 mb-6 w-full overflow-x-auto pb-4">
+            <div className="flex justify-start gap-4 mb-6 w-full overflow-x-auto pb-4">
               {visibleLevel2Items.map((item) => (
                 <div
                   key={item.id}
@@ -203,16 +200,14 @@ const TechnologyTree = () => {
             </div>
           )}
 
-          {/* Connector line from selected level 2 card to level 3 cards */}
           {selectedPath.level2 && visibleLevel3Items.length > 0 && (
-            <div className="flex justify-center">
-              <div className="relative h-12 w-0.5 bg-gray-400"></div>
+            <div className="relative h-12 mb-4">
+              <div className="absolute left-1/2 h-full border-l-2 border-gray-400"></div>
             </div>
           )}
 
-          {/* Level 3 cards */}
           {selectedPath.level2 && (
-            <div className="flex justify-center gap-4 mb-8 w-full overflow-x-auto pb-4">
+            <div className="flex justify-start gap-4 mb-8 w-full overflow-x-auto pb-4">
               {visibleLevel3Items.map((item) => (
                 <div
                   key={item.id}
