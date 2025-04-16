@@ -101,21 +101,21 @@ const TechnologyTree = () => {
           </p>
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-4 flex items-center space-x-2 mb-4">
+        <div className="bg-white rounded-lg border border-gray-200 p-2 flex items-center space-x-2 mb-4">
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="補償光学の眼科分野への利用 (Adaptive Optics in Ophthalmology)"
-            className="flex-grow p-2 text-lg border-0 focus:ring-0 focus:outline-none"
+            placeholder="Search technologies..."
+            className="flex-grow p-1 text-sm border-0 focus:ring-0 focus:outline-none"
           />
           <Button 
             variant="default" 
-            size="icon" 
+            size="sm" 
             onClick={handleSearch}
             className="bg-blue-500 hover:bg-blue-600 text-white"
           >
-            <Search className="h-5 w-5" />
+            <Search className="h-4 w-4" />
           </Button>
         </div>
 
