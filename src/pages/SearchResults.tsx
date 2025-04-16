@@ -33,7 +33,7 @@ const SearchResults = () => {
   const [activeTab, setActiveTab] = useState("papers");
   
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-12">
       <Navigation />
       
       {/* Search Bar */}
@@ -166,7 +166,7 @@ const SearchResults = () => {
       </div>
       
       {/* Results Tabs */}
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 mb-12">
         <Tabs defaultValue="papers" className="w-full" onValueChange={setActiveTab}>
           <TabsList className="inline-flex mb-6">
             <TabsTrigger value="papers" className={`${activeTab === "papers" ? "bg-blue-500 text-white" : "bg-gray-100"} rounded-md py-2 px-6 text-base`}>
@@ -184,10 +184,8 @@ const SearchResults = () => {
           </TabsList>
           
           {/* Tabs Content */}
-          
           <TabsContent value="papers" className="mt-0">
             <div className="space-y-6">
-              {/* Paper 1 */}
               <div className="bg-white p-6 border border-gray-200 rounded-md">
                 <h3 className="text-lg font-bold mb-1">高解像度適応光学走査レーザー検眼鏡による糖尿病網膜症の細胞レベル評価</h3>
                 <h4 className="text-base mb-2">(Cellular-level Assessment of Diabetic Retinopathy Using High-resolution AO-SLO)</h4>
@@ -205,7 +203,6 @@ const SearchResults = () => {
                 </div>
               </div>
               
-              {/* Paper 2 */}
               <div className="bg-white p-6 border border-gray-200 rounded-md">
                 <h3 className="text-lg font-bold mb-1">Multi-Modal Adaptive Optics Imaging Combined with OCT for Enhanced Retinal Diagnostics</h3>
                 <div className="text-gray-600 mb-3">J. Zhang, M. Williams, K. Yamada • American Journal of Ophthalmology • 2023</div>
