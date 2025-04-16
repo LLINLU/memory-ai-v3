@@ -2,6 +2,8 @@
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
+import { FormEvent } from "react";
 
 interface SuggestionProps {
   label: string;
@@ -16,23 +18,32 @@ const SearchSuggestion = ({ label }: SuggestionProps) => {
 };
 
 export const SearchSection = () => {
+  const navigate = useNavigate();
+  
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    navigate('/search-results');
+  };
+
   return (
     <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
       <h2 className="text-2xl font-bold text-center mb-6">Discover Research and Applications</h2>
       
-      <div className="relative w-full max-w-3xl mx-auto mb-6">
-        <Input 
-          type="text" 
-          placeholder="Describe your research interest or technology domain..."
-          className="w-full h-12 pr-24 focus-visible:ring-blue-400 border-gray-300"
-        />
-        <Button 
-          type="submit" 
-          className="absolute right-0 top-0 h-12 px-8 bg-blue-500 hover:bg-blue-600"
-        >
-          Search
-        </Button>
-      </div>
+      <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto mb-6">
+        <div className="relative w-full">
+          <Input 
+            type="text" 
+            placeholder="Describe your research interest or technology domain..."
+            className="w-full h-12 pr-24 focus-visible:ring-blue-400 border-gray-300"
+          />
+          <Button 
+            type="submit" 
+            className="absolute right-0 top-0 h-12 px-8 bg-blue-500 hover:bg-blue-600"
+          >
+            Search
+          </Button>
+        </div>
+      </form>
       
       <div className="flex items-center gap-2 justify-center">
         <span className="text-gray-600 mr-2">Try:</span>
