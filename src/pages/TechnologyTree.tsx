@@ -1,10 +1,12 @@
+
 import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MinusIcon, PlusIcon, ArrowRight, Search } from "lucide-react";
+import { MinusIcon, PlusIcon, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 const TechnologyTree = () => {
   const navigate = useNavigate();
@@ -87,15 +89,17 @@ const TechnologyTree = () => {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      <div className="container mx-auto px-4 mb-6">
-        <div className="bg-blue-50 rounded-lg p-4 mb-4">
-          <h2 className="text-2xl font-bold text-gray-800">Technology Tree</h2>
-          <p className="text-gray-600">
-            Click on a domain to explore related technologies.
+      <div className="container mx-auto px-4 py-6">
+        {/* Header Section */}
+        <div className="bg-blue-50 rounded-lg p-6 mb-6">
+          <h1 className="text-3xl font-bold text-gray-800">Technology Tree</h1>
+          <p className="text-gray-600 mt-2">
+            Navigate through the hierarchy: Level 1 (Main Domains) → Level 2 (Sub-domains) → Level 3 (Applications/Techniques)
           </p>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4">
+        {/* Selected Path Section */}
+        <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
           <div className="flex items-center flex-wrap gap-2">
             <span className="text-gray-700 font-medium">Selected path:</span>
             {selectedPath.level1 && (
@@ -124,7 +128,8 @@ const TechnologyTree = () => {
           </div>
         </div>
 
-        <div className="container mx-auto mb-4">
+        {/* Controls Section */}
+        <div className="container mx-auto mb-6">
           <div className="flex items-center gap-4">
             <div className="flex items-center">
               <span className="text-gray-600 mr-2">Zoom:</span>
@@ -152,42 +157,46 @@ const TechnologyTree = () => {
           </div>
         </div>
         
-        <div className="container mx-auto mb-8">
-          <div className="flex justify-start gap-4 mb-12 w-full overflow-x-auto pb-4">
-            {level1Items.map((item) => (
-              <div
-                key={item.id}
-                className={`
-                  flex-shrink-0 w-64 py-5 px-4 rounded-lg text-center cursor-pointer transition-all
-                  ${selectedPath.level1 === item.id 
-                    ? 'bg-blue-500 text-white ring-4 ring-yellow-400' 
-                    : 'bg-blue-400 text-white hover:bg-blue-500'
-                  }
-                `}
-                onClick={() => handleNodeClick('level1', item.id)}
-              >
-                <h3 className="text-xl font-bold">{item.name}</h3>
-                <p className="text-sm mt-1">{item.relevance}</p>
-              </div>
-            ))}
+        {/* Technology Tree Content */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Level 1 Column */}
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 1</h2>
+            <h3 className="text-sm text-blue-600 mb-4">Main Domains</h3>
+            
+            <div className="space-y-4">
+              {level1Items.map((item) => (
+                <div
+                  key={item.id}
+                  className={`
+                    py-4 px-3 rounded-lg text-center cursor-pointer transition-all
+                    ${selectedPath.level1 === item.id 
+                      ? 'bg-blue-500 text-white ring-2 ring-yellow-400' 
+                      : 'bg-blue-400 text-white hover:bg-blue-500'
+                    }
+                  `}
+                  onClick={() => handleNodeClick('level1', item.id)}
+                >
+                  <h4 className="text-lg font-bold">{item.name}</h4>
+                  <p className="text-xs mt-1">{item.relevance}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {selectedPath.level1 && visibleLevel2Items.length > 0 && (
-            <div className="relative h-24 mb-4">
-              <div className="absolute left-1/2 h-full border-l-2 border-gray-400"></div>
-              <div className="absolute bottom-0 left-1/3 right-1/3 border-t-2 border-gray-400"></div>
-            </div>
-          )}
-
-          {selectedPath.level1 && (
-            <div className="flex justify-start gap-4 mb-6 w-full overflow-x-auto pb-4">
+          {/* Level 2 Column */}
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 2</h2>
+            <h3 className="text-sm text-blue-600 mb-4">Sub-domains</h3>
+            
+            <div className="space-y-4">
               {visibleLevel2Items.map((item) => (
                 <div
                   key={item.id}
                   className={`
-                    flex-shrink-0 w-64 py-4 px-3 rounded-lg text-center cursor-pointer transition-all
+                    py-4 px-3 rounded-lg text-center cursor-pointer transition-all
                     ${selectedPath.level2 === item.id 
-                      ? 'bg-blue-500 text-white ring-4 ring-yellow-400' 
+                      ? 'bg-blue-500 text-white ring-2 ring-yellow-400' 
                       : 'bg-blue-400 text-white hover:bg-blue-500'
                     }
                   `}
@@ -197,62 +206,70 @@ const TechnologyTree = () => {
                   <p className="text-xs mt-1">{item.info}</p>
                 </div>
               ))}
+              {visibleLevel2Items.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  Select a domain from Level 1
+                </div>
+              )}
             </div>
-          )}
+          </div>
 
-          {selectedPath.level2 && visibleLevel3Items.length > 0 && (
-            <div className="relative h-12 mb-4">
-              <div className="absolute left-1/2 h-full border-l-2 border-gray-400"></div>
-            </div>
-          )}
-
-          {selectedPath.level2 && (
-            <div className="flex justify-start gap-4 mb-8 w-full overflow-x-auto pb-4">
+          {/* Level 3 Column */}
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 3</h2>
+            <h3 className="text-sm text-blue-600 mb-4">Specific Topics/Techniques</h3>
+            
+            <div className="space-y-4">
               {visibleLevel3Items.map((item) => (
                 <div
                   key={item.id}
                   className={`
-                    flex-shrink-0 w-64 py-3 px-3 rounded-lg text-center cursor-pointer transition-all
+                    py-4 px-3 rounded-lg text-center cursor-pointer transition-all
                     ${selectedPath.level3 === item.id 
-                      ? 'bg-blue-500 text-white ring-4 ring-yellow-400' 
+                      ? 'bg-blue-500 text-white ring-2 ring-yellow-400' 
                       : 'bg-blue-400 text-white hover:bg-blue-500'
                     }
                   `}
                   onClick={() => handleNodeClick('level3', item.id)}
                 >
-                  <h5 className="text-md font-bold">{item.name}</h5>
+                  <h4 className="text-lg font-bold">{item.name}</h4>
                   <p className="text-xs mt-1">{item.info}</p>
                 </div>
               ))}
+              {visibleLevel3Items.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  Select a sub-domain from Level 2
+                </div>
+              )}
             </div>
-          )}
-
-          <div className="w-full border-b border-dashed border-gray-300 my-8"></div>
-        </div>
-        
-        <div className="container mx-auto px-4 pb-12">
-          <div className="flex flex-col md:flex-row justify-between gap-4">
-            <Button
-              variant="outline"
-              className="border-2 border-gray-300 text-blue-500 py-6 px-8 text-lg font-medium"
-            >
-              Show All Results
-            </Button>
-            
-            <Button
-              variant="outline"
-              className="border-2 border-gray-300 text-blue-500 py-6 px-8 text-lg font-medium"
-            >
-              Export Technology Map
-            </Button>
-            
-            <Button
-              className="bg-blue-500 hover:bg-blue-600 text-white py-6 px-8 text-lg font-medium"
-              onClick={() => navigate("/search-results")}
-            >
-              View Research
-            </Button>
           </div>
+        </div>
+
+        {/* Separator */}
+        <Separator className="my-8" />
+        
+        {/* Action Buttons */}
+        <div className="flex flex-col md:flex-row justify-between gap-4 mb-12">
+          <Button
+            variant="outline"
+            className="border-2 border-gray-300 text-blue-500 py-6 px-8 text-lg font-medium"
+          >
+            Show All Results
+          </Button>
+          
+          <Button
+            variant="outline"
+            className="border-2 border-gray-300 text-blue-500 py-6 px-8 text-lg font-medium"
+          >
+            Export Technology Map
+          </Button>
+          
+          <Button
+            className="bg-blue-500 hover:bg-blue-600 text-white py-6 px-8 text-lg font-medium"
+            onClick={() => navigate("/search-results")}
+          >
+            View Research
+          </Button>
         </div>
       </div>
     </div>
