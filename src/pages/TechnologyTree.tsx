@@ -1,25 +1,38 @@
-
 import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, MinusIcon, PlusIcon, ArrowRight } from "lucide-react";
+import { ChevronDown, ChevronRight, MinusIcon, PlusIcon, ArrowRight, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const TechnologyTree = () => {
   const navigate = useNavigate();
   const [selectedView, setSelectedView] = useState("tree");
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
-  
-  // Define domain categories with their relevance data
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = () => {
+    console.log("Searching for:", searchTerm);
+  };
+
+  const toggleExpand = (itemId: string) => {
+    setExpandedItems(prev => 
+      prev.includes(itemId) 
+        ? prev.filter(id => id !== itemId) 
+        : [...prev, itemId]
+    );
+  };
+
+  const isExpanded = (itemId: string) => expandedItems.includes(itemId);
+
   const level1Items = [
     { id: "ophthalmology", name: "Ophthalmology", relevance: "98% relevance" },
     { id: "adaptive-optics", name: "Adaptive Optics", relevance: "95% relevance", selected: true },
     { id: "medical-imaging", name: "Medical Imaging", relevance: "82% relevance" },
     { id: "optical-engineering", name: "Optical Engineering", relevance: "75% relevance" }
   ];
-  
+
   const level2Items = {
     "ophthalmology": [
       { id: "retinal-disorders", name: "Retinal Disorders", info: "35 papers • 8 implementations" },
@@ -40,7 +53,7 @@ const TechnologyTree = () => {
       { id: "optical-materials", name: "Optical Materials", info: "16 papers • 3 implementations" }
     ]
   };
-  
+
   const level3Items = {
     "wavefront-sensing": [
       { id: "shack-hartmann", name: "Shack-Hartmann Sensors", info: "12 papers • 3 implementations" }
@@ -57,28 +70,28 @@ const TechnologyTree = () => {
     ]
   };
 
-  const toggleExpand = (itemId: string) => {
-    setExpandedItems(prev => 
-      prev.includes(itemId) 
-        ? prev.filter(id => id !== itemId) 
-        : [...prev, itemId]
-    );
-  };
-
-  const isExpanded = (itemId: string) => expandedItems.includes(itemId);
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      {/* Search Input */}
+      {/* Search Input with Search Button */}
       <div className="container mx-auto px-4 py-6">
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="bg-white rounded-lg border border-gray-200 p-4 flex items-center space-x-2">
           <input
             type="text"
-            defaultValue="補償光学の眼科分野への利用 (Adaptive Optics in Ophthalmology)"
-            className="w-full p-2 text-lg border-0 focus:ring-0 focus:outline-none"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="補償光学の眼科分野への利用 (Adaptive Optics in Ophthalmology)"
+            className="flex-grow p-2 text-lg border-0 focus:ring-0 focus:outline-none"
           />
+          <Button 
+            variant="default" 
+            size="icon" 
+            onClick={handleSearch}
+            className="bg-blue-500 hover:bg-blue-600 text-white"
+          >
+            <Search className="h-5 w-5" />
+          </Button>
         </div>
       </div>
       
