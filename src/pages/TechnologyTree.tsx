@@ -74,9 +74,17 @@ const TechnologyTree = () => {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      {/* Selected Path Section - MOVED ABOVE Technology Tree */}
-      <div className="container mx-auto px-4 mb-4">
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
+      {/* Technology Tree Header */}
+      <div className="container mx-auto px-4 mb-6">
+        <div className="bg-blue-50 rounded-lg p-4">
+          <h2 className="text-2xl font-bold text-gray-800">Technology Tree</h2>
+          <p className="text-gray-600">
+            Click on a domain to expand and see its sub-domains and specific techniques.
+          </p>
+        </div>
+
+        {/* Selected Path Section - MOVED BELOW Technology Tree Title */}
+        <div className="bg-white border border-gray-200 rounded-lg p-4 mt-4">
           <div className="flex items-center flex-wrap gap-2">
             <span className="text-gray-700 font-medium">Selected path:</span>
             <span className="text-blue-500 font-medium">Adaptive Optics</span>
@@ -87,7 +95,7 @@ const TechnologyTree = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Search Input with Search Button */}
       <div className="container mx-auto px-4 py-6">
         <div className="bg-white rounded-lg border border-gray-200 p-4 flex items-center space-x-2">
@@ -135,16 +143,6 @@ const TechnologyTree = () => {
               </TabsList>
             </Tabs>
           </div>
-        </div>
-      </div>
-      
-      {/* Technology Tree Header */}
-      <div className="container mx-auto px-4 mb-6">
-        <div className="bg-blue-50 rounded-lg p-4">
-          <h2 className="text-2xl font-bold text-gray-800">Technology Tree</h2>
-          <p className="text-gray-600">
-            Click on a domain to expand and see its sub-domains and specific techniques.
-          </p>
         </div>
       </div>
       
