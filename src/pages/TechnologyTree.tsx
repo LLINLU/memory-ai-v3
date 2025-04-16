@@ -1,34 +1,54 @@
+
 import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, MinusIcon, PlusIcon, ArrowRight, Search } from "lucide-react";
+import { MinusIcon, PlusIcon, ArrowRight, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const TechnologyTree = () => {
   const navigate = useNavigate();
   const [selectedView, setSelectedView] = useState("tree");
-  const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  // Track the currently selected nodes at each level
+  const [selectedPath, setSelectedPath] = useState({
+    level1: "adaptive-optics",
+    level2: "medical-applications",
+    level3: "retinal-imaging"
+  });
 
   const handleSearch = () => {
     console.log("Searching for:", searchTerm);
+    toast.info(`Searching for: ${searchTerm}`);
   };
 
-  const toggleExpand = (itemId: string) => {
-    setExpandedItems(prev => 
-      prev.includes(itemId) 
-        ? prev.filter(id => id !== itemId) 
-        : [...prev, itemId]
-    );
+  const handleNodeClick = (level: string, nodeId: string) => {
+    // Update the selected path based on the clicked node
+    if (level === 'level1') {
+      setSelectedPath({
+        level1: nodeId,
+        level2: "",
+        level3: ""
+      });
+    } else if (level === 'level2') {
+      setSelectedPath({
+        ...selectedPath,
+        level2: nodeId,
+        level3: ""
+      });
+    } else if (level === 'level3') {
+      setSelectedPath({
+        ...selectedPath,
+        level3: nodeId
+      });
+    }
   };
 
-  const isExpanded = (itemId: string) => expandedItems.includes(itemId);
-
+  // Technology tree data
   const level1Items = [
     { id: "ophthalmology", name: "Ophthalmology", relevance: "98% relevance" },
-    { id: "adaptive-optics", name: "Adaptive Optics", relevance: "95% relevance", selected: true },
+    { id: "adaptive-optics", name: "Adaptive Optics", relevance: "95% relevance" },
     { id: "medical-imaging", name: "Medical Imaging", relevance: "82% relevance" },
     { id: "optical-engineering", name: "Optical Engineering", relevance: "75% relevance" }
   ];
@@ -40,7 +60,7 @@ const TechnologyTree = () => {
     ],
     "adaptive-optics": [
       { id: "wavefront-sensing", name: "Wavefront Sensing", info: "Related to selected" },
-      { id: "medical-applications", name: "Medical Applications", info: "22 papers • 6 implementations", selected: true },
+      { id: "medical-applications", name: "Medical Applications", info: "22 papers • 6 implementations" },
       { id: "deformable-mirrors", name: "Deformable Mirrors", info: "Related to selected" },
       { id: "ocular-structure", name: "By Ocular Structure", info: "Alternative classification" }
     ],
@@ -59,7 +79,7 @@ const TechnologyTree = () => {
       { id: "shack-hartmann", name: "Shack-Hartmann Sensors", info: "12 papers • 3 implementations" }
     ],
     "medical-applications": [
-      { id: "retinal-imaging", name: "Retinal Imaging", info: "32 papers • 9 implementations", selected: true },
+      { id: "retinal-imaging", name: "Retinal Imaging", info: "32 papers • 9 implementations" },
       { id: "corneal-imaging", name: "Corneal Imaging", info: "18 papers • 4 implementations" }
     ],
     "deformable-mirrors": [
@@ -70,21 +90,25 @@ const TechnologyTree = () => {
     ]
   };
 
+  // Determine which level 2 and level 3 items to show based on selected path
+  const visibleLevel2Items = selectedPath.level1 ? level2Items[selectedPath.level1 as keyof typeof level2Items] || [] : [];
+  const visibleLevel3Items = selectedPath.level2 ? level3Items[selectedPath.level2 as keyof typeof level3Items] || [] : [];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
       {/* Technology Tree Header */}
       <div className="container mx-auto px-4 mb-6">
-        <div className="bg-blue-50 rounded-lg p-4">
+        <div className="bg-blue-50 rounded-lg p-4 mb-4">
           <h2 className="text-2xl font-bold text-gray-800">Technology Tree</h2>
           <p className="text-gray-600">
-            Click on a domain to expand and see its sub-domains and specific techniques.
+            Click on a domain to explore related technologies.
           </p>
         </div>
 
         {/* Search Input with Search Button */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 flex items-center space-x-2 mt-4">
+        <div className="bg-white rounded-lg border border-gray-200 p-4 flex items-center space-x-2 mb-4">
           <input
             type="text"
             value={searchTerm}
@@ -103,19 +127,37 @@ const TechnologyTree = () => {
         </div>
 
         {/* Selected Path Section */}
-        <div className="bg-white border border-gray-200 rounded-lg p-4 mt-4">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4">
           <div className="flex items-center flex-wrap gap-2">
             <span className="text-gray-700 font-medium">Selected path:</span>
-            <span className="text-blue-500 font-medium">Adaptive Optics</span>
-            <ArrowRight className="h-4 w-4 text-gray-500" />
-            <span className="text-blue-500 font-medium">Medical Applications</span>
-            <ArrowRight className="h-4 w-4 text-gray-500" />
-            <span className="text-blue-500 font-medium">Retinal Imaging</span>
+            {selectedPath.level1 && (
+              <>
+                <span className="text-blue-500 font-medium">
+                  {level1Items.find(item => item.id === selectedPath.level1)?.name || selectedPath.level1}
+                </span>
+                {selectedPath.level2 && (
+                  <>
+                    <ArrowRight className="h-4 w-4 text-gray-500" />
+                    <span className="text-blue-500 font-medium">
+                      {visibleLevel2Items.find(item => item.id === selectedPath.level2)?.name || selectedPath.level2}
+                    </span>
+                    {selectedPath.level3 && (
+                      <>
+                        <ArrowRight className="h-4 w-4 text-gray-500" />
+                        <span className="text-blue-500 font-medium">
+                          {visibleLevel3Items.find(item => item.id === selectedPath.level3)?.name || selectedPath.level3}
+                        </span>
+                      </>
+                    )}
+                  </>
+                )}
+              </>
+            )}
           </div>
         </div>
 
         {/* Zoom Controls and View Toggle */}
-        <div className="container mx-auto px-4 mb-4">
+        <div className="container mx-auto mb-4">
           <div className="flex items-center gap-4">
             <div className="flex items-center">
               <span className="text-gray-600 mr-2">Zoom:</span>
@@ -143,71 +185,96 @@ const TechnologyTree = () => {
           </div>
         </div>
         
-        {/* Technology Tree with Drill-down Format */}
-        <div className="container mx-auto px-4 mb-8">
-          <div className="space-y-4">
+        {/* Visual Technology Tree - Visual Network Format */}
+        <div className="container mx-auto mb-8">
+          {/* Level 1 Nodes */}
+          <div className="flex flex-wrap justify-center gap-4 mb-12">
             {level1Items.map((item) => (
-              <Collapsible 
-                key={item.id} 
-                open={isExpanded(item.id)} 
-                onOpenChange={() => toggleExpand(item.id)}
-                className="border border-gray-200 rounded-lg overflow-hidden"
+              <div
+                key={item.id}
+                className={`
+                  w-64 py-5 px-4 rounded-lg text-center cursor-pointer transition-all
+                  ${selectedPath.level1 === item.id 
+                    ? 'bg-blue-500 text-white ring-4 ring-yellow-400' 
+                    : 'bg-blue-400 text-white hover:bg-blue-500'
+                  }
+                `}
+                onClick={() => handleNodeClick('level1', item.id)}
               >
-                <CollapsibleTrigger className="w-full">
-                  <div className={`p-4 flex justify-between items-center bg-blue-500 text-white cursor-pointer ${item.selected ? "ring-2 ring-yellow-400" : ""}`}>
-                    <div className="flex items-center gap-2">
-                      {isExpanded(item.id) ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
-                      <div>
-                        <h3 className="text-lg font-medium text-left">{item.name}</h3>
-                        <p className="text-sm text-blue-100 text-left">{item.relevance}</p>
-                      </div>
-                    </div>
-                  </div>
-                </CollapsibleTrigger>
-                
-                <CollapsibleContent>
-                  <div className="pl-8 bg-blue-50">
-                    {level2Items[item.id as keyof typeof level2Items]?.map((subItem) => (
-                      <Collapsible 
-                        key={subItem.id} 
-                        open={isExpanded(subItem.id)}
-                        onOpenChange={() => toggleExpand(subItem.id)}
-                        className="border-t border-blue-200"
-                      >
-                        <CollapsibleTrigger className="w-full">
-                          <div className={`p-3 flex justify-between items-center bg-blue-100 text-blue-800 cursor-pointer ${subItem.selected ? "ring-2 ring-yellow-400" : ""}`}>
-                            <div className="flex items-center gap-2">
-                              {isExpanded(subItem.id) ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
-                              <div>
-                                <h4 className="text-md font-medium text-left">{subItem.name}</h4>
-                                <p className="text-sm text-blue-600 text-left">{subItem.info}</p>
-                              </div>
-                            </div>
-                          </div>
-                        </CollapsibleTrigger>
-                        
-                        <CollapsibleContent>
-                          <div className="pl-8 bg-white">
-                            {level3Items[subItem.id as keyof typeof level3Items]?.map((technique) => (
-                              <div 
-                                key={technique.id} 
-                                className={`p-2 flex items-center border-t border-gray-100 ${technique.selected ? "bg-blue-50 ring-2 ring-inset ring-yellow-400" : ""}`}
-                              >
-                                <div className="ml-6">
-                                  <h5 className="text-sm font-medium text-gray-800">{technique.name}</h5>
-                                  <p className="text-xs text-gray-600">{technique.info}</p>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </CollapsibleContent>
-                      </Collapsible>
-                    ))}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
+                <h3 className="text-xl font-bold">{item.name}</h3>
+                <p className="text-sm mt-1">{item.relevance}</p>
+              </div>
             ))}
           </div>
+
+          {/* Connection Lines */}
+          {selectedPath.level1 && visibleLevel2Items.length > 0 && (
+            <div className="relative h-24 mb-4">
+              <div className="absolute left-1/2 h-full border-l-2 border-gray-400"></div>
+              <div className="absolute bottom-0 left-1/3 right-1/3 border-t-2 border-gray-400"></div>
+            </div>
+          )}
+
+          {/* Level 2 Nodes */}
+          {selectedPath.level1 && (
+            <div className="flex flex-wrap justify-center gap-4 mb-6">
+              {visibleLevel2Items.map((item) => (
+                <div
+                  key={item.id}
+                  className={`
+                    w-64 py-4 px-3 rounded-lg text-center cursor-pointer transition-all
+                    ${selectedPath.level2 === item.id 
+                      ? 'bg-blue-500 text-white ring-4 ring-yellow-400' 
+                      : 'bg-blue-400 text-white hover:bg-blue-500'
+                    }
+                  `}
+                  onClick={() => handleNodeClick('level2', item.id)}
+                >
+                  <h4 className="text-lg font-bold">{item.name}</h4>
+                  <p className="text-xs mt-1">{item.info}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* User Action Note */}
+          {selectedPath.level2 && (
+            <div className="text-center text-orange-500 font-medium mb-6 italic">
+              User clicks "{visibleLevel2Items.find(item => item.id === selectedPath.level2)?.name}"
+            </div>
+          )}
+
+          {/* Connection Lines */}
+          {selectedPath.level2 && visibleLevel3Items.length > 0 && (
+            <div className="relative h-12 mb-4">
+              <div className="absolute left-1/2 h-full border-l-2 border-gray-400"></div>
+            </div>
+          )}
+
+          {/* Level 3 Nodes */}
+          {selectedPath.level2 && (
+            <div className="flex flex-wrap justify-center gap-4 mb-8">
+              {visibleLevel3Items.map((item) => (
+                <div
+                  key={item.id}
+                  className={`
+                    w-64 py-3 px-3 rounded-lg text-center cursor-pointer transition-all
+                    ${selectedPath.level3 === item.id 
+                      ? 'bg-blue-500 text-white ring-4 ring-yellow-400' 
+                      : 'bg-blue-400 text-white hover:bg-blue-500'
+                    }
+                  `}
+                  onClick={() => handleNodeClick('level3', item.id)}
+                >
+                  <h5 className="text-md font-bold">{item.name}</h5>
+                  <p className="text-xs mt-1">{item.info}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Visual Divider */}
+          <div className="w-full border-b border-dashed border-gray-300 my-8"></div>
         </div>
         
         {/* Action Buttons */}
