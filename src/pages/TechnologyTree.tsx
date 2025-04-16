@@ -9,30 +9,11 @@ import { toast } from "sonner";
 const TechnologyTree = () => {
   const navigate = useNavigate();
   const [selectedView, setSelectedView] = useState("tree");
-  const [searchTerm, setSearchTerm] = useState("");
   const [selectedPath, setSelectedPath] = useState({
     level1: "adaptive-optics",
     level2: "medical-applications",
     level3: "retinal-imaging"
   });
-
-  const handleSearch = () => {
-    const japaneseQuery = '補償光学の眼科分野への利用';
-    const englishQuery = 'Adaptive Optics in Ophthalmology';
-    
-    if (searchTerm === japaneseQuery || searchTerm === englishQuery) {
-      // Automatically select the relevant path
-      setSelectedPath({
-        level1: "adaptive-optics",
-        level2: "medical-applications",
-        level3: "retinal-imaging"
-      });
-      toast.success(`Found results for: ${searchTerm}`);
-    } else {
-      toast.info(`Searching for: ${searchTerm}`);
-    }
-    console.log("Searching for:", searchTerm);
-  };
 
   const handleNodeClick = (level: string, nodeId: string) => {
     if (level === 'level1') {
@@ -112,24 +93,6 @@ const TechnologyTree = () => {
           <p className="text-gray-600">
             Click on a domain to explore related technologies.
           </p>
-        </div>
-
-        <div className="bg-white rounded-lg border border-gray-200 p-2 flex items-center space-x-2 mb-4">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search technologies..."
-            className="flex-grow p-1 text-sm border-0 focus:ring-0 focus:outline-none"
-          />
-          <Button 
-            variant="default" 
-            size="sm" 
-            onClick={handleSearch}
-            className="bg-blue-500 hover:bg-blue-600 text-white"
-          >
-            <Search className="h-4 w-4" />
-          </Button>
         </div>
 
         <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4">
