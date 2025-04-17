@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { PaperList } from "./PaperList";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Clipboard } from "lucide-react";
+import { Book, Terminal } from "lucide-react";
 
 export const SearchResults = () => {
   const { toast } = useToast();
@@ -35,11 +35,11 @@ export const SearchResults = () => {
       <Tabs defaultValue="papers" className="w-full" onValueChange={setActiveTab}>
         <TabsList className="w-full mb-4">
           <TabsTrigger value="papers" className="flex-1">
-            <FileText className="w-4 h-4 mr-2" />
+            <Book className="w-4 h-4 mr-2" />
             Papers
           </TabsTrigger>
           <TabsTrigger value="implementation" className="flex-1">
-            <Clipboard className="w-4 h-4 mr-2" />
+            <Terminal className="w-4 h-4 mr-2" />
             Implementation
           </TabsTrigger>
         </TabsList>
