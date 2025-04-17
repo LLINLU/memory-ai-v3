@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Search, ArrowRight } from "lucide-react";
@@ -18,16 +17,6 @@ const chatMessages = [
     type: "system",
     content: "Creating Webset for your search: Research papers about cell regeneration technology, which includes one author who is an MD...",
     showMore: true
-  },
-  {
-    type: "criteria",
-    title: "Criteria for your search",
-    items: [
-      "Research paper focused on cell regeneration technology",
-      "At least one author who is an MD",
-      "At least one author who is a technologist"
-    ],
-    searchingCount: 25,
   },
   {
     type: "progress",
