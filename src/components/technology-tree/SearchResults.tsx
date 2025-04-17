@@ -23,8 +23,6 @@ export const SearchResults = () => {
                 <span>田中 健太, 佐藤 明子, 山田 雄一</span>
                 <span>•</span>
                 <span>日本眼科学会誌</span>
-                <span>•</span>
-                <span>2024</span>
               </div>
 
               <div className="flex gap-2">
@@ -40,6 +38,8 @@ export const SearchResults = () => {
                 <Button variant="outline" className="text-sm">View PDF</Button>
                 <Button variant="outline" className="text-sm">Save</Button>
               </div>
+
+              <div className="text-xs text-gray-500 text-right">2024-04-19</div>
             </div>
           </li>
 
@@ -51,8 +51,6 @@ export const SearchResults = () => {
                 <span>J. Zhang, M. Williams, K. Yamada</span>
                 <span>•</span>
                 <span>American Journal of Ophthalmology</span>
-                <span>•</span>
-                <span>2023</span>
               </div>
 
               <div className="flex gap-2">
@@ -68,6 +66,8 @@ export const SearchResults = () => {
                 <Button variant="outline" className="text-sm">View PDF</Button>
                 <Button variant="outline" className="text-sm">Save</Button>
               </div>
+
+              <div className="text-xs text-gray-500 text-right">2024-04-19</div>
             </div>
           </li>
         </ul>
