@@ -47,13 +47,13 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem onSelect={() => onSortChange?.("newest")}>
-            Newest first
+            Newest First
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => onSortChange?.("oldest")}>
-            Oldest first
+            Oldest First
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => onSortChange?.("relevance")}>
-            Most relevant
+          <DropdownMenuItem onSelect={() => onSortChange?.("citations")}>
+            Most Citations
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
