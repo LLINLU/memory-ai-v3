@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { PaperCard } from "./PaperCard";
+import { FilterSort } from "./FilterSort";
 
 // Create multiple paper sets to switch between
 const paperSets = {
@@ -65,20 +66,16 @@ const paperSets = {
 export const PaperList = () => {
   const [currentPaperSet, setCurrentPaperSet] = useState('default');
   const [papers, setPapers] = useState(paperSets.default);
-  // Use a key state to force re-render when needed
   const [refreshKey, setRefreshKey] = useState(0);
   
   useEffect(() => {
-    // Set the papers based on the current paper set
     setPapers(paperSets[currentPaperSet]);
   }, [currentPaperSet]);
 
   useEffect(() => {
-    // Event listener for the refresh-papers event
     const handleRefresh = () => {
       console.log("Refreshing papers...");
       setCurrentPaperSet('updated');
-      // Force a re-render by updating the key
       setRefreshKey(prev => prev + 1);
     };
     
@@ -90,13 +87,22 @@ export const PaperList = () => {
   }, []);
 
   return (
-    <div className="p-4"> {/* Removed bg-[#f3f2e8] */}
+    <div className="p-4">
       <div className="mb-4">
-        <h4 className="font-semibold">Adaptive Optics: Medical Applications</h4>
-        <p className="text-sm text-gray-600">
-          {currentPaperSet === 'default' ? '32 papers • 9 implementations' : '48 papers • 15 implementations'}
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-semibold">Adaptive Optics: Medical Applications</h4>
+            <p className="text-sm text-gray-600">
+              {currentPaperSet === 'default' ? '32 papers • 9 implementations' : '48 papers • 15 implementations'}
+            </p>
+          </div>
+          <FilterSort 
+            onFilterChange={(filter) => console.log('Filter:', filter)}
+            onSortChange={(sort) => console.log('Sort:', sort)}
+          />
+        </div>
       </div>
+      
       <ul className="space-y-4">
         {papers.map((paper, index) => (
           <PaperCard
@@ -110,6 +116,7 @@ export const PaperList = () => {
           />
         ))}
       </ul>
+      
       <Button variant="outline" className="w-full mt-4">
         View all {currentPaperSet === 'default' ? '32' : '48'} papers
       </Button>
