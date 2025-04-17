@@ -1,6 +1,8 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
-import { Search, ArrowLeft, ArrowRight } from "lucide-react";
+import { Search, ArrowLeft, ArrowRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
