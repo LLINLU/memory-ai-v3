@@ -21,6 +21,7 @@ interface MainContentProps {
     level2: string;
     level3: string;
   };
+  query?: string;
 }
 
 export const MainContent = ({
@@ -33,11 +34,12 @@ export const MainContent = ({
     level1: "Main Domains",
     level2: "Sub-domains",
     level3: "Specific Topics/Techniques"
-  }
+  },
+  query
 }: MainContentProps) => {
   return (
     <div className="container mx-auto px-4 py-6">
-      <TechnologyHeader />
+      <TechnologyHeader query={query} />
       <PathDisplay 
         selectedPath={selectedPath}
         level1Items={level1Items}

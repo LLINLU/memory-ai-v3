@@ -68,7 +68,8 @@ const TechnologyTree = () => {
     setShowSidebar,
     handleNodeClick,
     toggleSidebar,
-    handleInputChange
+    handleInputChange,
+    query
   } = useTechnologyTree();
 
   useEffect(() => {
@@ -91,6 +92,7 @@ const TechnologyTree = () => {
               level3Items={level3Items}
               onNodeClick={handleNodeClick}
               levelNames={levelNames}
+              query={query}
             />
           </ResizablePanel>
 

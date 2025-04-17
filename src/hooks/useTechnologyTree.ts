@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 
 export interface TechnologyTreeState {
@@ -12,6 +11,7 @@ export interface TechnologyTreeState {
   showSidebar: boolean;
   collapsedSidebar: boolean;
   inputValue: string;
+  query?: string;
 }
 
 export const useTechnologyTree = () => {
@@ -25,10 +25,10 @@ export const useTechnologyTree = () => {
   const [showSidebar, setShowSidebar] = useState(true);
   const [collapsedSidebar, setCollapsedSidebar] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [query, setQuery] = useState("補償光学の眼科分野への利用");
 
   const handleNodeClick = (level: string, nodeId: string) => {
     setSelectedPath(prev => {
-      // If clicking the same node that's already selected, unselect it and its children
       if (prev[level] === nodeId) {
         if (level === 'level1') {
           return { ...prev, level1: "", level2: "", level3: "" };
@@ -39,7 +39,6 @@ export const useTechnologyTree = () => {
         }
       }
       
-      // If selecting a new node
       if (level === 'level1') {
         return { ...prev, level1: nodeId, level2: "", level3: "" };
       } else if (level === 'level2') {
@@ -71,12 +70,13 @@ export const useTechnologyTree = () => {
     showSidebar,
     collapsedSidebar,
     inputValue,
+    query,
     setSelectedView,
     setSidebarTab,
     setShowSidebar,
     handleNodeClick,
     toggleSidebar,
-    handleInputChange
+    handleInputChange,
+    setQuery
   };
 };
-
