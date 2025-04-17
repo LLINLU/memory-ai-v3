@@ -1,9 +1,10 @@
+
 import React, { useEffect } from "react";
 import { PaperList } from "./PaperList";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Book, Code } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { ImplementationList } from "./ImplementationList";
 
 export const SearchResults = () => {
   const { toast } = useToast();
@@ -45,28 +46,7 @@ export const SearchResults = () => {
         {activeTab === "papers" ? (
           <PaperList />
         ) : (
-          <div className="space-y-4">
-            <div className="bg-white p-4 rounded-lg border border-gray-200">
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="font-semibold">Commercial AO-SLO System</h4>
-                <Badge className="ml-2 bg-[#E8F1FF] text-[#0EA5E9] border-0 hover:bg-[#E8F1FF]">3 releases</Badge>
-              </div>
-              <p className="text-gray-600 text-sm font-normal">
-                Commercially available adaptive optics system for clinical ophthalmology applications. 
-                Features real-time wavefront sensing and high-speed image acquisition.
-              </p>
-            </div>
-            <div className="bg-white p-4 rounded-lg border border-gray-200">
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="font-semibold">Research-Grade AO Platform</h4>
-                <Badge className="ml-2 bg-[#F2FCE2] text-[#16A34A] border-0 hover:bg-[#F2FCE2]">5 releases</Badge>
-              </div>
-              <p className="text-gray-600 text-sm font-normal">
-                Custom-built adaptive optics system integrating multiple imaging modalities. 
-                Enables simultaneous fluorescence imaging and structural assessment.
-              </p>
-            </div>
-          </div>
+          <ImplementationList />
         )}
       </Tabs>
     </div>
