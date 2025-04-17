@@ -1,3 +1,4 @@
+
 import { ArrowRight } from "lucide-react";
 
 interface LevelItem {
@@ -100,7 +101,7 @@ export const LevelSelection = ({
                   style={{ 
                     width: '48px',
                     height: '2px',
-                    transform: 'translateY(-50%)','translateX(-50%)'
+                    transform: 'translateY(-50%) translateX(0)',
                     transformOrigin: 'right'
                   }}
                 />
@@ -147,3 +148,4 @@ export const LevelSelection = ({
     </div>
   );
 };
+
