@@ -12,12 +12,7 @@ export const ChatInput = ({ value, onChange }: ChatInputProps) => {
   return (
     <div className="p-4 border-t border-gray-200">
       <div className="text-gray-500 mb-2 flex items-center gap-1 justify-between">
-        <div>
-          Need a custom webset?
-          <button className="text-blue-600 ml-1 flex items-center gap-1 inline">
-            Talk to us <ExternalLink className="h-4 w-4" />
-          </button>
-        </div>
+
       </div>
       
       <div className="bg-white rounded-lg border border-gray-200">
