@@ -34,9 +34,7 @@ export const ChatInput = ({ value, onChange }: ChatInputProps) => {
           </Button>
         </div>
         
-        <div className="px-3 py-1 text-xs text-gray-400 flex items-center justify-end">
-          <kbd className="px-2 py-0.5 border border-gray-300 rounded bg-gray-50">Tab</kbd>
-        </div>
+ 
       </div>
     </div>
   );
