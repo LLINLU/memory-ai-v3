@@ -29,7 +29,7 @@ export const SearchResults = () => {
 
   return (
     <div className="h-full p-4 overflow-auto bg-[#fffdf5]" data-sidebar="content">
-      <h3 className="text-xl font-bold mb-4">Results</h3>
+      
       
       <Tabs defaultValue="papers" className="w-full" onValueChange={setActiveTab}>
         <TabsList className="w-full mb-4">
