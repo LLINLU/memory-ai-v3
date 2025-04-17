@@ -23,7 +23,7 @@ export const ZoomControls = () => {
           variant="outline"
           onClick={() => navigate("/search-results")}
         >
-          View Research
+          View Results
         </Button>
       </div>
     </div>
