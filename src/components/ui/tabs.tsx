@@ -51,4 +51,30 @@ const TabsContent = React.forwardRef<
 ))
 TabsContent.displayName = TabsPrimitive.Content.displayName
 
-export { Tabs, TabsList, TabsTrigger, TabsContent }
+// Horizontal tab view with content side by side
+const TabsHorizontal = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.Root
+    ref={ref}
+    className={cn("flex flex-col", className)}
+    {...props}
+  />
+))
+TabsHorizontal.displayName = "TabsHorizontal"
+
+const TabsHorizontalContent = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & { value: string }
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("flex-1", className)}
+    data-state={props["data-state"]}
+    {...props}
+  />
+))
+TabsHorizontalContent.displayName = "TabsHorizontalContent"
+
+export { Tabs, TabsList, TabsTrigger, TabsContent, TabsHorizontal, TabsHorizontalContent }

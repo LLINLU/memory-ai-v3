@@ -1,11 +1,13 @@
+
 import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent, TabsHorizontal, TabsHorizontalContent } from "@/components/ui/tabs";
 import { MinusIcon, PlusIcon, ArrowRight, X, Search, ExternalLink, Send, Edit, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import {
   Sheet,
   SheetContent,
@@ -25,7 +27,7 @@ const TechnologyTree = () => {
     level2: "medical-applications",
     level3: "retinal-imaging"
   });
-  const [sidebarTab, setSidebarTab] = useState("chat");
+  const [sidebarTab, setSidebarTab] = useState("result");
   const [showSidebar, setShowSidebar] = useState(true);
   const [inputValue, setInputValue] = useState("");
 
@@ -323,109 +325,25 @@ const TechnologyTree = () => {
             showSidebar ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
-          <div className="flex items-center border-b border-gray-200">
-            <Tabs value={sidebarTab} onValueChange={setSidebarTab} className="flex-1">
-              <TabsList className="w-full bg-transparent p-0 h-auto border-b">
-                <TabsTrigger 
-                  value="chat" 
-                  className={`flex-1 font-medium text-lg rounded-none border-b-2 border-transparent px-6 py-3 ${
-                    sidebarTab === 'chat' ? 'text-blue-600 border-blue-600' : 'text-gray-500'
-                  }`}
-                >
-                  Chat
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="result" 
-                  className={`flex-1 font-medium text-lg rounded-none border-b-2 border-transparent px-6 py-3 ${
-                    sidebarTab === 'result' ? 'text-blue-600 border-blue-600' : 'text-gray-500'
-                  }`}
-                >
-                  Result
-                </TabsTrigger>
-              </TabsList>
-              
-              <div className="flex-1 overflow-auto bg-[#fffdf5]">
-                <TabsContent value="chat" className="m-0 p-4 h-full">
-                  <div className="space-y-6">
-                    <div className="bg-[#f3f2e8] rounded-lg p-4">
-                      <p className="text-gray-800 text-lg font-medium">
-                        Creating Webset for your search: Research papers about cell regeneration technology, which includes one author who is an MD...
-                      </p>
-                      <button className="text-gray-700 mt-2 font-medium">Show more</button>
-                    </div>
-                    
-                    <div className="bg-[#f3f2e8] rounded-lg p-4">
-                      <h3 className="text-gray-800 text-xl font-bold mb-3">Criteria for your search</h3>
-                      <ul className="space-y-2 mb-3">
-                        <li className="flex items-start gap-2 text-gray-600">
-                          <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
-                          <span>Research paper focused on cell regeneration technology</span>
-                        </li>
-                        <li className="flex items-start gap-2 text-gray-600">
-                          <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
-                          <span>At least one author who is an MD</span>
-                        </li>
-                        <li className="flex items-start gap-2 text-gray-600">
-                          <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
-                          <span>At least one author who is a technologist</span>
-                        </li>
-                      </ul>
-                      <p className="font-semibold mb-3">Searching for 25 results</p>
-                      <div className="flex items-center">
-                        <span className="font-semibold text-gray-700 underline mr-2">Search for more</span>
-                        <Search className="h-4 w-4" />
-                      </div>
-                    </div>
-                    
-                    <div className="bg-[#f3f2e8] rounded-lg p-4">
-                      <h3 className="text-gray-800 text-xl font-bold mb-4">Searching across billions of Exa embeddings</h3>
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-start gap-2 text-gray-600">
-                          <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
-                          <span>73 results analyzed</span>
-                        </div>
-                        <div className="flex items-start gap-2 text-gray-600">
-                          <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
-                          <span>35 results matched</span>
-                        </div>
-                      </div>
-                      <Progress value={65} className="h-2 w-full bg-gray-300" />
-                    </div>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="result" className="m-0 p-4">
-                  <h3 className="text-xl font-bold mb-4">Research Results</h3>
-                  <div className="bg-[#f3f2e8] p-4 rounded-lg">
-                    <div className="mb-4">
-                      <h4 className="font-semibold">Adaptive Optics: Medical Applications</h4>
-                      <p className="text-sm text-gray-600">32 papers • 9 implementations</p>
-                    </div>
-                    <ul className="space-y-4">
-                      <li className="bg-white p-3 rounded border border-gray-200">
-                        <h5 className="font-medium">High-resolution retinal imaging using adaptive optics</h5>
-                        <p className="text-sm text-gray-600">Journal of Vision Science, 2023</p>
-                        <div className="flex gap-2 mt-2">
-                          <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">Retinal Imaging</span>
-                          <span className="text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded">Clinical</span>
-                        </div>
-                      </li>
-                      <li className="bg-white p-3 rounded border border-gray-200">
-                        <h5 className="font-medium">Advancements in corneal imaging with adaptive optics technology</h5>
-                        <p className="text-sm text-gray-600">Ophthalmology Research, 2022</p>
-                        <div className="flex gap-2 mt-2">
-                          <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">Corneal Imaging</span>
-                          <span className="text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded">Technique</span>
-                        </div>
-                      </li>
-                    </ul>
-                    <Button variant="outline" className="w-full mt-4">
-                      View all 32 papers
-                    </Button>
-                  </div>
-                </TabsContent>
-              </div>
-            </Tabs>
+          <div className="flex items-center justify-between border-b border-gray-200 h-12">
+            <div className="flex-1 flex">
+              <button 
+                onClick={() => setSidebarTab("result")}
+                className={`flex-1 h-full font-medium text-center px-4 ${
+                  sidebarTab === 'result' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'
+                }`}
+              >
+                Result
+              </button>
+              <button 
+                onClick={() => setSidebarTab("chat")}
+                className={`flex-1 h-full font-medium text-center px-4 ${
+                  sidebarTab === 'chat' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'
+                }`}
+              >
+                Chat
+              </button>
+            </div>
             <Button 
               variant="ghost" 
               size="icon"
@@ -434,6 +352,92 @@ const TechnologyTree = () => {
             >
               <X className="h-5 w-5" />
             </Button>
+          </div>
+          
+          <div className="flex-1 overflow-hidden">
+            {sidebarTab === "result" && (
+              <div className="h-full p-4 overflow-auto bg-[#fffdf5]">
+                <h3 className="text-xl font-bold mb-4">Research Results</h3>
+                <div className="bg-[#f3f2e8] p-4 rounded-lg">
+                  <div className="mb-4">
+                    <h4 className="font-semibold">Adaptive Optics: Medical Applications</h4>
+                    <p className="text-sm text-gray-600">32 papers • 9 implementations</p>
+                  </div>
+                  <ul className="space-y-4">
+                    <li className="bg-white p-3 rounded border border-gray-200">
+                      <h5 className="font-medium">High-resolution retinal imaging using adaptive optics</h5>
+                      <p className="text-sm text-gray-600">Journal of Vision Science, 2023</p>
+                      <div className="flex gap-2 mt-2">
+                        <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">Retinal Imaging</span>
+                        <span className="text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded">Clinical</span>
+                      </div>
+                    </li>
+                    <li className="bg-white p-3 rounded border border-gray-200">
+                      <h5 className="font-medium">Advancements in corneal imaging with adaptive optics technology</h5>
+                      <p className="text-sm text-gray-600">Ophthalmology Research, 2022</p>
+                      <div className="flex gap-2 mt-2">
+                        <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">Corneal Imaging</span>
+                        <span className="text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded">Technique</span>
+                      </div>
+                    </li>
+                  </ul>
+                  <Button variant="outline" className="w-full mt-4">
+                    View all 32 papers
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {sidebarTab === "chat" && (
+              <div className="h-full p-4 overflow-auto bg-[#fffdf5]">
+                <div className="space-y-6">
+                  <div className="bg-[#f3f2e8] rounded-lg p-4">
+                    <p className="text-gray-800 text-lg font-medium">
+                      Creating Webset for your search: Research papers about cell regeneration technology, which includes one author who is an MD...
+                    </p>
+                    <button className="text-gray-700 mt-2 font-medium">Show more</button>
+                  </div>
+                  
+                  <div className="bg-[#f3f2e8] rounded-lg p-4">
+                    <h3 className="text-gray-800 text-xl font-bold mb-3">Criteria for your search</h3>
+                    <ul className="space-y-2 mb-3">
+                      <li className="flex items-start gap-2 text-gray-600">
+                        <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
+                        <span>Research paper focused on cell regeneration technology</span>
+                      </li>
+                      <li className="flex items-start gap-2 text-gray-600">
+                        <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
+                        <span>At least one author who is an MD</span>
+                      </li>
+                      <li className="flex items-start gap-2 text-gray-600">
+                        <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
+                        <span>At least one author who is a technologist</span>
+                      </li>
+                    </ul>
+                    <p className="font-semibold mb-3">Searching for 25 results</p>
+                    <div className="flex items-center">
+                      <span className="font-semibold text-gray-700 underline mr-2">Search for more</span>
+                      <Search className="h-4 w-4" />
+                    </div>
+                  </div>
+                  
+                  <div className="bg-[#f3f2e8] rounded-lg p-4">
+                    <h3 className="text-gray-800 text-xl font-bold mb-4">Searching across billions of Exa embeddings</h3>
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-start gap-2 text-gray-600">
+                        <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
+                        <span>73 results analyzed</span>
+                      </div>
+                      <div className="flex items-start gap-2 text-gray-600">
+                        <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
+                        <span>35 results matched</span>
+                      </div>
+                    </div>
+                    <Progress value={65} className="h-2 w-full bg-gray-300" />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           
           <div className="border-t border-gray-200">
