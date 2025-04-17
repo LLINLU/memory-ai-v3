@@ -6,35 +6,35 @@ export const PaperList = () => {
   return (
     <div className="bg-[#f3f2e8] p-4 rounded-lg">
       <div className="mb-4">
-        <h4 className="font-semibold">Adaptive Optics: Medical Applications</h4>
-        <p className="text-sm text-gray-600">32 papers • 9 implementations</p>
+        <h4 className="font-semibold">Advanced Optical Coherence Tomography</h4>
+        <p className="text-sm text-gray-600">45 papers • 12 implementations</p>
       </div>
       <ul className="space-y-4">
         <PaperCard
           title={{
-            japanese: "高解像度適応光学走査レーザー検眼鏡による糖尿病網膜症の細胞レベル評価",
-            english: "(Cellular-level Assessment of Diabetic Retinopathy Using High-resolution AO-SLO)"
+            japanese: "光干渉断層計を用いた網膜下構造の3次元イメージング技術",
+            english: "(3D Imaging of Sub-Retinal Structures Using OCT)"
           }}
-          authors="田中 健太, 佐藤 明子, 山田 雄一"
-          journal="日本眼科学会誌"
-          tags={["AO-SLO", "糖尿病網膜症"]}
-          abstract="This study investigates the application of adaptive optics scanning laser ophthalmoscopy (AO-SLO) for early detection of cellular changes in diabetic retinopathy. The research demonstrates improved visualization of retinal microvasculature and photoreceptor abnormalities before clinical symptoms appear."
+          authors="山本 浩二, 鈴木 友子, 佐藤 直人"
+          journal="医用画像学会誌"
+          tags={["OCT", "3Dイメージング"]}
+          abstract="This study presents a novel approach to 3D imaging of sub-retinal structures using advanced optical coherence tomography. The method achieves unprecedented resolution in visualizing retinal layers and microvasculature."
           date="2024-04-19"
         />
         
         <PaperCard
           title={{
-            english: "Multi-Modal Adaptive Optics Imaging Combined with OCT for Enhanced Retinal Diagnostics"
+            english: "Enhanced Resolution OCT Integration with Artificial Intelligence for Early Disease Detection"
           }}
-          authors="J. Zhang, M. Williams, K. Yamada"
-          journal="American Journal of Ophthalmology"
-          tags={["AO-OCT", "Multi-Modal"]}
-          abstract="This paper presents a novel approach combining adaptive optics with optical coherence tomography for comprehensive retinal imaging. The multi-modal system achieves unprecedented resolution for in vivo assessment of retinal layers, offering new insights into pathophysiology of macular degeneration."
+          authors="M. Anderson, K. Lee, R. Martinez"
+          journal="Journal of Biomedical Optics"
+          tags={["AI-OCT", "Disease Detection"]}
+          abstract="This paper introduces an integrated system combining high-resolution OCT with artificial intelligence algorithms for early detection of retinal diseases. The system demonstrates improved accuracy in identifying subtle pathological changes."
           date="2024-04-19"
         />
       </ul>
       <Button variant="outline" className="w-full mt-4">
-        View all 32 papers
+        View all 45 papers
       </Button>
     </div>
   );
