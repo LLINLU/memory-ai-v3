@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -102,7 +101,6 @@ const TechnologyTree = () => {
     setInputValue(e.target.value);
   };
 
-  // Dummy chat messages for the demo
   const chatMessages = [
     {
       type: "system",
@@ -134,7 +132,6 @@ const TechnologyTree = () => {
       <div className="flex flex-1 overflow-hidden">
         <div className={`flex-1 ${showSidebar ? 'mr-[400px]' : ''} transition-all duration-300 overflow-auto`}>
           <div className="container mx-auto px-4 py-6">
-            {/* Header Section */}
             <div className="bg-blue-50 rounded-lg p-6 mb-6">
               <h1 className="text-3xl font-bold text-gray-800">Technology Tree</h1>
               <p className="text-gray-600 mt-2">
@@ -142,7 +139,6 @@ const TechnologyTree = () => {
               </p>
             </div>
 
-            {/* Selected Path Section */}
             <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
               <div className="flex items-center flex-wrap gap-2">
                 <span className="text-gray-700 font-medium">Selected path:</span>
@@ -172,7 +168,6 @@ const TechnologyTree = () => {
               </div>
             </div>
 
-            {/* Controls Section */}
             <div className="container mx-auto mb-6">
               <div className="flex items-center gap-4">
                 <div className="flex items-center">
@@ -201,9 +196,7 @@ const TechnologyTree = () => {
               </div>
             </div>
             
-            {/* Technology Tree Content */}
             <div className="flex flex-row gap-6 mb-8 relative">
-              {/* Level 1 Column */}
               <div className="w-1/3 bg-blue-50 p-4 rounded-lg">
                 <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 1</h2>
                 <h3 className="text-sm text-blue-600 mb-4">Main Domains</h3>
@@ -225,7 +218,6 @@ const TechnologyTree = () => {
                       <h4 className="text-lg font-bold">{item.name}</h4>
                       <p className="text-xs mt-1">{item.relevance}</p>
                       
-                      {/* Horizontal Connection Line */}
                       {selectedPath.level1 === item.id && selectedPath.level2 && (
                         <div className="absolute top-1/2 right-0 w-6 h-0.5 bg-blue-600 -mr-6"></div>
                       )}
@@ -234,7 +226,6 @@ const TechnologyTree = () => {
                 </div>
               </div>
 
-              {/* Level 2 Column */}
               <div className="w-1/3 bg-blue-50 p-4 rounded-lg">
                 <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 2</h2>
                 <h3 className="text-sm text-blue-600 mb-4">Sub-domains</h3>
@@ -256,7 +247,6 @@ const TechnologyTree = () => {
                       <h4 className="text-lg font-bold">{item.name}</h4>
                       <p className="text-xs mt-1">{item.info}</p>
                       
-                      {/* Horizontal Connection Line */}
                       {selectedPath.level2 === item.id && selectedPath.level3 && (
                         <div className="absolute top-1/2 right-0 w-6 h-0.5 bg-blue-600 -mr-6"></div>
                       )}
@@ -270,7 +260,6 @@ const TechnologyTree = () => {
                 </div>
               </div>
 
-              {/* Level 3 Column */}
               <div className="w-1/3 bg-blue-50 p-4 rounded-lg">
                 <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 3</h2>
                 <h3 className="text-sm text-blue-600 mb-4">Specific Topics/Techniques</h3>
@@ -302,10 +291,8 @@ const TechnologyTree = () => {
               </div>
             </div>
 
-            {/* Separator */}
             <Separator className="my-8" />
             
-            {/* Action Buttons */}
             <div className="flex flex-col md:flex-row justify-between gap-4 mb-12">
               <Button
                 variant="outline"
@@ -331,15 +318,12 @@ const TechnologyTree = () => {
           </div>
         </div>
 
-        {/* Right Sidebar */}
         <div 
           className={`fixed right-0 top-[64px] bottom-0 w-[400px] bg-white border-l border-gray-200 shadow-lg flex flex-col transition-transform duration-300 z-10 ${
             showSidebar ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
-          {/* Sidebar Header with Tabs */}
           <div className="flex items-center border-b border-gray-200">
-            {/* This is where the issue is: we're using TabsTrigger without a proper Tabs container */}
             <Tabs value={sidebarTab} onValueChange={setSidebarTab} className="flex-1">
               <TabsList className="w-full bg-transparent p-0 h-auto border-b">
                 <TabsTrigger 
@@ -359,12 +343,10 @@ const TechnologyTree = () => {
                   Result
                 </TabsTrigger>
               </TabsList>
-            
-              {/* Sidebar Content - These TabsContent components need to be inside the Tabs component */}
+              
               <div className="flex-1 overflow-auto bg-[#fffdf5]">
                 <TabsContent value="chat" className="m-0 p-4 h-full">
                   <div className="space-y-6">
-                    {/* System Message */}
                     <div className="bg-[#f3f2e8] rounded-lg p-4">
                       <p className="text-gray-800 text-lg font-medium">
                         Creating Webset for your search: Research papers about cell regeneration technology, which includes one author who is an MD...
@@ -372,7 +354,6 @@ const TechnologyTree = () => {
                       <button className="text-gray-700 mt-2 font-medium">Show more</button>
                     </div>
                     
-                    {/* Criteria Message */}
                     <div className="bg-[#f3f2e8] rounded-lg p-4">
                       <h3 className="text-gray-800 text-xl font-bold mb-3">Criteria for your search</h3>
                       <ul className="space-y-2 mb-3">
@@ -396,7 +377,6 @@ const TechnologyTree = () => {
                       </div>
                     </div>
                     
-                    {/* Progress Message */}
                     <div className="bg-[#f3f2e8] rounded-lg p-4">
                       <h3 className="text-gray-800 text-xl font-bold mb-4">Searching across billions of Exa embeddings</h3>
                       <div className="space-y-2 mb-4">
@@ -456,7 +436,6 @@ const TechnologyTree = () => {
             </Button>
           </div>
           
-          {/* Sidebar Footer - Input Area */}
           <div className="border-t border-gray-200">
             <div className="p-4">
               <div className="text-gray-500 mb-2 flex items-center gap-1 justify-between">
@@ -494,7 +473,6 @@ const TechnologyTree = () => {
           </div>
         </div>
         
-        {/* Toggle Sidebar Button (when sidebar is hidden) */}
         {!showSidebar && (
           <Button 
             className="fixed right-4 bottom-4 rounded-full bg-blue-500 p-3"
