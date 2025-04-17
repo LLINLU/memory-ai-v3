@@ -7,9 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-  DropdownMenuRadioItem,
   DropdownMenuLabel,
-  DropdownMenuRadioGroup,
 } from "@/components/ui/dropdown-menu";
 
 interface FilterSortProps {
@@ -45,7 +43,7 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent 
-          className="w-56 [&>div>div]:before:hidden" 
+          className="w-56" 
           align="start"
           onCloseAutoFocus={(e) => {
             e.preventDefault();
@@ -55,74 +53,68 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
           }}
         >
           <DropdownMenuLabel>Time Period</DropdownMenuLabel>
-          <DropdownMenuRadioGroup value={selectedFilters.timePeriod}>
-            <DropdownMenuRadioItem 
-              value="past-year"
-              onClick={() => handleFilterSelect("timePeriod", "past-year")}
-            >
-              Past year
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem 
-              value="past-5-years"
-              onClick={() => handleFilterSelect("timePeriod", "past-5-years")}
-            >
-              Past 5 years
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem 
-              value="past-10-years"
-              onClick={() => handleFilterSelect("timePeriod", "past-10-years")}
-            >
-              Past 10 years
-            </DropdownMenuRadioItem>
-          </DropdownMenuRadioGroup>
+          <DropdownMenuItem 
+            onSelect={() => handleFilterSelect("timePeriod", "past-year")}
+            className={selectedFilters.timePeriod === "past-year" ? "bg-accent" : ""}
+          >
+            Past year
+          </DropdownMenuItem>
+          <DropdownMenuItem 
+            onSelect={() => handleFilterSelect("timePeriod", "past-5-years")}
+            className={selectedFilters.timePeriod === "past-5-years" ? "bg-accent" : ""}
+          >
+            Past 5 years
+          </DropdownMenuItem>
+          <DropdownMenuItem 
+            onSelect={() => handleFilterSelect("timePeriod", "past-10-years")}
+            className={selectedFilters.timePeriod === "past-10-years" ? "bg-accent" : ""}
+          >
+            Past 10 years
+          </DropdownMenuItem>
           
           <DropdownMenuSeparator />
           
           <DropdownMenuLabel>Citations</DropdownMenuLabel>
-          <DropdownMenuRadioGroup value={selectedFilters.citations}>
-            <DropdownMenuRadioItem 
-              value="citations-10"
-              onClick={() => handleFilterSelect("citations", "citations-10")}
-            >
-              10+ citations
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem 
-              value="citations-50"
-              onClick={() => handleFilterSelect("citations", "citations-50")}
-            >
-              50+ citations
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem 
-              value="citations-100"
-              onClick={() => handleFilterSelect("citations", "citations-100")}
-            >
-              100+ citations
-            </DropdownMenuRadioItem>
-          </DropdownMenuRadioGroup>
+          <DropdownMenuItem 
+            onSelect={() => handleFilterSelect("citations", "citations-10")}
+            className={selectedFilters.citations === "citations-10" ? "bg-accent" : ""}
+          >
+            10+ citations
+          </DropdownMenuItem>
+          <DropdownMenuItem 
+            onSelect={() => handleFilterSelect("citations", "citations-50")}
+            className={selectedFilters.citations === "citations-50" ? "bg-accent" : ""}
+          >
+            50+ citations
+          </DropdownMenuItem>
+          <DropdownMenuItem 
+            onSelect={() => handleFilterSelect("citations", "citations-100")}
+            className={selectedFilters.citations === "citations-100" ? "bg-accent" : ""}
+          >
+            100+ citations
+          </DropdownMenuItem>
           
           <DropdownMenuSeparator />
           
           <DropdownMenuLabel>Region</DropdownMenuLabel>
-          <DropdownMenuRadioGroup value={selectedFilters.region}>
-            <DropdownMenuRadioItem 
-              value="domestic"
-              onClick={() => handleFilterSelect("region", "domestic")}
-            >
-              Domestic
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem 
-              value="international"
-              onClick={() => handleFilterSelect("region", "international")}
-            >
-              International
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem 
-              value="both"
-              onClick={() => handleFilterSelect("region", "both")}
-            >
-              Both
-            </DropdownMenuRadioItem>
-          </DropdownMenuRadioGroup>
+          <DropdownMenuItem 
+            onSelect={() => handleFilterSelect("region", "domestic")}
+            className={selectedFilters.region === "domestic" ? "bg-accent" : ""}
+          >
+            Domestic
+          </DropdownMenuItem>
+          <DropdownMenuItem 
+            onSelect={() => handleFilterSelect("region", "international")}
+            className={selectedFilters.region === "international" ? "bg-accent" : ""}
+          >
+            International
+          </DropdownMenuItem>
+          <DropdownMenuItem 
+            onSelect={() => handleFilterSelect("region", "both")}
+            className={selectedFilters.region === "both" ? "bg-accent" : ""}
+          >
+            Both
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
