@@ -39,7 +39,7 @@ export const ZoomControls = ({ hasUserMadeSelection }: ZoomControlsProps) => {
           onClick={handleViewResults}
           disabled={!hasUserMadeSelection}
         >
-          View Results
+          Update Search Results
         </Button>
       </div>
     </div>
