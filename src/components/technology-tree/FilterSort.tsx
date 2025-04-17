@@ -7,6 +7,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 
 interface FilterSortProps {
@@ -25,16 +28,40 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
             Filter
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem onSelect={() => onFilterChange?.("all")}>
-            All
-          </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => onFilterChange?.("recent")}>
-            Recent only
-          </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => onFilterChange?.("featured")}>
-            Featured
-          </DropdownMenuItem>
+        <DropdownMenuContent className="w-56">
+          <DropdownMenuLabel>Time Period</DropdownMenuLabel>
+          <DropdownMenuCheckboxItem onSelect={() => onFilterChange?.("past-year")}>
+            Past year
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuCheckboxItem onSelect={() => onFilterChange?.("past-5-years")}>
+            Past 5 years
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuCheckboxItem onSelect={() => onFilterChange?.("past-10-years")}>
+            Past 10 years
+          </DropdownMenuCheckboxItem>
+          
+          <DropdownMenuSeparator />
+          
+          <DropdownMenuLabel>Citations</DropdownMenuLabel>
+          <DropdownMenuCheckboxItem onSelect={() => onFilterChange?.("citations-10")}>
+            10+ citations
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuCheckboxItem onSelect={() => onFilterChange?.("citations-50")}>
+            50+ citations
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuCheckboxItem onSelect={() => onFilterChange?.("citations-100")}>
+            100+ citations
+          </DropdownMenuCheckboxItem>
+          
+          <DropdownMenuSeparator />
+          
+          <DropdownMenuLabel>Region</DropdownMenuLabel>
+          <DropdownMenuCheckboxItem onSelect={() => onFilterChange?.("domestic")}>
+            Domestic
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuCheckboxItem onSelect={() => onFilterChange?.("international")}>
+            International
+          </DropdownMenuCheckboxItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
