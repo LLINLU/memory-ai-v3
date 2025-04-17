@@ -3,6 +3,12 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { MinusIcon, PlusIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface ZoomControlsProps {
   hasUserMadeSelection: boolean;
@@ -23,13 +29,26 @@ export const ZoomControls = ({ hasUserMadeSelection }: ZoomControlsProps) => {
             <PlusIcon className="h-4 w-4" />
           </Button>
         </div>
-        <Button
-          variant="outline"
-          onClick={() => navigate("/search-results")}
-          disabled={!hasUserMadeSelection}
-        >
-          View Results
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/search-results")}
+                  disabled={!hasUserMadeSelection}
+                >
+                  Update Results
+                </Button>
+              </div>
+            </TooltipTrigger>
+            {!hasUserMadeSelection && (
+              <TooltipContent>
+                <p>Change the path, then results will be updated</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   );
