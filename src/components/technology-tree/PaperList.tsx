@@ -88,12 +88,6 @@ export const PaperList = () => {
 
   return (
     <div className="p-4">
-      <FilterSort 
-        onFilterChange={(filter) => console.log('Filter:', filter)}
-        onSortChange={(sort) => console.log('Sort:', sort)}
-        className="mb-4 flex justify-end"
-      />
-      
       <ul className="space-y-4">
         {papers.map((paper, index) => (
           <PaperCard

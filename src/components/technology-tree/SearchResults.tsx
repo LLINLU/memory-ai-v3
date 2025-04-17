@@ -29,8 +29,6 @@ export const SearchResults = () => {
 
   return (
     <div className="h-full p-4 overflow-auto bg-[#fffdf5]" data-sidebar="content">
-      
-      
       <Tabs defaultValue="papers" className="w-full" onValueChange={setActiveTab}>
         <TabsList className="w-full mb-4">
           <TabsTrigger value="papers" className="flex-1">
