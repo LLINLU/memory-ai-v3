@@ -95,7 +95,7 @@ export const ImplementationCard = ({
         onClick={handleSave}
         className="w-full mt-2 text-gray-500 hover:text-gray-700"
       >
-        Save Implementation
+        Save
       </Button>
     </div>
   );
