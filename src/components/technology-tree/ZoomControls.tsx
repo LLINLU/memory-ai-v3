@@ -11,6 +11,11 @@ interface ZoomControlsProps {
 export const ZoomControls = ({ hasUserMadeSelection }: ZoomControlsProps) => {
   const navigate = useNavigate();
 
+  const handleViewResults = () => {
+    // Navigate to the search-results page
+    navigate("/search-results");
+  };
+
   return (
     <div className="container mx-auto mb-6">
       <div className="flex items-center justify-between gap-4">
@@ -25,7 +30,7 @@ export const ZoomControls = ({ hasUserMadeSelection }: ZoomControlsProps) => {
         </div>
         <Button
           variant="outline"
-          onClick={() => navigate("/search-results")}
+          onClick={handleViewResults}
           disabled={!hasUserMadeSelection}
         >
           View Results
