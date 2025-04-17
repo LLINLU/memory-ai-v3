@@ -19,7 +19,7 @@ export const FilterSort = ({ onFilterChange, onSortChange }: FilterSortProps) =>
     <div className="flex items-center gap-2">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button variant="ghost" size="sm" className="gap-2">
             <FilterIcon className="h-4 w-4" />
             Filter
           </Button>
@@ -39,7 +39,7 @@ export const FilterSort = ({ onFilterChange, onSortChange }: FilterSortProps) =>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button variant="ghost" size="sm" className="gap-2">
             <ArrowDownUp className="h-4 w-4" />
             Sort
           </Button>
@@ -59,3 +59,4 @@ export const FilterSort = ({ onFilterChange, onSortChange }: FilterSortProps) =>
     </div>
   );
 };
+
