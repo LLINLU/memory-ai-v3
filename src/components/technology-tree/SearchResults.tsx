@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { PaperList } from "./PaperList";
 import { useToast } from "@/hooks/use-toast";
@@ -11,11 +10,9 @@ export const SearchResults = () => {
   const [activeTab, setActiveTab] = React.useState("papers");
 
   useEffect(() => {
-    // Event listener for the refresh-papers event to show toast
     const handleRefresh = () => {
       console.log("SearchResults component detected refresh event");
       
-      // Scroll the sidebar to the top to show updated content
       const sidebarContent = document.querySelector('[data-sidebar="content"]');
       if (sidebarContent) {
         sidebarContent.scrollTop = 0;
@@ -52,7 +49,7 @@ export const SearchResults = () => {
             <div className="bg-white p-4 rounded-lg border border-gray-200">
               <div className="flex items-center justify-between mb-2">
                 <h4 className="font-semibold">Commercial AO-SLO System</h4>
-                <Badge variant="secondary" className="ml-2">3 releases</Badge>
+                <Badge className="ml-2 bg-[#E8F1FF] text-[#0EA5E9] border-0 hover:bg-[#E8F1FF]">3 releases</Badge>
               </div>
               <p className="text-gray-600 text-sm">
                 Commercially available adaptive optics system for clinical ophthalmology applications. 
@@ -62,7 +59,7 @@ export const SearchResults = () => {
             <div className="bg-white p-4 rounded-lg border border-gray-200">
               <div className="flex items-center justify-between mb-2">
                 <h4 className="font-semibold">Research-Grade AO Platform</h4>
-                <Badge variant="secondary" className="ml-2">5 releases</Badge>
+                <Badge className="ml-2 bg-[#F2FCE2] text-[#16A34A] border-0 hover:bg-[#F2FCE2]">5 releases</Badge>
               </div>
               <p className="text-gray-600 text-sm">
                 Custom-built adaptive optics system integrating multiple imaging modalities. 
@@ -75,4 +72,3 @@ export const SearchResults = () => {
     </div>
   );
 };
-
