@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Book, Code } from "lucide-react";
 import { ImplementationList } from "./ImplementationList";
+import { FilterSort } from "./FilterSort";
 
 export const SearchResults = () => {
   const { toast } = useToast();
@@ -29,6 +30,11 @@ export const SearchResults = () => {
 
   return (
     <div className="h-full p-4 overflow-auto bg-[#fffdf5]" data-sidebar="content">
+      <div className="flex justify-between items-center mb-4">
+        <span className="text-sm text-gray-600">32 papers • 9 implementations</span>
+        <FilterSort className="justify-end" />
+      </div>
+
       <Tabs defaultValue="papers" className="w-full" onValueChange={setActiveTab}>
         <TabsList className="w-full mb-4">
           <TabsTrigger value="papers" className="flex-1">
@@ -50,3 +56,4 @@ export const SearchResults = () => {
     </div>
   );
 };
+
