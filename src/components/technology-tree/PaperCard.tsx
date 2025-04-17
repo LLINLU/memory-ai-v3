@@ -1,5 +1,5 @@
-
 import { Button } from "@/components/ui/button";
+import { ExternalLink } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -76,7 +76,9 @@ export const PaperCard = ({
         <div className="flex justify-between items-center">
           <div className="text-xs text-gray-500">{date}</div>
           <div className="flex gap-2">
-            <Button variant="outline" className="text-sm">DOI</Button>
+            <Button variant="outline" className="text-sm flex items-center gap-2">
+              DOI <ExternalLink size={16} />
+            </Button>
             <Button variant="outline" className="text-sm">Save</Button>
           </div>
         </div>
