@@ -25,9 +25,7 @@ export const ChatInput = ({ value, onChange }: ChatInputProps) => {
         />
         
         <div className="flex items-center justify-between p-2 border-t">
-          <Button variant="outline" size="sm" className="flex items-center gap-1 text-gray-500">
-            <Edit className="h-4 w-4" /> Edit search criteria
-          </Button>
+         
           
           <Button variant="ghost" size="sm" className="text-gray-500">
             Send <Send className="h-4 w-4 ml-1" />
