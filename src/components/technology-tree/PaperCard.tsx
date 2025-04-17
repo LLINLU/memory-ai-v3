@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import {
   Tooltip,
   TooltipContent,
@@ -28,15 +27,6 @@ export const PaperCard = ({
   abstract,
   date,
 }: PaperCardProps) => {
-  const { toast } = useToast();
-
-  const handleSave = () => {
-    toast({
-      title: "Paper Saved",
-      description: `${title.english} has been saved to your library`
-    });
-  };
-
   return (
     <li className="bg-white p-6 rounded-lg border border-gray-200">
       <div className="space-y-3">
@@ -89,14 +79,7 @@ export const PaperCard = ({
             <Button variant="outline" className="text-sm flex items-center gap-2">
               DOI <ExternalLink size={16} />
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleSave}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              Save
-            </Button>
+            <Button variant="outline" className="text-sm">Save</Button>
           </div>
         </div>
       </div>
