@@ -14,6 +14,18 @@ interface ZoomControlsProps {
 }
 
 export const ZoomControls = ({ hasUserMadeSelection }: ZoomControlsProps) => {
+  const handleUpdateResults = () => {
+    // Scroll the sidebar to top
+    const sidebarElement = document.querySelector('[data-sidebar="content"]');
+    if (sidebarElement) {
+      sidebarElement.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      // Dispatch the custom event to refresh results
+      const refreshEvent = new CustomEvent('refresh-results');
+      document.dispatchEvent(refreshEvent);
+    }
+  };
+
   return (
     <div className="container mx-auto mb-6">
       <div className="flex items-center justify-between gap-4">
@@ -32,16 +44,7 @@ export const ZoomControls = ({ hasUserMadeSelection }: ZoomControlsProps) => {
               <div>
                 <Button
                   variant="outline"
-                  onClick={() => {
-                    const sidebarElement = document.querySelector('[data-sidebar="content"]');
-                    if (sidebarElement) {
-                      sidebarElement.scrollTo({ top: 0, behavior: 'smooth' });
-                      
-                      // Force a direct refresh of the SearchResults component
-                      const refreshEvent = new CustomEvent('refresh-results');
-                      document.dispatchEvent(refreshEvent);
-                    }
-                  }}
+                  onClick={handleUpdateResults}
                   disabled={!hasUserMadeSelection}
                 >
                   Update Results

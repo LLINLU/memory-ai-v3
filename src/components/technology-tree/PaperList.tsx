@@ -21,14 +21,12 @@ export const PaperList = ({ onRefresh }: PaperListProps) => {
     };
     
     setCurrentIndex(getRandomIndex());
-  }, [forceUpdate]);
+  }, [forceUpdate]); // This will trigger when forceUpdate changes
   
   const currentCollection = paperCollections[currentIndex];
 
   const handleViewAll = () => {
     // Get a different collection when clicking view all
-    const nextIndex = (currentIndex + 1) % paperCollections.length;
-    setCurrentIndex(nextIndex);
     setForceUpdate(prev => prev + 1); // Force component to update
     onRefresh?.();
   };
@@ -44,7 +42,7 @@ export const PaperList = ({ onRefresh }: PaperListProps) => {
       <ul className="space-y-4">
         {currentCollection.papers.map((paper, index) => (
           <PaperCard
-            key={`${currentIndex}-${index}`} // Ensure key changes when collection changes
+            key={`${currentIndex}-${index}-${forceUpdate}`} // Ensure key changes when collection or forceUpdate changes
             title={paper.title}
             authors={paper.authors}
             journal={paper.journal}

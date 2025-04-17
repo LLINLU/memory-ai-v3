@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { PaperList } from "./PaperList";
 import { useLocation } from "react-router-dom";
+import { toast } from "@/components/ui/use-toast";
 
 export const SearchResults = () => {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -10,6 +11,12 @@ export const SearchResults = () => {
   // Update to expose refresh function
   const refreshResults = () => {
     setRefreshKey(prev => prev + 1);
+    // Show a toast notification when results are updated
+    toast({
+      title: "Results Updated",
+      description: "Research results have been refreshed with new papers.",
+      duration: 2000,
+    });
   };
 
   // Effect to refresh the results when the path changes
