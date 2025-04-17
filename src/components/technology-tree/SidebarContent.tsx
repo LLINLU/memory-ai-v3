@@ -3,7 +3,6 @@ import { TabsHorizontal, TabsHorizontalContent } from "@/components/ui/tabs";
 import { SearchResults } from "./SearchResults";
 import { ChatContent } from "./ChatContent";
 import { ChatInput } from "./ChatInput";
-import { FilterSort } from "./FilterSort";
 
 interface SidebarContentProps {
   sidebarTab: string;
@@ -20,10 +19,6 @@ export const SidebarContent = ({
 }: SidebarContentProps) => {
   return (
     <div>
-      <div className="px-4 pt-4 flex justify-between items-center">
-        <span className="text-sm text-gray-600">32 papers • 9 implementations</span>
-        <FilterSort className="justify-end" />
-      </div>
       <TabsHorizontal value={sidebarTab} className="h-full">
         <TabsHorizontalContent value="result" className="h-full">
           <SearchResults />
