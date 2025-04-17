@@ -21,6 +21,7 @@ interface MainContentProps {
     level3: string;
   };
   query?: string;
+  hasUserMadeSelection: boolean;
 }
 
 export const MainContent = ({
@@ -34,7 +35,8 @@ export const MainContent = ({
     level2: "Sub-domains",
     level3: "Specific Topics/Techniques"
   },
-  query
+  query,
+  hasUserMadeSelection
 }: MainContentProps) => {
   return (
     <div className="container mx-auto px-4 py-6">
@@ -45,7 +47,7 @@ export const MainContent = ({
         level2Items={level2Items}
         level3Items={level3Items}
       />
-      <ZoomControls />
+      <ZoomControls hasUserMadeSelection={hasUserMadeSelection} />
       <LevelSelection
         selectedPath={selectedPath}
         level1Items={level1Items}
@@ -54,7 +56,6 @@ export const MainContent = ({
         onNodeClick={onNodeClick}
         levelNames={levelNames}
       />
-      {/* ActionButtons component removed */}
     </div>
   );
 };

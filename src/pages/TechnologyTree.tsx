@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Search, ArrowRight } from "lucide-react";
@@ -69,7 +70,8 @@ const TechnologyTree = () => {
     handleNodeClick,
     toggleSidebar,
     handleInputChange,
-    query
+    query,
+    hasUserMadeSelection
   } = useTechnologyTree();
 
   useEffect(() => {
@@ -93,6 +95,7 @@ const TechnologyTree = () => {
               onNodeClick={handleNodeClick}
               levelNames={levelNames}
               query={query}
+              hasUserMadeSelection={hasUserMadeSelection}
             />
           </ResizablePanel>
 

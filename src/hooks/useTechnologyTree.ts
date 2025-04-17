@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 
 export interface TechnologyTreeState {
@@ -12,6 +13,7 @@ export interface TechnologyTreeState {
   collapsedSidebar: boolean;
   inputValue: string;
   query?: string;
+  hasUserMadeSelection: boolean;
 }
 
 export const useTechnologyTree = () => {
@@ -26,8 +28,11 @@ export const useTechnologyTree = () => {
   const [collapsedSidebar, setCollapsedSidebar] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [query, setQuery] = useState("補償光学の眼科分野への利用");
+  const [hasUserMadeSelection, setHasUserMadeSelection] = useState(false);
 
   const handleNodeClick = (level: string, nodeId: string) => {
+    setHasUserMadeSelection(true);
+    
     setSelectedPath(prev => {
       if (prev[level] === nodeId) {
         if (level === 'level1') {
@@ -71,6 +76,7 @@ export const useTechnologyTree = () => {
     collapsedSidebar,
     inputValue,
     query,
+    hasUserMadeSelection,
     setSelectedView,
     setSidebarTab,
     setShowSidebar,

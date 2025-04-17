@@ -4,7 +4,11 @@ import { Button } from "@/components/ui/button";
 import { MinusIcon, PlusIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export const ZoomControls = () => {
+interface ZoomControlsProps {
+  hasUserMadeSelection: boolean;
+}
+
+export const ZoomControls = ({ hasUserMadeSelection }: ZoomControlsProps) => {
   const navigate = useNavigate();
 
   return (
@@ -22,6 +26,7 @@ export const ZoomControls = () => {
         <Button
           variant="outline"
           onClick={() => navigate("/search-results")}
+          disabled={!hasUserMadeSelection}
         >
           View Results
         </Button>
