@@ -1,5 +1,6 @@
+
 import React, { useState } from "react";
-import { Menu as FilterIcon, ArrowDownUp } from "lucide-react";
+import { Menu as FilterIcon, ArrowDownUp, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -55,21 +56,24 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
           <DropdownMenuLabel>Time Period</DropdownMenuLabel>
           <DropdownMenuItem 
             onSelect={() => handleFilterSelect("timePeriod", "past-year")}
-            className={selectedFilters.timePeriod === "past-year" ? "bg-accent" : ""}
+            className={`flex justify-between items-center ${selectedFilters.timePeriod === "past-year" ? "bg-accent" : ""}`}
           >
             Past year
+            {selectedFilters.timePeriod === "past-year" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem 
             onSelect={() => handleFilterSelect("timePeriod", "past-5-years")}
-            className={selectedFilters.timePeriod === "past-5-years" ? "bg-accent" : ""}
+            className={`flex justify-between items-center ${selectedFilters.timePeriod === "past-5-years" ? "bg-accent" : ""}`}
           >
             Past 5 years
+            {selectedFilters.timePeriod === "past-5-years" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem 
             onSelect={() => handleFilterSelect("timePeriod", "past-10-years")}
-            className={selectedFilters.timePeriod === "past-10-years" ? "bg-accent" : ""}
+            className={`flex justify-between items-center ${selectedFilters.timePeriod === "past-10-years" ? "bg-accent" : ""}`}
           >
             Past 10 years
+            {selectedFilters.timePeriod === "past-10-years" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           
           <DropdownMenuSeparator />
@@ -77,21 +81,24 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
           <DropdownMenuLabel>Citations</DropdownMenuLabel>
           <DropdownMenuItem 
             onSelect={() => handleFilterSelect("citations", "citations-10")}
-            className={selectedFilters.citations === "citations-10" ? "bg-accent" : ""}
+            className={`flex justify-between items-center ${selectedFilters.citations === "citations-10" ? "bg-accent" : ""}`}
           >
             10+ citations
+            {selectedFilters.citations === "citations-10" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem 
             onSelect={() => handleFilterSelect("citations", "citations-50")}
-            className={selectedFilters.citations === "citations-50" ? "bg-accent" : ""}
+            className={`flex justify-between items-center ${selectedFilters.citations === "citations-50" ? "bg-accent" : ""}`}
           >
             50+ citations
+            {selectedFilters.citations === "citations-50" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem 
             onSelect={() => handleFilterSelect("citations", "citations-100")}
-            className={selectedFilters.citations === "citations-100" ? "bg-accent" : ""}
+            className={`flex justify-between items-center ${selectedFilters.citations === "citations-100" ? "bg-accent" : ""}`}
           >
             100+ citations
+            {selectedFilters.citations === "citations-100" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           
           <DropdownMenuSeparator />
@@ -99,21 +106,24 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
           <DropdownMenuLabel>Region</DropdownMenuLabel>
           <DropdownMenuItem 
             onSelect={() => handleFilterSelect("region", "domestic")}
-            className={selectedFilters.region === "domestic" ? "bg-accent" : ""}
+            className={`flex justify-between items-center ${selectedFilters.region === "domestic" ? "bg-accent" : ""}`}
           >
             Domestic
+            {selectedFilters.region === "domestic" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem 
             onSelect={() => handleFilterSelect("region", "international")}
-            className={selectedFilters.region === "international" ? "bg-accent" : ""}
+            className={`flex justify-between items-center ${selectedFilters.region === "international" ? "bg-accent" : ""}`}
           >
             International
+            {selectedFilters.region === "international" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem 
             onSelect={() => handleFilterSelect("region", "both")}
-            className={selectedFilters.region === "both" ? "bg-accent" : ""}
+            className={`flex justify-between items-center ${selectedFilters.region === "both" ? "bg-accent" : ""}`}
           >
             Both
+            {selectedFilters.region === "both" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
