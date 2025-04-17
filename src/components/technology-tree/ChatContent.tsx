@@ -28,7 +28,7 @@ export const ChatContent = ({ chatMessages }: ChatContentProps) => {
                 {message.content}
               </p>
               {message.showMore && (
-                <button className="text-gray-700 mt-2 font-medium">Show more</button>
+               
               )}
             </div>
           );
