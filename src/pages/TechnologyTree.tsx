@@ -1,14 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
+import { Search, ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
-import { MinusIcon, PlusIcon, ArrowRight, X, Search, ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { Separator } from "@/components/ui/separator";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { LevelSelection } from "@/components/technology-tree/LevelSelection";
 import { SidebarContent } from "@/components/technology-tree/SidebarContent";
 import { ChatInput } from "@/components/technology-tree/ChatInput";
+import { TechnologyHeader } from "@/components/technology-tree/TechnologyHeader";
+import { PathDisplay } from "@/components/technology-tree/PathDisplay";
+import { ZoomControls } from "@/components/technology-tree/ZoomControls";
+import { ActionButtons } from "@/components/technology-tree/ActionButtons";
 
 const TechnologyTree = () => {
   const navigate = useNavigate();
@@ -140,59 +142,14 @@ const TechnologyTree = () => {
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={60} minSize={30}>
             <div className="container mx-auto px-4 py-6">
-              <div className="bg-blue-50 rounded-lg p-6 mb-6">
-                <h1 className="text-3xl font-bold text-gray-800">Technology Tree</h1>
-                <p className="text-gray-600 mt-2">
-                  Navigate through the hierarchy: Level 1  → Level 2   → Level 3  
-                </p>
-              </div>
-
-              {/* Selected Path Display */}
-              <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
-                <div className="flex items-center flex-wrap gap-2">
-                  <span className="text-gray-700 font-medium">Selected path:</span>
-                  {selectedPath.level1 && (
-                    <>
-                      <span className="text-blue-500 font-medium">
-                        {level1Items.find(item => item.id === selectedPath.level1)?.name || selectedPath.level1}
-                      </span>
-                      {selectedPath.level2 && (
-                        <>
-                          <ArrowRight className="h-4 w-4 text-gray-500" />
-                          <span className="text-blue-500 font-medium">
-                            {level2Items[selectedPath.level1]?.find(item => item.id === selectedPath.level2)?.name || selectedPath.level2}
-                          </span>
-                          {selectedPath.level3 && (
-                            <>
-                              <ArrowRight className="h-4 w-4 text-gray-500" />
-                              <span className="text-blue-500 font-medium">
-                                {level3Items[selectedPath.level2]?.find(item => item.id === selectedPath.level3)?.name || selectedPath.level3}
-                              </span>
-                            </>
-                          )}
-                        </>
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Zoom Controls */}
-              <div className="container mx-auto mb-6">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center">
-                    <span className="text-gray-600 mr-2">Zoom:</span>
-                    <Button variant="outline" size="sm" className="rounded-md">
-                      <MinusIcon className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm" className="rounded-md ml-1">
-                      <PlusIcon className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Level Selection Component */}
+              <TechnologyHeader />
+              <PathDisplay 
+                selectedPath={selectedPath}
+                level1Items={level1Items}
+                level2Items={level2Items}
+                level3Items={level3Items}
+              />
+              <ZoomControls />
               <LevelSelection
                 selectedPath={selectedPath}
                 level1Items={level1Items}
@@ -200,32 +157,7 @@ const TechnologyTree = () => {
                 level3Items={level3Items}
                 onNodeClick={handleNodeClick}
               />
-
-              <Separator className="my-8" />
-              
-              {/* Action Buttons */}
-              <div className="flex flex-col md:flex-row justify-between gap-4 mb-12">
-                <Button
-                  variant="outline"
-                  className="border-2 border-gray-300 text-blue-500 py-6 px-8 text-lg font-medium"
-                >
-                  Show All Results
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  className="border-2 border-gray-300 text-blue-500 py-6 px-8 text-lg font-medium"
-                >
-                  Export Technology Map
-                </Button>
-                
-                <Button
-                  className="bg-blue-500 hover:bg-blue-600 text-white py-6 px-8 text-lg font-medium"
-                  onClick={() => navigate("/search-results")}
-                >
-                  View Research
-                </Button>
-              </div>
+              <ActionButtons />
             </div>
           </ResizablePanel>
 
