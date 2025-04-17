@@ -16,6 +16,11 @@ interface LevelSelectionProps {
   level2Items: Record<string, LevelItem[]>;
   level3Items: Record<string, LevelItem[]>;
   onNodeClick: (level: string, nodeId: string) => void;
+  levelNames: {
+    level1: string;
+    level2: string;
+    level3: string;
+  };
 }
 
 export const LevelSelection = ({
@@ -23,7 +28,8 @@ export const LevelSelection = ({
   level1Items,
   level2Items,
   level3Items,
-  onNodeClick
+  onNodeClick,
+  levelNames
 }: LevelSelectionProps) => {
   const visibleLevel2Items = selectedPath.level1 ? level2Items[selectedPath.level1] || [] : [];
   const visibleLevel3Items = selectedPath.level2 ? level3Items[selectedPath.level2] || [] : [];
@@ -32,7 +38,7 @@ export const LevelSelection = ({
     <div className="flex flex-row gap-6 mb-8 relative">
       <div className="w-1/3 bg-blue-50 p-4 rounded-lg">
         <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 1</h2>
-        <h3 className="text-sm text-blue-600 mb-4">Main Domains</h3>
+        <h3 className="text-sm text-blue-600 mb-4">{levelNames.level1}</h3>
         
         <div className="space-y-4">
           {level1Items.map((item) => (
@@ -61,7 +67,7 @@ export const LevelSelection = ({
 
       <div className="w-1/3 bg-blue-50 p-4 rounded-lg">
         <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 2</h2>
-        <h3 className="text-sm text-blue-600 mb-4">Sub-domains</h3>
+        <h3 className="text-sm text-blue-600 mb-4">{levelNames.level2}</h3>
         
         <div className="space-y-4">
           {visibleLevel2Items.map((item) => (
@@ -95,7 +101,7 @@ export const LevelSelection = ({
 
       <div className="w-1/3 bg-blue-50 p-4 rounded-lg">
         <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 3</h2>
-        <h3 className="text-sm text-blue-600 mb-4">Specific Topics/Techniques</h3>
+        <h3 className="text-sm text-blue-600 mb-4">{levelNames.level3}</h3>
         
         <div className="space-y-4">
           {visibleLevel3Items.map((item) => (

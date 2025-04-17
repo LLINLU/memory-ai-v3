@@ -16,6 +16,11 @@ interface MainContentProps {
   level2Items: Record<string, any[]>;
   level3Items: Record<string, any[]>;
   onNodeClick: (level: string, nodeId: string) => void;
+  levelNames?: {
+    level1: string;
+    level2: string;
+    level3: string;
+  };
 }
 
 export const MainContent = ({
@@ -24,6 +29,11 @@ export const MainContent = ({
   level2Items,
   level3Items,
   onNodeClick,
+  levelNames = {
+    level1: "Main Domains",
+    level2: "Sub-domains",
+    level3: "Specific Topics/Techniques"
+  }
 }: MainContentProps) => {
   return (
     <div className="container mx-auto px-4 py-6">
@@ -41,6 +51,7 @@ export const MainContent = ({
         level2Items={level2Items}
         level3Items={level3Items}
         onNodeClick={onNodeClick}
+        levelNames={levelNames}
       />
       <ActionButtons />
     </div>
