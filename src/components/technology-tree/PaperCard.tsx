@@ -76,7 +76,7 @@ export const PaperCard = ({
         <div className="flex justify-between items-center">
           <div className="text-xs text-gray-500">{date}</div>
           <div className="flex gap-2">
-            <Button variant="outline" className="text-sm">View PDF</Button>
+            <Button variant="outline" className="text-sm">DOI</Button>
             <Button variant="outline" className="text-sm">Save</Button>
           </div>
         </div>
