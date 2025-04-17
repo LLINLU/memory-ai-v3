@@ -45,7 +45,7 @@ export const ImplementationCard = ({
       <div className="flex items-center justify-between mb-2">
         <h4 className="font-semibold">{title}</h4>
         <Badge 
-          className={`ml-2 ${badgeColor} ${badgeTextColor} border-0 hover:${badgeColor}`}
+          className={cn(`ml-2 ${badgeColor} ${badgeTextColor} border-0`)}
         >
           {releases} releases
         </Badge>
@@ -93,7 +93,7 @@ export const ImplementationCard = ({
         variant="outline"
         size="sm"
         onClick={handleSave}
-        className="w-full"
+        className="w-full mt-2"
       >
         <Save className="mr-2 h-4 w-4" />
         Save Implementation
@@ -101,4 +101,3 @@ export const ImplementationCard = ({
     </div>
   );
 };
-
