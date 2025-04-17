@@ -58,30 +58,30 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
               e.preventDefault();
               handleFilterSelect("timePeriod", "past-year");
             }}
-            className="flex items-center"
+            className="flex items-center justify-between"
           >
-            {selectedFilters.timePeriod === "past-year" && <Check className="h-4 w-4 mr-2" />}
             Past year
+            {selectedFilters.timePeriod === "past-year" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem 
             onSelect={(e) => {
               e.preventDefault();
               handleFilterSelect("timePeriod", "past-5-years");
             }}
-            className="flex items-center"
+            className="flex items-center justify-between"
           >
-            {selectedFilters.timePeriod === "past-5-years" && <Check className="h-4 w-4 mr-2" />}
             Past 5 years
+            {selectedFilters.timePeriod === "past-5-years" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem 
             onSelect={(e) => {
               e.preventDefault();
               handleFilterSelect("timePeriod", "past-10-years");
             }}
-            className="flex items-center"
+            className="flex items-center justify-between"
           >
-            {selectedFilters.timePeriod === "past-10-years" && <Check className="h-4 w-4 mr-2" />}
             Past 10 years
+            {selectedFilters.timePeriod === "past-10-years" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           
           <DropdownMenuSeparator />
@@ -92,30 +92,30 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
               e.preventDefault();
               handleFilterSelect("citations", "citations-10");
             }}
-            className="flex items-center"
+            className="flex items-center justify-between"
           >
-            {selectedFilters.citations === "citations-10" && <Check className="h-4 w-4 mr-2" />}
             10+ citations
+            {selectedFilters.citations === "citations-10" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem 
             onSelect={(e) => {
               e.preventDefault();
               handleFilterSelect("citations", "citations-50");
             }}
-            className="flex items-center"
+            className="flex items-center justify-between"
           >
-            {selectedFilters.citations === "citations-50" && <Check className="h-4 w-4 mr-2" />}
             50+ citations
+            {selectedFilters.citations === "citations-50" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem 
             onSelect={(e) => {
               e.preventDefault();
               handleFilterSelect("citations", "citations-100");
             }}
-            className="flex items-center"
+            className="flex items-center justify-between"
           >
-            {selectedFilters.citations === "citations-100" && <Check className="h-4 w-4 mr-2" />}
             100+ citations
+            {selectedFilters.citations === "citations-100" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           
           <DropdownMenuSeparator />
@@ -126,30 +126,30 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
               e.preventDefault();
               handleFilterSelect("region", "domestic");
             }}
-            className="flex items-center"
+            className="flex items-center justify-between"
           >
-            {selectedFilters.region === "domestic" && <Check className="h-4 w-4 mr-2" />}
             Domestic
+            {selectedFilters.region === "domestic" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem 
             onSelect={(e) => {
               e.preventDefault();
               handleFilterSelect("region", "international");
             }}
-            className="flex items-center"
+            className="flex items-center justify-between"
           >
-            {selectedFilters.region === "international" && <Check className="h-4 w-4 mr-2" />}
             International
+            {selectedFilters.region === "international" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem 
             onSelect={(e) => {
               e.preventDefault();
               handleFilterSelect("region", "both");
             }}
-            className="flex items-center"
+            className="flex items-center justify-between"
           >
-            {selectedFilters.region === "both" && <Check className="h-4 w-4 mr-2" />}
             Both
+            {selectedFilters.region === "both" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
