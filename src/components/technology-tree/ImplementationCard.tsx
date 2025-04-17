@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp, Save } from "lucide-react";
@@ -89,13 +90,13 @@ export const ImplementationCard = ({
         </div>
       )}
       <Button
-        variant="ghost"
+        variant="outline"
         size="sm"
         onClick={handleSave}
-        className="w-full mt-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+        className="w-full mt-2"
       >
-        <Save className="mr-2 h-3 w-3" />
-        Save
+        <Save className="mr-2 h-4 w-4" />
+        Save Implementation
       </Button>
     </div>
   );
