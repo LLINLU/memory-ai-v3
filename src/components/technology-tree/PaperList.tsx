@@ -1,72 +1,41 @@
 
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { PaperCard } from "./PaperCard";
-import { paperCollections } from "@/data/paperData";
 
-interface PaperListProps {
-  onRefresh?: () => void;
-}
-
-export const PaperList = ({ onRefresh }: PaperListProps) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [forceUpdate, setForceUpdate] = useState(0); // Added state to force re-rendering
-  
-  // Ensure we get a different collection on mount and refresh
-  useEffect(() => {
-    // Get a random index that's different from the current one
-    const getRandomIndex = () => {
-      // Force a different index than the current one
-      let newIndex;
-      do {
-        newIndex = Math.floor(Math.random() * paperCollections.length);
-      } while (newIndex === currentIndex && paperCollections.length > 1);
-      
-      return newIndex;
-    };
-    
-    console.log("PaperList useEffect triggered, setting new index");
-    setCurrentIndex(getRandomIndex());
-  }, [forceUpdate, currentIndex]); // This will trigger when forceUpdate changes
-  
-  const currentCollection = paperCollections[currentIndex];
-
-  const handleViewAll = () => {
-    // Get a different collection when clicking view all
-    console.log("View All clicked, triggering refresh");
-    setForceUpdate(prev => prev + 1); // Force component to update
-    onRefresh?.();
-  };
-
+export const PaperList = () => {
   return (
     <div className="bg-[#f3f2e8] p-4 rounded-lg">
       <div className="mb-4">
-        <h4 className="font-semibold">{currentCollection.title}</h4>
-        <p className="text-sm text-gray-600">
-          {currentCollection.count.papers} papers • {currentCollection.count.implementations} implementations
-        </p>
+        <h4 className="font-semibold">Adaptive Optics: Medical Applications</h4>
+        <p className="text-sm text-gray-600">32 papers • 9 implementations</p>
       </div>
       <ul className="space-y-4">
-        {currentCollection.papers.map((paper, index) => (
-          <PaperCard
-            key={`${currentIndex}-${index}-${forceUpdate}`} // Ensure key changes when collection or forceUpdate changes
-            title={paper.title}
-            authors={paper.authors}
-            journal={paper.journal}
-            tags={paper.tags}
-            abstract={paper.abstract}
-            date={paper.date}
-          />
-        ))}
+        <PaperCard
+          title={{
+            japanese: "高解像度適応光学走査レーザー検眼鏡による糖尿病網膜症の細胞レベル評価",
+            english: "(Cellular-level Assessment of Diabetic Retinopathy Using High-resolution AO-SLO)"
+          }}
+          authors="田中 健太, 佐藤 明子, 山田 雄一"
+          journal="日本眼科学会誌"
+          tags={["AO-SLO", "糖尿病網膜症"]}
+          abstract="This study investigates the application of adaptive optics scanning laser ophthalmoscopy (AO-SLO) for early detection of cellular changes in diabetic retinopathy. The research demonstrates improved visualization of retinal microvasculature and photoreceptor abnormalities before clinical symptoms appear."
+          date="2024-04-19"
+        />
+        
+        <PaperCard
+          title={{
+            english: "Multi-Modal Adaptive Optics Imaging Combined with OCT for Enhanced Retinal Diagnostics"
+          }}
+          authors="J. Zhang, M. Williams, K. Yamada"
+          journal="American Journal of Ophthalmology"
+          tags={["AO-OCT", "Multi-Modal"]}
+          abstract="This paper presents a novel approach combining adaptive optics with optical coherence tomography for comprehensive retinal imaging. The multi-modal system achieves unprecedented resolution for in vivo assessment of retinal layers, offering new insights into pathophysiology of macular degeneration."
+          date="2024-04-19"
+        />
       </ul>
-      <Button 
-        variant="outline" 
-        className="w-full mt-4"
-        onClick={handleViewAll}
-      >
-        View all {currentCollection.count.papers} papers
+      <Button variant="outline" className="w-full mt-4">
+        View all 32 papers
       </Button>
     </div>
   );
 };
-

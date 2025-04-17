@@ -31,10 +31,10 @@ export const useTechnologyTree = () => {
   const [hasUserMadeSelection, setHasUserMadeSelection] = useState(false);
 
   const handleNodeClick = (level: string, nodeId: string) => {
+    setHasUserMadeSelection(true);
+    
     setSelectedPath(prev => {
-      // If clicking the same node that's already selected, disable "View Results"
       if (prev[level] === nodeId) {
-        setHasUserMadeSelection(false);
         if (level === 'level1') {
           return { ...prev, level1: "", level2: "", level3: "" };
         } else if (level === 'level2') {
@@ -44,8 +44,6 @@ export const useTechnologyTree = () => {
         }
       }
       
-      // Only set hasUserMadeSelection to true when actually changing to a new selection
-      setHasUserMadeSelection(true);
       if (level === 'level1') {
         return { ...prev, level1: nodeId, level2: "", level3: "" };
       } else if (level === 'level2') {

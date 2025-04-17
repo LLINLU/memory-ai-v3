@@ -2,34 +2,14 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { MinusIcon, PlusIcon } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { useNavigate } from "react-router-dom";
 
 interface ZoomControlsProps {
   hasUserMadeSelection: boolean;
 }
 
 export const ZoomControls = ({ hasUserMadeSelection }: ZoomControlsProps) => {
-  const handleUpdateResults = () => {
-    console.log("Update Results button clicked");
-    
-    // Dispatch the custom event to refresh results
-    const refreshEvent = new CustomEvent('refresh-results');
-    document.dispatchEvent(refreshEvent);
-    
-    // Scroll the sidebar to top
-    setTimeout(() => {
-      const sidebarElement = document.querySelector('[data-sidebar="content"]');
-      if (sidebarElement) {
-        console.log("Scrolling sidebar to top");
-        sidebarElement.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }, 100);
-  };
+  const navigate = useNavigate();
 
   return (
     <div className="container mx-auto mb-6">
@@ -43,28 +23,14 @@ export const ZoomControls = ({ hasUserMadeSelection }: ZoomControlsProps) => {
             <PlusIcon className="h-4 w-4" />
           </Button>
         </div>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div>
-                <Button
-                  variant="outline"
-                  onClick={handleUpdateResults}
-                  disabled={!hasUserMadeSelection}
-                >
-                  Update Results
-                </Button>
-              </div>
-            </TooltipTrigger>
-            {!hasUserMadeSelection && (
-              <TooltipContent>
-                <p>Change the path, then results will be updated</p>
-              </TooltipContent>
-            )}
-          </Tooltip>
-        </TooltipProvider>
+        <Button
+          variant="outline"
+          onClick={() => navigate("/search-results")}
+          disabled={!hasUserMadeSelection}
+        >
+          View Results
+        </Button>
       </div>
     </div>
   );
 };
-
