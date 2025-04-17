@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MinusIcon, PlusIcon, ArrowRight, X, Search, ExternalLink, Send, Edit } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { MinusIcon, PlusIcon, ArrowRight, X, Search, ExternalLink, Send, Edit, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -339,154 +339,157 @@ const TechnologyTree = () => {
         >
           {/* Sidebar Header with Tabs */}
           <div className="flex items-center border-b border-gray-200">
-            <div 
-              className={`px-6 py-3 text-lg font-medium cursor-pointer ${sidebarTab === 'chat' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-500'}`}
-              onClick={() => setSidebarTab('chat')}
+            <Tabs value={sidebarTab} onValueChange={setSidebarTab} className="flex-1">
+              <TabsList className="w-full bg-transparent p-0 h-auto border-b">
+                <TabsTrigger 
+                  value="chat" 
+                  className={`flex-1 font-medium text-lg rounded-none border-b-2 border-transparent px-6 py-3 ${
+                    sidebarTab === 'chat' ? 'text-blue-600 border-blue-600' : 'text-gray-500'
+                  }`}
+                >
+                  Chat
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="result" 
+                  className={`flex-1 font-medium text-lg rounded-none border-b-2 border-transparent px-6 py-3 ${
+                    sidebarTab === 'result' ? 'text-blue-600 border-blue-600' : 'text-gray-500'
+                  }`}
+                >
+                  Result
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setShowSidebar(false)}
+              className="mr-2"
             >
-              Chat
-            </div>
-            <div 
-              className={`px-6 py-3 text-lg font-medium cursor-pointer ${sidebarTab === 'result' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-500'}`}
-              onClick={() => setSidebarTab('result')}
-            >
-              Result
-            </div>
-            <div className="ml-auto pr-3">
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={() => setShowSidebar(false)}
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
+              <X className="h-5 w-5" />
+            </Button>
           </div>
 
           {/* Sidebar Content */}
-          <div className="flex-1 overflow-auto p-4 bg-[#fffdf5]">
-            {/* Chat Tab Content */}
-            {sidebarTab === 'chat' && (
+          <div className="flex-1 overflow-auto bg-[#fffdf5]">
+            <TabsContent value="chat" className="m-0 p-4 h-full">
               <div className="space-y-6">
-                {chatMessages.map((message, index) => (
-                  <div key={index} className="bg-[#f3f2e8] rounded-lg p-4">
-                    {message.type === "system" && (
-                      <div>
-                        <p className="text-gray-800 text-lg font-medium">{message.content}</p>
-                        {message.showMore && (
-                          <button className="text-gray-600 mt-2 font-medium">Show more</button>
-                        )}
-                      </div>
-                    )}
-                    
-                    {message.type === "criteria" && (
-                      <div>
-                        <h3 className="text-gray-800 text-xl font-bold mb-3">{message.title}</h3>
-                        <ul className="space-y-2 mb-3">
-                          {message.items.map((item, idx) => (
-                            <li key={idx} className="flex items-start gap-2 text-gray-600">
-                              <ArrowRight className="h-4 w-4 mt-1" />
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                        <p className="font-semibold mb-3">Searching for {message.searchingCount} results</p>
-                        <div className="flex items-center">
-                          <span className="font-semibold text-gray-700 underline mr-2">Search for more</span>
-                          <Search className="h-4 w-4" />
-                        </div>
-                      </div>
-                    )}
-                    
-                    {message.type === "progress" && (
-                      <div>
-                        <h3 className="text-gray-800 text-xl font-bold mb-4">{message.title}</h3>
-                        <div className="space-y-2 mb-4">
-                          <div className="flex items-start gap-2 text-gray-600">
-                            <ArrowRight className="h-4 w-4 mt-1" />
-                            <span>{message.analyzed} results analyzed</span>
-                          </div>
-                          <div className="flex items-start gap-2 text-gray-600">
-                            <ArrowRight className="h-4 w-4 mt-1" />
-                            <span>{message.matched} results matched</span>
-                          </div>
-                        </div>
-                        <Progress value={65} className="h-2 w-full bg-gray-300" />
-                      </div>
-                    )}
-                  </div>
-                ))}
-                
-                <div className="mt-auto pt-4">
-                  <div className="text-gray-500 mb-2">Need a custom webset? 
-                    <button className="text-blue-500 ml-2 flex items-center gap-1 inline">
-                      Talk to us <ExternalLink className="h-4 w-4" />
-                    </button>
-                  </div>
-                  
-                  <div className="bg-white rounded-lg border border-gray-300 p-2">
-                    <div className="flex items-center mb-2 px-2">
-                      <p className="text-gray-500">Add abstract as an enrichment</p>
-                      <span className="ml-2 px-2 py-0.5 border border-gray-300 rounded text-sm">Tab</span>
-                    </div>
-                    <Separator className="my-2" />
-                    <div className="flex justify-between items-center px-2">
-                      <Button variant="outline" className="flex items-center gap-1 text-gray-500">
-                        <Edit className="h-4 w-4" /> Edit search criteria
-                      </Button>
-                      
-                      <Button variant="ghost" className="text-gray-300 hover:text-gray-600">
-                        Send <Send className="h-4 w-4 ml-1" />
-                      </Button>
-                    </div>
-                  </div>
+                {/* System Message */}
+                <div className="bg-[#f3f2e8] rounded-lg p-4">
+                  <p className="text-gray-800 text-lg font-medium">
+                    Creating Webset for your search: Research papers about cell regeneration technology, which includes one author who is an MD...
+                  </p>
+                  <button className="text-gray-700 mt-2 font-medium">Show more</button>
                 </div>
-              </div>
-            )}
-            
-            {/* Result Tab Content */}
-            {sidebarTab === 'result' && (
-              <div className="p-2">
-                <h3 className="text-xl font-bold mb-4">Research Results</h3>
-                <div className="bg-[#f3f2e8] p-4 rounded-lg">
-                  <div className="mb-4">
-                    <h4 className="font-semibold">Adaptive Optics: Medical Applications</h4>
-                    <p className="text-sm text-gray-600">32 papers • 9 implementations</p>
-                  </div>
-                  <ul className="space-y-4">
-                    <li className="bg-white p-3 rounded border border-gray-200">
-                      <h5 className="font-medium">High-resolution retinal imaging using adaptive optics</h5>
-                      <p className="text-sm text-gray-600">Journal of Vision Science, 2023</p>
-                      <div className="flex gap-2 mt-2">
-                        <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">Retinal Imaging</span>
-                        <span className="text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded">Clinical</span>
-                      </div>
+                
+                {/* Criteria Message */}
+                <div className="bg-[#f3f2e8] rounded-lg p-4">
+                  <h3 className="text-gray-800 text-xl font-bold mb-3">Criteria for your search</h3>
+                  <ul className="space-y-2 mb-3">
+                    <li className="flex items-start gap-2 text-gray-600">
+                      <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
+                      <span>Research paper focused on cell regeneration technology</span>
                     </li>
-                    <li className="bg-white p-3 rounded border border-gray-200">
-                      <h5 className="font-medium">Advancements in corneal imaging with adaptive optics technology</h5>
-                      <p className="text-sm text-gray-600">Ophthalmology Research, 2022</p>
-                      <div className="flex gap-2 mt-2">
-                        <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">Corneal Imaging</span>
-                        <span className="text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded">Technique</span>
-                      </div>
+                    <li className="flex items-start gap-2 text-gray-600">
+                      <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
+                      <span>At least one author who is an MD</span>
+                    </li>
+                    <li className="flex items-start gap-2 text-gray-600">
+                      <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
+                      <span>At least one author who is a technologist</span>
                     </li>
                   </ul>
-                  <Button variant="outline" className="w-full mt-4">
-                    View all 32 papers
-                  </Button>
+                  <p className="font-semibold mb-3">Searching for 25 results</p>
+                  <div className="flex items-center">
+                    <span className="font-semibold text-gray-700 underline mr-2">Search for more</span>
+                    <Search className="h-4 w-4" />
+                  </div>
+                </div>
+                
+                {/* Progress Message */}
+                <div className="bg-[#f3f2e8] rounded-lg p-4">
+                  <h3 className="text-gray-800 text-xl font-bold mb-4">Searching across billions of Exa embeddings</h3>
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-start gap-2 text-gray-600">
+                      <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
+                      <span>73 results analyzed</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-gray-600">
+                      <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
+                      <span>35 results matched</span>
+                    </div>
+                  </div>
+                  <Progress value={65} className="h-2 w-full bg-gray-300" />
                 </div>
               </div>
-            )}
+            </TabsContent>
+            
+            <TabsContent value="result" className="m-0 p-4">
+              <h3 className="text-xl font-bold mb-4">Research Results</h3>
+              <div className="bg-[#f3f2e8] p-4 rounded-lg">
+                <div className="mb-4">
+                  <h4 className="font-semibold">Adaptive Optics: Medical Applications</h4>
+                  <p className="text-sm text-gray-600">32 papers • 9 implementations</p>
+                </div>
+                <ul className="space-y-4">
+                  <li className="bg-white p-3 rounded border border-gray-200">
+                    <h5 className="font-medium">High-resolution retinal imaging using adaptive optics</h5>
+                    <p className="text-sm text-gray-600">Journal of Vision Science, 2023</p>
+                    <div className="flex gap-2 mt-2">
+                      <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">Retinal Imaging</span>
+                      <span className="text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded">Clinical</span>
+                    </div>
+                  </li>
+                  <li className="bg-white p-3 rounded border border-gray-200">
+                    <h5 className="font-medium">Advancements in corneal imaging with adaptive optics technology</h5>
+                    <p className="text-sm text-gray-600">Ophthalmology Research, 2022</p>
+                    <div className="flex gap-2 mt-2">
+                      <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">Corneal Imaging</span>
+                      <span className="text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded">Technique</span>
+                    </div>
+                  </li>
+                </ul>
+                <Button variant="outline" className="w-full mt-4">
+                  View all 32 papers
+                </Button>
+              </div>
+            </TabsContent>
           </div>
           
-          {/* Sidebar Input Area */}
-          <div className="bg-white border-t border-gray-200 p-4">
-            <Textarea 
-              placeholder="Type your query here..."
-              className="w-full resize-none"
-              value={inputValue}
-              onChange={handleInputChange}
-              rows={2}
-            />
+          {/* Sidebar Footer - Input Area */}
+          <div className="border-t border-gray-200">
+            <div className="p-4">
+              <div className="text-gray-500 mb-2 flex items-center gap-1 justify-between">
+                <div>Need a custom webset? 
+                  <button className="text-blue-600 ml-1 flex items-center gap-1 inline">
+                    Talk to us <ExternalLink className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+              
+              <div className="bg-white rounded-lg border border-gray-200">
+                <Textarea 
+                  placeholder="Add abstract as an enrichment"
+                  className="w-full resize-none border-0 focus-visible:ring-0 p-3"
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  rows={2}
+                />
+                
+                <div className="flex items-center justify-between p-2 border-t">
+                  <Button variant="outline" size="sm" className="flex items-center gap-1 text-gray-500">
+                    <Edit className="h-4 w-4" /> Edit search criteria
+                  </Button>
+                  
+                  <Button variant="ghost" size="sm" className="text-gray-500">
+                    Send <Send className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
+                
+                <div className="px-3 py-1 text-xs text-gray-400 flex items-center justify-end">
+                  <kbd className="px-2 py-0.5 border border-gray-300 rounded bg-gray-50">Tab</kbd>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         
