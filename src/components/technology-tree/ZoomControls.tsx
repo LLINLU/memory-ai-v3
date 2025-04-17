@@ -33,10 +33,14 @@ export const ZoomControls = ({ hasUserMadeSelection }: ZoomControlsProps) => {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    // Instead of navigating, we'll just focus on the results sidebar
                     const sidebarElement = document.querySelector('[data-sidebar="content"]');
                     if (sidebarElement) {
                       sidebarElement.scrollTo({ top: 0, behavior: 'smooth' });
+                      // Find and click the "View all papers" button to refresh content
+                      const viewAllButton = document.querySelector('[data-sidebar="content"] button:last-child') as HTMLButtonElement;
+                      if (viewAllButton) {
+                        viewAllButton.click();
+                      }
                     }
                   }}
                   disabled={!hasUserMadeSelection}

@@ -4,9 +4,18 @@ import { Button } from "@/components/ui/button";
 import { PaperCard } from "./PaperCard";
 import { paperCollections } from "@/data/paperData";
 
-export const PaperList = () => {
+interface PaperListProps {
+  onRefresh?: () => void;
+}
+
+export const PaperList = ({ onRefresh }: PaperListProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentCollection = paperCollections[currentIndex];
+
+  const handleViewAll = () => {
+    setCurrentIndex((prev) => (prev + 1) % paperCollections.length);
+    onRefresh?.();
+  };
 
   return (
     <div className="bg-[#f3f2e8] p-4 rounded-lg">
@@ -32,7 +41,7 @@ export const PaperList = () => {
       <Button 
         variant="outline" 
         className="w-full mt-4"
-        onClick={() => setCurrentIndex((prev) => (prev + 1) % paperCollections.length)}
+        onClick={handleViewAll}
       >
         View all {currentCollection.count.papers} papers
       </Button>
