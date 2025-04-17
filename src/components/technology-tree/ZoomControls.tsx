@@ -2,18 +2,24 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { MinusIcon, PlusIcon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
 
 interface ZoomControlsProps {
   hasUserMadeSelection: boolean;
 }
 
 export const ZoomControls = ({ hasUserMadeSelection }: ZoomControlsProps) => {
-  const navigate = useNavigate();
-
   const handleViewResults = () => {
-    // Navigate to the search-results page
-    navigate("/search-results");
+    // Create a custom event to refresh the paper list
+    const refreshEvent = new CustomEvent('refresh-papers');
+    document.dispatchEvent(refreshEvent);
+    
+    // Show notification to user
+    toast({
+      title: "Results updated",
+      description: "The paper list has been updated based on your selection",
+      duration: 3000,
+    });
   };
 
   return (
