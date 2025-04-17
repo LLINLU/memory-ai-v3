@@ -98,7 +98,7 @@ export const LevelSelection = ({
                 <div 
                   className="absolute top-1/2 -right-[24px] bg-blue-600" 
                   style={{ 
-                    width: '24px',
+                    width: '48px',
                     height: '2px',
                     transform: 'translateY(-50%)',
                     transformOrigin: 'right'
