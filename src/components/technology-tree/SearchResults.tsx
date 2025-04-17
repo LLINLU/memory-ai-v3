@@ -19,10 +19,10 @@ export const SearchResults = () => {
                 <h6 className="text-lg text-gray-700">(Cellular-level Assessment of Diabetic Retinopathy Using High-resolution AO-SLO)</h6>
               </div>
               
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <span>田中 健太, 佐藤 明子, 山田 雄一</span>
-                <span>•</span>
-                <span>日本眼科学会誌</span>
+              <div className="flex items-center gap-2 text-sm text-gray-600 truncate">
+                <span className="truncate">田中 健太, 佐藤 明子, 山田 雄一</span>
+                <span className="shrink-0">•</span>
+                <span className="truncate">日本眼科学会誌</span>
               </div>
 
               <div className="flex gap-2">
@@ -34,12 +34,13 @@ export const SearchResults = () => {
                 This study investigates the application of adaptive optics scanning laser ophthalmoscopy (AO-SLO) for early detection of cellular changes in diabetic retinopathy. The research demonstrates improved visualization of retinal microvasculature and photoreceptor abnormalities before clinical symptoms appear.
               </p>
 
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" className="text-sm">View PDF</Button>
-                <Button variant="outline" className="text-sm">Save</Button>
+              <div className="flex justify-between items-center">
+                <div className="text-xs text-gray-500">2024-04-19</div>
+                <div className="flex gap-2">
+                  <Button variant="outline" className="text-sm">View PDF</Button>
+                  <Button variant="outline" className="text-sm">Save</Button>
+                </div>
               </div>
-
-              <div className="text-xs text-gray-500 text-right">2024-04-19</div>
             </div>
           </li>
 
@@ -47,10 +48,10 @@ export const SearchResults = () => {
             <div className="space-y-3">
               <h5 className="text-xl font-bold mb-2">Multi-Modal Adaptive Optics Imaging Combined with OCT for Enhanced Retinal Diagnostics</h5>
               
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <span>J. Zhang, M. Williams, K. Yamada</span>
-                <span>•</span>
-                <span>American Journal of Ophthalmology</span>
+              <div className="flex items-center gap-2 text-sm text-gray-600 truncate">
+                <span className="truncate">J. Zhang, M. Williams, K. Yamada</span>
+                <span className="shrink-0">•</span>
+                <span className="truncate">American Journal of Ophthalmology</span>
               </div>
 
               <div className="flex gap-2">
@@ -62,12 +63,13 @@ export const SearchResults = () => {
                 This paper presents a novel approach combining adaptive optics with optical coherence tomography for comprehensive retinal imaging. The multi-modal system achieves unprecedented resolution for in vivo assessment of retinal layers, offering new insights into pathophysiology of macular degeneration.
               </p>
 
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" className="text-sm">View PDF</Button>
-                <Button variant="outline" className="text-sm">Save</Button>
+              <div className="flex justify-between items-center">
+                <div className="text-xs text-gray-500">2024-04-19</div>
+                <div className="flex gap-2">
+                  <Button variant="outline" className="text-sm">View PDF</Button>
+                  <Button variant="outline" className="text-sm">Save</Button>
+                </div>
               </div>
-
-              <div className="text-xs text-gray-500 text-right">2024-04-19</div>
             </div>
           </li>
         </ul>
@@ -78,3 +80,4 @@ export const SearchResults = () => {
     </div>
   );
 };
+
