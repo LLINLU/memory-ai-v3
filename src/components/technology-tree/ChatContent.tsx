@@ -45,7 +45,7 @@ export const ChatContent = ({ chatMessages }: ChatContentProps) => {
                 ))}
               </ul>
               {message.searchingCount && (
-                <p className="font-semibold mb-3">Searching for {message.searchingCount} results</p>
+               
               )}
             </div>
           );
