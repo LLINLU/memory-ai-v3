@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { PaperCard } from "./PaperCard";
@@ -91,7 +90,7 @@ export const PaperList = () => {
   }, []);
 
   return (
-    <div className="bg-[#f3f2e8] p-4 rounded-lg" key={refreshKey}>
+    <div className="p-4"> {/* Removed bg-[#f3f2e8] */}
       <div className="mb-4">
         <h4 className="font-semibold">Adaptive Optics: Medical Applications</h4>
         <p className="text-sm text-gray-600">
