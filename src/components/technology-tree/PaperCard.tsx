@@ -28,7 +28,7 @@ export const PaperCard = ({
   date,
 }: PaperCardProps) => {
   return (
-    <li className="bg-white p-6 rounded-lg border border-gray-200">
+    <li className="w-full bg-white p-6 rounded-lg border border-gray-200">
       <div className="space-y-3">
         <div>
           {title.japanese && (
