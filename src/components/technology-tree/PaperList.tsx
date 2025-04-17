@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PaperCard } from "./PaperCard";
-import { FilterSort } from "./FilterSort";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
-// Create multiple paper sets to switch between
 const paperSets = {
   default: [
     {
@@ -67,6 +67,8 @@ export const PaperList = () => {
   const [currentPaperSet, setCurrentPaperSet] = useState('default');
   const [papers, setPapers] = useState(paperSets.default);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
   
   useEffect(() => {
     setPapers(paperSets[currentPaperSet]);
@@ -77,6 +79,7 @@ export const PaperList = () => {
       console.log("Refreshing papers...");
       setCurrentPaperSet('updated');
       setRefreshKey(prev => prev + 1);
+      setCurrentPage(1);
     };
     
     document.addEventListener('refresh-papers', handleRefresh);
@@ -86,10 +89,31 @@ export const PaperList = () => {
     };
   }, []);
 
+  const totalPages = Math.ceil(papers.length / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const visiblePapers = papers.slice(startIndex, startIndex + pageSize);
+
   return (
     <div className="p-4">
+      <div className="flex justify-end mb-4">
+        <Select value={pageSize.toString()} onValueChange={(value) => {
+          setPageSize(Number(value));
+          setCurrentPage(1);
+        }}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Papers per page" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="5">5 per page</SelectItem>
+            <SelectItem value="10">10 per page</SelectItem>
+            <SelectItem value="15">15 per page</SelectItem>
+            <SelectItem value="20">20 per page</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       <ul className="space-y-4">
-        {papers.map((paper, index) => (
+        {visiblePapers.map((paper, index) => (
           <PaperCard
             key={index}
             title={paper.title}
@@ -101,10 +125,39 @@ export const PaperList = () => {
           />
         ))}
       </ul>
-      
-      <Button variant="outline" className="w-full mt-4">
-        View all {currentPaperSet === 'default' ? '32' : '48'} papers
-      </Button>
+
+      {totalPages > 1 && (
+        <Pagination className="mt-4">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious 
+                onClick={() => setCurrentPage(page => Math.max(1, page - 1))}
+                aria-disabled={currentPage === 1}
+                className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+            
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <PaginationItem key={page}>
+                <PaginationLink
+                  onClick={() => setCurrentPage(page)}
+                  isActive={currentPage === page}
+                >
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}
+                aria-disabled={currentPage === totalPages}
+                className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 };
