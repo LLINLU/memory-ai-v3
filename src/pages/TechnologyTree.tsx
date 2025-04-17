@@ -1,31 +1,14 @@
 import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
-import { 
-  Tabs, 
-  TabsList, 
-  TabsTrigger, 
-  TabsContent, 
-  TabsHorizontal, 
-  TabsHorizontalContent,
-  updateTabsHorizontalState 
-} from "@/components/ui/tabs";
-import { MinusIcon, PlusIcon, ArrowRight, X, Search, ExternalLink, Send, Edit, ChevronRight, PanelRight, ArrowLeft } from "lucide-react";
+import { updateTabsHorizontalState } from "@/components/ui/tabs";
+import { MinusIcon, PlusIcon, ArrowRight, X, Search, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
-import { GripVertical } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetClose
-} from "@/components/ui/sheet";
-import { Textarea } from "@/components/ui/textarea";
-import { Progress } from "@/components/ui/progress";
+import { LevelSelection } from "@/components/technology-tree/LevelSelection";
+import { SidebarContent } from "@/components/technology-tree/SidebarContent";
+import { ChatInput } from "@/components/technology-tree/ChatInput";
 
 const TechnologyTree = () => {
   const navigate = useNavigate();
@@ -109,22 +92,6 @@ const TechnologyTree = () => {
     ]
   };
 
-  const visibleLevel2Items = selectedPath.level1 ? level2Items[selectedPath.level1 as keyof typeof level2Items] || [] : [];
-  const visibleLevel3Items = selectedPath.level2 ? level3Items[selectedPath.level2 as keyof typeof level3Items] || [] : [];
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInputValue(e.target.value);
-  };
-
-  const toggleSidebar = () => {
-    if (collapsedSidebar) {
-      setCollapsedSidebar(false);
-      setShowSidebar(true);
-    } else {
-      setCollapsedSidebar(true);
-    }
-  };
-
   const chatMessages = [
     {
       type: "system",
@@ -149,6 +116,22 @@ const TechnologyTree = () => {
     }
   ];
 
+  const visibleLevel2Items = selectedPath.level1 ? level2Items[selectedPath.level1 as keyof typeof level2Items] || [] : [];
+  const visibleLevel3Items = selectedPath.level2 ? level3Items[selectedPath.level2 as keyof typeof level3Items] || [] : [];
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  const toggleSidebar = () => {
+    if (collapsedSidebar) {
+      setCollapsedSidebar(false);
+      setShowSidebar(true);
+    } else {
+      setCollapsedSidebar(true);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navigation />
@@ -164,6 +147,7 @@ const TechnologyTree = () => {
                 </p>
               </div>
 
+              {/* Selected Path Display */}
               <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
                 <div className="flex items-center flex-wrap gap-2">
                   <span className="text-gray-700 font-medium">Selected path:</span>
@@ -176,13 +160,13 @@ const TechnologyTree = () => {
                         <>
                           <ArrowRight className="h-4 w-4 text-gray-500" />
                           <span className="text-blue-500 font-medium">
-                            {visibleLevel2Items.find(item => item.id === selectedPath.level2)?.name || selectedPath.level2}
+                            {level2Items[selectedPath.level1]?.find(item => item.id === selectedPath.level2)?.name || selectedPath.level2}
                           </span>
                           {selectedPath.level3 && (
                             <>
                               <ArrowRight className="h-4 w-4 text-gray-500" />
                               <span className="text-blue-500 font-medium">
-                                {visibleLevel3Items.find(item => item.id === selectedPath.level3)?.name || selectedPath.level3}
+                                {level3Items[selectedPath.level2]?.find(item => item.id === selectedPath.level3)?.name || selectedPath.level3}
                               </span>
                             </>
                           )}
@@ -193,6 +177,7 @@ const TechnologyTree = () => {
                 </div>
               </div>
 
+              {/* Zoom Controls */}
               <div className="container mx-auto mb-6">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center">
@@ -204,120 +189,21 @@ const TechnologyTree = () => {
                       <PlusIcon className="h-4 w-4" />
                     </Button>
                   </div>
-                  
-                  <div className="flex items-center">
-                    <span className="text-gray-600 mr-2">View:</span>
-                    <Tabs value={selectedView} onValueChange={setSelectedView} className="inline-flex">
-                      <TabsList>
-                        <TabsTrigger value="tree" className={selectedView === "tree" ? "bg-blue-500 text-white" : ""}>
-                          Tree
-                        </TabsTrigger>
-                        <TabsTrigger value="network" className={selectedView === "network" ? "bg-blue-500 text-white" : ""}>
-                          Network
-                        </TabsTrigger>
-                      </TabsList>
-                    </Tabs>
-                  </div>
                 </div>
               </div>
-              
-              <div className="flex flex-row gap-6 mb-8 relative">
-                <div className="w-1/3 bg-blue-50 p-4 rounded-lg">
-                  <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 1</h2>
-                  <h3 className="text-sm text-blue-600 mb-4">Main Domains</h3>
-                  
-                  <div className="space-y-4">
-                    {level1Items.map((item) => (
-                      <div
-                        key={item.id}
-                        className={`
-                          py-4 px-3 rounded-lg text-center cursor-pointer transition-all relative
-                          ${selectedPath.level1 === item.id 
-                            ? 'bg-blue-500 text-white ring-2 ring-yellow-400' 
-                            : 'bg-blue-400 text-white hover:bg-blue-500'
-                          }
-                        `}
-                        onClick={() => handleNodeClick('level1', item.id)}
-                        id={`level1-${item.id}`}
-                      >
-                        <h4 className="text-lg font-bold">{item.name}</h4>
-                        <p className="text-xs mt-1">{item.relevance}</p>
-                        
-                        {selectedPath.level1 === item.id && selectedPath.level2 && (
-                          <div className="absolute top-1/2 right-0 w-6 h-0.5 bg-blue-600 -mr-6"></div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
 
-                <div className="w-1/3 bg-blue-50 p-4 rounded-lg">
-                  <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 2</h2>
-                  <h3 className="text-sm text-blue-600 mb-4">Sub-domains</h3>
-                  
-                  <div className="space-y-4">
-                    {visibleLevel2Items.map((item) => (
-                      <div
-                        key={item.id}
-                        className={`
-                          py-4 px-3 rounded-lg text-center cursor-pointer transition-all relative
-                          ${selectedPath.level2 === item.id 
-                            ? 'bg-blue-500 text-white ring-2 ring-yellow-400' 
-                            : 'bg-blue-400 text-white hover:bg-blue-500'
-                          }
-                        `}
-                        onClick={() => handleNodeClick('level2', item.id)}
-                        id={`level2-${item.id}`}
-                      >
-                        <h4 className="text-lg font-bold">{item.name}</h4>
-                        <p className="text-xs mt-1">{item.info}</p>
-                        
-                        {selectedPath.level2 === item.id && selectedPath.level3 && (
-                          <div className="absolute top-1/2 right-0 w-6 h-0.5 bg-blue-600 -mr-6"></div>
-                        )}
-                      </div>
-                    ))}
-                    {visibleLevel2Items.length === 0 && (
-                      <div className="text-center py-8 text-gray-500">
-                        Select a domain from Level 1
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="w-1/3 bg-blue-50 p-4 rounded-lg">
-                  <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 3</h2>
-                  <h3 className="text-sm text-blue-600 mb-4">Specific Topics/Techniques</h3>
-                  
-                  <div className="space-y-4">
-                    {visibleLevel3Items.map((item) => (
-                      <div
-                        key={item.id}
-                        className={`
-                          py-4 px-3 rounded-lg text-center cursor-pointer transition-all
-                          ${selectedPath.level3 === item.id 
-                            ? 'bg-blue-500 text-white ring-2 ring-yellow-400' 
-                            : 'bg-blue-400 text-white hover:bg-blue-500'
-                          }
-                        `}
-                        onClick={() => handleNodeClick('level3', item.id)}
-                        id={`level3-${item.id}`}
-                      >
-                        <h4 className="text-lg font-bold">{item.name}</h4>
-                        <p className="text-xs mt-1">{item.info}</p>
-                      </div>
-                    ))}
-                    {visibleLevel3Items.length === 0 && (
-                      <div className="text-center py-8 text-gray-500">
-                        Select a sub-domain from Level 2
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+              {/* Level Selection Component */}
+              <LevelSelection
+                selectedPath={selectedPath}
+                level1Items={level1Items}
+                level2Items={level2Items}
+                level3Items={level3Items}
+                onNodeClick={handleNodeClick}
+              />
 
               <Separator className="my-8" />
               
+              {/* Action Buttons */}
               <div className="flex flex-col md:flex-row justify-between gap-4 mb-12">
                 <Button
                   variant="outline"
@@ -380,131 +266,26 @@ const TechnologyTree = () => {
                 </div>
                 
                 <div className="flex-1 overflow-hidden">
-                  <TabsHorizontal value={sidebarTab} className="h-full">
-                    <TabsHorizontalContent value="result" className="h-full p-4 overflow-auto bg-[#fffdf5]">
-                      <h3 className="text-xl font-bold mb-4">Research Results</h3>
-                      <div className="bg-[#f3f2e8] p-4 rounded-lg">
-                        <div className="mb-4">
-                          <h4 className="font-semibold">Adaptive Optics: Medical Applications</h4>
-                          <p className="text-sm text-gray-600">32 papers • 9 implementations</p>
-                        </div>
-                        <ul className="space-y-4">
-                          <li className="bg-white p-3 rounded border border-gray-200">
-                            <h5 className="font-medium">High-resolution retinal imaging using adaptive optics</h5>
-                            <p className="text-sm text-gray-600">Journal of Vision Science, 2023</p>
-                            <div className="flex gap-2 mt-2">
-                              <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">Retinal Imaging</span>
-                              <span className="text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded">Clinical</span>
-                            </div>
-                          </li>
-                          <li className="bg-white p-3 rounded border border-gray-200">
-                            <h5 className="font-medium">Advancements in corneal imaging with adaptive optics technology</h5>
-                            <p className="text-sm text-gray-600">Ophthalmology Research, 2022</p>
-                            <div className="flex gap-2 mt-2">
-                              <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">Corneal Imaging</span>
-                              <span className="text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded">Technique</span>
-                            </div>
-                          </li>
-                        </ul>
-                        <Button variant="outline" className="w-full mt-4">
-                          View all 32 papers
-                        </Button>
-                      </div>
-                    </TabsHorizontalContent>
-
-                    <TabsHorizontalContent value="chat" className="h-full p-4 overflow-auto bg-[#fffdf5]">
-                      <div className="space-y-6">
-                        <div className="bg-[#f3f2e8] rounded-lg p-4">
-                          <p className="text-gray-800 text-lg font-medium">
-                            Creating Webset for your search: Research papers about cell regeneration technology, which includes one author who is an MD...
-                          </p>
-                          <button className="text-gray-700 mt-2 font-medium">Show more</button>
-                        </div>
-                        
-                        <div className="bg-[#f3f2e8] rounded-lg p-4">
-                          <h3 className="text-gray-800 text-xl font-bold mb-3">Criteria for your search</h3>
-                          <ul className="space-y-2 mb-3">
-                            <li className="flex items-start gap-2 text-gray-600">
-                              <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
-                              <span>Research paper focused on cell regeneration technology</span>
-                            </li>
-                            <li className="flex items-start gap-2 text-gray-600">
-                              <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
-                              <span>At least one author who is an MD</span>
-                            </li>
-                            <li className="flex items-start gap-2 text-gray-600">
-                              <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
-                              <span>At least one author who is a technologist</span>
-                            </li>
-                          </ul>
-                          <p className="font-semibold mb-3">Searching for 25 results</p>
-                          <div className="flex items-center">
-                            <span className="font-semibold text-gray-700 underline mr-2">Search for more</span>
-                            <Search className="h-4 w-4" />
-                          </div>
-                        </div>
-                        
-                        <div className="bg-[#f3f2e8] rounded-lg p-4">
-                          <h3 className="text-gray-800 text-xl font-bold mb-4">Searching across billions of Exa embeddings</h3>
-                          <div className="space-y-2 mb-4">
-                            <div className="flex items-start gap-2 text-gray-600">
-                              <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
-                              <span>73 results analyzed</span>
-                            </div>
-                            <div className="flex items-start gap-2 text-gray-600">
-                              <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
-                              <span>35 results matched</span>
-                            </div>
-                          </div>
-                          <Progress value={65} className="h-2 w-full bg-gray-300" />
-                        </div>
-                      </div>
-                    </TabsHorizontalContent>
-                  </TabsHorizontal>
+                  <SidebarContent
+                    sidebarTab={sidebarTab}
+                    chatMessages={chatMessages}
+                    inputValue={inputValue}
+                    onInputChange={handleInputChange}
+                  />
                 </div>
                 
-                <div className="border-t border-gray-200">
-                  {sidebarTab === 'chat' && (
-                    <div className="p-4">
-                      <div className="text-gray-500 mb-2 flex items-center gap-1 justify-between">
-                        <div>Need a custom webset? 
-                          <button className="text-blue-600 ml-1 flex items-center gap-1 inline">
-                            Talk to us <ExternalLink className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </div>
-                      
-                      <div className="bg-white rounded-lg border border-gray-200">
-                        <Textarea 
-                          placeholder="Add abstract as an enrichment"
-                          className="w-full resize-none border-0 focus-visible:ring-0 p-3"
-                          value={inputValue}
-                          onChange={handleInputChange}
-                          rows={2}
-                        />
-                        
-                        <div className="flex items-center justify-between p-2 border-t">
-                          <Button variant="outline" size="sm" className="flex items-center gap-1 text-gray-500">
-                            <Edit className="h-4 w-4" /> Edit search criteria
-                          </Button>
-                          
-                          <Button variant="ghost" size="sm" className="text-gray-500">
-                            Send <Send className="h-4 w-4 ml-1" />
-                          </Button>
-                        </div>
-                        
-                        <div className="px-3 py-1 text-xs text-gray-400 flex items-center justify-end">
-                          <kbd className="px-2 py-0.5 border border-gray-300 rounded bg-gray-50">Tab</kbd>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                {sidebarTab === 'chat' && (
+                  <ChatInput
+                    value={inputValue}
+                    onChange={handleInputChange}
+                  />
+                )}
               </div>
             </ResizablePanel>
           )}
         </ResizablePanelGroup>
 
+        {/* Sidebar Toggle Controls */}
         {collapsedSidebar && (
           <div className="fixed right-0 top-[64px] bottom-0 w-[50px] bg-[#F3F3E8] border-l border-gray-200 shadow-sm flex flex-col transition-all duration-300 z-10">
             <Button 
