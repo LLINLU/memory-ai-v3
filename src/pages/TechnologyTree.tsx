@@ -12,15 +12,6 @@ import { CollapsedSidebar } from "@/components/technology-tree/CollapsedSidebar"
 import { useTechnologyTree } from "@/hooks/useTechnologyTree";
 import { level1Items, level2Items, level3Items } from "@/data/technologyTreeData";
 
-const chatMessages = [
-  {
-    type: "progress",
-    title: "Searching across billions of Exa embeddings",
-    analyzed: 73,
-    matched: 35
-  }
-];
-
 const getLevelNames = (selectedPath: { level1: string }) => {
   if (selectedPath.level1.includes('optics')) {
     return {
@@ -61,6 +52,27 @@ const TechnologyTree = () => {
   useEffect(() => {
     updateTabsHorizontalState(sidebarTab);
   }, [sidebarTab]);
+
+  const chatMessages = query ? [
+    {
+      type: "system",
+      content: query,
+      showMore: true
+    },
+    {
+      type: "progress",
+      title: "Searching across billions of Exa embeddings",
+      analyzed: 73,
+      matched: 35
+    }
+  ] : [
+    {
+      type: "progress",
+      title: "Searching across billions of Exa embeddings",
+      analyzed: 73,
+      matched: 35
+    }
+  ];
 
   const levelNames = getLevelNames(selectedPath);
 
