@@ -94,8 +94,8 @@ export const PaperList = () => {
   const visiblePapers = papers.slice(startIndex, startIndex + pageSize);
 
   return (
-    <div className="p-4 max-w-[calc(100%-2rem)] mx-auto">
-      <ul className="space-y-4 max-w-none w-full">
+    <div className="p-4 max-w-full mx-auto">
+      <ul className="space-y-4 w-full">
         {visiblePapers.map((paper, index) => (
           <PaperCard
             key={index}
