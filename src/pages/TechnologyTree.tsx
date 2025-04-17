@@ -55,24 +55,10 @@ const TechnologyTree = () => {
 
   const chatMessages = query ? [
     {
-      type: "system",
-      content: query,
-      showMore: true
-    },
-    {
       type: "progress",
-      title: "Searching across billions of Exa embeddings",
-      analyzed: 73,
-      matched: 35
+      title: "Searching across billions of Exa embeddings"
     }
-  ] : [
-    {
-      type: "progress",
-      title: "Searching across billions of Exa embeddings",
-      analyzed: 73,
-      matched: 35
-    }
-  ];
+  ] : [];
 
   const levelNames = getLevelNames(selectedPath);
 
