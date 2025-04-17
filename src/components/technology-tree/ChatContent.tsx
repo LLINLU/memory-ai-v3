@@ -27,7 +27,9 @@ export const ChatContent = ({ chatMessages }: ChatContentProps) => {
               <p className="text-gray-800 text-lg font-medium">
                 {message.content}
               </p>
-              {/* Removed empty condition */}
+              {message.showMore && (
+                <button className="text-blue-500 text-sm mt-2">Show more</button>
+              )}
             </div>
           );
         }
@@ -45,7 +47,7 @@ export const ChatContent = ({ chatMessages }: ChatContentProps) => {
                 ))}
               </ul>
               {message.searchingCount && (
-               
+                <p className="font-semibold mb-3">Searching for {message.searchingCount} results</p>
               )}
             </div>
           );
