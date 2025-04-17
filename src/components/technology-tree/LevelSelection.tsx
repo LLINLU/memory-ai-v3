@@ -48,7 +48,7 @@ export const LevelSelection = ({
               className={`
                 py-4 px-3 rounded-lg text-center cursor-pointer transition-all relative
                 ${selectedPath.level1 === item.id 
-                  ? 'bg-blue-500 text-white ring-2 ring-vivid-purple' 
+                  ? 'bg-blue-500 text-white ring-2 ring-bright-orange' 
                   : 'bg-blue-400 text-white hover:bg-blue-500'
                 }
               `}
@@ -127,7 +127,7 @@ export const LevelSelection = ({
               className={`
                 py-4 px-3 rounded-lg text-center cursor-pointer transition-all
                 ${selectedPath.level3 === item.id 
-                  ? 'bg-blue-500 text-white ring-2 ring-ocean-blue' 
+                  ? 'bg-blue-500 text-white ring-2 ring-bright-orange' 
                   : 'bg-blue-400 text-white hover:bg-blue-500'
                 }
               `}
@@ -148,3 +148,4 @@ export const LevelSelection = ({
     </div>
   );
 };
+
