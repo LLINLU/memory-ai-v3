@@ -12,11 +12,12 @@ import {
 interface FilterSortProps {
   onFilterChange?: (filter: string) => void;
   onSortChange?: (sort: string) => void;
+  className?: string;
 }
 
-export const FilterSort = ({ onFilterChange, onSortChange }: FilterSortProps) => {
+export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSortProps) => {
   return (
-    <div className="flex items-center gap-2">
+    <div className={`flex items-center gap-2 ${className || ''}`}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className="gap-2">
@@ -59,4 +60,3 @@ export const FilterSort = ({ onFilterChange, onSortChange }: FilterSortProps) =>
     </div>
   );
 };
-
