@@ -1,6 +1,12 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export const SearchResults = () => {
   return (
@@ -20,9 +26,27 @@ export const SearchResults = () => {
               </div>
               
               <div className="flex items-center gap-2 text-sm text-gray-600 truncate">
-                <span className="truncate">田中 健太, 佐藤 明子, 山田 雄一</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="truncate">田中 健太, 佐藤 明子, 山田 雄一</span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>田中 健太, 佐藤 明子, 山田 雄一</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <span className="shrink-0">•</span>
-                <span className="truncate">日本眼科学会誌</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="truncate">日本眼科学会誌</span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>日本眼科学会誌</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
 
               <div className="flex gap-2">
@@ -49,9 +73,27 @@ export const SearchResults = () => {
               <h5 className="text-xl font-bold mb-2">Multi-Modal Adaptive Optics Imaging Combined with OCT for Enhanced Retinal Diagnostics</h5>
               
               <div className="flex items-center gap-2 text-sm text-gray-600 truncate">
-                <span className="truncate">J. Zhang, M. Williams, K. Yamada</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="truncate">J. Zhang, M. Williams, K. Yamada</span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>J. Zhang, M. Williams, K. Yamada</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <span className="shrink-0">•</span>
-                <span className="truncate">American Journal of Ophthalmology</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="truncate">American Journal of Ophthalmology</span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>American Journal of Ophthalmology</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
 
               <div className="flex gap-2">
