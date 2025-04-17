@@ -1,7 +1,9 @@
 
 import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Save } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 interface PressRelease {
@@ -29,6 +31,14 @@ export const ImplementationCard = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const hasMoreReleases = pressReleases.length > 3;
   const displayedReleases = isExpanded ? pressReleases : pressReleases.slice(0, 3);
+  const { toast } = useToast();
+
+  const handleSave = () => {
+    toast({
+      title: "Implementation Saved",
+      description: `${title} has been saved to your library`
+    });
+  };
 
   return (
     <div className="bg-white p-4 rounded-lg border border-gray-200">
@@ -44,7 +54,7 @@ export const ImplementationCard = ({
         {description}
       </p>
       {pressReleases.length > 0 && (
-        <div className="space-y-2">
+        <div className="space-y-2 mb-4">
           <div className="text-sm font-medium text-gray-700">Press Releases:</div>
           <div className="pl-4 space-y-1.5">
             {displayedReleases.map((release, index) => (
@@ -79,6 +89,16 @@ export const ImplementationCard = ({
           )}
         </div>
       )}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleSave}
+        className="w-full"
+      >
+        <Save className="mr-2 h-4 w-4" />
+        Save Implementation
+      </Button>
     </div>
   );
 };
+
