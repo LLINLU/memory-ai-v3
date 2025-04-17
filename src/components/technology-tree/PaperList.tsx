@@ -1,6 +1,4 @@
-
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { PaperCard } from "./PaperCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
@@ -96,39 +94,8 @@ export const PaperList = () => {
 
   return (
     <div className="p-4">
-      <div className="flex justify-end mb-4">
-        <Select value={pageSize.toString()} onValueChange={(value) => {
-          setPageSize(Number(value));
-          setCurrentPage(1);
-        }}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Papers per page" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="5">5 per page</SelectItem>
-            <SelectItem value="10">10 per page</SelectItem>
-            <SelectItem value="15">15 per page</SelectItem>
-            <SelectItem value="20">20 per page</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <ul className="space-y-4">
-        {visiblePapers.map((paper, index) => (
-          <PaperCard
-            key={index}
-            title={paper.title}
-            authors={paper.authors}
-            journal={paper.journal}
-            tags={paper.tags}
-            abstract={paper.abstract}
-            date={paper.date}
-          />
-        ))}
-      </ul>
-
-      {totalPages > 1 && (
-        <Pagination className="mt-4">
+      <div className="flex justify-between items-center mb-4">
+        <Pagination>
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious 
@@ -158,7 +125,36 @@ export const PaperList = () => {
             </PaginationItem>
           </PaginationContent>
         </Pagination>
-      )}
+
+        <Select value={pageSize.toString()} onValueChange={(value) => {
+          setPageSize(Number(value));
+          setCurrentPage(1);
+        }}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Papers per page" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="5">5 per page</SelectItem>
+            <SelectItem value="10">10 per page</SelectItem>
+            <SelectItem value="15">15 per page</SelectItem>
+            <SelectItem value="20">20 per page</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <ul className="space-y-4">
+        {visiblePapers.map((paper, index) => (
+          <PaperCard
+            key={index}
+            title={paper.title}
+            authors={paper.authors}
+            journal={paper.journal}
+            tags={paper.tags}
+            abstract={paper.abstract}
+            date={paper.date}
+          />
+        ))}
+      </ul>
     </div>
   );
 };
