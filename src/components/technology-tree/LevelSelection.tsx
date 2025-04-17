@@ -59,14 +59,16 @@ export const LevelSelection = ({
               <p className="text-xs mt-1">{item.info}</p>
               
               {selectedPath.level1 === item.id && selectedPath.level2 && (
-                <div 
-                  className="absolute top-1/2 right-0 bg-blue-600" 
-                  style={{ 
-                    width: '24px',
-                    height: '2px',
-                    transform: 'translateY(-50%)'
-                  }}
-                />
+                <>
+                  <div 
+                    className="absolute top-1/2 -right-6 bg-blue-600" 
+                    style={{ 
+                      width: '24px',
+                      height: '2px',
+                      transform: 'translateY(-50%)'
+                    }}
+                  />
+                </>
               )}
             </div>
           ))}
@@ -95,14 +97,16 @@ export const LevelSelection = ({
               <p className="text-xs mt-1">{item.info}</p>
               
               {selectedPath.level2 === item.id && selectedPath.level3 && (
-                <div 
-                  className="absolute top-1/2 right-0 bg-blue-600" 
-                  style={{ 
-                    width: '24px',
-                    height: '2px',
-                    transform: 'translateY(-50%)'
-                  }}
-                />
+                <>
+                  <div 
+                    className="absolute top-1/2 -right-6 bg-blue-600" 
+                    style={{ 
+                      width: '24px',
+                      height: '2px',
+                      transform: 'translateY(-50%)'
+                    }}
+                  />
+                </>
               )}
             </div>
           ))}
