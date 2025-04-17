@@ -64,16 +64,17 @@ const TabsHorizontal = React.forwardRef<
 ))
 TabsHorizontal.displayName = "TabsHorizontal"
 
+// Define a type for the custom TabsHorizontalContent props
+interface TabsHorizontalContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  value: string;
+}
+
 const TabsHorizontalContent = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { value: string }
+  TabsHorizontalContentProps
 >(({ className, value, ...props }, ref) => {
-  // Get the TabsContext
-  const context = React.useContext(TabsPrimitive.TabsContext)
-  
-  // Check if this tab is active
-  const isSelected = context?.value === value
-  
+  // We need to use a different approach since TabsPrimitive.TabsContext doesn't exist
+  // Instead, we'll use data attributes to handle active state
   return (
     <div
       ref={ref}
@@ -81,13 +82,38 @@ const TabsHorizontalContent = React.forwardRef<
         "flex-1 hidden data-[state=active]:block", 
         className
       )}
-      data-state={isSelected ? "active" : "inactive"}
+      data-state="inactive"
+      data-tab-value={value}
       role="tabpanel"
-      data-value={value}
       {...props}
     />
   )
 })
 TabsHorizontalContent.displayName = "TabsHorizontalContent"
 
-export { Tabs, TabsList, TabsTrigger, TabsContent, TabsHorizontal, TabsHorizontalContent }
+// Add this function to the exports to update the active tab content
+// This will be used in TechnologyTree.tsx to manually control the active tab
+const updateTabsHorizontalState = (selectedValue: string) => {
+  // Find all tab contents
+  const tabContents = document.querySelectorAll('[data-tab-value]');
+  
+  // Update their state based on the selected value
+  tabContents.forEach((content) => {
+    const tabValue = content.getAttribute('data-tab-value');
+    if (tabValue === selectedValue) {
+      content.setAttribute('data-state', 'active');
+    } else {
+      content.setAttribute('data-state', 'inactive');
+    }
+  });
+};
+
+export { 
+  Tabs, 
+  TabsList, 
+  TabsTrigger, 
+  TabsContent, 
+  TabsHorizontal, 
+  TabsHorizontalContent,
+  updateTabsHorizontalState 
+}

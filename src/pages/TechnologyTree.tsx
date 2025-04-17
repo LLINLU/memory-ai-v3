@@ -1,8 +1,15 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent, TabsHorizontal, TabsHorizontalContent } from "@/components/ui/tabs";
+import { 
+  Tabs, 
+  TabsList, 
+  TabsTrigger, 
+  TabsContent, 
+  TabsHorizontal, 
+  TabsHorizontalContent,
+  updateTabsHorizontalState 
+} from "@/components/ui/tabs";
 import { MinusIcon, PlusIcon, ArrowRight, X, Search, ExternalLink, Send, Edit, ChevronRight, PanelRight, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -31,6 +38,10 @@ const TechnologyTree = () => {
   const [showSidebar, setShowSidebar] = useState(true);
   const [collapsedSidebar, setCollapsedSidebar] = useState(false);
   const [inputValue, setInputValue] = useState("");
+
+  useEffect(() => {
+    updateTabsHorizontalState(sidebarTab);
+  }, [sidebarTab]);
 
   const handleNodeClick = (level: string, nodeId: string) => {
     if (level === 'level1') {
@@ -347,26 +358,24 @@ const TechnologyTree = () => {
         {showSidebar && !collapsedSidebar && (
           <div className="fixed right-0 top-[64px] bottom-0 w-[400px] bg-white border-l border-gray-200 shadow-lg flex flex-col transition-transform duration-300 z-10">
             <div className="flex items-center justify-between border-b border-gray-200 h-12">
-              <TabsHorizontal defaultValue="result" value={sidebarTab} onValueChange={setSidebarTab} className="flex-1">
-                <div className="flex flex-1">
-                  <button
-                    onClick={() => setSidebarTab("result")}
-                    className={`flex-1 h-full font-medium text-center px-4 ${
-                      sidebarTab === 'result' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'
-                    }`}
-                  >
-                    Result
-                  </button>
-                  <button
-                    onClick={() => setSidebarTab("chat")}
-                    className={`flex-1 h-full font-medium text-center px-4 ${
-                      sidebarTab === 'chat' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'
-                    }`}
-                  >
-                    Chat
-                  </button>
-                </div>
-              </TabsHorizontal>
+              <div className="flex flex-1">
+                <button
+                  onClick={() => setSidebarTab("result")}
+                  className={`flex-1 h-full font-medium text-center px-4 ${
+                    sidebarTab === 'result' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'
+                  }`}
+                >
+                  Result
+                </button>
+                <button
+                  onClick={() => setSidebarTab("chat")}
+                  className={`flex-1 h-full font-medium text-center px-4 ${
+                    sidebarTab === 'chat' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'
+                  }`}
+                >
+                  Chat
+                </button>
+              </div>
               <Button 
                 variant="ghost" 
                 size="icon"
