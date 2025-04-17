@@ -47,7 +47,7 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent 
-          className="w-56" 
+          className="w-56 [&>div>div]:before:hidden" // Added class to remove circle
           align="start"
           onCloseAutoFocus={(e) => {
             // Prevent focus events from closing the dropdown
