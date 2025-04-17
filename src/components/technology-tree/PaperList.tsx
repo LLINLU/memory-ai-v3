@@ -94,8 +94,8 @@ export const PaperList = () => {
   const visiblePapers = papers.slice(startIndex, startIndex + pageSize);
 
   return (
-    <div className="p-4 max-w-full mx-auto">
-      <ul className="space-y-4 w-full">
+    <>
+      <ul className="w-full space-y-4">
         {visiblePapers.map((paper, index) => (
           <PaperCard
             key={index}
@@ -156,6 +156,6 @@ export const PaperList = () => {
           </SelectContent>
         </Select>
       </div>
-    </div>
+    </>
   );
 };
