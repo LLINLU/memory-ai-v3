@@ -4,7 +4,6 @@ import { TechnologyHeader } from "./TechnologyHeader";
 import { PathDisplay } from "./PathDisplay";
 import { ZoomControls } from "./ZoomControls";
 import { LevelSelection } from "./LevelSelection";
-import { ActionButtons } from "./ActionButtons";
 
 interface MainContentProps {
   selectedPath: {
@@ -55,7 +54,7 @@ export const MainContent = ({
         onNodeClick={onNodeClick}
         levelNames={levelNames}
       />
-      <ActionButtons />
+      {/* ActionButtons component removed */}
     </div>
   );
 };

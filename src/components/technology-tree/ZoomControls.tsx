@@ -2,11 +2,14 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { MinusIcon, PlusIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export const ZoomControls = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="container mx-auto mb-6">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between gap-4">
         <div className="flex items-center">
           <span className="text-gray-600 mr-2">Zoom:</span>
           <Button variant="outline" size="sm" className="rounded-md">
@@ -16,6 +19,12 @@ export const ZoomControls = () => {
             <PlusIcon className="h-4 w-4" />
           </Button>
         </div>
+        <Button
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm"
+          onClick={() => navigate("/search-results")}
+        >
+          View Research
+        </Button>
       </div>
     </div>
   );
