@@ -12,42 +12,62 @@ export const SearchResults = () => {
           <p className="text-sm text-gray-600">32 papers • 9 implementations</p>
         </div>
         <ul className="space-y-4">
-          <li className="bg-white p-4 rounded border border-gray-200">
-            <h5 className="font-medium text-lg mb-1">High-resolution retinal imaging using adaptive optics</h5>
-            <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-              <span>Authors: Smith J., Johnson M., Williams R.</span>
-              <span>•</span>
-              <span>Journal of Vision Science</span>
-              <span>•</span>
-              <span>March 2023</span>
-            </div>
-            <p className="text-sm text-gray-700 mb-3">
-              This groundbreaking study explores the application of adaptive optics in high-resolution retinal imaging, 
-              demonstrating significant improvements in visualization of retinal microstructures. The research presents 
-              novel techniques for real-time correction of optical aberrations in the human eye.
-            </p>
-            <div className="flex gap-2 mb-3">
-              <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">Retinal Imaging</span>
-              <span className="text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded">Clinical</span>
+          <li className="bg-white p-6 rounded-lg border border-gray-200">
+            <div className="space-y-3">
+              <div>
+                <h5 className="text-xl font-bold mb-2">高解像度適応光学走査レーザー検眼鏡による糖尿病網膜症の細胞レベル評価</h5>
+                <h6 className="text-lg text-gray-700">(Cellular-level Assessment of Diabetic Retinopathy Using High-resolution AO-SLO)</h6>
+              </div>
+              
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <span>田中 健太, 佐藤 明子, 山田 雄一</span>
+                <span>•</span>
+                <span>日本眼科学会誌</span>
+                <span>•</span>
+                <span>2024</span>
+              </div>
+
+              <div className="flex gap-2">
+                <span className="text-xs bg-[#E8F1FF] text-blue-600 px-3 py-1 rounded-full">AO-SLO</span>
+                <span className="text-xs bg-[#E8F1FF] text-blue-600 px-3 py-1 rounded-full">糖尿病網膜症</span>
+              </div>
+
+              <p className="text-sm text-gray-700 leading-relaxed">
+                This study investigates the application of adaptive optics scanning laser ophthalmoscopy (AO-SLO) for early detection of cellular changes in diabetic retinopathy. The research demonstrates improved visualization of retinal microvasculature and photoreceptor abnormalities before clinical symptoms appear.
+              </p>
+
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" className="text-sm">View PDF</Button>
+                <Button variant="outline" className="text-sm">Save</Button>
+              </div>
             </div>
           </li>
-          <li className="bg-white p-4 rounded border border-gray-200">
-            <h5 className="font-medium text-lg mb-1">Advancements in corneal imaging with adaptive optics technology</h5>
-            <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-              <span>Authors: Chen H., Rodriguez A., Kumar P.</span>
-              <span>•</span>
-              <span>Ophthalmology Research</span>
-              <span>•</span>
-              <span>December 2022</span>
-            </div>
-            <p className="text-sm text-gray-700 mb-3">
-              This comprehensive study investigates recent developments in corneal imaging using adaptive optics. 
-              The research presents innovative approaches to overcome traditional limitations in corneal visualization 
-              and introduces new methodologies for clinical applications.
-            </p>
-            <div className="flex gap-2 mb-3">
-              <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">Corneal Imaging</span>
-              <span className="text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded">Technique</span>
+
+          <li className="bg-white p-6 rounded-lg border border-gray-200">
+            <div className="space-y-3">
+              <h5 className="text-xl font-bold mb-2">Multi-Modal Adaptive Optics Imaging Combined with OCT for Enhanced Retinal Diagnostics</h5>
+              
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <span>J. Zhang, M. Williams, K. Yamada</span>
+                <span>•</span>
+                <span>American Journal of Ophthalmology</span>
+                <span>•</span>
+                <span>2023</span>
+              </div>
+
+              <div className="flex gap-2">
+                <span className="text-xs bg-[#E8F1FF] text-blue-600 px-3 py-1 rounded-full">AO-OCT</span>
+                <span className="text-xs bg-[#E8F1FF] text-blue-600 px-3 py-1 rounded-full">Multi-Modal</span>
+              </div>
+
+              <p className="text-sm text-gray-700 leading-relaxed">
+                This paper presents a novel approach combining adaptive optics with optical coherence tomography for comprehensive retinal imaging. The multi-modal system achieves unprecedented resolution for in vivo assessment of retinal layers, offering new insights into pathophysiology of macular degeneration.
+              </p>
+
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" className="text-sm">View PDF</Button>
+                <Button variant="outline" className="text-sm">Save</Button>
+              </div>
             </div>
           </li>
         </ul>

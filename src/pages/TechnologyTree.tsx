@@ -138,7 +138,7 @@ const TechnologyTree = () => {
       
       <div className="flex flex-1 overflow-hidden">
         <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel defaultSize={70} minSize={30}>
+          <ResizablePanel defaultSize={60} minSize={30}>
             <div className="container mx-auto px-4 py-6">
               <div className="bg-blue-50 rounded-lg p-6 mb-6">
                 <h1 className="text-3xl font-bold text-gray-800">Technology Tree</h1>
@@ -234,7 +234,7 @@ const TechnologyTree = () => {
           )}
 
           {showSidebar && !collapsedSidebar && (
-            <ResizablePanel defaultSize={30} minSize={20} maxSize={40}>
+            <ResizablePanel defaultSize={40} minSize={20} maxSize={50}>
               <div className="h-full bg-white border-l border-gray-200 shadow-lg flex flex-col">
                 <div className="flex items-center justify-between border-b border-gray-200 h-12">
                   <div className="flex flex-1">
@@ -285,7 +285,6 @@ const TechnologyTree = () => {
           )}
         </ResizablePanelGroup>
 
-        {/* Sidebar Toggle Controls */}
         {collapsedSidebar && (
           <div className="fixed right-0 top-[64px] bottom-0 w-[50px] bg-[#F3F3E8] border-l border-gray-200 shadow-sm flex flex-col transition-all duration-300 z-10">
             <Button 
