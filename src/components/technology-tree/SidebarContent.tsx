@@ -18,14 +18,19 @@ export const SidebarContent = ({
   onInputChange
 }: SidebarContentProps) => {
   return (
-    <TabsHorizontal value={sidebarTab} className="h-full">
-      <TabsHorizontalContent value="result" className="h-full">
-        <SearchResults />
-      </TabsHorizontalContent>
+    <div>
+      <div className="px-4 pt-4 text-sm text-gray-600">
+        32 papers • 9 implementations
+      </div>
+      <TabsHorizontal value={sidebarTab} className="h-full">
+        <TabsHorizontalContent value="result" className="h-full">
+          <SearchResults />
+        </TabsHorizontalContent>
 
-      <TabsHorizontalContent value="chat" className="h-full p-4 overflow-auto bg-[#fffdf5]">
-        <ChatContent chatMessages={chatMessages} />
-      </TabsHorizontalContent>
-    </TabsHorizontal>
+        <TabsHorizontalContent value="chat" className="h-full p-4 overflow-auto bg-[#fffdf5]">
+          <ChatContent chatMessages={chatMessages} />
+        </TabsHorizontalContent>
+      </TabsHorizontal>
+    </div>
   );
 };
