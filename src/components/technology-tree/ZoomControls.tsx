@@ -36,11 +36,10 @@ export const ZoomControls = ({ hasUserMadeSelection }: ZoomControlsProps) => {
                     const sidebarElement = document.querySelector('[data-sidebar="content"]');
                     if (sidebarElement) {
                       sidebarElement.scrollTo({ top: 0, behavior: 'smooth' });
-                      // Find and click the "View all papers" button to refresh content
-                      const viewAllButton = document.querySelector('[data-sidebar="content"] button:last-child') as HTMLButtonElement;
-                      if (viewAllButton) {
-                        viewAllButton.click();
-                      }
+                      
+                      // Force a direct refresh of the SearchResults component
+                      const refreshEvent = new CustomEvent('refresh-results');
+                      document.dispatchEvent(refreshEvent);
                     }
                   }}
                   disabled={!hasUserMadeSelection}

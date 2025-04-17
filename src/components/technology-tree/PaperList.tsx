@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { PaperCard } from "./PaperCard";
 import { paperCollections } from "@/data/paperData";
@@ -10,10 +10,26 @@ interface PaperListProps {
 
 export const PaperList = ({ onRefresh }: PaperListProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [forceUpdate, setForceUpdate] = useState(0); // Added state to force re-rendering
+  
+  // Ensure we get a different collection on mount and refresh
+  useEffect(() => {
+    // Get a random index that's different from the current one
+    const getRandomIndex = () => {
+      const newIndex = Math.floor(Math.random() * paperCollections.length);
+      return newIndex !== currentIndex ? newIndex : (newIndex + 1) % paperCollections.length;
+    };
+    
+    setCurrentIndex(getRandomIndex());
+  }, [forceUpdate]);
+  
   const currentCollection = paperCollections[currentIndex];
 
   const handleViewAll = () => {
-    setCurrentIndex((prev) => (prev + 1) % paperCollections.length);
+    // Get a different collection when clicking view all
+    const nextIndex = (currentIndex + 1) % paperCollections.length;
+    setCurrentIndex(nextIndex);
+    setForceUpdate(prev => prev + 1); // Force component to update
     onRefresh?.();
   };
 
@@ -28,7 +44,7 @@ export const PaperList = ({ onRefresh }: PaperListProps) => {
       <ul className="space-y-4">
         {currentCollection.papers.map((paper, index) => (
           <PaperCard
-            key={index}
+            key={`${currentIndex}-${index}`} // Ensure key changes when collection changes
             title={paper.title}
             authors={paper.authors}
             journal={paper.journal}

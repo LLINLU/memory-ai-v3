@@ -17,6 +17,19 @@ export const SearchResults = () => {
     setRefreshKey(prev => prev + 1);
   }, [location.pathname]);
 
+  // Listen for the custom refresh event
+  useEffect(() => {
+    const handleCustomRefresh = () => {
+      refreshResults();
+    };
+    
+    document.addEventListener('refresh-results', handleCustomRefresh);
+    
+    return () => {
+      document.removeEventListener('refresh-results', handleCustomRefresh);
+    };
+  }, []);
+
   return (
     <div className="h-full p-4 overflow-auto bg-[#fffdf5]">
       <h3 className="text-xl font-bold mb-4">Research Results</h3>
