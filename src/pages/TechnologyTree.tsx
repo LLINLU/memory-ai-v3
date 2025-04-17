@@ -13,10 +13,11 @@ import { CollapsedSidebar } from "@/components/technology-tree/CollapsedSidebar"
 
 const TechnologyTree = () => {
   const navigate = useNavigate();
+  const [selectedView, setSelectedView] = useState("tree");
   const [selectedPath, setSelectedPath] = useState({
-    level1: [] as string[],
-    level2: [] as string[],
-    level3: [] as string[]
+    level1: "adaptive-optics",
+    level2: "medical-applications",
+    level3: "retinal-imaging"
   });
   const [sidebarTab, setSidebarTab] = useState("result");
   const [showSidebar, setShowSidebar] = useState(true);
@@ -28,21 +29,24 @@ const TechnologyTree = () => {
   }, [sidebarTab]);
 
   const handleNodeClick = (level: string, nodeId: string) => {
-    setSelectedPath(prev => {
-      const currentLevel = prev[level as keyof typeof prev];
-      if (Array.isArray(currentLevel)) {
-        const isSelected = currentLevel.includes(nodeId);
-        return {
-          ...prev,
-          [level]: isSelected
-            ? currentLevel.filter(id => id !== nodeId)
-            : [...currentLevel, nodeId],
-          ...(level === 'level1' && !isSelected ? { level2: [], level3: [] } : {}),
-          ...(level === 'level2' && !isSelected ? { level3: [] } : {})
-        };
-      }
-      return prev;
-    });
+    if (level === 'level1') {
+      setSelectedPath({
+        level1: nodeId,
+        level2: "",
+        level3: ""
+      });
+    } else if (level === 'level2') {
+      setSelectedPath({
+        ...selectedPath,
+        level2: nodeId,
+        level3: ""
+      });
+    } else if (level === 'level3') {
+      setSelectedPath({
+        ...selectedPath,
+        level3: nodeId
+      });
+    }
   };
 
   const level1Items = [

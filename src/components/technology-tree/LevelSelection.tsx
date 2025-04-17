@@ -1,4 +1,3 @@
-
 import { ArrowRight } from "lucide-react";
 
 interface LevelItem {
@@ -9,9 +8,9 @@ interface LevelItem {
 
 interface LevelSelectionProps {
   selectedPath: {
-    level1: string[];
-    level2: string[];
-    level3: string[];
+    level1: string;
+    level2: string;
+    level3: string;
   };
   level1Items: LevelItem[];
   level2Items: Record<string, LevelItem[]>;
@@ -26,26 +25,8 @@ export const LevelSelection = ({
   level3Items,
   onNodeClick
 }: LevelSelectionProps) => {
-  const getVisibleLevel2Items = () => {
-    const items = new Set<LevelItem>();
-    selectedPath.level1.forEach(level1Id => {
-      const level2ForLevel1 = level2Items[level1Id] || [];
-      level2ForLevel1.forEach(item => items.add(item));
-    });
-    return Array.from(items);
-  };
-
-  const getVisibleLevel3Items = () => {
-    const items = new Set<LevelItem>();
-    selectedPath.level2.forEach(level2Id => {
-      const level3ForLevel2 = level3Items[level2Id] || [];
-      level3ForLevel2.forEach(item => items.add(item));
-    });
-    return Array.from(items);
-  };
-
-  const visibleLevel2Items = getVisibleLevel2Items();
-  const visibleLevel3Items = getVisibleLevel3Items();
+  const visibleLevel2Items = selectedPath.level1 ? level2Items[selectedPath.level1] || [] : [];
+  const visibleLevel3Items = selectedPath.level2 ? level3Items[selectedPath.level2] || [] : [];
 
   return (
     <div className="flex flex-row gap-6 mb-8 relative">
@@ -59,7 +40,7 @@ export const LevelSelection = ({
               key={item.id}
               className={`
                 py-4 px-3 rounded-lg text-center cursor-pointer transition-all relative
-                ${selectedPath.level1.includes(item.id)
+                ${selectedPath.level1 === item.id 
                   ? 'bg-blue-500 text-white ring-2 ring-yellow-400' 
                   : 'bg-blue-400 text-white hover:bg-blue-500'
                 }
@@ -68,7 +49,11 @@ export const LevelSelection = ({
               id={`level1-${item.id}`}
             >
               <h4 className="text-lg font-bold">{item.name}</h4>
-              {item.info && <p className="text-xs mt-1">{item.info}</p>}
+              <p className="text-xs mt-1">{item.info}</p>
+              
+              {selectedPath.level1 === item.id && selectedPath.level2 && (
+                <div className="absolute top-1/2 right-0 w-6 h-0.5 bg-blue-600 -mr-6"></div>
+              )}
             </div>
           ))}
         </div>
@@ -84,7 +69,7 @@ export const LevelSelection = ({
               key={item.id}
               className={`
                 py-4 px-3 rounded-lg text-center cursor-pointer transition-all relative
-                ${selectedPath.level2.includes(item.id)
+                ${selectedPath.level2 === item.id 
                   ? 'bg-blue-500 text-white ring-2 ring-yellow-400' 
                   : 'bg-blue-400 text-white hover:bg-blue-500'
                 }
@@ -93,7 +78,11 @@ export const LevelSelection = ({
               id={`level2-${item.id}`}
             >
               <h4 className="text-lg font-bold">{item.name}</h4>
-              {item.info && <p className="text-xs mt-1">{item.info}</p>}
+              <p className="text-xs mt-1">{item.info}</p>
+              
+              {selectedPath.level2 === item.id && selectedPath.level3 && (
+                <div className="absolute top-1/2 right-0 w-6 h-0.5 bg-blue-600 -mr-6"></div>
+              )}
             </div>
           ))}
           {visibleLevel2Items.length === 0 && (
@@ -114,7 +103,7 @@ export const LevelSelection = ({
               key={item.id}
               className={`
                 py-4 px-3 rounded-lg text-center cursor-pointer transition-all
-                ${selectedPath.level3.includes(item.id)
+                ${selectedPath.level3 === item.id 
                   ? 'bg-blue-500 text-white ring-2 ring-yellow-400' 
                   : 'bg-blue-400 text-white hover:bg-blue-500'
                 }
@@ -123,7 +112,7 @@ export const LevelSelection = ({
               id={`level3-${item.id}`}
             >
               <h4 className="text-lg font-bold">{item.name}</h4>
-              {item.info && <p className="text-xs mt-1">{item.info}</p>}
+              <p className="text-xs mt-1">{item.info}</p>
             </div>
           ))}
           {visibleLevel3Items.length === 0 && (
