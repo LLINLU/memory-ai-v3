@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Filter, ArrowDownUp } from "lucide-react";
+import { Menu as FilterIcon, ArrowDownUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -20,7 +20,7 @@ export const FilterSort = ({ onFilterChange, onSortChange }: FilterSortProps) =>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="sm" className="gap-2">
-            <Filter className="h-4 w-4" />
+            <FilterIcon className="h-4 w-4" />
             Filter
           </Button>
         </DropdownMenuTrigger>
