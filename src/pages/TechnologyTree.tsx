@@ -45,6 +45,7 @@ const TechnologyTree = () => {
     collapsedSidebar,
     inputValue,
     setSidebarTab,
+    setShowSidebar,
     handleNodeClick,
     toggleSidebar,
     handleInputChange
