@@ -1,3 +1,4 @@
+
 import { ArrowRight } from "lucide-react";
 
 interface LevelItem {
@@ -36,7 +37,7 @@ export const LevelSelection = ({
 
   return (
     <div className="flex flex-row gap-6 mb-8 relative">
-      <div className="w-1/3 bg-blue-50 p-4 rounded-lg">
+      <div className="w-1/3 bg-blue-50 p-4 rounded-lg relative">
         <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 1</h2>
         <h3 className="text-sm text-blue-600 mb-4">{levelNames.level1}</h3>
         
@@ -58,14 +59,20 @@ export const LevelSelection = ({
               <p className="text-xs mt-1">{item.info}</p>
               
               {selectedPath.level1 === item.id && selectedPath.level2 && (
-                <div className="absolute top-1/2 right-0 w-6 h-0.5 bg-blue-600 -mr-6"></div>
+                <div 
+                  className="absolute top-1/2 -right-6 h-[2px] bg-blue-600" 
+                  style={{ 
+                    width: '24px',
+                    transform: 'translateY(-50%)'
+                  }}
+                />
               )}
             </div>
           ))}
         </div>
       </div>
 
-      <div className="w-1/3 bg-blue-50 p-4 rounded-lg">
+      <div className="w-1/3 bg-blue-50 p-4 rounded-lg relative">
         <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 2</h2>
         <h3 className="text-sm text-blue-600 mb-4">{levelNames.level2}</h3>
         
@@ -87,7 +94,13 @@ export const LevelSelection = ({
               <p className="text-xs mt-1">{item.info}</p>
               
               {selectedPath.level2 === item.id && selectedPath.level3 && (
-                <div className="absolute top-1/2 right-0 w-6 h-0.5 bg-blue-600 -mr-6"></div>
+                <div 
+                  className="absolute top-1/2 -right-6 h-[2px] bg-blue-600" 
+                  style={{ 
+                    width: '24px',
+                    transform: 'translateY(-50%)'
+                  }}
+                />
               )}
             </div>
           ))}
