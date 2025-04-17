@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { PaperCard } from "./PaperCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -94,7 +95,21 @@ export const PaperList = () => {
 
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
+      <ul className="space-y-4">
+        {visiblePapers.map((paper, index) => (
+          <PaperCard
+            key={index}
+            title={paper.title}
+            authors={paper.authors}
+            journal={paper.journal}
+            tags={paper.tags}
+            abstract={paper.abstract}
+            date={paper.date}
+          />
+        ))}
+      </ul>
+
+      <div className="flex justify-between items-center mt-4">
         <Pagination>
           <PaginationContent>
             <PaginationItem>
@@ -141,20 +156,6 @@ export const PaperList = () => {
           </SelectContent>
         </Select>
       </div>
-
-      <ul className="space-y-4">
-        {visiblePapers.map((paper, index) => (
-          <PaperCard
-            key={index}
-            title={paper.title}
-            authors={paper.authors}
-            journal={paper.journal}
-            tags={paper.tags}
-            abstract={paper.abstract}
-            date={paper.date}
-          />
-        ))}
-      </ul>
     </div>
   );
 };
