@@ -88,20 +88,11 @@ export const PaperList = () => {
 
   return (
     <div className="p-4">
-      <div className="mb-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h4 className="font-semibold">Adaptive Optics: Medical Applications</h4>
-            <p className="text-sm text-gray-600">
-              {currentPaperSet === 'default' ? '32 papers • 9 implementations' : '48 papers • 15 implementations'}
-            </p>
-          </div>
-          <FilterSort 
-            onFilterChange={(filter) => console.log('Filter:', filter)}
-            onSortChange={(sort) => console.log('Sort:', sort)}
-          />
-        </div>
-      </div>
+      <FilterSort 
+        onFilterChange={(filter) => console.log('Filter:', filter)}
+        onSortChange={(sort) => console.log('Sort:', sort)}
+        className="mb-4 flex justify-end"
+      />
       
       <ul className="space-y-4">
         {papers.map((paper, index) => (
