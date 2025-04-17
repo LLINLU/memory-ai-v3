@@ -15,15 +15,20 @@ interface ZoomControlsProps {
 
 export const ZoomControls = ({ hasUserMadeSelection }: ZoomControlsProps) => {
   const handleUpdateResults = () => {
+    console.log("Update Results button clicked");
+    
+    // Dispatch the custom event to refresh results
+    const refreshEvent = new CustomEvent('refresh-results');
+    document.dispatchEvent(refreshEvent);
+    
     // Scroll the sidebar to top
-    const sidebarElement = document.querySelector('[data-sidebar="content"]');
-    if (sidebarElement) {
-      sidebarElement.scrollTo({ top: 0, behavior: 'smooth' });
-      
-      // Dispatch the custom event to refresh results
-      const refreshEvent = new CustomEvent('refresh-results');
-      document.dispatchEvent(refreshEvent);
-    }
+    setTimeout(() => {
+      const sidebarElement = document.querySelector('[data-sidebar="content"]');
+      if (sidebarElement) {
+        console.log("Scrolling sidebar to top");
+        sidebarElement.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   return (
@@ -62,3 +67,4 @@ export const ZoomControls = ({ hasUserMadeSelection }: ZoomControlsProps) => {
     </div>
   );
 };
+

@@ -10,6 +10,7 @@ export const SearchResults = () => {
   
   // Update to expose refresh function
   const refreshResults = () => {
+    console.log("SearchResults refreshing with new key");
     setRefreshKey(prev => prev + 1);
     // Show a toast notification when results are updated
     toast({
@@ -21,12 +22,14 @@ export const SearchResults = () => {
 
   // Effect to refresh the results when the path changes
   useEffect(() => {
+    console.log("Path changed, refreshing results");
     setRefreshKey(prev => prev + 1);
   }, [location.pathname]);
 
   // Listen for the custom refresh event
   useEffect(() => {
     const handleCustomRefresh = () => {
+      console.log("Custom refresh event received");
       refreshResults();
     };
     
@@ -38,9 +41,10 @@ export const SearchResults = () => {
   }, []);
 
   return (
-    <div className="h-full p-4 overflow-auto bg-[#fffdf5]">
+    <div className="h-full p-4 overflow-auto bg-[#fffdf5]" data-sidebar="content">
       <h3 className="text-xl font-bold mb-4">Research Results</h3>
       <PaperList key={refreshKey} onRefresh={refreshResults} />
     </div>
   );
 };
+

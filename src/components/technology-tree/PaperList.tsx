@@ -16,17 +16,24 @@ export const PaperList = ({ onRefresh }: PaperListProps) => {
   useEffect(() => {
     // Get a random index that's different from the current one
     const getRandomIndex = () => {
-      const newIndex = Math.floor(Math.random() * paperCollections.length);
-      return newIndex !== currentIndex ? newIndex : (newIndex + 1) % paperCollections.length;
+      // Force a different index than the current one
+      let newIndex;
+      do {
+        newIndex = Math.floor(Math.random() * paperCollections.length);
+      } while (newIndex === currentIndex && paperCollections.length > 1);
+      
+      return newIndex;
     };
     
+    console.log("PaperList useEffect triggered, setting new index");
     setCurrentIndex(getRandomIndex());
-  }, [forceUpdate]); // This will trigger when forceUpdate changes
+  }, [forceUpdate, currentIndex]); // This will trigger when forceUpdate changes
   
   const currentCollection = paperCollections[currentIndex];
 
   const handleViewAll = () => {
     // Get a different collection when clicking view all
+    console.log("View All clicked, triggering refresh");
     setForceUpdate(prev => prev + 1); // Force component to update
     onRefresh?.();
   };
@@ -62,3 +69,4 @@ export const PaperList = ({ onRefresh }: PaperListProps) => {
     </div>
   );
 };
+
