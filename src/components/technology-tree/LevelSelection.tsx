@@ -60,9 +60,10 @@ export const LevelSelection = ({
               
               {selectedPath.level1 === item.id && selectedPath.level2 && (
                 <div 
-                  className="absolute top-1/2 -right-6 h-[2px] bg-blue-600" 
+                  className="absolute top-1/2 right-0 bg-blue-600" 
                   style={{ 
                     width: '24px',
+                    height: '2px',
                     transform: 'translateY(-50%)'
                   }}
                 />
@@ -95,9 +96,10 @@ export const LevelSelection = ({
               
               {selectedPath.level2 === item.id && selectedPath.level3 && (
                 <div 
-                  className="absolute top-1/2 -right-6 h-[2px] bg-blue-600" 
+                  className="absolute top-1/2 right-0 bg-blue-600" 
                   style={{ 
                     width: '24px',
+                    height: '2px',
                     transform: 'translateY(-50%)'
                   }}
                 />
