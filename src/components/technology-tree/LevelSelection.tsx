@@ -4,7 +4,6 @@ interface LevelItem {
   id: string;
   name: string;
   info?: string;
-  relevance?: string;
 }
 
 interface LevelSelectionProps {
@@ -50,7 +49,7 @@ export const LevelSelection = ({
               id={`level1-${item.id}`}
             >
               <h4 className="text-lg font-bold">{item.name}</h4>
-              <p className="text-xs mt-1">{item.relevance}</p>
+              <p className="text-xs mt-1">{item.info}</p>
               
               {selectedPath.level1 === item.id && selectedPath.level2 && (
                 <div className="absolute top-1/2 right-0 w-6 h-0.5 bg-blue-600 -mr-6"></div>

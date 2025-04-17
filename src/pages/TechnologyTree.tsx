@@ -53,10 +53,10 @@ const TechnologyTree = () => {
   };
 
   const level1Items = [
-    { id: "ophthalmology", name: "Ophthalmology", relevance: "98%" },
-    { id: "adaptive-optics", name: "Adaptive Optics", relevance: "95%" },
-    { id: "medical-imaging", name: "Medical Imaging", relevance: "82%" },
-    { id: "optical-engineering", name: "Optical Engineering", relevance: "75%" }
+    { id: "ophthalmology", name: "Ophthalmology", info: "42 papers • 12 implementations" },
+    { id: "adaptive-optics", name: "Adaptive Optics", info: "38 papers • 15 implementations" },
+    { id: "medical-imaging", name: "Medical Imaging", info: "45 papers • 18 implementations" },
+    { id: "optical-engineering", name: "Optical Engineering", info: "32 papers • 14 implementations" }
   ];
 
   const level2Items = {
@@ -65,10 +65,10 @@ const TechnologyTree = () => {
       { id: "glaucoma", name: "Glaucoma", info: "27 papers • 5 implementations" }
     ],
     "adaptive-optics": [
-      { id: "wavefront-sensing", name: "Wavefront Sensing", info: "Related to selected" },
+      { id: "wavefront-sensing", name: "Wavefront Sensing", info: "28 papers • 7 implementations" },
       { id: "medical-applications", name: "Medical Applications", info: "22 papers • 6 implementations" },
-      { id: "deformable-mirrors", name: "Deformable Mirrors", info: "Related to selected" },
-      { id: "ocular-structure", name: "By Ocular Structure", info: "Alternative classification" }
+      { id: "deformable-mirrors", name: "Deformable Mirrors", info: "25 papers • 8 implementations" },
+      { id: "ocular-structure", name: "By Ocular Structure", info: "20 papers • 5 implementations" }
     ],
     "medical-imaging": [
       { id: "mri-techniques", name: "MRI Techniques", info: "18 papers • 3 implementations" },
