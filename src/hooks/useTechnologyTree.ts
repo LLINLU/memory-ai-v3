@@ -27,24 +27,28 @@ export const useTechnologyTree = () => {
   const [inputValue, setInputValue] = useState("");
 
   const handleNodeClick = (level: string, nodeId: string) => {
-    if (level === 'level1') {
-      setSelectedPath({
-        level1: nodeId,
-        level2: "",
-        level3: ""
-      });
-    } else if (level === 'level2') {
-      setSelectedPath({
-        ...selectedPath,
-        level2: nodeId,
-        level3: ""
-      });
-    } else if (level === 'level3') {
-      setSelectedPath({
-        ...selectedPath,
-        level3: nodeId
-      });
-    }
+    setSelectedPath(prev => {
+      // If clicking the same node that's already selected, unselect it and its children
+      if (prev[level] === nodeId) {
+        if (level === 'level1') {
+          return { ...prev, level1: "", level2: "", level3: "" };
+        } else if (level === 'level2') {
+          return { ...prev, level2: "", level3: "" };
+        } else if (level === 'level3') {
+          return { ...prev, level3: "" };
+        }
+      }
+      
+      // If selecting a new node
+      if (level === 'level1') {
+        return { ...prev, level1: nodeId, level2: "", level3: "" };
+      } else if (level === 'level2') {
+        return { ...prev, level2: nodeId, level3: "" };
+      } else if (level === 'level3') {
+        return { ...prev, level3: nodeId };
+      }
+      return prev;
+    });
   };
 
   const toggleSidebar = () => {
@@ -75,3 +79,4 @@ export const useTechnologyTree = () => {
     handleInputChange
   };
 };
+
