@@ -8,9 +8,9 @@ import { ActionButtons } from "./ActionButtons";
 
 interface MainContentProps {
   selectedPath: {
-    level1: string;
-    level2: string;
-    level3: string;
+    level1: string[];
+    level2: string[];
+    level3: string[];
   };
   level1Items: any[];
   level2Items: Record<string, any[]>;
