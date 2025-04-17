@@ -11,6 +11,7 @@ export const ActionButtons = () => {
       <Button
         variant="outline"
         className="border-2 border-gray-300 text-blue-500 py-6 px-8 text-lg font-medium"
+        onClick={() => navigate("/search-results")}
       >
         Show All Results
       </Button>
