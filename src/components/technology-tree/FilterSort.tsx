@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Menu as FilterIcon, ArrowDownUp, Check } from "lucide-react";
+import { Menu as FilterIcon, ArrowDownUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -25,6 +25,7 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
     citations: "",
     region: ""
   });
+  const [filterOpen, setFilterOpen] = useState(false);
 
   const handleFilterSelect = (category: keyof typeof selectedFilters, value: string) => {
     setSelectedFilters(prev => {
@@ -38,14 +39,25 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
 
   return (
     <div className={`flex items-center gap-2 ${className || ''}`}>
-      <DropdownMenu>
+      <DropdownMenu open={filterOpen} onOpenChange={setFilterOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className="gap-2">
             <FilterIcon className="h-4 w-4" />
             Filter
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="start">
+        <DropdownMenuContent 
+          className="w-56" 
+          align="start"
+          onCloseAutoFocus={(e) => {
+            // Prevent focus events from closing the dropdown
+            e.preventDefault();
+          }}
+          onInteractOutside={() => {
+            // Only close when clicking outside
+            setFilterOpen(false);
+          }}
+        >
           <DropdownMenuLabel>Time Period</DropdownMenuLabel>
           <DropdownMenuRadioGroup value={selectedFilters.timePeriod}>
             <DropdownMenuRadioItem 
