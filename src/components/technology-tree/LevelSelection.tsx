@@ -64,7 +64,7 @@ export const LevelSelection = ({
                   style={{ 
                     width: '24px',
                     height: '2px',
-                    transform: 'translateY(-50%)',
+                    transform: 'translateY(-50%) translateX(50%)',
                     transformOrigin: 'right'
                   }}
                 />
