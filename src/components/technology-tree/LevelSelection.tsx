@@ -1,4 +1,3 @@
-
 import { ArrowRight } from "lucide-react";
 
 interface LevelItem {

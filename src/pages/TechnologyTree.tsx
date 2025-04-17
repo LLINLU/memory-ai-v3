@@ -49,10 +49,10 @@ const TechnologyTree = () => {
   };
 
   const level1Items = [
-    { id: "ophthalmology", name: "Ophthalmology", relevance: "98% relevance" },
-    { id: "adaptive-optics", name: "Adaptive Optics", relevance: "95% relevance" },
-    { id: "medical-imaging", name: "Medical Imaging", relevance: "82% relevance" },
-    { id: "optical-engineering", name: "Optical Engineering", relevance: "75% relevance" }
+    { id: "ophthalmology", name: "Ophthalmology", relevance: "98%" },
+    { id: "adaptive-optics", name: "Adaptive Optics", relevance: "95%" },
+    { id: "medical-imaging", name: "Medical Imaging", relevance: "82%" },
+    { id: "optical-engineering", name: "Optical Engineering", relevance: "75%" }
   ];
 
   const level2Items = {
