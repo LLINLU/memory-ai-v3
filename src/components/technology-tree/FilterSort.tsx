@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Menu as FilterIcon, ArrowDownUp, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -49,81 +48,108 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
           onCloseAutoFocus={(e) => {
             e.preventDefault();
           }}
-          onInteractOutside={() => {
-            setFilterOpen(false);
+          onClick={(e) => {
+            e.stopPropagation();
           }}
         >
           <DropdownMenuLabel>Time Period</DropdownMenuLabel>
           <DropdownMenuItem 
-            onSelect={() => handleFilterSelect("timePeriod", "past-year")}
-            className={`flex justify-between items-center ${selectedFilters.timePeriod === "past-year" ? "bg-accent" : ""}`}
+            onSelect={(e) => {
+              e.preventDefault();
+              handleFilterSelect("timePeriod", "past-year");
+            }}
+            className="flex items-center"
           >
+            {selectedFilters.timePeriod === "past-year" && <Check className="h-4 w-4 mr-2" />}
             Past year
-            {selectedFilters.timePeriod === "past-year" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem 
-            onSelect={() => handleFilterSelect("timePeriod", "past-5-years")}
-            className={`flex justify-between items-center ${selectedFilters.timePeriod === "past-5-years" ? "bg-accent" : ""}`}
+            onSelect={(e) => {
+              e.preventDefault();
+              handleFilterSelect("timePeriod", "past-5-years");
+            }}
+            className="flex items-center"
           >
+            {selectedFilters.timePeriod === "past-5-years" && <Check className="h-4 w-4 mr-2" />}
             Past 5 years
-            {selectedFilters.timePeriod === "past-5-years" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem 
-            onSelect={() => handleFilterSelect("timePeriod", "past-10-years")}
-            className={`flex justify-between items-center ${selectedFilters.timePeriod === "past-10-years" ? "bg-accent" : ""}`}
+            onSelect={(e) => {
+              e.preventDefault();
+              handleFilterSelect("timePeriod", "past-10-years");
+            }}
+            className="flex items-center"
           >
+            {selectedFilters.timePeriod === "past-10-years" && <Check className="h-4 w-4 mr-2" />}
             Past 10 years
-            {selectedFilters.timePeriod === "past-10-years" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           
           <DropdownMenuSeparator />
           
           <DropdownMenuLabel>Citations</DropdownMenuLabel>
           <DropdownMenuItem 
-            onSelect={() => handleFilterSelect("citations", "citations-10")}
-            className={`flex justify-between items-center ${selectedFilters.citations === "citations-10" ? "bg-accent" : ""}`}
+            onSelect={(e) => {
+              e.preventDefault();
+              handleFilterSelect("citations", "citations-10");
+            }}
+            className="flex items-center"
           >
+            {selectedFilters.citations === "citations-10" && <Check className="h-4 w-4 mr-2" />}
             10+ citations
-            {selectedFilters.citations === "citations-10" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem 
-            onSelect={() => handleFilterSelect("citations", "citations-50")}
-            className={`flex justify-between items-center ${selectedFilters.citations === "citations-50" ? "bg-accent" : ""}`}
+            onSelect={(e) => {
+              e.preventDefault();
+              handleFilterSelect("citations", "citations-50");
+            }}
+            className="flex items-center"
           >
+            {selectedFilters.citations === "citations-50" && <Check className="h-4 w-4 mr-2" />}
             50+ citations
-            {selectedFilters.citations === "citations-50" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem 
-            onSelect={() => handleFilterSelect("citations", "citations-100")}
-            className={`flex justify-between items-center ${selectedFilters.citations === "citations-100" ? "bg-accent" : ""}`}
+            onSelect={(e) => {
+              e.preventDefault();
+              handleFilterSelect("citations", "citations-100");
+            }}
+            className="flex items-center"
           >
+            {selectedFilters.citations === "citations-100" && <Check className="h-4 w-4 mr-2" />}
             100+ citations
-            {selectedFilters.citations === "citations-100" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           
           <DropdownMenuSeparator />
           
           <DropdownMenuLabel>Region</DropdownMenuLabel>
           <DropdownMenuItem 
-            onSelect={() => handleFilterSelect("region", "domestic")}
-            className={`flex justify-between items-center ${selectedFilters.region === "domestic" ? "bg-accent" : ""}`}
+            onSelect={(e) => {
+              e.preventDefault();
+              handleFilterSelect("region", "domestic");
+            }}
+            className="flex items-center"
           >
+            {selectedFilters.region === "domestic" && <Check className="h-4 w-4 mr-2" />}
             Domestic
-            {selectedFilters.region === "domestic" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem 
-            onSelect={() => handleFilterSelect("region", "international")}
-            className={`flex justify-between items-center ${selectedFilters.region === "international" ? "bg-accent" : ""}`}
+            onSelect={(e) => {
+              e.preventDefault();
+              handleFilterSelect("region", "international");
+            }}
+            className="flex items-center"
           >
+            {selectedFilters.region === "international" && <Check className="h-4 w-4 mr-2" />}
             International
-            {selectedFilters.region === "international" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem 
-            onSelect={() => handleFilterSelect("region", "both")}
-            className={`flex justify-between items-center ${selectedFilters.region === "both" ? "bg-accent" : ""}`}
+            onSelect={(e) => {
+              e.preventDefault();
+              handleFilterSelect("region", "both");
+            }}
+            className="flex items-center"
           >
+            {selectedFilters.region === "both" && <Check className="h-4 w-4 mr-2" />}
             Both
-            {selectedFilters.region === "both" && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
