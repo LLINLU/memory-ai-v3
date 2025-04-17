@@ -1,18 +1,15 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
-import { Search, ArrowLeft, ArrowRight, X } from "lucide-react";
+import { Search, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
-import { LevelSelection } from "@/components/technology-tree/LevelSelection";
 import { SidebarContent } from "@/components/technology-tree/SidebarContent";
 import { ChatInput } from "@/components/technology-tree/ChatInput";
-import { TechnologyHeader } from "@/components/technology-tree/TechnologyHeader";
-import { PathDisplay } from "@/components/technology-tree/PathDisplay";
-import { ZoomControls } from "@/components/technology-tree/ZoomControls";
-import { ActionButtons } from "@/components/technology-tree/ActionButtons";
+import { MainContent } from "@/components/technology-tree/MainContent";
+import { SidebarControls } from "@/components/technology-tree/SidebarControls";
+import { CollapsedSidebar } from "@/components/technology-tree/CollapsedSidebar";
 
 const TechnologyTree = () => {
   const navigate = useNavigate();
@@ -120,9 +117,6 @@ const TechnologyTree = () => {
     }
   ];
 
-  const visibleLevel2Items = selectedPath.level1 ? level2Items[selectedPath.level1 as keyof typeof level2Items] || [] : [];
-  const visibleLevel3Items = selectedPath.level2 ? level3Items[selectedPath.level2 as keyof typeof level3Items] || [] : [];
-
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
   };
@@ -143,24 +137,13 @@ const TechnologyTree = () => {
       <div className="flex flex-1 overflow-hidden">
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={60} minSize={30}>
-            <div className="container mx-auto px-4 py-6">
-              <TechnologyHeader />
-              <PathDisplay 
-                selectedPath={selectedPath}
-                level1Items={level1Items}
-                level2Items={level2Items}
-                level3Items={level3Items}
-              />
-              <ZoomControls />
-              <LevelSelection
-                selectedPath={selectedPath}
-                level1Items={level1Items}
-                level2Items={level2Items}
-                level3Items={level3Items}
-                onNodeClick={handleNodeClick}
-              />
-              <ActionButtons />
-            </div>
+            <MainContent
+              selectedPath={selectedPath}
+              level1Items={level1Items}
+              level2Items={level2Items}
+              level3Items={level3Items}
+              onNodeClick={handleNodeClick}
+            />
           </ResizablePanel>
 
           {showSidebar && !collapsedSidebar && (
@@ -170,34 +153,11 @@ const TechnologyTree = () => {
           {showSidebar && !collapsedSidebar && (
             <ResizablePanel defaultSize={40} minSize={20} maxSize={50}>
               <div className="h-full bg-white border-l border-gray-200 shadow-lg flex flex-col">
-                <div className="flex items-center justify-between border-b border-gray-200 h-12">
-                  <div className="flex flex-1">
-                    <button
-                      onClick={() => setSidebarTab("result")}
-                      className={`flex-1 h-full font-medium text-center px-4 ${
-                        sidebarTab === 'result' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'
-                      }`}
-                    >
-                      Result
-                    </button>
-                    <button
-                      onClick={() => setSidebarTab("chat")}
-                      className={`flex-1 h-full font-medium text-center px-4 ${
-                        sidebarTab === 'chat' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'
-                      }`}
-                    >
-                      Chat
-                    </button>
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    onClick={toggleSidebar}
-                    className="mr-2"
-                  >
-                    <X className="h-5 w-5" />
-                  </Button>
-                </div>
+                <SidebarControls
+                  sidebarTab={sidebarTab}
+                  setSidebarTab={setSidebarTab}
+                  toggleSidebar={toggleSidebar}
+                />
                 
                 <div className="flex-1 overflow-hidden">
                   <SidebarContent
@@ -219,17 +179,7 @@ const TechnologyTree = () => {
           )}
         </ResizablePanelGroup>
 
-        {collapsedSidebar && (
-          <div className="fixed right-0 top-[64px] bottom-0 w-[50px] bg-[#F3F3E8] border-l border-gray-200 shadow-sm flex flex-col transition-all duration-300 z-10">
-            <Button 
-              variant="outline" 
-              className="absolute top-2 left-2 w-[40px] h-[40px] p-0 flex items-center justify-center bg-[#1A1F2C] text-white" 
-              onClick={toggleSidebar}
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          </div>
-        )}
+        {collapsedSidebar && <CollapsedSidebar toggleSidebar={toggleSidebar} />}
 
         {!showSidebar && !collapsedSidebar && (
           <Button 
