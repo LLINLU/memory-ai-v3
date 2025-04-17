@@ -30,8 +30,8 @@ export const ImplementationList = () => {
         title="Research-Grade AO Platform"
         description="Custom-built adaptive optics system integrating multiple imaging modalities. Enables simultaneous fluorescence imaging and structural assessment."
         releases={5}
-        badgeColor="bg-[#F2FCE2]"
-        badgeTextColor="text-[#16A34A]"
+        badgeColor="bg-[#E8F1FF]"
+        badgeTextColor="text-[#0EA5E9]"
         pressReleases={[
           {
             title: "New Research Platform Development",
@@ -58,3 +58,4 @@ export const ImplementationList = () => {
     </div>
   );
 };
+

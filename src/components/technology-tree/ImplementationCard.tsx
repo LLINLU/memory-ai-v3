@@ -45,7 +45,7 @@ export const ImplementationCard = ({
       <div className="flex items-center justify-between mb-2">
         <h4 className="font-semibold">{title}</h4>
         <Badge 
-          className={cn(`ml-2 ${badgeColor} ${badgeTextColor} border-0`)}
+          className={cn(`ml-2 ${badgeColor} ${badgeTextColor} border-0 font-normal`)}
         >
           {releases} releases
         </Badge>
@@ -100,3 +100,4 @@ export const ImplementationCard = ({
     </div>
   );
 };
+
