@@ -62,6 +62,9 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
           <DropdownMenuCheckboxItem onSelect={() => onFilterChange?.("international")}>
             International
           </DropdownMenuCheckboxItem>
+          <DropdownMenuCheckboxItem onSelect={() => onFilterChange?.("both")}>
+            Both
+          </DropdownMenuCheckboxItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
