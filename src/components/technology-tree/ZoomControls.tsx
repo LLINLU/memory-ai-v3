@@ -2,7 +2,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { MinusIcon, PlusIcon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import {
   Tooltip,
   TooltipContent,
@@ -15,8 +14,6 @@ interface ZoomControlsProps {
 }
 
 export const ZoomControls = ({ hasUserMadeSelection }: ZoomControlsProps) => {
-  const navigate = useNavigate();
-
   return (
     <div className="container mx-auto mb-6">
       <div className="flex items-center justify-between gap-4">
@@ -35,7 +32,13 @@ export const ZoomControls = ({ hasUserMadeSelection }: ZoomControlsProps) => {
               <div>
                 <Button
                   variant="outline"
-                  onClick={() => navigate("/search-results")}
+                  onClick={() => {
+                    // Instead of navigating, we'll just focus on the results sidebar
+                    const sidebarElement = document.querySelector('[data-sidebar="content"]');
+                    if (sidebarElement) {
+                      sidebarElement.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                  }}
                   disabled={!hasUserMadeSelection}
                 >
                   Update Results
