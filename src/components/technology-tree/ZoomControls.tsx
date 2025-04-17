@@ -20,7 +20,7 @@ export const ZoomControls = () => {
           </Button>
         </div>
         <Button
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm"
+          variant="outline"
           onClick={() => navigate("/search-results")}
         >
           View Research
