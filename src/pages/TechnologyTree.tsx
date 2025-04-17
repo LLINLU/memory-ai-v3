@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Search, ArrowRight } from "lucide-react";
@@ -37,6 +36,27 @@ const chatMessages = [
   }
 ];
 
+const getLevelNames = (selectedPath: { level1: string }) => {
+  if (selectedPath.level1.includes('optics')) {
+    return {
+      level1: "Optical Technologies",
+      level2: "Applications",
+      level3: "Implementation Methods"
+    };
+  } else if (selectedPath.level1.includes('medical')) {
+    return {
+      level1: "Medical Fields",
+      level2: "Specializations",
+      level3: "Procedures"
+    };
+  }
+  return {
+    level1: "Technology Areas",
+    level2: "Focus Areas",
+    level3: "Specific Methods"
+  };
+};
+
 const TechnologyTree = () => {
   const {
     selectedPath,
@@ -55,6 +75,8 @@ const TechnologyTree = () => {
     updateTabsHorizontalState(sidebarTab);
   }, [sidebarTab]);
 
+  const levelNames = getLevelNames(selectedPath);
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navigation />
@@ -68,6 +90,7 @@ const TechnologyTree = () => {
               level2Items={level2Items}
               level3Items={level3Items}
               onNodeClick={handleNodeClick}
+              levelNames={levelNames}
             />
           </ResizablePanel>
 
