@@ -67,14 +67,27 @@ TabsHorizontal.displayName = "TabsHorizontal"
 const TabsHorizontalContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & { value: string }
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex-1", className)}
-    data-state={props["data-state"]}
-    {...props}
-  />
-))
+>(({ className, value, ...props }, ref) => {
+  // Get the TabsContext
+  const context = React.useContext(TabsPrimitive.TabsContext)
+  
+  // Check if this tab is active
+  const isSelected = context?.value === value
+  
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "flex-1 hidden data-[state=active]:block", 
+        className
+      )}
+      data-state={isSelected ? "active" : "inactive"}
+      role="tabpanel"
+      data-value={value}
+      {...props}
+    />
+  )
+})
 TabsHorizontalContent.displayName = "TabsHorizontalContent"
 
 export { Tabs, TabsList, TabsTrigger, TabsContent, TabsHorizontal, TabsHorizontalContent }
