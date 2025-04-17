@@ -14,11 +14,6 @@ import { level1Items, level2Items, level3Items } from "@/data/technologyTreeData
 
 const chatMessages = [
   {
-    type: "system",
-    content: "Creating Webset for your search: Research papers about cell regeneration technology, which includes one author who is an MD...",
-    showMore: true
-  },
-  {
     type: "progress",
     title: "Searching across billions of Exa embeddings",
     analyzed: 73,
