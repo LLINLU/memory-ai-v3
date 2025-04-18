@@ -26,7 +26,7 @@ export const SidebarContent = ({
 
         <TabsHorizontalContent value="chat" className="h-full flex flex-col bg-[#f6f6f6]">
           <ChatConversation chatMessages={chatMessages} />
-          <ChatInput value={inputValue} onChange={onInputChange} />
+          {sidebarTab === "chat" && <ChatInput value={inputValue} onChange={onInputChange} />}
         </TabsHorizontalContent>
       </TabsHorizontal>
     </div>
