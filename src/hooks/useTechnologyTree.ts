@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export interface TechnologyTreeState {
   selectedPath: {
@@ -106,8 +106,7 @@ export const useInputQuery = (sidebarTab: string) => {
     setInputValue(e.target.value);
   };
 
-  // When sidebar tab changes, reset chat messages
-  React.useEffect(() => {
+  useEffect(() => {
     setChatMessages(
       sidebarTab === 'chat' 
         ? [
