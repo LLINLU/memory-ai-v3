@@ -96,10 +96,6 @@ const TechnologyTree = () => {
           </ResizablePanel>
 
           {showSidebar && !collapsedSidebar && (
-            <ResizableHandle withHandle />
-          )}
-
-          {showSidebar && !collapsedSidebar && (
             <ResizablePanel defaultSize={40} minSize={20} maxSize={50}>
               <div className="h-full bg-white border-l border-gray-200 shadow-lg flex flex-col">
                 <SidebarControls
@@ -116,13 +112,6 @@ const TechnologyTree = () => {
                     onInputChange={handleInputChange}
                   />
                 </div>
-                
-                {sidebarTab === 'chat' && (
-                  <ChatInput
-                    value={inputValue}
-                    onChange={handleInputChange}
-                  />
-                )}
               </div>
             </ResizablePanel>
           )}
