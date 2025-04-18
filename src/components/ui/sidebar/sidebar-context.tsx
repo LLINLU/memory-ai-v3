@@ -1,5 +1,6 @@
 
 import * as React from "react"
+import { cn } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-mobile"
 
 export const SIDEBAR_COOKIE_NAME = "sidebar:state"
@@ -118,4 +119,3 @@ export const SidebarProvider = React.forwardRef<
   )
 })
 SidebarProvider.displayName = "SidebarProvider"
-
