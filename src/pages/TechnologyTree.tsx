@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Search } from "lucide-react";
@@ -7,7 +6,6 @@ import { updateTabsHorizontalState } from "@/components/ui/tabs";
 import { ResizablePanelGroup, ResizablePanel } from "@/components/ui/resizable";
 import { SidebarContent } from "@/components/technology-tree/SidebarContent";
 import { MainContent } from "@/components/technology-tree/MainContent";
-import { TechnologyHeader } from "@/components/technology-tree/TechnologyHeader";
 import { SidebarControls } from "@/components/technology-tree/SidebarControls";
 import { CollapsedSidebar } from "@/components/technology-tree/CollapsedSidebar";
 import { useTechnologyTree } from "@/hooks/useTechnologyTree";
@@ -41,7 +39,6 @@ const TechnologyTree = () => {
     showSidebar,
     collapsedSidebar,
     inputValue,
-    query,
     setSidebarTab,
     setShowSidebar,
     handleNodeClick,
@@ -66,7 +63,6 @@ const TechnologyTree = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navigation />
-      <TechnologyHeader query={query} />
       
       <div className="flex flex-1 overflow-hidden">
         <ResizablePanelGroup direction="horizontal">
