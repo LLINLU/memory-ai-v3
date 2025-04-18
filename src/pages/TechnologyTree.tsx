@@ -1,9 +1,10 @@
+
 import { useEffect, useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
-import { ResizablePanelGroup, ResizablePanel } from "@/components/ui/resizable";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { SidebarContent } from "@/components/technology-tree/SidebarContent";
 import { MainContent } from "@/components/technology-tree/MainContent";
 import { SidebarControls } from "@/components/technology-tree/SidebarControls";
@@ -81,6 +82,8 @@ const TechnologyTree = () => {
               hasUserMadeSelection={hasUserMadeSelection}
             />
           </ResizablePanel>
+
+          <ResizableHandle withHandle />
 
           {showSidebar && !collapsedSidebar && (
             <ResizablePanel 
