@@ -19,7 +19,9 @@ export const SidebarControls = ({
         <button
           onClick={() => setSidebarTab("result")}
           className={`flex-1 h-full font-medium text-center px-4 ${
-            sidebarTab === 'result' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'
+            sidebarTab === 'result' 
+              ? 'text-blue-600 border-b-2 border-blue-600 -mb-[1px]' 
+              : 'text-gray-500'
           }`}
         >
           Result
@@ -27,7 +29,9 @@ export const SidebarControls = ({
         <button
           onClick={() => setSidebarTab("chat")}
           className={`flex-1 h-full font-medium text-center px-4 ${
-            sidebarTab === 'chat' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'
+            sidebarTab === 'chat' 
+              ? 'text-blue-600 border-b-2 border-blue-600 -mb-[1px]' 
+              : 'text-gray-500'
           }`}
         >
           Chat
