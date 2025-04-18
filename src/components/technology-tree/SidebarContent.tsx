@@ -18,17 +18,17 @@ export const SidebarContent = ({
   onInputChange
 }: SidebarContentProps) => {
   return (
-    <div>
-      <TabsHorizontal value={sidebarTab} className="h-full">
+    <div className="h-full flex flex-col">
+      <TabsHorizontal value={sidebarTab} className="h-full flex-1">
         <TabsHorizontalContent value="result" className="h-full">
           <SearchResults />
         </TabsHorizontalContent>
 
         <TabsHorizontalContent value="chat" className="h-full flex flex-col bg-[#f6f6f6]">
-          <ChatContent chatMessages={chatMessages} />
-          {sidebarTab === 'chat' && (
-            <ChatInput value={inputValue} onChange={onInputChange} />
-          )}
+          <div className="flex-1 overflow-y-auto">
+            <ChatContent chatMessages={chatMessages} />
+          </div>
+          <ChatInput value={inputValue} onChange={onInputChange} />
         </TabsHorizontalContent>
       </TabsHorizontal>
     </div>

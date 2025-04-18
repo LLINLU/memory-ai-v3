@@ -85,44 +85,27 @@ export const useSidebar = (initialTab = "result") => {
 export const useInputQuery = (sidebarTab: string) => {
   const [inputValue, setInputValue] = useState("");
   const [query, setQuery] = useState("");
-  const [chatMessages, setChatMessages] = useState<any[]>(
-    sidebarTab === 'chat' 
-      ? [
-          {
-            type: "agent",
-            content: "I've found research on\nAdaptive Optics → Medical Applications → Retinal Imaging\nHow can I refine this for you?",
-            isUser: false
-          },
-          {
-            type: "user",
-            content: "Do you have anything about fluorescence AO imaging?",
-            isUser: true
-          }
-        ]
-      : []
-  );
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
   };
 
   useEffect(() => {
-    setChatMessages(
-      sidebarTab === 'chat' 
-        ? [
-            {
-              type: "agent",
-              content: "I've found research on\nAdaptive Optics → Medical Applications → Retinal Imaging\nHow can I refine this for you?",
-              isUser: false
-            },
-            {
-              type: "user",
-              content: "Do you have anything about fluorescence AO imaging?",
-              isUser: true
-            }
-          ]
-        : []
-    );
+    if (sidebarTab === 'chat') {
+      setChatMessages([
+        {
+          type: "agent",
+          content: "I've found research on\nAdaptive Optics → Medical Applications → Retinal Imaging\nHow can I refine this for you?",
+          isUser: false
+        },
+        {
+          type: "user",
+          content: "Do you have anything about fluorescence AO imaging?",
+          isUser: true
+        }
+      ]);
+    }
   }, [sidebarTab]);
 
   return {

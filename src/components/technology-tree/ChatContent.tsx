@@ -16,23 +16,10 @@ interface ChatContentProps {
 }
 
 export const ChatContent = ({ chatMessages }: ChatContentProps) => {
-  const pathConversation = [
-    {
-      type: "agent",
-      content: "I've found research on\nAdaptive Optics → Medical Applications → Retinal Imaging\nHow can I refine this for you?",
-      isUser: false
-    },
-    {
-      type: "user",
-      content: "Do you have anything about fluorescence AO imaging?",
-      isUser: true
-    }
-  ];
-
   return (
-    <div className="flex-1 overflow-y-auto space-y-4 px-4 py-2">
+    <div className="space-y-4 px-4 py-2">
       {/* Path conversation bubbles */}
-      {pathConversation.map((message, index) => (
+      {chatMessages.map((message, index) => (
         <div 
           key={index} 
           className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
@@ -52,10 +39,10 @@ export const ChatContent = ({ chatMessages }: ChatContentProps) => {
       ))}
 
       {/* System messages */}
-      {chatMessages.map((message, index) => {
+      {chatMessages.filter(m => m.type === "system" || m.type === "criteria").map((message, index) => {
         if (message.type === "system") {
           return (
-            <div key={index} className="inline-block max-w-[85%] bg-white rounded-2xl p-4 shadow-sm">
+            <div key={`sys-${index}`} className="inline-block max-w-[85%] bg-white rounded-2xl p-4 shadow-sm">
               <p className="text-gray-800 text-base leading-relaxed">
                 {message.content}
               </p>
@@ -65,7 +52,7 @@ export const ChatContent = ({ chatMessages }: ChatContentProps) => {
 
         if (message.type === "criteria") {
           return (
-            <div key={index} className="inline-block max-w-[85%] bg-white rounded-2xl p-4 shadow-sm">
+            <div key={`crit-${index}`} className="inline-block max-w-[85%] bg-white rounded-2xl p-4 shadow-sm">
               <h3 className="text-gray-800 text-lg font-semibold mb-2">{message.title}</h3>
               <ul className="space-y-2 mb-2">
                 {message.items?.map((item, itemIndex) => (
