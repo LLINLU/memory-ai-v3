@@ -2,7 +2,6 @@
 import { Navigation } from "@/components/Navigation";
 import { SearchSection } from "@/components/SearchSection";
 import { RecentSearches } from "@/components/RecentSearches";
-import { SavedSearches } from "@/components/SavedSearches";
 
 const Index = () => {
   return (
@@ -12,7 +11,6 @@ const Index = () => {
         <div className="max-w-4xl mx-auto">
           <SearchSection />
           <RecentSearches />
-          <SavedSearches />
         </div>
       </div>
     </div>
@@ -20,3 +18,4 @@ const Index = () => {
 };
 
 export default Index;
+
