@@ -1,3 +1,4 @@
+
 import { History, Home, PanelLeft, Bell, Settings, Clock, Search } from "lucide-react";
 import {
   Sidebar,
@@ -19,15 +20,17 @@ export const HomeSidebar = () => {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <div className="p-4 flex items-center gap-3">
+            <div className="p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-blue-600 font-bold text-2xl">M</span>
+                <span className="font-semibold text-xl">Memory AI</span>
+              </div>
               <PanelLeft className="w-5 h-5 cursor-pointer" onClick={toggleSidebar} />
-              <span className="text-blue-600 font-bold text-2xl">M</span>
-              <span className="font-semibold text-xl">Memory AI</span>
             </div>
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
+        <SidebarGroup className="mt-4">
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -46,8 +49,8 @@ export const HomeSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel>Recent Searches</SidebarGroupLabel>
+        <SidebarGroup className="mt-8">
+          <SidebarGroupLabel className="text-gray-600">Recent Searches</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {[
@@ -68,8 +71,8 @@ export const HomeSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel>Previous searches</SidebarGroupLabel>
+        <SidebarGroup className="mt-8">
+          <SidebarGroupLabel className="text-gray-600">Previous searches</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {[
