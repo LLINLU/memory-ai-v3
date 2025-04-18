@@ -1,3 +1,4 @@
+
 import { TabsHorizontal, TabsHorizontalContent } from "@/components/ui/tabs";
 import { SearchResults } from "./SearchResults";
 import { ChatInput } from "./ChatInput";

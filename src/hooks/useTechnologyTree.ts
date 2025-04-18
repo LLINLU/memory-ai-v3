@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 
 export interface TechnologyTreeState {
@@ -92,6 +93,7 @@ export const useInputQuery = (sidebarTab: string) => {
   };
 
   useEffect(() => {
+    // Only initialize chat messages if we're in the chat tab
     if (sidebarTab === 'chat') {
       setChatMessages([
         {
