@@ -1,3 +1,4 @@
+
 import { History, Home, Bell, Settings, PanelLeft } from "lucide-react";
 import {
   Sidebar,
@@ -13,10 +14,10 @@ import {
 
 export const HomeSidebar = () => {
   return (
-    <Sidebar className="border-r border-gray-200">
+    <Sidebar className="border-r border-gray-200" collapsible="icon">
       <SidebarContent>
         <div className="flex items-center justify-between mb-4 px-2">
-          <h1 className="text-xl font-bold">Memory AI</h1>
+          <h1 className="text-xl font-bold transition-opacity group-data-[state=collapsed]:opacity-0">Memory AI</h1>
           <SidebarTrigger />
         </div>
 
@@ -104,3 +105,4 @@ export const HomeSidebar = () => {
     </Sidebar>
   );
 };
+
