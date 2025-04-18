@@ -22,7 +22,7 @@ export const SearchSection = () => {
   
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    navigate('/search-results');
+    navigate('/technology-tree');
   };
 
   return (
