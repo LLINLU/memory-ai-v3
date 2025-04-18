@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 import {
@@ -31,7 +30,12 @@ export const PaperCard = ({
   return (
     <li className="w-full bg-white p-6 rounded-lg border border-gray-200">
       <div className="space-y-3">
-        <h6 className="text-lg text-gray-700">{title.english}</h6>
+        <div>
+          {title.japanese && (
+            <h5 className="text-xl font-bold mb-2">{title.japanese}</h5>
+          )}
+          <h6 className="text-lg text-gray-700">{title.english}</h6>
+        </div>
         
         <div className="flex items-center gap-2 text-sm text-gray-600 truncate">
           <TooltipProvider>

@@ -1,6 +1,5 @@
 
-import React from 'react';
-import { ChevronRight, Search } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 interface ChatMessage {
@@ -29,9 +28,7 @@ export const ChatContent = ({ chatMessages }: ChatContentProps) => {
                 {message.content}
               </p>
               {message.showMore && (
-                <button className="text-blue-500 text-sm font-medium mt-2 flex items-center">
-                  Show more <ChevronRight className="h-4 w-4 ml-1" />
-                </button>
+                <button className="text-blue-500 text-sm mt-2">Show more</button>
               )}
             </div>
           );
@@ -59,23 +56,18 @@ export const ChatContent = ({ chatMessages }: ChatContentProps) => {
         if (message.type === "progress") {
           return (
             <div key={index} className="bg-[#f3f2e8] rounded-lg p-4">
-              <h3 className="text-gray-800 text-lg font-medium mb-2">{message.title}</h3>
-              <div className="space-y-4">
-                <div className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span>Analyzing embeddings</span>
-                    <span>{message.analyzed} found</span>
-                  </div>
-                  <Progress value={message.analyzed ? 75 : 0} className="h-2" />
+              <h3 className="text-gray-800 text-xl font-bold mb-4">{message.title}</h3>
+              <div className="space-y-2 mb-4">
+                <div className="flex items-start gap-2 text-gray-600">
+                  <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
+                  <span>{message.analyzed} results analyzed</span>
                 </div>
-                <div className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span>Matching results</span>
-                    <span>{message.matched} matches</span>
-                  </div>
-                  <Progress value={message.matched ? 65 : 0} className="h-2" />
+                <div className="flex items-start gap-2 text-gray-600">
+                  <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
+                  <span>{message.matched} results matched</span>
                 </div>
               </div>
+              <Progress value={65} className="h-2 w-full bg-gray-300" />
             </div>
           );
         }

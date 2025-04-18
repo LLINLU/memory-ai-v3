@@ -1,7 +1,6 @@
-
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send } from "lucide-react";
+import { Edit, Send, ExternalLink } from "lucide-react";
 
 interface ChatInputProps {
   value: string;
@@ -10,7 +9,10 @@ interface ChatInputProps {
 
 export const ChatInput = ({ value, onChange }: ChatInputProps) => {
   return (
-    <div className="w-full bg-white border-t border-gray-200 p-4">
+    <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4">
+      <div className="text-gray-500 mb-2 flex items-center gap-1 justify-between">
+      </div>
+      
       <div className="bg-white rounded-lg border border-gray-200">
         <Textarea 
           placeholder="Input anything to refine the search area"

@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
-import { Search } from "lucide-react";
+import { Search, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { SidebarContent } from "@/components/technology-tree/SidebarContent";
+import { ChatInput } from "@/components/technology-tree/ChatInput";
 import { MainContent } from "@/components/technology-tree/MainContent";
 import { SidebarControls } from "@/components/technology-tree/SidebarControls";
 import { CollapsedSidebar } from "@/components/technology-tree/CollapsedSidebar";
@@ -115,6 +116,13 @@ const TechnologyTree = () => {
                     onInputChange={handleInputChange}
                   />
                 </div>
+                
+                {sidebarTab === 'chat' && (
+                  <ChatInput
+                    value={inputValue}
+                    onChange={handleInputChange}
+                  />
+                )}
               </div>
             </ResizablePanel>
           )}
