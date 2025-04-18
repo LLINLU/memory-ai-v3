@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Edit, Send, ExternalLink } from "lucide-react";
@@ -10,9 +9,8 @@ interface ChatInputProps {
 
 export const ChatInput = ({ value, onChange }: ChatInputProps) => {
   return (
-    <div className="p-4 border-t border-gray-200">
+    <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4">
       <div className="text-gray-500 mb-2 flex items-center gap-1 justify-between">
-
       </div>
       
       <div className="bg-white rounded-lg border border-gray-200">
@@ -25,14 +23,10 @@ export const ChatInput = ({ value, onChange }: ChatInputProps) => {
         />
         
         <div className="flex items-center justify-between p-2 border-t">
-         
-          
           <Button variant="ghost" size="sm" className="text-gray-500">
             Send <Send className="h-4 w-4 ml-1" />
           </Button>
         </div>
-        
- 
       </div>
     </div>
   );
