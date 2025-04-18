@@ -5,14 +5,14 @@ interface TechnologyHeaderProps {
   query?: string;
 }
 
-export const TechnologyHeader = ({ query }: TechnologyHeaderProps) => {
+export const TechnologyHeader = ({ query = '補償光学の眼科分野への利用' }: TechnologyHeaderProps) => {
   return (
     <div className="bg-blue-50 rounded-lg p-6 mb-6">
       <h1 className="text-[21px] font-bold text-gray-800">
-        {query || 'Technology Tree'}
+        {query}
       </h1>
       <p className="text-gray-600 mt-2">
-        {query || 'Select technologies by exploring the tree'}
+        {query ? query : 'Select technologies by exploring the tree'}
       </p>
     </div>
   );
