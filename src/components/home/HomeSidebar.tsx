@@ -1,30 +1,28 @@
 
-import { History, Home, Bell, Settings, PanelLeft } from "lucide-react";
+import { History, Home, PanelLeft } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger
 } from "@/components/ui/sidebar";
 
 export const HomeSidebar = () => {
   return (
-    <Sidebar className="border-r border-gray-200" collapsible="icon">
+    <Sidebar className="bg-white border-r border-gray-100" collapsible="icon">
       <SidebarContent>
-        <div className="flex items-center justify-between mb-4 px-2">
-          <h1 className="text-xl font-bold transition-opacity group-data-[state=collapsed]:opacity-0">Memory AI</h1>
-          <SidebarTrigger />
-        </div>
-
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton tooltip="Menu">
+                  <PanelLeft className="w-5 h-5" />
+                  <span>Menu</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton tooltip="Home">
                   <Home className="w-5 h-5" />
@@ -35,67 +33,6 @@ export const HomeSidebar = () => {
                 <SidebarMenuButton tooltip="History">
                   <History className="w-5 h-5" />
                   <span>History</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Recent Searches</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {[
-                "Quantum computing a...",
-                "Machine learning in he...",
-                "Climate change mitigat...",
-                "Neural network archite...",
-                "Sustainable energy sol..."
-              ].map((search) => (
-                <SidebarMenuItem key={search}>
-                  <SidebarMenuButton tooltip={search}>
-                    <History className="w-4 h-4" />
-                    <span>{search}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Previous searches</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {[
-                "Blockchain technology ...",
-                "Genetic algorithms opt...",
-                "Virtual reality in educa..."
-              ].map((search) => (
-                <SidebarMenuItem key={search}>
-                  <SidebarMenuButton tooltip={search}>
-                    <History className="w-4 h-4" />
-                    <span>{search}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup className="mt-auto">
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Notifications">
-                  <Bell className="w-5 h-5" />
-                  <span>Notifications</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Settings">
-                  <Settings className="w-5 h-5" />
-                  <span>Settings</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
