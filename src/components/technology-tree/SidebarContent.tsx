@@ -24,8 +24,9 @@ export const SidebarContent = ({
           <SearchResults />
         </TabsHorizontalContent>
 
-        <TabsHorizontalContent value="chat" className="h-full p-4 overflow-auto bg-[#fffdf5]">
+        <TabsHorizontalContent value="chat" className="h-full flex flex-col bg-[#f6f6f6]">
           <ChatContent chatMessages={chatMessages} />
+          <ChatInput value={inputValue} onChange={onInputChange} />
         </TabsHorizontalContent>
       </TabsHorizontal>
     </div>

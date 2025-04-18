@@ -19,35 +19,32 @@ interface ChatContentProps {
 
 export const ChatContent = ({ chatMessages }: ChatContentProps) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 px-4 py-2">
       {chatMessages.map((message, index) => {
         if (message.type === "system") {
           return (
-            <div key={index} className="bg-[#f3f2e8] rounded-lg p-4">
-              <p className="text-gray-800 text-lg font-medium">
+            <div key={index} className="inline-block max-w-[85%] bg-white rounded-2xl p-4 shadow-sm">
+              <p className="text-gray-800 text-base leading-relaxed">
                 {message.content}
               </p>
-              {message.showMore && (
-                <button className="text-blue-500 text-sm mt-2">Show more</button>
-              )}
             </div>
           );
         }
 
         if (message.type === "criteria") {
           return (
-            <div key={index} className="bg-[#f3f2e8] rounded-lg p-4">
-              <h3 className="text-gray-800 text-xl font-bold mb-3">{message.title}</h3>
-              <ul className="space-y-2 mb-3">
+            <div key={index} className="inline-block max-w-[85%] bg-white rounded-2xl p-4 shadow-sm">
+              <h3 className="text-gray-800 text-lg font-semibold mb-2">{message.title}</h3>
+              <ul className="space-y-2 mb-2">
                 {message.items?.map((item, itemIndex) => (
                   <li key={itemIndex} className="flex items-start gap-2 text-gray-600">
-                    <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
-                    <span>{item}</span>
+                    <ChevronRight className="h-4 w-4 mt-1 flex-shrink-0" />
+                    <span className="text-sm">{item}</span>
                   </li>
                 ))}
               </ul>
               {message.searchingCount && (
-                <p className="font-semibold mb-3">Searching for {message.searchingCount} results</p>
+                <p className="text-sm text-gray-600">Searching for {message.searchingCount} results</p>
               )}
             </div>
           );
@@ -55,19 +52,19 @@ export const ChatContent = ({ chatMessages }: ChatContentProps) => {
 
         if (message.type === "progress") {
           return (
-            <div key={index} className="bg-[#f3f2e8] rounded-lg p-4">
-              <h3 className="text-gray-800 text-xl font-bold mb-4">{message.title}</h3>
-              <div className="space-y-2 mb-4">
-                <div className="flex items-start gap-2 text-gray-600">
-                  <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
-                  <span>{message.analyzed} results analyzed</span>
+            <div key={index} className="inline-block max-w-[85%] bg-white rounded-2xl p-4 shadow-sm">
+              <h3 className="text-gray-800 text-lg font-semibold mb-3">{message.title}</h3>
+              <div className="space-y-2 mb-3">
+                <div className="flex items-center gap-2 text-gray-600">
+                  <ChevronRight className="h-4 w-4 flex-shrink-0" />
+                  <span className="text-sm">{message.analyzed} results analyzed</span>
                 </div>
-                <div className="flex items-start gap-2 text-gray-600">
-                  <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
-                  <span>{message.matched} results matched</span>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <ChevronRight className="h-4 w-4 flex-shrink-0" />
+                  <span className="text-sm">{message.matched} results matched</span>
                 </div>
               </div>
-              <Progress value={65} className="h-2 w-full bg-gray-300" />
+              <Progress value={65} className="h-1.5 w-full bg-gray-100" />
             </div>
           );
         }
