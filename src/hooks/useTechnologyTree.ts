@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 
 export interface TechnologyTreeState {
@@ -85,17 +84,55 @@ export const useSidebar = (initialTab = "result") => {
 // Separate hook for input and query management
 export const useInputQuery = (sidebarTab: string) => {
   const [inputValue, setInputValue] = useState("");
-  const [query, setQuery] = useState(sidebarTab === 'chat' ? "補償光学の眼科分野への利用" : "");
+  const [query, setQuery] = useState("");
+  const [chatMessages, setChatMessages] = useState<any[]>(
+    sidebarTab === 'chat' 
+      ? [
+          {
+            type: "agent",
+            content: "I've found research on\nAdaptive Optics → Medical Applications → Retinal Imaging\nHow can I refine this for you?",
+            isUser: false
+          },
+          {
+            type: "user",
+            content: "Do you have anything about fluorescence AO imaging?",
+            isUser: true
+          }
+        ]
+      : []
+  );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
   };
 
+  // When sidebar tab changes, reset chat messages
+  React.useEffect(() => {
+    setChatMessages(
+      sidebarTab === 'chat' 
+        ? [
+            {
+              type: "agent",
+              content: "I've found research on\nAdaptive Optics → Medical Applications → Retinal Imaging\nHow can I refine this for you?",
+              isUser: false
+            },
+            {
+              type: "user",
+              content: "Do you have anything about fluorescence AO imaging?",
+              isUser: true
+            }
+          ]
+        : []
+    );
+  }, [sidebarTab]);
+
   return {
     inputValue,
     query,
+    chatMessages,
     handleInputChange,
-    setQuery
+    setQuery,
+    setChatMessages
   };
 };
 
@@ -104,7 +141,7 @@ export const useTechnologyTree = () => {
   const [selectedView, setSelectedView] = useState("tree");
   const { selectedPath, hasUserMadeSelection, handleNodeClick } = usePathSelection();
   const { sidebarTab, showSidebar, collapsedSidebar, setSidebarTab, setShowSidebar, toggleSidebar } = useSidebar();
-  const { inputValue, query, handleInputChange, setQuery } = useInputQuery(sidebarTab);
+  const { inputValue, query, chatMessages, handleInputChange, setQuery, setChatMessages } = useInputQuery(sidebarTab);
 
   return {
     selectedPath,
@@ -114,6 +151,7 @@ export const useTechnologyTree = () => {
     collapsedSidebar,
     inputValue,
     query,
+    chatMessages,
     hasUserMadeSelection,
     setSelectedView,
     setSidebarTab,
@@ -121,6 +159,7 @@ export const useTechnologyTree = () => {
     handleNodeClick,
     toggleSidebar,
     handleInputChange,
-    setQuery
+    setQuery,
+    setChatMessages
   };
 };
