@@ -8,7 +8,6 @@ export const RecentSearches = () => {
       title: "Nanomaterial Composites",
       paperCount: 15,
       implementationCount: 4,
-      maturity: "Emerging" as const,
       tags: [
         { label: "Materials", variant: "materials" as const },
         { label: "Engineering", variant: "engineering" as const },
@@ -19,7 +18,6 @@ export const RecentSearches = () => {
       title: "Bioinformatics AI",
       paperCount: 28,
       implementationCount: 7,
-      maturity: "High" as const,
       tags: [
         { label: "AI/ML", variant: "aiml" as const },
         { label: "Healthcare", variant: "healthcare" as const },
@@ -30,7 +28,6 @@ export const RecentSearches = () => {
       title: "Green Hydrogen Storage",
       paperCount: 21,
       implementationCount: 2,
-      maturity: "Exploratory" as const,
       tags: [
         { label: "Energy", variant: "energy" as const },
         { label: "Sustainability", variant: "sustainability" as const },
