@@ -1,7 +1,6 @@
 
 import { Navigation } from "@/components/Navigation";
 import { SearchSection } from "@/components/SearchSection";
-import { Divider } from "@/components/Divider";
 import { RecentSearches } from "@/components/RecentSearches";
 import { SavedSearches } from "@/components/SavedSearches";
 
@@ -12,7 +11,6 @@ const Index = () => {
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-4xl mx-auto">
           <SearchSection />
-          <Divider />
           <RecentSearches />
           <SavedSearches />
         </div>
