@@ -1,5 +1,5 @@
 
-import { History, Home, PanelLeft, Bell, Settings } from "lucide-react";
+import { History, Home, PanelLeft, Bell, Settings, Menu } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -12,10 +12,10 @@ import {
 } from "@/components/ui/sidebar";
 
 export const HomeSidebar = () => {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, state } = useSidebar();
 
   return (
-    <Sidebar className="bg-white border-r border-gray-100" collapsible="icon">
+    <Sidebar className="bg-white border-r border-gray-100 relative" collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
@@ -69,6 +69,16 @@ export const HomeSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      
+      {/* Additional toggle button that's always visible when collapsed */}
+      {state === "collapsed" && (
+        <div 
+          className="absolute top-4 left-[calc(100%)] transform -translate-x-1/2 z-20 bg-white rounded-full shadow-md cursor-pointer p-1"
+          onClick={toggleSidebar}
+        >
+          <Menu className="w-4 h-4 text-blue-600" />
+        </div>
+      )}
     </Sidebar>
   );
 };
