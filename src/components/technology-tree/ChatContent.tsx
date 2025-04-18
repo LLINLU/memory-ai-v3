@@ -8,6 +8,7 @@ interface ChatMessage {
   items?: string[];
   showMore?: boolean;
   searchingCount?: number;
+  isUser?: boolean;
 }
 
 interface ChatContentProps {
@@ -15,8 +16,42 @@ interface ChatContentProps {
 }
 
 export const ChatContent = ({ chatMessages }: ChatContentProps) => {
+  const pathConversation = [
+    {
+      type: "agent",
+      content: "I've found research on\nAdaptive Optics → Medical Applications → Retinal Imaging\nHow can I refine this for you?",
+      isUser: false
+    },
+    {
+      type: "user",
+      content: "Do you have anything about fluorescence AO imaging?",
+      isUser: true
+    }
+  ];
+
   return (
-    <div className="space-y-4 px-4 py-2">
+    <div className="flex-1 overflow-y-auto space-y-4 px-4 py-2">
+      {/* Path conversation bubbles */}
+      {pathConversation.map((message, index) => (
+        <div 
+          key={index} 
+          className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+        >
+          <div 
+            className={`inline-block max-w-[85%] p-4 rounded-2xl ${
+              message.isUser 
+                ? 'bg-blue-100 text-blue-900' 
+                : 'bg-white text-gray-800'
+            }`}
+          >
+            <p className="text-base leading-relaxed whitespace-pre-line">
+              {message.content}
+            </p>
+          </div>
+        </div>
+      ))}
+
+      {/* System messages */}
       {chatMessages.map((message, index) => {
         if (message.type === "system") {
           return (
