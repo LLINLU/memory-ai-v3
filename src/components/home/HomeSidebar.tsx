@@ -1,5 +1,4 @@
-
-import { History, Home, Bell, Settings } from "lucide-react";
+import { History, Home, Bell, Settings, PanelLeft } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -9,12 +8,18 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger
 } from "@/components/ui/sidebar";
 
 export const HomeSidebar = () => {
   return (
     <Sidebar className="border-r border-gray-200">
       <SidebarContent>
+        <div className="flex items-center justify-between mb-4 px-2">
+          <h1 className="text-xl font-bold">Memory AI</h1>
+          <SidebarTrigger />
+        </div>
+
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
