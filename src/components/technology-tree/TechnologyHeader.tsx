@@ -12,8 +12,9 @@ export const TechnologyHeader = ({ query = '補償光学の眼科分野への利
         {query}
       </h1>
       <p className="text-gray-600 mt-2">
-        {query ? query : 'Select technologies by exploring the tree'}
+        Select technologies by exploring the tree
       </p>
     </div>
   );
 };
+
