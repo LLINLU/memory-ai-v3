@@ -58,21 +58,8 @@ const TechnologyTree = () => {
       type: "system",
       content: query,
       showMore: true
-    },
-    {
-      type: "progress",
-      title: "Searching across billions of Exa embeddings",
-      analyzed: 73,
-      matched: 35
     }
-  ] : [
-    {
-      type: "progress",
-      title: "Searching across billions of Exa embeddings",
-      analyzed: 73,
-      matched: 35
-    }
-  ];
+  ] : [];
 
   const levelNames = getLevelNames(selectedPath);
 
