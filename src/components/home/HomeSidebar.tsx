@@ -20,6 +20,7 @@ export const HomeSidebar = () => {
         <SidebarGroup>
           <SidebarGroupContent>
             <div className="p-4 flex items-center gap-3">
+              <PanelLeft className="w-5 h-5 cursor-pointer" onClick={toggleSidebar} />
               <span className="text-blue-600 font-bold text-2xl">M</span>
               <span className="font-semibold text-xl">Memory AI</span>
             </div>
@@ -29,12 +30,6 @@ export const HomeSidebar = () => {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Menu" onClick={toggleSidebar}>
-                  <PanelLeft className="w-5 h-5" />
-                  <span>Menu</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton tooltip="Home">
                   <Home className="w-5 h-5" />
