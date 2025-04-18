@@ -20,7 +20,7 @@ export const SidebarControls = ({
           onClick={() => setSidebarTab("result")}
           className={`flex-1 h-full font-medium text-center px-4 ${
             sidebarTab === 'result' 
-              ? 'text-blue-600 border-b-2 border-blue-600 -mb-[1px]' 
+              ? 'text-blue-600 border-b-2 border-blue-600 -mb-[2px]' 
               : 'text-gray-500'
           }`}
         >
@@ -30,7 +30,7 @@ export const SidebarControls = ({
           onClick={() => setSidebarTab("chat")}
           className={`flex-1 h-full font-medium text-center px-4 ${
             sidebarTab === 'chat' 
-              ? 'text-blue-600 border-b-2 border-blue-600 -mb-[1px]' 
+              ? 'text-blue-600 border-b-2 border-blue-600 -mb-[2px]' 
               : 'text-gray-500'
           }`}
         >
