@@ -1,4 +1,3 @@
-
 import { ChevronRight } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
@@ -49,25 +48,6 @@ export const ChatContent = ({ chatMessages }: ChatContentProps) => {
               {message.searchingCount && (
                 <p className="font-semibold mb-3">Searching for {message.searchingCount} results</p>
               )}
-            </div>
-          );
-        }
-
-        if (message.type === "progress") {
-          return (
-            <div key={index} className="bg-[#f3f2e8] rounded-lg p-4">
-              <h3 className="text-gray-800 text-xl font-bold mb-4">{message.title}</h3>
-              <div className="space-y-2 mb-4">
-                <div className="flex items-start gap-2 text-gray-600">
-                  <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
-                  <span>{message.analyzed} results analyzed</span>
-                </div>
-                <div className="flex items-start gap-2 text-gray-600">
-                  <ChevronRight className="h-5 w-5 mt-[2px] flex-shrink-0" />
-                  <span>{message.matched} results matched</span>
-                </div>
-              </div>
-              <Progress value={65} className="h-2 w-full bg-gray-300" />
             </div>
           );
         }
