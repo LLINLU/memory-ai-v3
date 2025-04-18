@@ -17,7 +17,7 @@ export const ChatInput = ({ value, onChange }: ChatInputProps) => {
       
       <div className="bg-white rounded-lg border border-gray-200">
         <Textarea 
-          placeholder="Add abstract as an enrichment"
+          placeholder="Input anything to refine the search area"
           className="w-full resize-none border-0 focus-visible:ring-0 p-3"
           value={value}
           onChange={onChange}
