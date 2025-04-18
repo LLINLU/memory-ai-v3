@@ -1,5 +1,5 @@
 
-import { History, Home, PanelLeft, Bell, Settings, Clock, Search } from "lucide-react";
+import { History, Home, PanelLeft, Bell, Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -8,7 +8,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarGroupLabel,
   useSidebar,
 } from "@/components/ui/sidebar";
 
@@ -45,48 +44,6 @@ export const HomeSidebar = () => {
                   <span>History</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup className="mt-8">
-          <SidebarGroupLabel className="text-gray-600">Recent Searches</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {[
-                "Quantum computing and cryptography",
-                "Machine learning in healthcare",
-                "Climate change mitigation",
-                "Neural network architecture",
-                "Sustainable energy solutions"
-              ].map((search) => (
-                <SidebarMenuItem key={search}>
-                  <SidebarMenuButton>
-                    <Clock className="w-4 h-4" />
-                    <span className="truncate">{search}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup className="mt-8">
-          <SidebarGroupLabel className="text-gray-600">Previous searches</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {[
-                "Blockchain technology applications",
-                "Genetic algorithms optimization",
-                "Virtual reality in education"
-              ].map((search) => (
-                <SidebarMenuItem key={search}>
-                  <SidebarMenuButton>
-                    <Search className="w-4 h-4" />
-                    <span className="truncate">{search}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
