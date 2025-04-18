@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -48,6 +48,12 @@ const TechnologyTree = () => {
     hasUserMadeSelection
   } = useTechnologyTree();
 
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   useEffect(() => {
     updateTabsHorizontalState(sidebarTab);
   }, [sidebarTab]);
@@ -60,7 +66,11 @@ const TechnologyTree = () => {
       
       <div className="flex flex-1 overflow-hidden">
         <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel defaultSize={60} minSize={30}>
+          <ResizablePanel 
+            defaultSize={60} 
+            minSize={30}
+            className={isExpanded ? 'hidden' : undefined}
+          >
             <MainContent
               selectedPath={selectedPath}
               level1Items={level1Items}
@@ -73,12 +83,18 @@ const TechnologyTree = () => {
           </ResizablePanel>
 
           {showSidebar && !collapsedSidebar && (
-            <ResizablePanel defaultSize={40} minSize={20} maxSize={50}>
+            <ResizablePanel 
+              defaultSize={isExpanded ? 100 : 40} 
+              minSize={isExpanded ? 100 : 20} 
+              maxSize={isExpanded ? 100 : 50}
+            >
               <div className="h-full bg-white border-l border-gray-200 shadow-lg flex flex-col">
                 <SidebarControls
                   sidebarTab={sidebarTab}
                   setSidebarTab={setSidebarTab}
                   toggleSidebar={toggleSidebar}
+                  isExpanded={isExpanded}
+                  toggleExpand={toggleExpand}
                 />
                 
                 <div className="flex-1 overflow-hidden">

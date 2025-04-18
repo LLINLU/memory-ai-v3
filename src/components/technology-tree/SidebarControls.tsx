@@ -1,17 +1,21 @@
 
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X, Maximize2, Minimize2 } from "lucide-react";
 
 interface SidebarControlsProps {
   sidebarTab: string;
   setSidebarTab: (tab: string) => void;
   toggleSidebar: () => void;
+  isExpanded: boolean;
+  toggleExpand: () => void;
 }
 
 export const SidebarControls = ({
   sidebarTab,
   setSidebarTab,
   toggleSidebar,
+  isExpanded,
+  toggleExpand,
 }: SidebarControlsProps) => {
   return (
     <div className="flex items-center justify-between border-b border-gray-200 h-12">
@@ -37,14 +41,26 @@ export const SidebarControls = ({
           Chat
         </button>
       </div>
-      <Button 
-        variant="ghost" 
-        size="icon"
-        onClick={toggleSidebar}
-        className="mr-2"
-      >
-        <X className="h-5 w-5" />
-      </Button>
+      <div className="flex items-center gap-2 mr-2">
+        <Button 
+          variant="ghost" 
+          size="icon"
+          onClick={toggleExpand}
+        >
+          {isExpanded ? (
+            <Minimize2 className="h-5 w-5" />
+          ) : (
+            <Maximize2 className="h-5 w-5" />
+          )}
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="icon"
+          onClick={toggleSidebar}
+        >
+          <X className="h-5 w-5" />
+        </Button>
+      </div>
     </div>
   );
 };
