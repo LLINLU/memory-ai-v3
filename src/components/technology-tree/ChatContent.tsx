@@ -1,4 +1,6 @@
-import { ChevronRight } from "lucide-react";
+
+import React from 'react';
+import { ChevronRight, Search } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 interface ChatMessage {
@@ -27,7 +29,9 @@ export const ChatContent = ({ chatMessages }: ChatContentProps) => {
                 {message.content}
               </p>
               {message.showMore && (
-               
+                <button className="text-blue-500 text-sm font-medium mt-2 flex items-center">
+                  Show more <ChevronRight className="h-4 w-4 ml-1" />
+                </button>
               )}
             </div>
           );
@@ -48,6 +52,30 @@ export const ChatContent = ({ chatMessages }: ChatContentProps) => {
               {message.searchingCount && (
                 <p className="font-semibold mb-3">Searching for {message.searchingCount} results</p>
               )}
+            </div>
+          );
+        }
+
+        if (message.type === "progress") {
+          return (
+            <div key={index} className="bg-[#f3f2e8] rounded-lg p-4">
+              <h3 className="text-gray-800 text-lg font-medium mb-2">{message.title}</h3>
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span>Analyzing embeddings</span>
+                    <span>{message.analyzed} found</span>
+                  </div>
+                  <Progress value={message.analyzed ? 75 : 0} className="h-2" />
+                </div>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span>Matching results</span>
+                    <span>{message.matched} matches</span>
+                  </div>
+                  <Progress value={message.matched ? 65 : 0} className="h-2" />
+                </div>
+              </div>
             </div>
           );
         }
