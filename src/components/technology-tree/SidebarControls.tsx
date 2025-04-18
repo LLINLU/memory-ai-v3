@@ -15,12 +15,12 @@ export const SidebarControls = ({
 }: SidebarControlsProps) => {
   return (
     <div className="flex items-center justify-between border-b border-gray-200 h-12">
-      <div className="flex flex-1">
+      <div className="flex flex-1 relative">
         <button
           onClick={() => setSidebarTab("result")}
-          className={`flex-1 h-full font-medium text-center px-4 ${
+          className={`flex-1 h-full font-medium text-center px-4 relative ${
             sidebarTab === 'result' 
-              ? 'text-blue-600 border-b-2 border-blue-600 -mb-[2px]' 
+              ? 'text-blue-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-blue-600' 
               : 'text-gray-500'
           }`}
         >
@@ -28,9 +28,9 @@ export const SidebarControls = ({
         </button>
         <button
           onClick={() => setSidebarTab("chat")}
-          className={`flex-1 h-full font-medium text-center px-4 ${
+          className={`flex-1 h-full font-medium text-center px-4 relative ${
             sidebarTab === 'chat' 
-              ? 'text-blue-600 border-b-2 border-blue-600 -mb-[2px]' 
+              ? 'text-blue-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-blue-600' 
               : 'text-gray-500'
           }`}
         >
@@ -48,3 +48,4 @@ export const SidebarControls = ({
     </div>
   );
 };
+
