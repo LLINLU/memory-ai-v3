@@ -1,4 +1,3 @@
-
 import { History, Home, PanelLeft, Bell, Settings, Clock, Search } from "lucide-react";
 import {
   Sidebar,
@@ -9,9 +8,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarGroupLabel,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 export const HomeSidebar = () => {
+  const { toggleSidebar } = useSidebar();
+
   return (
     <Sidebar className="bg-white border-r border-gray-100" collapsible="icon">
       <SidebarContent>
@@ -28,7 +30,7 @@ export const HomeSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Menu">
+                <SidebarMenuButton tooltip="Menu" onClick={toggleSidebar}>
                   <PanelLeft className="w-5 h-5" />
                   <span>Menu</span>
                 </SidebarMenuButton>
