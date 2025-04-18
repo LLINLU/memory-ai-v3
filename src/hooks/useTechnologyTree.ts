@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 
 export interface TechnologyTreeState {
@@ -15,18 +16,13 @@ export interface TechnologyTreeState {
   hasUserMadeSelection: boolean;
 }
 
-export const useTechnologyTree = () => {
-  const [selectedPath, setSelectedPath] = useState({
-    level1: "adaptive-optics",
-    level2: "medical-applications",
-    level3: "retinal-imaging"
-  });
-  const [selectedView, setSelectedView] = useState("tree");
-  const [sidebarTab, setSidebarTab] = useState("result");
-  const [showSidebar, setShowSidebar] = useState(true);
-  const [collapsedSidebar, setCollapsedSidebar] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [query, setQuery] = useState(sidebarTab === 'chat' ? "補償光学の眼科分野への利用" : "");
+// Separate hook for path selection
+export const usePathSelection = (initialPath = {
+  level1: "adaptive-optics",
+  level2: "medical-applications",
+  level3: "retinal-imaging"
+}) => {
+  const [selectedPath, setSelectedPath] = useState(initialPath);
   const [hasUserMadeSelection, setHasUserMadeSelection] = useState(false);
 
   const handleNodeClick = (level: string, nodeId: string) => {
@@ -54,6 +50,19 @@ export const useTechnologyTree = () => {
     });
   };
 
+  return {
+    selectedPath,
+    hasUserMadeSelection,
+    handleNodeClick
+  };
+};
+
+// Separate hook for sidebar management
+export const useSidebar = (initialTab = "result") => {
+  const [sidebarTab, setSidebarTab] = useState(initialTab);
+  const [showSidebar, setShowSidebar] = useState(true);
+  const [collapsedSidebar, setCollapsedSidebar] = useState(false);
+
   const toggleSidebar = () => {
     if (collapsedSidebar) {
       setCollapsedSidebar(false);
@@ -63,9 +72,39 @@ export const useTechnologyTree = () => {
     }
   };
 
+  return {
+    sidebarTab,
+    showSidebar,
+    collapsedSidebar,
+    setSidebarTab,
+    setShowSidebar,
+    toggleSidebar
+  };
+};
+
+// Separate hook for input and query management
+export const useInputQuery = (sidebarTab: string) => {
+  const [inputValue, setInputValue] = useState("");
+  const [query, setQuery] = useState(sidebarTab === 'chat' ? "補償光学の眼科分野への利用" : "");
+
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
   };
+
+  return {
+    inputValue,
+    query,
+    handleInputChange,
+    setQuery
+  };
+};
+
+// Main hook that combines all the others
+export const useTechnologyTree = () => {
+  const [selectedView, setSelectedView] = useState("tree");
+  const { selectedPath, hasUserMadeSelection, handleNodeClick } = usePathSelection();
+  const { sidebarTab, showSidebar, collapsedSidebar, setSidebarTab, setShowSidebar, toggleSidebar } = useSidebar();
+  const { inputValue, query, handleInputChange, setQuery } = useInputQuery(sidebarTab);
 
   return {
     selectedPath,
