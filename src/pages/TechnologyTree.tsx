@@ -88,7 +88,7 @@ const TechnologyTree = () => {
           {showSidebar && !collapsedSidebar && (
             <ResizablePanel 
               defaultSize={isExpanded ? 100 : 40} 
-              minSize={isExpanded ? 100 : 20} 
+              minSize={20}
               maxSize={isExpanded ? 100 : 50}
             >
               <div className="h-full bg-white border-l border-gray-200 shadow-lg flex flex-col">
