@@ -12,7 +12,7 @@ export const TechnologyHeader = ({ query = '補償光学の眼科分野への利
         {query}
       </h1>
       <p className="text-gray-600 mt-2">
-        Your query mapped to this technology path - explore or refine to see relevant results
+        Your query mapped to this technology path - explore to see relevant results
       </p>
     </div>
   );
