@@ -3,7 +3,7 @@ import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 
 interface SuggestionProps {
   label: string;
@@ -19,10 +19,15 @@ const SearchSuggestion = ({ label }: SuggestionProps) => {
 
 export const SearchSection = () => {
   const navigate = useNavigate();
+  const [searchValue, setSearchValue] = useState("");
   
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     navigate('/technology-tree');
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
   };
 
   return (
@@ -35,6 +40,8 @@ export const SearchSection = () => {
             type="text" 
             placeholder="e.g.補償光学の眼科分野への利用"
             className="w-full h-16 pl-6 pr-14 text-lg rounded-2xl border border-gray-200 focus-visible:ring-1 focus-visible:ring-gray-200 placeholder:text-gray-400"
+            value={searchValue}
+            onChange={handleSearchChange}
           />
           <Button
             type="submit"
