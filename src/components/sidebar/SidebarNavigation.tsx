@@ -18,7 +18,7 @@ export function SidebarNavigation() {
       <SidebarMenuItem>
         <SidebarMenuButton 
           asChild 
-          tooltip="Toggle Sidebar"
+          tooltip="Home"
         >
           <Link to="/">
             <Home />
