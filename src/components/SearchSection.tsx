@@ -23,7 +23,9 @@ export const SearchSection = () => {
   
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    navigate('/technology-tree');
+    if (searchValue.trim()) {
+      navigate('/technology-tree');
+    }
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,7 +48,8 @@ export const SearchSection = () => {
           <Button
             type="submit"
             size="icon"
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-12 w-12 rounded-xl bg-blue-100 hover:bg-blue-200"
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-12 w-12 rounded-xl bg-blue-100 hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!searchValue.trim()}
           >
             <ArrowUp className="h-6 w-6 text-blue-600" />
           </Button>
