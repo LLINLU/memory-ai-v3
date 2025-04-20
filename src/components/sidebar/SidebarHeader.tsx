@@ -24,6 +24,7 @@ export function SidebarHeader() {
           onClick={toggleSidebar}
           className="h-8 w-8"
           aria-label={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
+          tooltip="Open sidebar"
         >
           {isExpanded ? <PanelLeftClose /> : <PanelLeftOpen />}
         </Button>
