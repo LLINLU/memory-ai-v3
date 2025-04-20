@@ -83,7 +83,9 @@ export const Sidebar = React.forwardRef<
         <div
           className={cn(
             "duration-200 fixed inset-y-0 z-10 h-svh w-[--sidebar-width] transition-all ease-linear md:flex",
-            state === "collapsed" ? "transform -translate-x-full" : "transform translate-x-0",
+            state === "collapsed" 
+              ? "transform -translate-x-full opacity-0" 
+              : "transform translate-x-0 opacity-100",
             side === "left"
               ? "left-0"
               : "right-0",
