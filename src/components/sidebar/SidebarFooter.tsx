@@ -10,6 +10,7 @@ import {
 
 export function SidebarFooter() {
   const { state } = useSidebar();
+  const isExpanded = state === 'expanded';
 
   return (
     <div className="border-t">
@@ -19,7 +20,7 @@ export function SidebarFooter() {
             tooltip="Notifications"
           >
             <Bell />
-            {state === 'expanded' && <span>Notifications</span>}
+            {isExpanded && <span>Notifications</span>}
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>
@@ -27,7 +28,7 @@ export function SidebarFooter() {
             tooltip="Settings"
           >
             <Settings />
-            {state === 'expanded' && <span>Settings</span>}
+            {isExpanded && <span>Settings</span>}
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

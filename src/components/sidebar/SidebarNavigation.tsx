@@ -11,6 +11,7 @@ import {
 
 export function SidebarNavigation() {
   const { state } = useSidebar();
+  const isExpanded = state === 'expanded';
 
   return (
     <SidebarMenu>
@@ -21,7 +22,7 @@ export function SidebarNavigation() {
         >
           <Link to="/">
             <Home />
-            {state === 'expanded' && <span>Home</span>}
+            {isExpanded && <span>Home</span>}
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
@@ -30,7 +31,7 @@ export function SidebarNavigation() {
           tooltip="History"
         >
           <History />
-          {state === 'expanded' && <span>History</span>}
+          {isExpanded && <span>History</span>}
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>

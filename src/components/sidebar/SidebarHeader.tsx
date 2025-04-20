@@ -7,11 +7,12 @@ import { useSidebar } from "@/hooks/use-sidebar";
 
 export function SidebarHeader() {
   const { state, toggleSidebar } = useSidebar();
+  const isExpanded = state === 'expanded';
 
   return (
     <div className="border-b p-4">
       <div className="flex items-center justify-between">
-        {state === 'expanded' && (
+        {isExpanded && (
           <Link to="/" className="flex items-center gap-2 text-2xl font-bold">
             <span className="text-blue-600">M</span>
             <span>Memory AI</span>
@@ -22,8 +23,9 @@ export function SidebarHeader() {
           size="icon"
           onClick={toggleSidebar}
           className="h-8 w-8"
+          aria-label={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
         >
-          {state === 'expanded' ? <PanelLeftClose /> : <PanelLeftOpen />}
+          {isExpanded ? <PanelLeftClose /> : <PanelLeftOpen />}
         </Button>
       </div>
     </div>
