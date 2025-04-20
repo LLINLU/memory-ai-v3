@@ -1,5 +1,7 @@
 
+import React from "react";
 import { Bell, Settings } from "lucide-react";
+import { useSidebar } from "@/hooks/use-sidebar";
 import {
   SidebarMenu,
   SidebarMenuItem,
@@ -7,6 +9,8 @@ import {
 } from "@/components/ui/sidebar";
 
 export function SidebarFooter() {
+  const { state } = useSidebar();
+
   return (
     <div className="border-t">
       <SidebarMenu>
@@ -15,7 +19,7 @@ export function SidebarFooter() {
             tooltip="Notifications"
           >
             <Bell />
-            <span>Notifications</span>
+            {state === 'expanded' && <span>Notifications</span>}
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>
@@ -23,7 +27,7 @@ export function SidebarFooter() {
             tooltip="Settings"
           >
             <Settings />
-            <span>Settings</span>
+            {state === 'expanded' && <span>Settings</span>}
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

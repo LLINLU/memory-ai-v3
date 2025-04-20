@@ -1,6 +1,8 @@
 
+import React from "react";
 import { Link } from "react-router-dom";
 import { Home, History } from "lucide-react";
+import { useSidebar } from "@/hooks/use-sidebar";
 import {
   SidebarMenu,
   SidebarMenuItem,
@@ -8,6 +10,8 @@ import {
 } from "@/components/ui/sidebar";
 
 export function SidebarNavigation() {
+  const { state } = useSidebar();
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -17,7 +21,7 @@ export function SidebarNavigation() {
         >
           <Link to="/">
             <Home />
-            <span>Home</span>
+            {state === 'expanded' && <span>Home</span>}
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
@@ -26,7 +30,7 @@ export function SidebarNavigation() {
           tooltip="History"
         >
           <History />
-          <span>History</span>
+          {state === 'expanded' && <span>History</span>}
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>
