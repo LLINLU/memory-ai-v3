@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import { SidebarContext } from "@/hooks/use-sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -29,6 +28,23 @@ export const SidebarProvider = React.forwardRef<
     const [openMobile, setOpenMobile] = React.useState(false)
     const [_open, _setOpen] = React.useState(defaultOpen)
     const open = openProp ?? _open
+    
+    React.useEffect(() => {
+      try {
+        const cookieValue = document.cookie
+          .split('; ')
+          .find(row => row.startsWith(`${SIDEBAR_COOKIE_NAME}=`))
+          ?.split('=')[1];
+          
+        if (cookieValue === undefined || cookieValue === 'true') {
+          _setOpen(true);
+        } else {
+          _setOpen(cookieValue === 'true');
+        }
+      } catch (e) {
+        _setOpen(true);
+      }
+    }, []);
     
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
