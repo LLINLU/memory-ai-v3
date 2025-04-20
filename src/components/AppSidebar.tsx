@@ -1,4 +1,5 @@
-import { Clock, History, Home, Bell, Settings, ToggleLeft } from "lucide-react";
+
+import { Clock, History, Home, Bell, Settings, ArrowLeft } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -47,7 +48,7 @@ export function AppSidebar() {
             onClick={toggleSidebar}
             className="h-8 w-8"
           >
-            <ToggleLeft className="h-5 w-5" />
+            <ArrowLeft className="h-5 w-5" />
           </Button>
         </div>
       </SidebarHeader>
