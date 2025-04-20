@@ -11,13 +11,17 @@ export function SidebarFooter() {
     <div className="border-t">
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton>
+          <SidebarMenuButton
+            tooltip="Notifications"
+          >
             <Bell />
             <span>Notifications</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>
-          <SidebarMenuButton>
+          <SidebarMenuButton
+            tooltip="Settings"
+          >
             <Settings />
             <span>Settings</span>
           </SidebarMenuButton>

@@ -11,7 +11,10 @@ export function SidebarNavigation() {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <SidebarMenuButton asChild>
+        <SidebarMenuButton 
+          asChild 
+          tooltip="Home"
+        >
           <Link to="/">
             <Home />
             <span>Home</span>
@@ -19,7 +22,9 @@ export function SidebarNavigation() {
         </SidebarMenuButton>
       </SidebarMenuItem>
       <SidebarMenuItem>
-        <SidebarMenuButton>
+        <SidebarMenuButton 
+          tooltip="History"
+        >
           <History />
           <span>History</span>
         </SidebarMenuButton>
