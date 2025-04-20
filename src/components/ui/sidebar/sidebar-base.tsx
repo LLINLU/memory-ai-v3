@@ -1,5 +1,6 @@
+
 import * as React from "react"
-import { SidebarContext } from "@/hooks/use-sidebar"
+import { SidebarContext, SIDEBAR_COOKIE_NAME } from "@/hooks/use-sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
@@ -54,7 +55,7 @@ export const SidebarProvider = React.forwardRef<
         } else {
           _setOpen(openState)
         }
-        document.cookie = `sidebar:state=${openState}; path=/; max-age=${60 * 60 * 24 * 7}`
+        document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${60 * 60 * 24 * 7}`
       },
       [setOpenProp, open]
     )
