@@ -11,7 +11,7 @@ interface SuggestionProps {
 
 const SearchSuggestion = ({ label }: SuggestionProps) => {
   return (
-    <button className="bg-gray-100 hover:bg-gray-200 rounded-full px-4 py-2 text-sm text-gray-700 transition-colors">
+    <button className="bg-gray-50 hover:bg-gray-100 rounded-full px-6 py-3 text-gray-700 transition-colors text-base">
       {label}
     </button>
   );
@@ -26,19 +26,19 @@ export const SearchSection = () => {
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-      <h2 className="text-2xl font-bold text-center mb-6">Discover Research and Applications</h2>
+    <div className="bg-white p-12 rounded-3xl shadow-sm border border-gray-200">
+      <h2 className="text-4xl font-bold text-center mb-10">Discover Research and Applications</h2>
       
-      <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto mb-6">
-        <div className="flex items-center space-x-2">
+      <form onSubmit={handleSubmit} className="w-full max-w-5xl mx-auto mb-10">
+        <div className="flex items-center gap-4">
           <Input 
             type="text" 
             placeholder="Describe your research interest or technology domain..."
-            className="flex-grow h-12 pr-24 focus-visible:ring-blue-400 border-gray-300"
+            className="flex-grow h-14 text-lg rounded-full bg-gray-50 border-0 focus-visible:ring-1 focus-visible:ring-gray-200 placeholder:text-gray-500"
           />
           <Button 
             type="submit" 
-            className="bg-blue-500 hover:bg-blue-600 text-white px-8 h-12 rounded-md flex items-center justify-center"
+            className="h-14 px-8 rounded-full bg-blue-500 hover:bg-blue-600 text-lg font-medium"
           >
             <Search className="mr-2 h-5 w-5" />
             Search
@@ -46,9 +46,9 @@ export const SearchSection = () => {
         </div>
       </form>
       
-      <div className="flex items-center gap-2 justify-center">
-        <span className="text-gray-600 mr-2">Try:</span>
-        <div className="flex gap-2">
+      <div className="flex items-center gap-3 justify-center">
+        <span className="text-gray-600 text-lg">Try:</span>
+        <div className="flex gap-3">
           <SearchSuggestion label="Solid state batteries" />
           <SearchSuggestion label="Quantum computing" />
           <SearchSuggestion label="Sustainable materials" />
