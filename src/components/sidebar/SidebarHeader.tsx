@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/hooks/use-sidebar";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function SidebarHeader() {
   const { state, toggleSidebar } = useSidebar();
@@ -18,16 +19,22 @@ export function SidebarHeader() {
             <span>Memory AI</span>
           </Link>
         )}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleSidebar}
-          className="h-8 w-8"
-          aria-label={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
-          tooltip="Open sidebar"
-        >
-          {isExpanded ? <PanelLeftClose /> : <PanelLeftOpen />}
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleSidebar}
+              className="h-8 w-8"
+              aria-label={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
+            >
+              {isExpanded ? <PanelLeftClose /> : <PanelLeftOpen />}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Open sidebar</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
     </div>
   );
