@@ -28,4 +28,4 @@ export function useSidebar() {
 export { SidebarContext }
 export const SIDEBAR_WIDTH = "16rem"
 export const SIDEBAR_WIDTH_MOBILE = "18rem"
-export const SIDEBAR_WIDTH_ICON = "3rem"
+export const SIDEBAR_WIDTH_ICON = "4rem" // Increased from 3rem to 4rem for better icon visibility

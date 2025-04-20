@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
@@ -60,7 +59,7 @@ export const Sidebar = React.forwardRef<
       )
     }
 
-    // For desktop, use visibility based on state
+    // For desktop, use width transition based on state
     return (
       <div
         ref={ref}
@@ -74,13 +73,14 @@ export const Sidebar = React.forwardRef<
           className={cn(
             "duration-200 relative h-svh w-0 bg-transparent transition-[width] ease-linear",
             state === "expanded" && "w-[--sidebar-width]",
+            state === "collapsed" && "w-[--sidebar-width-icon]",
             "group-data-[side=right]:rotate-180"
           )}
         />
         <div
           className={cn(
             "fixed inset-y-0 z-10 h-svh transition-all duration-200 ease-linear",
-            state === "collapsed" ? "w-0 opacity-0 pointer-events-none" : "w-[--sidebar-width] opacity-100",
+            state === "expanded" ? "w-[--sidebar-width]" : "w-[--sidebar-width-icon]",
             side === "left" ? "left-0" : "right-0",
             variant === "floating" || variant === "inset" ? "p-2" : "group-data-[side=left]:border-r group-data-[side=right]:border-l",
             className
