@@ -6,7 +6,12 @@ import { cn } from "@/lib/utils"
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
   ({ className, type, ...props }, ref) => {
     const [isFocused, setIsFocused] = React.useState(false);
-    const [hasValue, setHasValue] = React.useState(false);
+    const [hasValue, setHasValue] = React.useState(!!props.value);
+
+    React.useEffect(() => {
+      // Update hasValue when props.value changes (for controlled inputs)
+      setHasValue(!!props.value);
+    }, [props.value]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setHasValue(!!e.target.value);
