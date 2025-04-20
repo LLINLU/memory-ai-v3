@@ -1,5 +1,5 @@
 
-import { Search } from "lucide-react";
+import { SearchCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
@@ -34,14 +34,14 @@ export const SearchSection = () => {
           <Input 
             type="text" 
             placeholder="e.g.補償光学の眼科分野への利用"
-            className="w-full h-14 pl-6 pr-14 text-lg rounded-2xl border border-gray-200 focus-visible:ring-1 focus-visible:ring-gray-200 placeholder:text-gray-400"
+            className="w-full h-16 pl-6 pr-14 text-lg rounded-2xl border border-gray-200 focus-visible:ring-1 focus-visible:ring-gray-200 placeholder:text-gray-400"
           />
           <Button
             type="submit"
             size="icon"
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-xl bg-blue-500 hover:bg-blue-600"
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-12 w-12 rounded-xl bg-blue-500 hover:bg-blue-600"
           >
-            <Search className="h-5 w-5" />
+            <SearchCode className="h-6 w-6" />
           </Button>
         </div>
       </form>
