@@ -4,7 +4,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 
 interface SearchSectionProps {
@@ -15,7 +14,7 @@ interface SearchSectionProps {
 function SearchSection({ title, searches }: SearchSectionProps) {
   return (
     <>
-      <SidebarGroupLabel>{title}</SidebarGroupLabel>
+      <div className="px-3 pt-3 text-xs font-medium text-muted-foreground">{title}</div>
       <SidebarMenu>
         {searches.map((search) => (
           <SidebarMenuItem key={search}>

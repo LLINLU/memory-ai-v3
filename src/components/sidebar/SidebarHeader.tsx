@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useSidebar } from "@/components/ui/sidebar";
+import { useSidebar } from "@/hooks/use-sidebar";
 
 export function SidebarHeader() {
   const { state, toggleSidebar } = useSidebar();

@@ -1,4 +1,5 @@
 
+import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { PanelLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -34,4 +35,3 @@ export const SidebarTrigger = React.forwardRef<
   )
 })
 SidebarTrigger.displayName = "SidebarTrigger"
-
