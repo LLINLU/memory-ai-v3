@@ -1,5 +1,5 @@
 
-import { SearchCode } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
@@ -39,9 +39,9 @@ export const SearchSection = () => {
           <Button
             type="submit"
             size="icon"
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-12 w-12 rounded-xl bg-blue-500 hover:bg-blue-600"
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-12 w-12 rounded-xl bg-blue-100 hover:bg-blue-200"
           >
-            <SearchCode className="h-6 w-6" />
+            <ArrowUp className="h-6 w-6 text-blue-600" />
           </Button>
         </div>
       </form>
