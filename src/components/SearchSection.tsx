@@ -11,7 +11,7 @@ interface SuggestionProps {
 
 const SearchSuggestion = ({ label }: SuggestionProps) => {
   return (
-    <button className="bg-gray-50 hover:bg-gray-100 rounded-full px-6 py-3 text-gray-700 transition-colors text-base">
+    <button className="bg-white hover:bg-gray-50 rounded-full px-6 py-2.5 text-gray-700 transition-colors text-sm border border-gray-200">
       {label}
     </button>
   );
@@ -26,29 +26,29 @@ export const SearchSection = () => {
   };
 
   return (
-    <div className="bg-white p-12 rounded-3xl shadow-sm border border-gray-200">
-      <h2 className="text-4xl font-bold text-center mb-10">Discover Research and Applications</h2>
+    <div className="bg-white p-8 rounded-3xl shadow-sm max-w-5xl mx-auto">
+      <h1 className="text-4xl font-bold text-center mb-12">Discover Research and Applications</h1>
       
-      <form onSubmit={handleSubmit} className="w-full max-w-5xl mx-auto mb-10">
-        <div className="flex items-center gap-4">
+      <form onSubmit={handleSubmit} className="w-full mx-auto mb-8">
+        <div className="relative">
           <Input 
             type="text" 
-            placeholder="Describe your research interest or technology domain..."
-            className="flex-grow h-14 text-lg rounded-full bg-gray-50 border-0 focus-visible:ring-1 focus-visible:ring-gray-200 placeholder:text-gray-500"
+            placeholder="e.g.補償光学の眼科分野への利用"
+            className="w-full h-14 pl-6 pr-14 text-lg rounded-2xl border border-gray-200 focus-visible:ring-1 focus-visible:ring-gray-200 placeholder:text-gray-400"
           />
-          <Button 
-            type="submit" 
-            className="h-14 px-8 rounded-full bg-blue-500 hover:bg-blue-600 text-lg font-medium"
+          <Button
+            type="submit"
+            size="icon"
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-xl bg-blue-500 hover:bg-blue-600"
           >
-            <Search className="mr-2 h-5 w-5" />
-            Search
+            <Search className="h-5 w-5" />
           </Button>
         </div>
       </form>
       
       <div className="flex items-center gap-3 justify-center">
-        <span className="text-gray-600 text-lg">Try:</span>
-        <div className="flex gap-3">
+        <span className="text-gray-600 text-sm">Try:</span>
+        <div className="flex gap-2">
           <SearchSuggestion label="Solid state batteries" />
           <SearchSuggestion label="Quantum computing" />
           <SearchSuggestion label="Sustainable materials" />
