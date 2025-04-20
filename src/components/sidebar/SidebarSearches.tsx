@@ -5,6 +5,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
+import { useSidebar } from "@/hooks/use-sidebar";
 
 interface SearchSectionProps {
   title: string;
@@ -12,6 +13,11 @@ interface SearchSectionProps {
 }
 
 function SearchSection({ title, searches }: SearchSectionProps) {
+  const { state } = useSidebar();
+  
+  // Only show in expanded state
+  if (state === "collapsed") return null;
+  
   return (
     <>
       <div className="px-3 pt-3 text-xs font-medium text-muted-foreground">{title}</div>

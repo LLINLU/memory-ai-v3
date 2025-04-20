@@ -17,14 +17,6 @@ export function SidebarFooter() {
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton
-            tooltip="Notifications"
-          >
-            <Bell />
-            {isExpanded && <span>Notifications</span>}
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-        <SidebarMenuItem>
-          <SidebarMenuButton
             tooltip="Settings"
           >
             <Settings />

@@ -18,7 +18,7 @@ export function SidebarNavigation() {
       <SidebarMenuItem>
         <SidebarMenuButton 
           asChild 
-          tooltip="Home"
+          tooltip="Toggle Sidebar"
         >
           <Link to="/">
             <Home />
@@ -26,14 +26,16 @@ export function SidebarNavigation() {
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
-      <SidebarMenuItem>
-        <SidebarMenuButton 
-          tooltip="History"
-        >
-          <History />
-          {isExpanded && <span>History</span>}
-        </SidebarMenuButton>
-      </SidebarMenuItem>
+      {isExpanded && (
+        <SidebarMenuItem>
+          <SidebarMenuButton 
+            tooltip="History"
+          >
+            <History />
+            {isExpanded && <span>History</span>}
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      )}
     </SidebarMenu>
   );
 }
