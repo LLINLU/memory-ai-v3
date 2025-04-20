@@ -26,16 +26,14 @@ export function SidebarNavigation() {
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
-      {isExpanded && (
-        <SidebarMenuItem>
-          <SidebarMenuButton 
-            tooltip="History"
-          >
-            <History />
-            {isExpanded && <span>History</span>}
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      )}
+      <SidebarMenuItem>
+        <SidebarMenuButton 
+          tooltip="History"
+        >
+          <History />
+          {isExpanded && <span>History</span>}
+        </SidebarMenuButton>
+      </SidebarMenuItem>
     </SidebarMenu>
   );
 }
