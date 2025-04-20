@@ -72,26 +72,17 @@ export const Sidebar = React.forwardRef<
       >
         <div
           className={cn(
-            "duration-200 relative h-svh w-[--sidebar-width] bg-transparent transition-[width] ease-linear",
-            state === "collapsed" && "!w-0",
-            "group-data-[side=right]:rotate-180",
-            variant === "floating" || variant === "inset"
-              ? state === "collapsed" && "!w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"
-              : state === "collapsed" && "!w-[--sidebar-width-icon]"
+            "duration-200 relative h-svh w-0 bg-transparent transition-[width] ease-linear",
+            state === "expanded" && "w-[--sidebar-width]",
+            "group-data-[side=right]:rotate-180"
           )}
         />
         <div
           className={cn(
-            "duration-200 fixed inset-y-0 z-10 h-svh w-[--sidebar-width] transition-all ease-linear md:flex",
-            state === "collapsed" 
-              ? "transform -translate-x-full opacity-0" 
-              : "transform translate-x-0 opacity-100",
-            side === "left"
-              ? "left-0"
-              : "right-0",
-            variant === "floating" || variant === "inset"
-              ? "p-2"
-              : "group-data-[side=left]:border-r group-data-[side=right]:border-l",
+            "fixed inset-y-0 z-10 h-svh transition-all duration-200 ease-linear",
+            state === "collapsed" ? "w-0 opacity-0 pointer-events-none" : "w-[--sidebar-width] opacity-100",
+            side === "left" ? "left-0" : "right-0",
+            variant === "floating" || variant === "inset" ? "p-2" : "group-data-[side=left]:border-r group-data-[side=right]:border-l",
             className
           )}
           {...props}
@@ -99,8 +90,7 @@ export const Sidebar = React.forwardRef<
           <div
             data-sidebar="sidebar"
             className={cn(
-              "flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow",
-              state === "collapsed" && "hidden"
+              "flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
             )}
           >
             {children}
