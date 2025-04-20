@@ -1,5 +1,4 @@
-
-import { Clock, History, Home, Bell, Settings } from "lucide-react";
+import { Clock, History, Home, Bell, Settings, ToggleLeft } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -11,8 +10,10 @@ import {
   SidebarMenuButton,
   SidebarHeader,
   SidebarFooter,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Link } from "react-router-dom";
+import { Button } from "./ui/button";
 
 // Recent searches mock data
 const recentSearches = [
@@ -30,13 +31,25 @@ const previousSearches = [
 ];
 
 export function AppSidebar() {
+  const { toggleSidebar } = useSidebar();
+
   return (
     <Sidebar>
       <SidebarHeader className="border-b p-4">
-        <Link to="/" className="flex items-center gap-2 text-2xl font-bold">
-          <span className="text-blue-600">M</span>
-          <span>Memory AI</span>
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2 text-2xl font-bold">
+            <span className="text-blue-600">M</span>
+            <span>Memory AI</span>
+          </Link>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleSidebar}
+            className="h-8 w-8"
+          >
+            <ToggleLeft className="h-5 w-5" />
+          </Button>
+        </div>
       </SidebarHeader>
 
       <SidebarContent>
