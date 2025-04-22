@@ -24,7 +24,7 @@ export const SearchSection = () => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (searchValue.trim()) {
-      navigate('/technology-tree');
+      navigate('/technology-tree', { state: { query: searchValue } });
     }
   };
 
