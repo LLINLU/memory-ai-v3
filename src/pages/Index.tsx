@@ -7,7 +7,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 const Index = () => {
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+      <div className="min-h-screen flex w-full items-center justify-center">
         <AppSidebar />
         <div className="flex-1">
           <div className="container mx-auto px-4 py-6">
