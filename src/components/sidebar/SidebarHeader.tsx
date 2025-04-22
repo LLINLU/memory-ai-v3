@@ -25,7 +25,7 @@ export function SidebarHeader() {
               variant="ghost"
               size="icon"
               onClick={toggleSidebar}
-              className="h-8 w-8"
+              className={`h-8 w-8 ${!isExpanded ? 'flex items-center justify-center' : ''}`}
               aria-label={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
             >
               {isExpanded ? <PanelLeftClose /> : <PanelLeftOpen />}
