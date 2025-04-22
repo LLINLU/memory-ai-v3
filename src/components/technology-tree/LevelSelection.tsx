@@ -41,15 +41,14 @@ export const LevelSelection = ({
         <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 1</h2>
         <h3 className="text-sm text-blue-600 mb-4">{levelNames.level1}</h3>
         
-        <div className="space-y-8">
+        <div className="space-y-4">
           {level1Items.map((item) => (
             <div
               key={item.id}
               className={`
                 py-4 px-3 rounded-lg text-center cursor-pointer transition-all relative
-                transform -rotate-6 hover:rotate-0 duration-200
                 ${selectedPath.level1 === item.id 
-                  ? 'bg-blue-500 text-white ring-2 ring-bright-orange rotate-0' 
+                  ? 'bg-blue-500 text-white ring-2 ring-bright-orange' 
                   : 'bg-blue-400 text-white hover:bg-blue-500'
                 }
               `}
@@ -79,15 +78,14 @@ export const LevelSelection = ({
         <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 2</h2>
         <h3 className="text-sm text-blue-600 mb-4">{levelNames.level2}</h3>
         
-        <div className="space-y-8">
+        <div className="space-y-4">
           {visibleLevel2Items.map((item) => (
             <div
               key={item.id}
               className={`
                 py-4 px-3 rounded-lg text-center cursor-pointer transition-all relative
-                transform -rotate-6 hover:rotate-0 duration-200
                 ${selectedPath.level2 === item.id 
-                  ? 'bg-blue-500 text-white ring-2 ring-bright-orange rotate-0' 
+                  ? 'bg-blue-500 text-white ring-2 ring-bright-orange' 
                   : 'bg-blue-400 text-white hover:bg-blue-500'
                 }
               `}
@@ -122,15 +120,14 @@ export const LevelSelection = ({
         <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 3</h2>
         <h3 className="text-sm text-blue-600 mb-4">{levelNames.level3}</h3>
         
-        <div className="space-y-8">
+        <div className="space-y-4">
           {visibleLevel3Items.map((item) => (
             <div
               key={item.id}
               className={`
                 py-4 px-3 rounded-lg text-center cursor-pointer transition-all
-                transform -rotate-6 hover:rotate-0 duration-200
                 ${selectedPath.level3 === item.id 
-                  ? 'bg-blue-500 text-white ring-2 ring-bright-orange rotate-0' 
+                  ? 'bg-blue-500 text-white ring-2 ring-bright-orange' 
                   : 'bg-blue-400 text-white hover:bg-blue-500'
                 }
               `}
@@ -151,3 +148,4 @@ export const LevelSelection = ({
     </div>
   );
 };
+
