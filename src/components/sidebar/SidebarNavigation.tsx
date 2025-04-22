@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { Home, History } from "lucide-react";
+import { Search, History } from "lucide-react";
 import { useSidebar } from "@/hooks/use-sidebar";
 import {
   SidebarMenu,
@@ -18,11 +18,11 @@ export function SidebarNavigation() {
       <SidebarMenuItem>
         <SidebarMenuButton 
           asChild 
-          tooltip="Home"
+          tooltip="Search"
         >
           <Link to="/">
-            <Home />
-            {isExpanded && <span>Home</span>}
+            <Search />
+            {isExpanded && <span>Search</span>}
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
