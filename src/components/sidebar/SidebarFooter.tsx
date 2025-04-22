@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Bell, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { UserRound } from "lucide-react";
@@ -29,9 +29,9 @@ export function SidebarFooter() {
           <SidebarMenuButton
             tooltip="Profile"
           >
-            <Avatar>
-              <AvatarFallback>
-                <UserRound className="h-5 w-5" />
+            <Avatar className="size-4">
+              <AvatarFallback className="size-4 p-0">
+                <UserRound className="size-4" />
               </AvatarFallback>
             </Avatar>
             {isExpanded && <span>Profile</span>}
