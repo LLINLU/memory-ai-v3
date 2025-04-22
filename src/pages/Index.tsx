@@ -1,5 +1,4 @@
 
-import { Navigation } from "@/components/Navigation";
 import { SearchSection } from "@/components/SearchSection";
 import { RecentSearches } from "@/components/RecentSearches";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -11,7 +10,6 @@ const Index = () => {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1">
-          <Navigation />
           <div className="container mx-auto px-4 py-6">
             <div className="relative">
               <SidebarTrigger className="absolute left-4 top-4 md:hidden" />
