@@ -1,4 +1,3 @@
-
 import { ArrowRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -35,37 +34,57 @@ export const LevelSelection = ({
 }: LevelSelectionProps) => {
   const visibleLevel2Items = selectedPath.level1 ? level2Items[selectedPath.level1] || [] : [];
   const visibleLevel3Items = selectedPath.level2 ? level3Items[selectedPath.level2] || [] : [];
-  const [connectionLine, setConnectionLine] = useState<{x1: number, y1: number, x2: number, y2: number} | null>(null);
+  const [level2to3Line, setLevel2to3Line] = useState<{x1: number, y1: number, x2: number, y2: number} | null>(null);
+  const [level1to2Line, setLevel1to2Line] = useState<{x1: number, y1: number, x2: number, y2: number} | null>(null);
   
-  // Reference to the container element
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Update connection line whenever selected paths change
+  // Update connection lines whenever selected paths change
   useEffect(() => {
-    if (selectedPath.level2 && selectedPath.level3) {
-      const level2Node = document.getElementById(`level2-${selectedPath.level2}`);
-      const level3Node = document.getElementById(`level3-${selectedPath.level3}`);
-      
-      if (level2Node && level3Node && containerRef.current) {
-        // Get container position for relative positioning
-        const containerRect = containerRef.current.getBoundingClientRect();
+    if (containerRef.current) {
+      const containerRect = containerRef.current.getBoundingClientRect();
+
+      // Update level 1 to level 2 connection
+      if (selectedPath.level1 && selectedPath.level2) {
+        const level1Node = document.getElementById(`level1-${selectedPath.level1}`);
+        const level2Node = document.getElementById(`level2-${selectedPath.level2}`);
         
-        // Get the positions of the two nodes
-        const level2Rect = level2Node.getBoundingClientRect();
-        const level3Rect = level3Node.getBoundingClientRect();
-        
-        // Calculate line endpoints
-        const x1 = level2Rect.right - containerRect.left;
-        const y1 = level2Rect.top + level2Rect.height/2 - containerRect.top;
-        const x2 = level3Rect.left - containerRect.left;
-        const y2 = level3Rect.top + level3Rect.height/2 - containerRect.top;
-        
-        setConnectionLine({ x1, y1, x2, y2 });
+        if (level1Node && level2Node) {
+          const level1Rect = level1Node.getBoundingClientRect();
+          const level2Rect = level2Node.getBoundingClientRect();
+          
+          setLevel1to2Line({
+            x1: level1Rect.right - containerRect.left,
+            y1: level1Rect.top + level1Rect.height/2 - containerRect.top,
+            x2: level2Rect.left - containerRect.left,
+            y2: level2Rect.top + level2Rect.height/2 - containerRect.top
+          });
+        }
+      } else {
+        setLevel1to2Line(null);
       }
-    } else {
-      setConnectionLine(null);
+
+      // Update level 2 to level 3 connection
+      if (selectedPath.level2 && selectedPath.level3) {
+        const level2Node = document.getElementById(`level2-${selectedPath.level2}`);
+        const level3Node = document.getElementById(`level3-${selectedPath.level3}`);
+        
+        if (level2Node && level3Node) {
+          const level2Rect = level2Node.getBoundingClientRect();
+          const level3Rect = level3Node.getBoundingClientRect();
+          
+          setLevel2to3Line({
+            x1: level2Rect.right - containerRect.left,
+            y1: level2Rect.top + level2Rect.height/2 - containerRect.top,
+            x2: level3Rect.left - containerRect.left,
+            y2: level3Rect.top + level3Rect.height/2 - containerRect.top
+          });
+        }
+      } else {
+        setLevel2to3Line(null);
+      }
     }
-  }, [selectedPath.level2, selectedPath.level3]);
+  }, [selectedPath.level1, selectedPath.level2, selectedPath.level3]);
 
   return (
     <div className="flex flex-row gap-6 mb-8 relative" ref={containerRef}>
@@ -89,18 +108,6 @@ export const LevelSelection = ({
             >
               <h4 className="text-lg font-bold">{item.name}</h4>
               <p className="text-xs mt-1">{item.info}</p>
-              
-              {selectedPath.level1 === item.id && selectedPath.level2 && (
-                <div 
-                  className="absolute top-1/2 -right-[24px] bg-blue-600" 
-                  style={{ 
-                    width: '48px',
-                    height: '2px',
-                    transform: 'translateY(-50%) translateX(50%)',
-                    transformOrigin: 'right'
-                  }}
-                />
-              )}
             </div>
           ))}
         </div>
@@ -166,23 +173,34 @@ export const LevelSelection = ({
         </div>
       </div>
 
-      {/* SVG connection line between level2 and level3 */}
-      {connectionLine && (
-        <svg 
-          className="absolute top-0 left-0 w-full h-full pointer-events-none z-10"
-          style={{ overflow: 'visible' }}
-        >
+      {/* SVG connection lines */}
+      <svg 
+        className="absolute top-0 left-0 w-full h-full pointer-events-none z-10"
+        style={{ overflow: 'visible' }}
+      >
+        {level1to2Line && (
           <line
-            x1={connectionLine.x1}
-            y1={connectionLine.y1}
-            x2={connectionLine.x2}
-            y2={connectionLine.y2}
-            stroke="#2563eb" // blue-600
+            x1={level1to2Line.x1}
+            y1={level1to2Line.y1}
+            x2={level1to2Line.x2}
+            y2={level1to2Line.y2}
+            stroke="#2563eb"
             strokeWidth="2"
             strokeLinecap="round"
           />
-        </svg>
-      )}
+        )}
+        {level2to3Line && (
+          <line
+            x1={level2to3Line.x1}
+            y1={level2to3Line.y1}
+            x2={level2to3Line.x2}
+            y2={level2to3Line.y2}
+            stroke="#2563eb"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        )}
+      </svg>
     </div>
   );
 };
