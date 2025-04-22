@@ -1,5 +1,6 @@
 
 import { ArrowRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface LevelItem {
   id: string;
@@ -34,20 +35,40 @@ export const LevelSelection = ({
 }: LevelSelectionProps) => {
   const visibleLevel2Items = selectedPath.level1 ? level2Items[selectedPath.level1] || [] : [];
   const visibleLevel3Items = selectedPath.level2 ? level3Items[selectedPath.level2] || [] : [];
+  const [connectionLine, setConnectionLine] = useState<{x1: number, y1: number, x2: number, y2: number} | null>(null);
+  
+  // Reference to the container element
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Get the selected DOM elements to calculate connecting line position
-  const getNodePositions = () => {
-    const level2NodeId = `level2-${selectedPath.level2}`;
-    const level3NodeId = `level3-${selectedPath.level3}`;
-    
-    const level2Node = document.getElementById(level2NodeId);
-    const level3Node = document.getElementById(level3NodeId);
-    
-    return { level2Node, level3Node };
-  };
+  // Update connection line whenever selected paths change
+  useEffect(() => {
+    if (selectedPath.level2 && selectedPath.level3) {
+      const level2Node = document.getElementById(`level2-${selectedPath.level2}`);
+      const level3Node = document.getElementById(`level3-${selectedPath.level3}`);
+      
+      if (level2Node && level3Node && containerRef.current) {
+        // Get container position for relative positioning
+        const containerRect = containerRef.current.getBoundingClientRect();
+        
+        // Get the positions of the two nodes
+        const level2Rect = level2Node.getBoundingClientRect();
+        const level3Rect = level3Node.getBoundingClientRect();
+        
+        // Calculate line endpoints
+        const x1 = level2Rect.right - containerRect.left;
+        const y1 = level2Rect.top + level2Rect.height/2 - containerRect.top;
+        const x2 = level3Rect.left - containerRect.left;
+        const y2 = level3Rect.top + level3Rect.height/2 - containerRect.top;
+        
+        setConnectionLine({ x1, y1, x2, y2 });
+      }
+    } else {
+      setConnectionLine(null);
+    }
+  }, [selectedPath.level2, selectedPath.level3]);
 
   return (
-    <div className="flex flex-row gap-6 mb-8 relative">
+    <div className="flex flex-row gap-6 mb-8 relative" ref={containerRef}>
       <div className="w-1/3 bg-blue-50 p-4 rounded-lg relative">
         <h2 className="text-lg font-semibold text-blue-700 mb-3">Level 1</h2>
         <h3 className="text-sm text-blue-600 mb-4">{levelNames.level1}</h3>
@@ -145,50 +166,22 @@ export const LevelSelection = ({
         </div>
       </div>
 
-      {/* Dynamic connecting line between level2 and level3 */}
-      {selectedPath.level2 && selectedPath.level3 && (
-        <div 
-          className="absolute pointer-events-none z-10"
-          style={{
-            position: 'absolute',
-            left: '62.5%', // Position between level 2 and level 3 columns
-            right: '32.5%',
-            top: 0,
-            bottom: 0,
-            overflow: 'visible'
-          }}
+      {/* SVG connection line between level2 and level3 */}
+      {connectionLine && (
+        <svg 
+          className="absolute top-0 left-0 w-full h-full pointer-events-none z-10"
+          style={{ overflow: 'visible' }}
         >
-          <svg 
-            style={{ 
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              overflow: 'visible'
-            }}
-          >
-            <line
-              x1="0"
-              y1="0"  
-              x2="100%"
-              y2="0"
-              className="connecting-line"
-              style={{
-                stroke: '#2563eb', // blue-600
-                strokeWidth: '2px',
-                strokeLinecap: 'round',
-                transformOrigin: 'left',
-                transform: `translateY(${
-                  // Get position of selected level 2 node
-                  document.getElementById(`level2-${selectedPath.level2}`)?.offsetTop +
-                  document.getElementById(`level2-${selectedPath.level2}`)?.clientHeight / 2 -
-                  // Adjust for level 3 node position
-                  (document.getElementById(`level3-${selectedPath.level3}`)?.offsetTop || 0) -
-                  (document.getElementById(`level3-${selectedPath.level3}`)?.clientHeight / 2 || 0)
-                }px)`,
-              }}
-            />
-          </svg>
-        </div>
+          <line
+            x1={connectionLine.x1}
+            y1={connectionLine.y1}
+            x2={connectionLine.x2}
+            y2={connectionLine.y2}
+            stroke="#2563eb" // blue-600
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
       )}
     </div>
   );
