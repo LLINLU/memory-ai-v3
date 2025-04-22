@@ -17,7 +17,7 @@ export const TechnologyHeader = ({ query: propQuery }: TechnologyHeaderProps) =>
         {displayQuery}
       </h1>
       <p className="text-gray-600 mt-2">
-        Your query mapped to this technology path - explore to see relevant results
+        Click on nodes below to refine your search and update results.
       </p>
     </div>
   );
