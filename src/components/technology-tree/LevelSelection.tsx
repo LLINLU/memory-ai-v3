@@ -40,8 +40,8 @@ export const LevelSelection = ({
   
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Update connection lines whenever selected paths change
-  useEffect(() => {
+  // Function to update connection lines based on current DOM positions
+  const updateConnectionLines = () => {
     if (containerRef.current) {
       const containerRect = containerRef.current.getBoundingClientRect();
 
@@ -85,7 +85,51 @@ export const LevelSelection = ({
         setLevel2to3Line(null);
       }
     }
+  };
+
+  // Update connection lines when selected paths change or on resize
+  useEffect(() => {
+    updateConnectionLines();
+    
+    // Add resize event listener to handle panel resizing
+    const handleResize = () => {
+      requestAnimationFrame(updateConnectionLines);
+    };
+
+    window.addEventListener('resize', handleResize);
+    
+    // Listen for panel resize events
+    const resizeObserver = new ResizeObserver(() => {
+      requestAnimationFrame(updateConnectionLines);
+    });
+    
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+    
+    // Handle specific resize events from resizable panels
+    document.addEventListener('panel-resize', handleResize);
+    
+    // Clean up
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('panel-resize', handleResize);
+      resizeObserver.disconnect();
+    };
   }, [selectedPath.level1, selectedPath.level2, selectedPath.level3]);
+
+  // Also update lines when the component mounts and after a short delay
+  // to ensure proper positioning after DOM layout stabilizes
+  useEffect(() => {
+    updateConnectionLines();
+    
+    // Update again after layout stabilizes
+    const timeoutId = setTimeout(() => {
+      updateConnectionLines();
+    }, 100);
+    
+    return () => clearTimeout(timeoutId);
+  }, []);
 
   return (
     <div className="flex flex-row gap-6 mb-8 relative" ref={containerRef}>
@@ -205,4 +249,3 @@ export const LevelSelection = ({
     </div>
   );
 };
-

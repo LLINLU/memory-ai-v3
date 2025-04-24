@@ -61,16 +61,23 @@ const TechnologyTree = () => {
 
   const levelNames = getLevelNames(selectedPath);
 
+  // Dispatch panel resize event when panels are resized
+  const handlePanelResize = () => {
+    const event = new CustomEvent('panel-resize');
+    document.dispatchEvent(event);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navigation />
       
       <div className="flex flex-1 overflow-hidden">
-        <ResizablePanelGroup direction="horizontal">
+        <ResizablePanelGroup direction="horizontal" onLayout={handlePanelResize}>
           <ResizablePanel 
             defaultSize={60} 
             minSize={30}
             className={isExpanded ? 'hidden' : undefined}
+            onResize={handlePanelResize}
           >
             <MainContent
               selectedPath={selectedPath}
@@ -90,6 +97,7 @@ const TechnologyTree = () => {
               defaultSize={isExpanded ? 100 : 40} 
               minSize={20}
               maxSize={isExpanded ? 100 : 50}
+              onResize={handlePanelResize}
             >
               <div className="h-full bg-white border-l border-gray-200 shadow-lg flex flex-col">
                 <SidebarControls
