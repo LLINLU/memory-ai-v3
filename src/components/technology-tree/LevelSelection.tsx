@@ -52,11 +52,11 @@ export const LevelSelection = ({
       const refreshEvent = new CustomEvent('refresh-papers');
       document.dispatchEvent(refreshEvent);
       
-      // Show notification to user with shorter duration for better visibility
+      // Show notification to user with 3-second duration
       toast({
         title: "Results updated",
         description: "The paper list has been updated based on your selection",
-        duration: 3000,
+        duration: 3000, // Explicitly set to 3 seconds
       });
       
       console.log("Toast triggered for node selection", { level, nodeId });
