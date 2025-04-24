@@ -1,4 +1,3 @@
-
 import React, { useRef } from "react";
 import { LevelColumn } from "./LevelColumn";
 import { ConnectionLines } from "./ConnectionLines";
@@ -33,17 +32,13 @@ export const LevelSelection = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const { level1to2Line, level2to3Line } = useConnectionLines(containerRef, selectedPath);
 
-  // Wrap the onNodeClick to show toast and trigger results update
   const handleNodeClick = (level: string, nodeId: string) => {
     onNodeClick(level, nodeId);
     
-    // Only show toast and update results if actually selecting a new node
     if (selectedPath[level] !== nodeId) {
-      // Create a custom event to refresh the paper list
       const refreshEvent = new CustomEvent('refresh-papers');
       document.dispatchEvent(refreshEvent);
       
-      // Show notification to user
       toast({
         title: "Results updated",
         description: "The paper list has been updated based on your selection",
