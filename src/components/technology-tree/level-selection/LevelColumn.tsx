@@ -1,0 +1,57 @@
+
+import React from 'react';
+
+interface LevelItem {
+  id: string;
+  name: string;
+  info?: string;
+}
+
+interface LevelColumnProps {
+  title: string;
+  subtitle: string;
+  items: LevelItem[];
+  selectedId: string;
+  onNodeClick: (nodeId: string) => void;
+}
+
+export const LevelColumn: React.FC<LevelColumnProps> = ({
+  title,
+  subtitle,
+  items,
+  selectedId,
+  onNodeClick
+}) => {
+  return (
+    <div className="w-1/3 bg-blue-50 p-4 rounded-lg relative">
+      <h2 className="text-lg font-semibold text-blue-700 mb-3">{title}</h2>
+      <h3 className="text-sm text-blue-600 mb-4">{subtitle}</h3>
+      
+      <div className="space-y-4">
+        {items.map((item) => (
+          <div
+            key={item.id}
+            className={`
+              py-4 px-3 rounded-lg text-center cursor-pointer transition-all relative
+              ${selectedId === item.id 
+                ? 'bg-blue-500 text-white ring-2 ring-blue-600' 
+                : 'bg-blue-400 text-white hover:bg-blue-500'
+              }
+            `}
+            onClick={() => onNodeClick(item.id)}
+            id={`level${title.slice(-1)}-${item.id}`}
+          >
+            <h4 className="text-lg font-bold">{item.name}</h4>
+            {item.info && <p className="text-xs mt-1">{item.info}</p>}
+          </div>
+        ))}
+        {items.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            {title === "Level 2" ? "Select a domain from Level 1" : "Select a sub-domain from Level 2"}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
