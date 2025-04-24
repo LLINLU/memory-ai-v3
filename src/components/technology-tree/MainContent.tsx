@@ -2,7 +2,6 @@
 import React from 'react';
 import { TechnologyHeader } from "./TechnologyHeader";
 import { PathDisplay } from "./PathDisplay";
-import { ZoomControls } from "./ZoomControls";
 import { LevelSelection } from "./LevelSelection";
 
 interface MainContentProps {
@@ -35,8 +34,7 @@ export const MainContent = ({
     level2: "Sub-domains",
     level3: "Specific Topics/Techniques"
   },
-  query,
-  hasUserMadeSelection
+  query
 }: MainContentProps) => {
   return (
     <div className="container mx-auto px-4 py-6">
@@ -47,7 +45,6 @@ export const MainContent = ({
         level2Items={level2Items}
         level3Items={level3Items}
       />
-      <ZoomControls hasUserMadeSelection={hasUserMadeSelection} />
       <LevelSelection
         selectedPath={selectedPath}
         level1Items={level1Items}
