@@ -1,5 +1,5 @@
 
-import { useEffect, RefObject } from 'react';
+import { useEffect, RefObject, useState } from 'react';
 
 interface ConnectionLine {
   x1: number;
@@ -11,9 +11,16 @@ interface ConnectionLine {
 export const useConnectionLines = (
   containerRef: RefObject<HTMLDivElement>,
   selectedPath: { level1: string; level2: string; level3: string },
-  setLevel1to2Line: (line: ConnectionLine | null) => void,
-  setLevel2to3Line: (line: ConnectionLine | null) => void
+  setLevel1to2Line?: (line: ConnectionLine | null) => void,
+  setLevel2to3Line?: (line: ConnectionLine | null) => void
 ) => {
+  const [level1to2Line, setInternalLevel1to2Line] = useState<ConnectionLine | null>(null);
+  const [level2to3Line, setInternalLevel2to3Line] = useState<ConnectionLine | null>(null);
+  
+  // Use the provided setters if available, otherwise use internal state
+  const updateLevel1to2Line = setLevel1to2Line || setInternalLevel1to2Line;
+  const updateLevel2to3Line = setLevel2to3Line || setInternalLevel2to3Line;
+
   const updateConnectionLines = () => {
     if (containerRef.current) {
       const containerRect = containerRef.current.getBoundingClientRect();
@@ -27,7 +34,7 @@ export const useConnectionLines = (
           const level1Rect = level1Node.getBoundingClientRect();
           const level2Rect = level2Node.getBoundingClientRect();
           
-          setLevel1to2Line({
+          updateLevel1to2Line({
             x1: level1Rect.right - containerRect.left,
             y1: level1Rect.top + level1Rect.height/2 - containerRect.top,
             x2: level2Rect.left - containerRect.left,
@@ -35,7 +42,7 @@ export const useConnectionLines = (
           });
         }
       } else {
-        setLevel1to2Line(null);
+        updateLevel1to2Line(null);
       }
 
       // Update level 2 to level 3 connection
@@ -47,7 +54,7 @@ export const useConnectionLines = (
           const level2Rect = level2Node.getBoundingClientRect();
           const level3Rect = level3Node.getBoundingClientRect();
           
-          setLevel2to3Line({
+          updateLevel2to3Line({
             x1: level2Rect.right - containerRect.left,
             y1: level2Rect.top + level2Rect.height/2 - containerRect.top,
             x2: level3Rect.left - containerRect.left,
@@ -55,7 +62,7 @@ export const useConnectionLines = (
           });
         }
       } else {
-        setLevel2to3Line(null);
+        updateLevel2to3Line(null);
       }
     }
   };
@@ -92,6 +99,7 @@ export const useConnectionLines = (
     return () => clearTimeout(timeoutId);
   }, []);
 
-  return { updateConnectionLines };
+  return { level1to2Line: setLevel1to2Line ? null : level1to2Line, 
+           level2to3Line: setLevel2to3Line ? null : level2to3Line, 
+           updateConnectionLines };
 };
-

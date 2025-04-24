@@ -40,4 +40,3 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
     </svg>
   );
 };
-

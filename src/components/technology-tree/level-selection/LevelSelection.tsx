@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useRef } from "react";
 import { LevelColumn } from "./LevelColumn";
 import { ConnectionLines } from "./ConnectionLines";
 import { useConnectionLines } from "./useConnectionLines";
@@ -30,7 +30,8 @@ export const LevelSelection = ({
   onNodeClick,
   levelNames
 }: LevelSelectionProps) => {
-  const { level1to2Line, level2to3Line } = useConnectionLines();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { level1to2Line, level2to3Line } = useConnectionLines(containerRef, selectedPath);
 
   // Wrap the onNodeClick to show toast and trigger results update
   const handleNodeClick = (level: string, nodeId: string) => {
@@ -52,7 +53,7 @@ export const LevelSelection = ({
   };
 
   return (
-    <div className="flex flex-row gap-6 mb-8 relative">
+    <div className="flex flex-row gap-6 mb-8 relative" ref={containerRef}>
       <LevelColumn
         title="Level 1"
         subtitle={levelNames.level1}
