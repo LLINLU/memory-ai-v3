@@ -1,12 +1,13 @@
-import * as React from "react"
+
+import * as React from "react";
 
 import type {
   ToastActionElement,
   ToastProps,
-} from "@/components/ui/toast"
+} from "@/components/ui/toast";
 
-const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+const TOAST_LIMIT = 5;  // Increasing from 1 to 5
+const TOAST_REMOVE_DELAY = 5000;  // Reducing from 1000000 to 5000 milliseconds
 
 type ToasterToast = ToastProps & {
   id: string

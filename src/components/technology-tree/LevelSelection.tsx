@@ -1,8 +1,9 @@
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { LevelColumn } from "./level-selection/LevelColumn";
 import { ConnectionLines } from "./level-selection/ConnectionLines";
 import { useConnectionLines } from "./level-selection/useConnectionLines";
+import { toast } from "@/hooks/use-toast";
 
 interface LevelItem {
   id: string;
@@ -44,6 +45,26 @@ export const LevelSelection = ({
 
   useConnectionLines(containerRef, selectedPath, setLevel1to2Line, setLevel2to3Line);
 
+  const handleNodeSelection = (level: string, nodeId: string) => {
+    // Only show toast if actually selecting a new node
+    if (selectedPath[level] !== nodeId) {
+      // Create custom event to refresh paper list
+      const refreshEvent = new CustomEvent('refresh-papers');
+      document.dispatchEvent(refreshEvent);
+      
+      // Show notification to user with shorter duration for better visibility
+      toast({
+        title: "Results updated",
+        description: "The paper list has been updated based on your selection",
+        duration: 3000,
+      });
+      
+      console.log("Toast triggered for node selection", { level, nodeId });
+    }
+    
+    onNodeClick(level, nodeId);
+  };
+
   return (
     <div className="flex flex-row gap-6 mb-8 relative" ref={containerRef}>
       <LevelColumn
@@ -51,7 +72,7 @@ export const LevelSelection = ({
         subtitle={levelNames.level1}
         items={level1Items}
         selectedId={selectedPath.level1}
-        onNodeClick={(nodeId) => onNodeClick('level1', nodeId)}
+        onNodeClick={(nodeId) => handleNodeSelection('level1', nodeId)}
       />
 
       <LevelColumn
@@ -59,7 +80,7 @@ export const LevelSelection = ({
         subtitle={levelNames.level2}
         items={visibleLevel2Items}
         selectedId={selectedPath.level2}
-        onNodeClick={(nodeId) => onNodeClick('level2', nodeId)}
+        onNodeClick={(nodeId) => handleNodeSelection('level2', nodeId)}
       />
 
       <LevelColumn
@@ -67,7 +88,7 @@ export const LevelSelection = ({
         subtitle={levelNames.level3}
         items={visibleLevel3Items}
         selectedId={selectedPath.level3}
-        onNodeClick={(nodeId) => onNodeClick('level3', nodeId)}
+        onNodeClick={(nodeId) => handleNodeSelection('level3', nodeId)}
       />
 
       <ConnectionLines
@@ -77,4 +98,3 @@ export const LevelSelection = ({
     </div>
   );
 };
-
