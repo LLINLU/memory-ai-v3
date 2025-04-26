@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { NodeSuggestion } from "@/types/chat";
 import { toast } from "@/hooks/use-toast";
@@ -57,6 +58,15 @@ export const usePathSelection = (initialPath = {
       description: `Added "${node.title}" to Level ${level}`,
       duration: 2000,
     });
+
+    // Update the selected path to the newly added node
+    if (level === 'level1') {
+      setSelectedPath(prev => ({ ...prev, level1: node.title.toLowerCase().replace(/\s+/g, '-'), level2: "", level3: "" }));
+    } else if (level === 'level2') {
+      setSelectedPath(prev => ({ ...prev, level2: node.title.toLowerCase().replace(/\s+/g, '-'), level3: "" }));
+    } else if (level === 'level3') {
+      setSelectedPath(prev => ({ ...prev, level3: node.title.toLowerCase().replace(/\s+/g, '-') }));
+    }
   };
 
   return {
