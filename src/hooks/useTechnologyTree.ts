@@ -135,8 +135,20 @@ export const useInputQuery = (sidebarTab: string) => {
 
 export const useTechnologyTree = () => {
   const [selectedView, setSelectedView] = useState("tree");
-  const { selectedPath, hasUserMadeSelection, handleNodeClick, addCustomNode } = usePathSelection();
-  const { sidebarTab, showSidebar, collapsedSidebar, setSidebarTab, setShowSidebar, toggleSidebar } = useSidebar();
+  const { 
+    selectedPath, 
+    hasUserMadeSelection, 
+    handleNodeClick, 
+    addCustomNode 
+  } = usePathSelection();
+  const { 
+    sidebarTab, 
+    showSidebar, 
+    collapsedSidebar, 
+    setSidebarTab, 
+    setShowSidebar, 
+    toggleSidebar 
+  } = useSidebar();
   const { 
     inputValue, 
     query, 
@@ -165,6 +177,7 @@ export const useTechnologyTree = () => {
     handleInputChange,
     setQuery,
     setChatMessages,
-    setInputValue
+    setInputValue,
+    addCustomNode  // Add this line to expose the function
   };
 };
