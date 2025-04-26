@@ -49,11 +49,11 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
             className={`
               py-4 px-3 rounded-lg text-center cursor-pointer transition-all relative
               ${selectedId === item.id 
-                ? 'bg-blue-500 text-white ring-2 ring-blue-600' 
+                ? item.isCustom
+                  ? 'bg-[#FFE194] border-2 border-[#FBCA17] text-[#483B3B]'
+                  : 'bg-blue-500 text-white ring-2 ring-blue-600'
                 : item.isCustom
-                  ? (selectedId === item.id 
-                    ? 'bg-[#FFE194] border-2 border-[#FBCA17] text-[#483B3B]' 
-                    : 'bg-[#FFF4CB] border-2 border-[#FEE27E] text-[#554444]')
+                  ? 'bg-[#FFF4CB] border-2 border-[#FEE27E] text-[#554444]'
                   : 'bg-blue-400 text-white hover:bg-blue-500'
               }
             `}
@@ -85,3 +85,4 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
     </div>
   );
 };
+
