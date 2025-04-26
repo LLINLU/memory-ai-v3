@@ -1,10 +1,11 @@
 
 import { useState, useEffect } from "react";
 import { processUserMessage } from '@/utils/chatUtils';
+import { ChatMessage } from "@/types/chat";
 
 export const useTechTreeChat = () => {
   const [inputValue, setInputValue] = useState("");
-  const [chatMessages, setChatMessages] = useState<any[]>([]);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
@@ -12,7 +13,7 @@ export const useTechTreeChat = () => {
   
   const handleSendMessage = () => {
     if (inputValue.trim()) {
-      const userMessage = {
+      const userMessage: ChatMessage = {
         content: inputValue,
         isUser: true
       };

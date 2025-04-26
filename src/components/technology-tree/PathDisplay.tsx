@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { ArrowRight } from "lucide-react";
 
 interface PathDisplayProps {
   selectedPath: {
@@ -19,34 +18,29 @@ export const PathDisplay = ({
   level2Items,
   level3Items
 }: PathDisplayProps) => {
+  // Find the selected items by ID to display their names
+  const findItemName = (itemId: string, items: any[]) => {
+    const item = items.find(item => item.id === itemId);
+    return item ? item.name : '';
+  };
+
+  const level1Name = findItemName(selectedPath.level1, level1Items);
+  
+  const level2Name = selectedPath.level2 && selectedPath.level1
+    ? findItemName(selectedPath.level2, level2Items[selectedPath.level1] || [])
+    : '';
+  
+  const level3Name = selectedPath.level3 && selectedPath.level2
+    ? findItemName(selectedPath.level3, level3Items[selectedPath.level2] || [])
+    : '';
+
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
-      <div className="flex items-center flex-wrap gap-2">
-        <span className="text-gray-700 font-medium">Selected path:</span>
-        {selectedPath.level1 && (
-          <>
-            <span className="text-blue-500 font-medium">
-              {level1Items.find(item => item.id === selectedPath.level1)?.name || selectedPath.level1}
-            </span>
-            {selectedPath.level2 && (
-              <>
-                <ArrowRight className="h-4 w-4 text-gray-500" />
-                <span className="text-blue-500 font-medium">
-                  {level2Items[selectedPath.level1]?.find(item => item.id === selectedPath.level2)?.name || selectedPath.level2}
-                </span>
-                {selectedPath.level3 && (
-                  <>
-                    <ArrowRight className="h-4 w-4 text-gray-500" />
-                    <span className="text-blue-500 font-medium">
-                      {level3Items[selectedPath.level2]?.find(item => item.id === selectedPath.level3)?.name || selectedPath.level3}
-                    </span>
-                  </>
-                )}
-              </>
-            )}
-          </>
-        )}
-      </div>
+    <div className="mb-6">
+      <p className="text-gray-600">
+        {level1Name && level1Name}
+        {level2Name && ` → ${level2Name}`}
+        {level3Name && ` → ${level3Name}`}
+      </p>
     </div>
   );
 };
