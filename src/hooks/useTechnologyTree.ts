@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { NodeSuggestion } from "@/types/chat";
+import { toast } from "@/hooks/use-toast";
 
 export interface TechnologyTreeState {
   selectedPath: {
@@ -15,7 +17,6 @@ export interface TechnologyTreeState {
   hasUserMadeSelection: boolean;
 }
 
-// Separate hook for path selection
 export const usePathSelection = (initialPath = {
   level1: "adaptive-optics",
   level2: "medical-applications",
@@ -66,7 +67,6 @@ export const usePathSelection = (initialPath = {
   };
 };
 
-// Separate hook for sidebar management
 export const useSidebar = (initialTab = "result") => {
   const [sidebarTab, setSidebarTab] = useState(initialTab);
   const [showSidebar, setShowSidebar] = useState(true);
@@ -91,7 +91,6 @@ export const useSidebar = (initialTab = "result") => {
   };
 };
 
-// Separate hook for input and query management
 export const useInputQuery = (sidebarTab: string) => {
   const [inputValue, setInputValue] = useState("");
   const [query, setQuery] = useState("");
@@ -124,7 +123,6 @@ export const useInputQuery = (sidebarTab: string) => {
   };
 };
 
-// Main hook that combines all the others
 export const useTechnologyTree = () => {
   const [selectedView, setSelectedView] = useState("tree");
   const { selectedPath, hasUserMadeSelection, handleNodeClick, addCustomNode } = usePathSelection();

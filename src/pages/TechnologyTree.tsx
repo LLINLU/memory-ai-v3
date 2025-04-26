@@ -48,7 +48,8 @@ const TechnologyTree = () => {
     handleInputChange,
     chatMessages,
     setChatMessages,
-    hasUserMadeSelection
+    hasUserMadeSelection,
+    addCustomNode
   } = useTechnologyTree();
 
   const [isExpanded, setIsExpanded] = useState(false);
@@ -106,10 +107,12 @@ const TechnologyTree = () => {
   };
 
   const handleUseNode = (suggestion: NodeSuggestion) => {
-    const levelMatch = chatMessages[0]?.content.match(/Level (\d)/);
-    if (levelMatch) {
-      const level = levelMatch[1];
-      addCustomNode(level, suggestion);
+    if (chatMessages[0]?.content) {
+      const levelMatch = chatMessages[0].content.match(/Level (\d+)/i);
+      if (levelMatch) {
+        const level = `level${levelMatch[1]}`;
+        addCustomNode(level, suggestion);
+      }
     }
   };
 
