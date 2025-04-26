@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { NodeSuggestion } from "@/types/chat";
 import { toast } from "@/hooks/use-toast";
+import { level1Items as initialLevel1Items, level2Items as initialLevel2Items, level3Items as initialLevel3Items } from "@/data/technologyTreeData";
 
 export interface TechnologyTreeState {
   selectedPath: {
@@ -25,6 +26,9 @@ export const usePathSelection = (initialPath = {
 }) => {
   const [selectedPath, setSelectedPath] = useState(initialPath);
   const [hasUserMadeSelection, setHasUserMadeSelection] = useState(false);
+  const [level1Items, setLevel1Items] = useState(initialLevel1Items);
+  const [level2Items, setLevel2Items] = useState(initialLevel2Items);
+  const [level3Items, setLevel3Items] = useState(initialLevel3Items);
 
   const handleNodeClick = (level: string, nodeId: string) => {
     setHasUserMadeSelection(true);
@@ -53,27 +57,64 @@ export const usePathSelection = (initialPath = {
 
   const addCustomNode = (level: string, node: NodeSuggestion) => {
     console.log('Adding custom node:', { level, node });
+    
+    // Create a URL-friendly ID from the title
+    const nodeId = node.title.toLowerCase().replace(/\s+/g, '-');
+    
+    // Create a new node object
+    const newNode = {
+      id: nodeId,
+      name: node.title,
+      info: "New node • 0 implementations"
+    };
+    
+    // Add the new node to the appropriate level
+    if (level === 'level1') {
+      setLevel1Items(prev => [...prev, newNode]);
+      setSelectedPath(prev => ({ ...prev, level1: nodeId, level2: "", level3: "" }));
+    } 
+    else if (level === 'level2') {
+      // For level2, we need to update the object for the current level1 selection
+      setLevel2Items(prev => {
+        const currentLevel1 = selectedPath.level1;
+        const currentItems = prev[currentLevel1] || [];
+        
+        return {
+          ...prev,
+          [currentLevel1]: [...currentItems, newNode]
+        };
+      });
+      setSelectedPath(prev => ({ ...prev, level2: nodeId, level3: "" }));
+    } 
+    else if (level === 'level3') {
+      // For level3, we need to update the object for the current level2 selection
+      setLevel3Items(prev => {
+        const currentLevel2 = selectedPath.level2;
+        const currentItems = prev[currentLevel2] || [];
+        
+        return {
+          ...prev,
+          [currentLevel2]: [...currentItems, newNode]
+        };
+      });
+      setSelectedPath(prev => ({ ...prev, level3: nodeId }));
+    }
+    
     toast({
       title: "Node added",
-      description: `Added "${node.title}" to Level ${level}`,
+      description: `Added "${node.title}" to Level ${level.charAt(5)}`,
       duration: 2000,
     });
-
-    // Update the selected path to the newly added node
-    if (level === 'level1') {
-      setSelectedPath(prev => ({ ...prev, level1: node.title.toLowerCase().replace(/\s+/g, '-'), level2: "", level3: "" }));
-    } else if (level === 'level2') {
-      setSelectedPath(prev => ({ ...prev, level2: node.title.toLowerCase().replace(/\s+/g, '-'), level3: "" }));
-    } else if (level === 'level3') {
-      setSelectedPath(prev => ({ ...prev, level3: node.title.toLowerCase().replace(/\s+/g, '-') }));
-    }
   };
 
   return {
     selectedPath,
     hasUserMadeSelection,
     handleNodeClick,
-    addCustomNode
+    addCustomNode,
+    level1Items,
+    level2Items,
+    level3Items
   };
 };
 
@@ -139,7 +180,10 @@ export const useTechnologyTree = () => {
     selectedPath, 
     hasUserMadeSelection, 
     handleNodeClick, 
-    addCustomNode 
+    addCustomNode,
+    level1Items,
+    level2Items,
+    level3Items
   } = usePathSelection();
   const { 
     sidebarTab, 
@@ -178,6 +222,9 @@ export const useTechnologyTree = () => {
     setQuery,
     setChatMessages,
     setInputValue,
-    addCustomNode  // Add this line to expose the function
+    addCustomNode,
+    level1Items,
+    level2Items,
+    level3Items
   };
 };

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Search } from "lucide-react";
@@ -9,7 +10,6 @@ import { MainContent } from "@/components/technology-tree/MainContent";
 import { SidebarControls } from "@/components/technology-tree/SidebarControls";
 import { CollapsedSidebar } from "@/components/technology-tree/CollapsedSidebar";
 import { useTechnologyTree } from "@/hooks/useTechnologyTree";
-import { level1Items, level2Items, level3Items } from "@/data/technologyTreeData";
 import { processUserMessage } from '@/utils/chatUtils';
 import { NodeSuggestion } from '@/types/chat';
 
@@ -49,7 +49,10 @@ const TechnologyTree = () => {
     chatMessages,
     setChatMessages,
     hasUserMadeSelection,
-    addCustomNode
+    addCustomNode,
+    level1Items,
+    level2Items,
+    level3Items
   } = useTechnologyTree();
 
   const [isExpanded, setIsExpanded] = useState(false);
@@ -107,12 +110,22 @@ const TechnologyTree = () => {
   };
 
   const handleUseNode = (suggestion: NodeSuggestion) => {
-    if (chatMessages[0]?.content) {
-      const levelMatch = chatMessages[0].content.match(/Level (\d+)/i);
-      if (levelMatch) {
-        const level = `level${levelMatch[1]}`;
-        addCustomNode(level, suggestion);
+    if (chatMessages.length > 0) {
+      // Try to find a message that mentions a level
+      for (const message of chatMessages) {
+        const levelMatch = message.content?.match(/Level (\d+)/i);
+        if (levelMatch) {
+          const levelNum = levelMatch[1];
+          const level = `level${levelNum}`;
+          console.log(`Adding custom node to ${level}:`, suggestion);
+          addCustomNode(level, suggestion);
+          return;
+        }
       }
+      
+      // If no level was found, default to adding to level2 since that's what the user is trying to do
+      // based on the screenshot
+      addCustomNode('level2', suggestion);
     }
   };
 
