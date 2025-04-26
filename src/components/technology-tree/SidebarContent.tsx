@@ -1,4 +1,5 @@
 
+import React from "react";
 import { TabsHorizontal, TabsHorizontalContent } from "@/components/ui/tabs";
 import { SearchResults } from "./SearchResults";
 import { ChatInput } from "./ChatInput";
@@ -9,13 +10,15 @@ interface SidebarContentProps {
   chatMessages: any[];
   inputValue: string;
   onInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onSendMessage?: () => void;
 }
 
 export const SidebarContent = ({
   sidebarTab,
   chatMessages,
   inputValue,
-  onInputChange
+  onInputChange,
+  onSendMessage
 }: SidebarContentProps) => {
   return (
     <div className="h-full flex flex-col">
@@ -28,7 +31,11 @@ export const SidebarContent = ({
           {sidebarTab === "chat" && (
             <>
               <ChatConversation chatMessages={chatMessages} />
-              <ChatInput value={inputValue} onChange={onInputChange} />
+              <ChatInput 
+                value={inputValue} 
+                onChange={onInputChange} 
+                onSend={onSendMessage} 
+              />
             </>
           )}
         </TabsHorizontalContent>

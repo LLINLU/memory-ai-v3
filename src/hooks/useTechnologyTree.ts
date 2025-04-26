@@ -93,22 +93,17 @@ export const useInputQuery = (sidebarTab: string) => {
   };
 
   useEffect(() => {
-    // Only initialize chat messages if we're in the chat tab
-    if (sidebarTab === 'chat') {
+    // Only initialize chat messages if we're in the chat tab and no messages exist
+    if (sidebarTab === 'chat' && chatMessages.length === 0) {
       setChatMessages([
         {
           type: "agent",
           content: "I've found research on\nAdaptive Optics → Medical Applications → Retinal Imaging\nHow can I refine this for you?",
           isUser: false
-        },
-        {
-          type: "user",
-          content: "Do you have anything about fluorescence AO imaging?",
-          isUser: true
         }
       ]);
     }
-  }, [sidebarTab]);
+  }, [sidebarTab, chatMessages.length]);
 
   return {
     inputValue,
@@ -116,7 +111,8 @@ export const useInputQuery = (sidebarTab: string) => {
     chatMessages,
     handleInputChange,
     setQuery,
-    setChatMessages
+    setChatMessages,
+    setInputValue
   };
 };
 
@@ -125,7 +121,15 @@ export const useTechnologyTree = () => {
   const [selectedView, setSelectedView] = useState("tree");
   const { selectedPath, hasUserMadeSelection, handleNodeClick } = usePathSelection();
   const { sidebarTab, showSidebar, collapsedSidebar, setSidebarTab, setShowSidebar, toggleSidebar } = useSidebar();
-  const { inputValue, query, chatMessages, handleInputChange, setQuery, setChatMessages } = useInputQuery(sidebarTab);
+  const { 
+    inputValue, 
+    query, 
+    chatMessages, 
+    handleInputChange, 
+    setQuery, 
+    setChatMessages,
+    setInputValue 
+  } = useInputQuery(sidebarTab);
 
   return {
     selectedPath,
@@ -144,6 +148,7 @@ export const useTechnologyTree = () => {
     toggleSidebar,
     handleInputChange,
     setQuery,
-    setChatMessages
+    setChatMessages,
+    setInputValue
   };
 };

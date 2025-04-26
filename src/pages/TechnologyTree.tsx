@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Search } from "lucide-react";
@@ -87,6 +86,30 @@ const TechnologyTree = () => {
     document.dispatchEvent(event);
   };
 
+  const handleSendMessage = () => {
+    if (inputValue.trim()) {
+      // Add user message to chat
+      setChatMessages(prev => [...prev, {
+        type: "user",
+        content: inputValue,
+        isUser: true
+      }]);
+      
+      // Clear input field
+      // In a real app, you would send the message to your backend here
+      handleInputChange({ target: { value: "" } } as React.ChangeEvent<HTMLTextAreaElement>);
+      
+      // Mock response from system (just for demo purposes)
+      setTimeout(() => {
+        setChatMessages(prev => [...prev, {
+          type: "agent",
+          content: "Thanks for your input! I've noted your request for a custom node.",
+          isUser: false
+        }]);
+      }, 1000);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navigation />
@@ -134,6 +157,7 @@ const TechnologyTree = () => {
                     chatMessages={chatMessages}
                     inputValue={inputValue}
                     onInputChange={handleInputChange}
+                    onSendMessage={handleSendMessage}
                   />
                 </div>
               </div>
