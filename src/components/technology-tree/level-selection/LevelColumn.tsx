@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Plus, Star } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 interface LevelItem {
   id: string;
@@ -61,7 +61,6 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
             id={`level${title.slice(-1)}-${item.id}`}
           >
             <div className="flex items-center justify-center gap-2">
-              {/* Removed star icon */}
               <h4 className="text-lg font-bold">{item.name}</h4>
             </div>
             {item.info && <p className="text-xs mt-1">{item.info}</p>}
@@ -73,7 +72,6 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
           className="w-full py-3 px-3 rounded-lg border-2 border-dashed border-gray-300 text-gray-500 hover:border-blue-400 hover:text-blue-500 transition-colors flex items-center justify-center gap-2"
         >
           <Plus className="h-5 w-5" />
-          Custom node
         </button>
 
         {items.length === 0 && (
@@ -85,4 +83,3 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
     </div>
   );
 };
-
