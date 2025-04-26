@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { NodeSuggestion } from "@/types/chat";
 import { toast } from "@/hooks/use-toast";
@@ -55,6 +54,14 @@ export const usePathSelection = (initialPath = {
     });
   };
 
+  const generateChildNode = (parentTitle: string, level: number): NodeSuggestion => {
+    const prefix = level === 2 ? "Implementation of" : "Method for";
+    return {
+      title: `${prefix} ${parentTitle}`,
+      description: `Generated child node for ${parentTitle}`
+    };
+  };
+
   const addCustomNode = (level: string, node: NodeSuggestion) => {
     console.log('Adding custom node:', { level, node });
     
@@ -68,35 +75,58 @@ export const usePathSelection = (initialPath = {
       info: "New node • 0 implementations"
     };
     
-    // Add the new node to the appropriate level
+    // Add the new node and generate child nodes based on the level
     if (level === 'level1') {
       setLevel1Items(prev => [...prev, newNode]);
+      
+      // Generate and add a child node to level2
+      const childNode = generateChildNode(node.title, 2);
+      const childId = childNode.title.toLowerCase().replace(/\s+/g, '-');
+      setLevel2Items(prev => ({
+        ...prev,
+        [nodeId]: [{
+          id: childId,
+          name: childNode.title,
+          info: "Generated node • 0 implementations"
+        }]
+      }));
+      
       setSelectedPath(prev => ({ ...prev, level1: nodeId, level2: "", level3: "" }));
     } 
     else if (level === 'level2') {
-      // For level2, we need to update the object for the current level1 selection
-      setLevel2Items(prev => {
-        const currentLevel1 = selectedPath.level1;
-        const currentItems = prev[currentLevel1] || [];
-        
-        return {
-          ...prev,
-          [currentLevel1]: [...currentItems, newNode]
-        };
-      });
+      // For level2, update the object for the current level1 selection
+      const currentLevel1 = selectedPath.level1;
+      const currentItems = level2Items[currentLevel1] || [];
+      
+      setLevel2Items(prev => ({
+        ...prev,
+        [currentLevel1]: [...currentItems, newNode]
+      }));
+      
+      // Generate and add a child node to level3
+      const childNode = generateChildNode(node.title, 3);
+      const childId = childNode.title.toLowerCase().replace(/\s+/g, '-');
+      setLevel3Items(prev => ({
+        ...prev,
+        [nodeId]: [{
+          id: childId,
+          name: childNode.title,
+          info: "Generated node • 0 implementations"
+        }]
+      }));
+      
       setSelectedPath(prev => ({ ...prev, level2: nodeId, level3: "" }));
     } 
     else if (level === 'level3') {
-      // For level3, we need to update the object for the current level2 selection
-      setLevel3Items(prev => {
-        const currentLevel2 = selectedPath.level2;
-        const currentItems = prev[currentLevel2] || [];
-        
-        return {
-          ...prev,
-          [currentLevel2]: [...currentItems, newNode]
-        };
-      });
+      // For level3, update the object for the current level2 selection
+      const currentLevel2 = selectedPath.level2;
+      const currentItems = level3Items[currentLevel2] || [];
+      
+      setLevel3Items(prev => ({
+        ...prev,
+        [currentLevel2]: [...currentItems, newNode]
+      }));
+      
       setSelectedPath(prev => ({ ...prev, level3: nodeId }));
     }
     
