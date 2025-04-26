@@ -34,7 +34,7 @@ export const useTechTreeChat = () => {
     if (sidebarTab === 'chat' && chatMessages.length === 0) {
       setChatMessages([
         {
-          type: "agent",
+          type: "text", // Changed from "agent" to "text"
           content: "I've found research on\nAdaptive Optics → Medical Applications → Retinal Imaging\nHow can I refine this for you?",
           isUser: false
         }
@@ -44,7 +44,7 @@ export const useTechTreeChat = () => {
 
   const handleSwitchToChat = (message: string) => {
     setChatMessages([{
-      type: "agent",
+      type: "text", // Changed from "agent" to "text"
       content: message,
       isUser: false
     }]);
