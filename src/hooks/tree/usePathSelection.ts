@@ -55,7 +55,7 @@ export const usePathSelection = (initialPath = {
     const newNode = {
       id: nodeId,
       name: node.title,
-      info: "Custom node • 0 implementations",
+      info: "18 papers • 4 implementations", // Updated microcopy
       isCustom: true
     };
     
@@ -69,7 +69,7 @@ export const usePathSelection = (initialPath = {
         [nodeId]: [{
           id: childId,
           name: childNode.title,
-          info: "Generated node • 0 implementations",
+          info: "18 papers • 4 implementations", // Updated for child node
           isCustom: true
         }]
       }));
@@ -92,7 +92,7 @@ export const usePathSelection = (initialPath = {
         [nodeId]: [{
           id: childId,
           name: childNode.title,
-          info: "Generated node • 0 implementations",
+          info: "18 papers • 4 implementations", // Updated for child node
           isCustom: true
         }]
       }));
