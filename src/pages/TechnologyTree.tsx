@@ -10,6 +10,8 @@ import { SidebarControls } from "@/components/technology-tree/SidebarControls";
 import { CollapsedSidebar } from "@/components/technology-tree/CollapsedSidebar";
 import { useTechnologyTree } from "@/hooks/useTechnologyTree";
 import { level1Items, level2Items, level3Items } from "@/data/technologyTreeData";
+import { processUserMessage } from '@/utils/chatUtils';
+import { NodeSuggestion } from '@/types/chat';
 
 const getLevelNames = (selectedPath: { level1: string }) => {
   if (selectedPath.level1.includes('optics')) {
@@ -63,7 +65,6 @@ const TechnologyTree = () => {
     const handleSwitchToChat = (event: CustomEvent) => {
       setSidebarTab("chat");
       setShowSidebar(true);
-      // Update chat messages with the welcome message
       setChatMessages([{
         type: "agent",
         content: event.detail.message,
@@ -80,7 +81,6 @@ const TechnologyTree = () => {
 
   const levelNames = getLevelNames(selectedPath);
 
-  // Dispatch panel resize event when panels are resized
   const handlePanelResize = () => {
     const event = new CustomEvent('panel-resize');
     document.dispatchEvent(event);
@@ -88,25 +88,28 @@ const TechnologyTree = () => {
 
   const handleSendMessage = () => {
     if (inputValue.trim()) {
-      // Add user message to chat
-      setChatMessages(prev => [...prev, {
-        type: "user",
+      const userMessage = {
         content: inputValue,
         isUser: true
-      }]);
+      };
       
-      // Clear input field
-      // In a real app, you would send the message to your backend here
+      setChatMessages(prev => [...prev, userMessage]);
+      
+      const aiResponse = processUserMessage(inputValue);
+      
       handleInputChange({ target: { value: "" } } as React.ChangeEvent<HTMLTextAreaElement>);
       
-      // Mock response from system (just for demo purposes)
       setTimeout(() => {
-        setChatMessages(prev => [...prev, {
-          type: "agent",
-          content: "Thanks for your input! I've noted your request for a custom node.",
-          isUser: false
-        }]);
-      }, 1000);
+        setChatMessages(prev => [...prev, aiResponse]);
+      }, 500);
+    }
+  };
+
+  const handleUseNode = (suggestion: NodeSuggestion) => {
+    const levelMatch = chatMessages[0]?.content.match(/Level (\d)/);
+    if (levelMatch) {
+      const level = levelMatch[1];
+      addCustomNode(level, suggestion);
     }
   };
 
@@ -158,6 +161,9 @@ const TechnologyTree = () => {
                     inputValue={inputValue}
                     onInputChange={handleInputChange}
                     onSendMessage={handleSendMessage}
+                    onUseNode={handleUseNode}
+                    onEditNode={(suggestion) => console.log('Edit node:', suggestion)}
+                    onRefine={(suggestion) => console.log('Refine node:', suggestion)}
                   />
                 </div>
               </div>

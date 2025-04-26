@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 
 export interface TechnologyTreeState {
@@ -50,10 +49,20 @@ export const usePathSelection = (initialPath = {
     });
   };
 
+  const addCustomNode = (level: string, node: NodeSuggestion) => {
+    console.log('Adding custom node:', { level, node });
+    toast({
+      title: "Node added",
+      description: `Added "${node.title}" to Level ${level}`,
+      duration: 2000,
+    });
+  };
+
   return {
     selectedPath,
     hasUserMadeSelection,
-    handleNodeClick
+    handleNodeClick,
+    addCustomNode
   };
 };
 
@@ -93,7 +102,6 @@ export const useInputQuery = (sidebarTab: string) => {
   };
 
   useEffect(() => {
-    // Only initialize chat messages if we're in the chat tab and no messages exist
     if (sidebarTab === 'chat' && chatMessages.length === 0) {
       setChatMessages([
         {
@@ -119,7 +127,7 @@ export const useInputQuery = (sidebarTab: string) => {
 // Main hook that combines all the others
 export const useTechnologyTree = () => {
   const [selectedView, setSelectedView] = useState("tree");
-  const { selectedPath, hasUserMadeSelection, handleNodeClick } = usePathSelection();
+  const { selectedPath, hasUserMadeSelection, handleNodeClick, addCustomNode } = usePathSelection();
   const { sidebarTab, showSidebar, collapsedSidebar, setSidebarTab, setShowSidebar, toggleSidebar } = useSidebar();
   const { 
     inputValue, 
