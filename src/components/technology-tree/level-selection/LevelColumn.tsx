@@ -51,7 +51,9 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
               ${selectedId === item.id 
                 ? 'bg-blue-500 text-white ring-2 ring-blue-600' 
                 : item.isCustom
-                  ? 'bg-vivid-purple/90 text-white hover:bg-vivid-purple'
+                  ? (selectedId === item.id 
+                    ? 'bg-[#FFE194] border-2 border-[#FBCA17] text-[#483B3B]' 
+                    : 'bg-[#FFF4CB] border-2 border-[#FEE27E] text-[#554444]')
                   : 'bg-blue-400 text-white hover:bg-blue-500'
               }
             `}
