@@ -61,7 +61,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
             id={`level${title.slice(-1)}-${item.id}`}
           >
             <div className="flex items-center justify-center gap-2">
-              {item.isCustom && <Star className="h-4 w-4" />}
+              {/* Removed star icon */}
               <h4 className="text-lg font-bold">{item.name}</h4>
             </div>
             {item.info && <p className="text-xs mt-1">{item.info}</p>}
