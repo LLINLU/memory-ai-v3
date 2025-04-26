@@ -55,7 +55,8 @@ export const usePathSelection = (initialPath = {
     const newNode = {
       id: nodeId,
       name: node.title,
-      info: "New node • 0 implementations"
+      info: "Custom node • 0 implementations",
+      isCustom: true
     };
     
     if (level === 'level1') {
@@ -68,7 +69,8 @@ export const usePathSelection = (initialPath = {
         [nodeId]: [{
           id: childId,
           name: childNode.title,
-          info: "Generated node • 0 implementations"
+          info: "Generated node • 0 implementations",
+          isCustom: true
         }]
       }));
       
@@ -90,7 +92,8 @@ export const usePathSelection = (initialPath = {
         [nodeId]: [{
           id: childId,
           name: childNode.title,
-          info: "Generated node • 0 implementations"
+          info: "Generated node • 0 implementations",
+          isCustom: true
         }]
       }));
       

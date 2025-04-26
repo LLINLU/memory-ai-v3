@@ -1,11 +1,12 @@
 
 import React from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Star } from 'lucide-react';
 
 interface LevelItem {
   id: string;
   name: string;
   info?: string;
+  isCustom?: boolean;
 }
 
 interface LevelColumnProps {
@@ -49,13 +50,18 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
               py-4 px-3 rounded-lg text-center cursor-pointer transition-all relative
               ${selectedId === item.id 
                 ? 'bg-blue-500 text-white ring-2 ring-blue-600' 
-                : 'bg-blue-400 text-white hover:bg-blue-500'
+                : item.isCustom
+                  ? 'bg-vivid-purple/90 text-white hover:bg-vivid-purple'
+                  : 'bg-blue-400 text-white hover:bg-blue-500'
               }
             `}
             onClick={() => onNodeClick(item.id)}
             id={`level${title.slice(-1)}-${item.id}`}
           >
-            <h4 className="text-lg font-bold">{item.name}</h4>
+            <div className="flex items-center justify-center gap-2">
+              {item.isCustom && <Star className="h-4 w-4" />}
+              <h4 className="text-lg font-bold">{item.name}</h4>
+            </div>
             {item.info && <p className="text-xs mt-1">{item.info}</p>}
           </div>
         ))}
