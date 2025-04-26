@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { NodeSuggestion } from "@/types/chat";
 import { toast } from "@/hooks/use-toast";
@@ -54,7 +55,7 @@ export const usePathSelection = (initialPath = {
     const newNode = {
       id: nodeId,
       name: node.title,
-      info: "Custom implementation • 0 papers",
+      info: "Custom node • 0 implementations",
       isCustom: true
     };
     

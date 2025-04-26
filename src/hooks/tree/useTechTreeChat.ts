@@ -15,8 +15,7 @@ export const useTechTreeChat = () => {
     if (inputValue.trim()) {
       const userMessage: ChatMessage = {
         content: inputValue,
-        isUser: true,
-        type: "text"
+        isUser: true
       };
       
       setChatMessages(prev => [...prev, userMessage]);
@@ -26,7 +25,7 @@ export const useTechTreeChat = () => {
       setInputValue("");
       
       setTimeout(() => {
-        setChatMessages(prev => [...prev, { ...aiResponse, type: "text" }]);
+        setChatMessages(prev => [...prev, aiResponse]);
       }, 500);
     }
   };
@@ -35,7 +34,7 @@ export const useTechTreeChat = () => {
     if (sidebarTab === 'chat' && chatMessages.length === 0) {
       setChatMessages([
         {
-          type: "text",
+          type: "agent",
           content: "I've found research on\nAdaptive Optics → Medical Applications → Retinal Imaging\nHow can I refine this for you?",
           isUser: false
         }
@@ -45,7 +44,7 @@ export const useTechTreeChat = () => {
 
   const handleSwitchToChat = (message: string) => {
     setChatMessages([{
-      type: "text",
+      type: "agent",
       content: message,
       isUser: false
     }]);
@@ -61,4 +60,3 @@ export const useTechTreeChat = () => {
     setChatMessages
   };
 };
-
