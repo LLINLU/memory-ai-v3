@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Plus } from 'lucide-react';
 
 interface LevelItem {
   id: string;
@@ -22,6 +23,16 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   selectedId,
   onNodeClick
 }) => {
+  const handleCustomNodeClick = () => {
+    // Update sidebar tab to chat
+    const customEvent = new CustomEvent('switch-to-chat', {
+      detail: {
+        message: "👋 Hi there!\nReady to add a new node? Here's how you can start:\n🔹 Option 1: Enter a clear Title and Description yourself.\n🔹 Option 2: Just describe your idea in natural language — I'll help turn it into a well-structured node!"
+      }
+    });
+    document.dispatchEvent(customEvent);
+  };
+
   return (
     <div className="w-1/3 bg-blue-50 p-4 rounded-lg relative">
       <h2 className="text-lg font-semibold text-blue-700 mb-3">{title}</h2>
@@ -45,6 +56,15 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
             {item.info && <p className="text-xs mt-1">{item.info}</p>}
           </div>
         ))}
+
+        <button
+          onClick={handleCustomNodeClick}
+          className="w-full py-3 px-3 rounded-lg border-2 border-dashed border-gray-300 text-gray-500 hover:border-blue-400 hover:text-blue-500 transition-colors flex items-center justify-center gap-2"
+        >
+          <Plus className="h-5 w-5" />
+          Custom node
+        </button>
+
         {items.length === 0 && (
           <div className="text-center py-8 text-gray-500">
             {title === "Level 2" ? "Select a domain from Level 1" : "Select a sub-domain from Level 2"}
@@ -54,4 +74,3 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
     </div>
   );
 };
-

@@ -46,6 +46,7 @@ const TechnologyTree = () => {
     toggleSidebar,
     handleInputChange,
     chatMessages,
+    setChatMessages,
     hasUserMadeSelection
   } = useTechnologyTree();
 
@@ -58,6 +59,25 @@ const TechnologyTree = () => {
   useEffect(() => {
     updateTabsHorizontalState(sidebarTab);
   }, [sidebarTab]);
+
+  useEffect(() => {
+    const handleSwitchToChat = (event: CustomEvent) => {
+      setSidebarTab("chat");
+      setShowSidebar(true);
+      // Update chat messages with the welcome message
+      setChatMessages([{
+        type: "agent",
+        content: event.detail.message,
+        isUser: false
+      }]);
+    };
+
+    document.addEventListener('switch-to-chat', handleSwitchToChat as EventListener);
+    
+    return () => {
+      document.removeEventListener('switch-to-chat', handleSwitchToChat as EventListener);
+    };
+  }, [setSidebarTab, setShowSidebar, setChatMessages]);
 
   const levelNames = getLevelNames(selectedPath);
 
