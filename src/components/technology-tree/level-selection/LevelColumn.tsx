@@ -24,10 +24,13 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   onNodeClick
 }) => {
   const handleCustomNodeClick = () => {
-    // Update sidebar tab to chat
+    // Extract the level number from the title (e.g., "Level 1" -> "1")
+    const levelNumber = title.slice(-1);
+    
+    // Update sidebar tab to chat with level-specific message
     const customEvent = new CustomEvent('switch-to-chat', {
       detail: {
-        message: "👋 Hi there!\nReady to add a new node? Here's how you can start:\n🔹 Option 1: Enter a clear Title and Description yourself.\n🔹 Option 2: Just describe your idea in natural language — I'll help turn it into a well-structured node!"
+        message: `👋 Hi there!\nReady to add a new node under Level ${levelNumber}? Here's how you can start:\n🔹 Option 1: Enter a clear Title and Description yourself.\n🔹 Option 2: Just describe your idea in natural language — I'll help turn it into a well-structured node!`
       }
     });
     document.dispatchEvent(customEvent);
