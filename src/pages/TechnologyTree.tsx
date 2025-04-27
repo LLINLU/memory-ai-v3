@@ -101,12 +101,22 @@ const TechnologyTree = () => {
           const level = `level${levelNum}`;
           console.log(`Adding custom node to ${level}:`, suggestion);
           addCustomNode(level, suggestion);
+
+          // Add completion message
+          setChatMessages(prev => [...prev, {
+            content: "The node has been created 😊",
+            isUser: false
+          }]);
           return;
         }
       }
       
       // Default to level2 if no specific level found
       addCustomNode('level2', suggestion);
+      setChatMessages(prev => [...prev, {
+        content: "The node has been created 😊",
+        isUser: false
+      }]);
     }
   };
 

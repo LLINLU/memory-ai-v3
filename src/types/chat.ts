@@ -8,5 +8,6 @@ export interface ChatMessage {
   content: string;
   isUser: boolean;
   suggestion?: NodeSuggestion;
-  type?: 'suggestion' | 'text';
+  type?: 'suggestion' | 'text' | 'confirmation';
+  isActionTaken?: boolean;
 }

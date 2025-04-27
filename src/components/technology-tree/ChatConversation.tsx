@@ -17,13 +17,14 @@ export const ChatConversation = ({
   onEditNode,
   onRefine 
 }: ChatConversationProps) => {
-  const renderSuggestionActions = (suggestion: NodeSuggestion) => (
+  const renderSuggestionActions = (suggestion: NodeSuggestion, isDisabled: boolean) => (
     <div className="flex gap-2 mt-3">
       <Button 
         variant="outline" 
         size="sm"
         onClick={() => onUseNode?.(suggestion)}
         className="flex items-center gap-2"
+        disabled={isDisabled}
       >
         <Check className="h-4 w-4" />
         Use this
@@ -33,6 +34,7 @@ export const ChatConversation = ({
         size="sm"
         onClick={() => onEditNode?.(suggestion)}
         className="flex items-center gap-2"
+        disabled={isDisabled}
       >
         <Edit className="h-4 w-4" />
         Edit
@@ -42,6 +44,7 @@ export const ChatConversation = ({
         size="sm"
         onClick={() => onRefine?.(suggestion)}
         className="flex items-center gap-2"
+        disabled={isDisabled}
       >
         <MessageSquare className="h-4 w-4" />
         {suggestion.title.includes('Refined') ? 'Narrow further' : 'Refine further'}
@@ -51,25 +54,30 @@ export const ChatConversation = ({
 
   return (
     <div className="flex-1 overflow-y-auto p-4">
-      {chatMessages.map((message, index) => (
-        <div 
-          key={index} 
-          className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-4`}
-        >
+      {chatMessages.map((message, index) => {
+        const nextMessage = chatMessages[index + 1];
+        const isActionTaken = nextMessage && nextMessage.content === "The node has been created 😊";
+
+        return (
           <div 
-            className={`inline-block max-w-[85%] p-4 rounded-2xl ${
-              message.isUser 
-                ? 'bg-blue-100 text-blue-900' 
-                : 'bg-white text-gray-800'
-            }`}
+            key={index} 
+            className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-4`}
           >
-            <p className="text-base leading-relaxed whitespace-pre-line">
-              {message.content}
-            </p>
-            {message.suggestion && renderSuggestionActions(message.suggestion)}
+            <div 
+              className={`inline-block max-w-[85%] p-4 rounded-2xl ${
+                message.isUser 
+                  ? 'bg-blue-100 text-blue-900' 
+                  : 'bg-white text-gray-800'
+              }`}
+            >
+              <p className="text-base leading-relaxed whitespace-pre-line">
+                {message.content}
+              </p>
+              {message.suggestion && renderSuggestionActions(message.suggestion, isActionTaken)}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };
