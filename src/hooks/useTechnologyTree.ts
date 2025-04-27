@@ -3,34 +3,22 @@ import { useState } from "react";
 import { usePathSelection } from "./tree/usePathSelection";
 import { useSidebar } from "./tree/useSidebar";
 import { useInputQuery } from "./tree/useInputQuery";
-
-export interface TechnologyTreeState {
-  selectedPath: {
-    level1: string;
-    level2: string;
-    level3: string;
-  };
-  selectedView: string;
-  sidebarTab: string;
-  showSidebar: boolean;
-  collapsedSidebar: boolean;
-  inputValue: string;
-  query?: string;
-  hasUserMadeSelection: boolean;
-}
+import { useNavigationHistory } from "./tree/useNavigationHistory";
 
 export const useTechnologyTree = () => {
   const [selectedView, setSelectedView] = useState("tree");
   const { 
     selectedPath, 
     hasUserMadeSelection, 
-    handleNodeClick, 
+    handleNodeClick: originalHandleNodeClick,
     addCustomNode,
     level1Items,
     level2Items,
     level3Items
   } = usePathSelection();
   
+  const navigationHistory = useNavigationHistory(selectedPath);
+
   const { 
     sidebarTab, 
     showSidebar, 
@@ -49,6 +37,36 @@ export const useTechnologyTree = () => {
     setChatMessages,
     setInputValue 
   } = useInputQuery(sidebarTab);
+
+  const handleNodeClick = (level: string, nodeId: string) => {
+    // Call original handleNodeClick
+    originalHandleNodeClick(level, nodeId);
+    
+    // Add to navigation history
+    navigationHistory.addToHistory({
+      level1: level === 'level1' ? nodeId : selectedPath.level1,
+      level2: level === 'level2' ? nodeId : selectedPath.level2,
+      level3: level === 'level3' ? nodeId : selectedPath.level3
+    });
+  };
+
+  const handleUndo = () => {
+    const previousPath = navigationHistory.undo();
+    if (previousPath) {
+      originalHandleNodeClick('level1', previousPath.level1);
+      originalHandleNodeClick('level2', previousPath.level2);
+      originalHandleNodeClick('level3', previousPath.level3);
+    }
+  };
+
+  const handleRedo = () => {
+    const nextPath = navigationHistory.redo();
+    if (nextPath) {
+      originalHandleNodeClick('level1', nextPath.level1);
+      originalHandleNodeClick('level2', nextPath.level2);
+      originalHandleNodeClick('level3', nextPath.level3);
+    }
+  };
 
   return {
     selectedPath,
@@ -72,6 +90,11 @@ export const useTechnologyTree = () => {
     addCustomNode,
     level1Items,
     level2Items,
-    level3Items
+    level3Items,
+    // New navigation methods
+    handleUndo,
+    handleRedo,
+    canUndo: navigationHistory.canUndo,
+    canRedo: navigationHistory.canRedo
   };
 };
