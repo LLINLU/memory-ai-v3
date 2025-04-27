@@ -1,59 +1,64 @@
 
-import React, { ReactNode } from 'react';
-import { ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import React from "react";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import { Navigation } from "@/components/Navigation";
+import { Button } from "@/components/ui/button";
+import { Search } from "lucide-react";
+import { CollapsedSidebar } from "@/components/technology-tree/CollapsedSidebar";
 
 interface TechTreeLayoutProps {
-  children: ReactNode;
+  children: React.ReactNode;
+  sidebarContent: React.ReactNode;
   showSidebar: boolean;
   collapsedSidebar: boolean;
   isExpanded: boolean;
   toggleSidebar: () => void;
   setShowSidebar: (show: boolean) => void;
   handlePanelResize: () => void;
-  sidebarContent: ReactNode;
-  headerActions?: ReactNode;
 }
 
 export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
   children,
+  sidebarContent,
   showSidebar,
   collapsedSidebar,
   isExpanded,
   toggleSidebar,
   setShowSidebar,
-  handlePanelResize,
-  sidebarContent,
-  headerActions
+  handlePanelResize
 }) => {
   return (
-    <div className="flex h-screen overflow-hidden">
-      <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel 
-          defaultSize={showSidebar ? (collapsedSidebar ? 80 : 60) : 100} 
-          minSize={50}
-        >
-          <div className="flex-1 flex flex-col relative h-full">
-            <div className="flex justify-between items-center p-4 border-b border-gray-200">
-              <div>Technology Tree</div>
-              {headerActions}
-            </div>
-            <div className="flex-1 overflow-hidden">
-              {children}
-            </div>
-          </div>
-        </ResizablePanel>
-
-        {showSidebar && (
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Navigation />
+      
+      <div className="flex flex-1 overflow-hidden">
+        <ResizablePanelGroup direction="horizontal" onLayout={handlePanelResize}>
           <ResizablePanel 
-            defaultSize={isExpanded ? 40 : 20} 
-            minSize={20}
-            maxSize={isExpanded ? 50 : 30}
+            defaultSize={60} 
+            minSize={30}
+            className={isExpanded ? 'hidden' : undefined}
             onResize={handlePanelResize}
           >
-            {sidebarContent}
+            {children}
           </ResizablePanel>
+
+          <ResizableHandle withHandle />
+
+          {showSidebar && !collapsedSidebar && sidebarContent}
+        </ResizablePanelGroup>
+
+        {collapsedSidebar && <CollapsedSidebar toggleSidebar={toggleSidebar} />}
+
+        {!showSidebar && !collapsedSidebar && (
+          <Button 
+            className="fixed right-4 bottom-4 rounded-full bg-blue-500 p-3"
+            onClick={() => setShowSidebar(true)}
+            size="icon"
+          >
+            <Search className="h-5 w-5" />
+          </Button>
         )}
-      </ResizablePanelGroup>
+      </div>
     </div>
   );
 };

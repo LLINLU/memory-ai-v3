@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
 import { MainContent } from "@/components/technology-tree/MainContent";
@@ -6,8 +7,6 @@ import { TechTreeSidebar } from "@/components/technology-tree/TechTreeSidebar";
 import { useTechnologyTree } from "@/hooks/useTechnologyTree";
 import { useTechTreeChat } from "@/hooks/tree/useTechTreeChat";
 import { NodeSuggestion } from '@/types/chat';
-import { Undo2, Redo2 } from 'lucide-react';
-import { Button } from "@/components/ui/button";
 
 const getLevelNames = (selectedPath: { level1: string }) => {
   if (selectedPath.level1.includes('optics')) {
@@ -44,11 +43,7 @@ const TechnologyTree = () => {
     addCustomNode,
     level1Items,
     level2Items,
-    level3Items,
-    handleUndo,
-    handleRedo,
-    canUndo,
-    canRedo
+    level3Items
   } = useTechnologyTree();
 
   const {
@@ -152,28 +147,6 @@ const TechnologyTree = () => {
       setShowSidebar={setShowSidebar}
       handlePanelResize={handlePanelResize}
       sidebarContent={sidebarContent}
-      headerActions={
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={handleUndo}
-            disabled={!canUndo}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <Undo2 className="h-5 w-5" />
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={handleRedo}
-            disabled={!canRedo}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <Redo2 className="h-5 w-5" />
-          </Button>
-        </div>
-      }
     >
       {mainContent}
     </TechTreeLayout>
