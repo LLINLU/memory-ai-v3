@@ -1,13 +1,29 @@
-
 import { useState } from "react";
 import { NodeSuggestion } from "@/types/chat";
 import { toast } from "@/hooks/use-toast";
 import { level1Items as initialLevel1Items, level2Items as initialLevel2Items, level3Items as initialLevel3Items } from "@/data/technologyTreeData";
 
 export const generateChildNode = (parentTitle: string, level: number): NodeSuggestion => {
-  const prefix = level === 2 ? "Implementation of" : "Method for";
+  const prefixes = {
+    2: [
+      "Advanced", 
+      "Novel",
+      "Improved",
+      "Enhanced",
+      "Modern"
+    ],
+    3: [
+      "Algorithm for",
+      "Technique for",
+      "Method for",
+      "Approach to",
+      "System for"
+    ]
+  };
+
+  const randomPrefix = (level === 2 ? prefixes[2] : prefixes[3])[Math.floor(Math.random() * 5)];
   return {
-    title: `${prefix} ${parentTitle}`,
+    title: `${randomPrefix} ${parentTitle}`,
     description: `Generated child node for ${parentTitle}`
   };
 };
@@ -55,7 +71,7 @@ export const usePathSelection = (initialPath = {
     const newNode = {
       id: nodeId,
       name: node.title,
-      info: "18 papers • 4 implementations", // Updated microcopy
+      info: "18 papers • 4 implementations",
       isCustom: true
     };
     
@@ -69,7 +85,7 @@ export const usePathSelection = (initialPath = {
         [nodeId]: [{
           id: childId,
           name: childNode.title,
-          info: "18 papers • 4 implementations", // Updated for child node
+          info: "18 papers • 4 implementations",
           isCustom: true
         }]
       }));
@@ -92,7 +108,7 @@ export const usePathSelection = (initialPath = {
         [nodeId]: [{
           id: childId,
           name: childNode.title,
-          info: "18 papers • 4 implementations", // Updated for child node
+          info: "18 papers • 4 implementations",
           isCustom: true
         }]
       }));
