@@ -25,6 +25,9 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   onNodeClick
 }) => {
   const handleCustomNodeClick = () => {
+    // Scroll to the top of the page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     // Extract the level number from the title (e.g., "Level 1" -> "1")
     const levelNumber = title.slice(-1);
     
@@ -85,4 +88,3 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
     </div>
   );
 };
-
