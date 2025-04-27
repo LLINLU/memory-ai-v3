@@ -7,6 +7,7 @@ import { useTechnologyTree } from "@/hooks/useTechnologyTree";
 import { useTechTreeChat } from "@/hooks/tree/useTechTreeChat";
 import { NodeSuggestion } from '@/types/chat';
 import { Undo2, Redo2 } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 
 const getLevelNames = (selectedPath: { level1: string }) => {
   if (selectedPath.level1.includes('optics')) {

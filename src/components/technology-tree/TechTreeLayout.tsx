@@ -1,5 +1,6 @@
 
 import React, { ReactNode } from 'react';
+import { ResizablePanel } from "@/components/ui/resizable";
 
 interface TechTreeLayoutProps {
   children: ReactNode;
