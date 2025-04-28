@@ -1,12 +1,19 @@
 
 import React from 'react';
-import { Plus, Star } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 interface LevelItem {
   id: string;
   name: string;
   info?: string;
   isCustom?: boolean;
+  description?: string;
 }
 
 interface LevelColumnProps {
@@ -47,28 +54,35 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
       
       <div className="space-y-4">
         {items.map((item) => (
-          <div
-            key={item.id}
-            className={`
-              py-4 px-3 rounded-lg text-center cursor-pointer transition-all relative
-              ${selectedId === item.id 
-                ? item.isCustom
-                  ? 'bg-[#FFE194] border-2 border-[#FBCA17] text-[#483B3B]'
-                  : 'bg-blue-500 text-white ring-2 ring-blue-600'
-                : item.isCustom
-                  ? 'bg-[#FFF4CB] border-2 border-[#FEE27E] text-[#554444]'
-                  : 'bg-blue-400 text-white hover:bg-blue-500'
-              }
-            `}
-            onClick={() => onNodeClick(item.id)}
-            id={`level${title.slice(-1)}-${item.id}`}
-          >
-            <div className="flex items-center justify-center gap-2">
-              {/* Removed star icon */}
-              <h4 className="text-lg font-bold">{item.name}</h4>
-            </div>
-            {item.info && <p className="text-xs mt-1">{item.info}</p>}
-          </div>
+          <TooltipProvider key={item.id}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  className={`
+                    py-4 px-3 rounded-lg text-center cursor-pointer transition-all relative
+                    ${selectedId === item.id 
+                      ? item.isCustom
+                        ? 'bg-[#FFE194] border-2 border-[#FBCA17] text-[#483B3B]'
+                        : 'bg-blue-500 text-white ring-2 ring-blue-600'
+                      : item.isCustom
+                        ? 'bg-[#FFF4CB] border-2 border-[#FEE27E] text-[#554444]'
+                        : 'bg-blue-400 text-white hover:bg-blue-500'
+                    }
+                  `}
+                  onClick={() => onNodeClick(item.id)}
+                  id={`level${title.slice(-1)}-${item.id}`}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <h4 className="text-lg font-bold">{item.name}</h4>
+                  </div>
+                  {item.info && <p className="text-xs mt-1">{item.info}</p>}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{item.description || `Details about ${item.name}`}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         ))}
 
         <button
