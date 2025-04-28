@@ -55,7 +55,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
       <div className="space-y-4">
         {items.map((item) => (
           <TooltipProvider key={item.id}>
-            <Tooltip>
+            <Tooltip delayDuration={100}>
               <TooltipTrigger asChild>
                 <div
                   className={`
@@ -78,7 +78,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
                   {item.info && <p className="text-xs mt-1">{item.info}</p>}
                 </div>
               </TooltipTrigger>
-              <TooltipContent>
+              <TooltipContent side="top" className="max-w-[250px] text-sm">
                 <p>{item.description || `Details about ${item.name}`}</p>
               </TooltipContent>
             </Tooltip>
