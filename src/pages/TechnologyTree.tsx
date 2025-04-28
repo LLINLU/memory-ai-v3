@@ -102,10 +102,11 @@ const TechnologyTree = () => {
           console.log(`Adding custom node to ${level}:`, suggestion);
           addCustomNode(level, suggestion);
 
-          // Add completion message
+          // Add completion message with the showCheckResults property set to true
           setChatMessages(prev => [...prev, {
             content: "The node has been created 😊",
-            isUser: false
+            isUser: false,
+            showCheckResults: true
           }]);
           return;
         }
@@ -115,7 +116,8 @@ const TechnologyTree = () => {
       addCustomNode('level2', suggestion);
       setChatMessages(prev => [...prev, {
         content: "The node has been created 😊",
-        isUser: false
+        isUser: false,
+        showCheckResults: true
       }]);
     }
   };

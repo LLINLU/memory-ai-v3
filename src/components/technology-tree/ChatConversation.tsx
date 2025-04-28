@@ -60,6 +60,9 @@ export const ChatConversation = ({
         const nextMessage = chatMessages[index + 1];
         const isActionTaken = nextMessage && nextMessage.content === "The node has been created 😊";
 
+        console.log("Message:", message); // Add this log to debug
+        console.log("showCheckResults:", message.showCheckResults); // Add this log to debug
+
         return (
           <div 
             key={index} 
