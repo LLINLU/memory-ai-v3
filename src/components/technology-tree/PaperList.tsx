@@ -82,6 +82,67 @@ const paperSets = {
       abstract: "This groundbreaking study presents a novel approach to adaptive optics control using deep learning algorithms. By integrating neural networks into the control system, the researchers achieve faster response times and better correction of atmospheric turbulence effects.",
       date: "2024-04-18"
     }
+  ],
+  // Add node-specific paper sets
+  "adaptive-optics": [
+    {
+      title: {
+        english: "Advances in Adaptive Optics Systems for Astronomical Applications"
+      },
+      authors: "K. Johnson, M. Nakamura, P. Garcia",
+      journal: "Journal of Astronomy & Astrophysics",
+      tags: ["Astronomy", "Wavefront Sensing"],
+      abstract: "This paper reviews recent developments in adaptive optics technology for ground-based telescopes. The authors discuss innovations in wavefront sensing, deformable mirror design, and real-time control algorithms that have significantly improved image resolution in astronomical observations.",
+      date: "2024-04-20"
+    }
+  ],
+  "medical-applications": [
+    {
+      title: {
+        english: "Adaptive Optics in Medical Imaging: Current Status and Future Directions"
+      },
+      authors: "S. Williams, R. Chen, T. Suzuki",
+      journal: "Medical Imaging Technology",
+      tags: ["Medical", "Innovation"],
+      abstract: "This comprehensive review examines the rapidly evolving field of adaptive optics for medical applications. From retinal imaging to microscopy, the paper highlights how wavefront correction technologies are revolutionizing diagnostic capabilities across multiple medical specialties.",
+      date: "2024-04-16"
+    }
+  ],
+  "medical-imaging": [
+    {
+      title: {
+        english: "Medical Imaging Breakthroughs with Modern Computational Methods"
+      },
+      authors: "L. Rodriguez, J. Kim, S. Peterson",
+      journal: "Biomedical Computing",
+      tags: ["Imaging", "AI", "Diagnostics"],
+      abstract: "This study explores how advanced computational techniques are transforming medical imaging analysis. The integration of machine learning algorithms with traditional imaging modalities has enabled more precise detection of pathological conditions and improved diagnostic accuracy.",
+      date: "2024-04-14"
+    }
+  ],
+  "ct-scanning": [
+    {
+      title: {
+        english: "Next-Generation CT Scanning: Lower Dose, Higher Resolution"
+      },
+      authors: "T. Anderson, Y. Zhang, R. Patel",
+      journal: "Radiological Science",
+      tags: ["CT", "Radiation Dose", "Resolution"],
+      abstract: "This research presents novel CT reconstruction algorithms that significantly reduce radiation exposure while maintaining or improving image quality. Clinical validation demonstrates successful application in pediatric patients where radiation dose minimization is particularly critical.",
+      date: "2024-04-12"
+    }
+  ],
+  "mri-techniques": [
+    {
+      title: {
+        english: "Advanced MRI Techniques for Neurological Disorder Diagnosis"
+      },
+      authors: "J. Martinez, H. Tanaka, S. Wilson",
+      journal: "Neuroimaging Journal",
+      tags: ["MRI", "Neurology", "Diagnosis"],
+      abstract: "This paper introduces multiple innovative MRI protocols specifically designed for early detection of neurodegenerative disorders. The techniques described offer improved visualization of subtle structural changes associated with disease progression before clinical symptoms become apparent.",
+      date: "2024-04-10"
+    }
   ]
 };
 
@@ -92,10 +153,6 @@ export const PaperList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   
-  useEffect(() => {
-    setPapers(paperSets[currentPaperSet] || paperSets.default);
-  }, [currentPaperSet]);
-
   useEffect(() => {
     const handleRefresh = (event: Event) => {
       console.log("Refreshing papers with event:", event);
@@ -108,12 +165,22 @@ export const PaperList = () => {
         // If it's a custom node selection, use the custom paper set
         if (customEvent.detail.nodeId && customEvent.detail.nodeId.includes('refined')) {
           setCurrentPaperSet('customNode');
-        } else {
+          setPapers(paperSets.customNode);
+        } 
+        // Handle specific node selections
+        else if (customEvent.detail.nodeId && paperSets[customEvent.detail.nodeId]) {
+          setCurrentPaperSet(customEvent.detail.nodeId);
+          setPapers(paperSets[customEvent.detail.nodeId]);
+        }
+        else {
+          // Default to updated paper set
           setCurrentPaperSet('updated');
+          setPapers(paperSets.updated);
         }
       } else {
         // Default behavior
         setCurrentPaperSet('updated');
+        setPapers(paperSets.updated);
       }
       
       setRefreshKey(prev => prev + 1);
@@ -134,6 +201,15 @@ export const PaperList = () => {
       document.removeEventListener('refresh-papers', handleRefresh);
     };
   }, []);
+
+  useEffect(() => {
+    // This effect ensures papers state is updated when currentPaperSet changes
+    if (paperSets[currentPaperSet]) {
+      setPapers(paperSets[currentPaperSet]);
+    } else {
+      setPapers(paperSets.default);
+    }
+  }, [currentPaperSet]);
 
   const totalPages = Math.ceil(papers.length / pageSize);
   const startIndex = (currentPage - 1) * pageSize;

@@ -48,7 +48,7 @@ export const LevelSelection = ({
   const handleNodeSelection = (level: string, nodeId: string) => {
     // Only show toast if actually selecting a new node
     if (selectedPath[level] !== nodeId) {
-      // Create custom event to refresh paper list with more information
+      // Create custom event to refresh paper list with node information
       const refreshEvent = new CustomEvent('refresh-papers', {
         detail: { level, nodeId, timestamp: Date.now() }
       });
