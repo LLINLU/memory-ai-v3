@@ -15,6 +15,7 @@ interface SidebarContentProps {
   onUseNode?: (suggestion: NodeSuggestion) => void;
   onEditNode?: (suggestion: NodeSuggestion) => void;
   onRefine?: (suggestion: NodeSuggestion) => void;
+  onCheckResults?: () => void;
 }
 
 export const SidebarContent = ({
@@ -25,7 +26,8 @@ export const SidebarContent = ({
   onSendMessage,
   onUseNode,
   onEditNode,
-  onRefine
+  onRefine,
+  onCheckResults
 }: SidebarContentProps) => {
   return (
     <div className="h-full flex flex-col">
@@ -42,6 +44,7 @@ export const SidebarContent = ({
                 onUseNode={onUseNode}
                 onEditNode={onEditNode}
                 onRefine={onRefine}
+                onCheckResults={onCheckResults}
               />
               <ChatInput 
                 value={inputValue} 

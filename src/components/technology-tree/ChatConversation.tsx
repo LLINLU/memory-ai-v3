@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Check, Edit, MessageSquare } from 'lucide-react';
+import { Check, Edit, MessageSquare, CheckCircle } from 'lucide-react';
 import { ChatMessage, NodeSuggestion } from '@/types/chat';
 
 interface ChatConversationProps {
@@ -9,13 +9,15 @@ interface ChatConversationProps {
   onUseNode?: (suggestion: NodeSuggestion) => void;
   onEditNode?: (suggestion: NodeSuggestion) => void;
   onRefine?: (suggestion: NodeSuggestion) => void;
+  onCheckResults?: () => void;
 }
 
 export const ChatConversation = ({ 
   chatMessages, 
   onUseNode,
   onEditNode,
-  onRefine 
+  onRefine,
+  onCheckResults 
 }: ChatConversationProps) => {
   const renderSuggestionActions = (suggestion: NodeSuggestion, isDisabled: boolean) => (
     <div className="flex gap-2 mt-3">
@@ -74,6 +76,19 @@ export const ChatConversation = ({
                 {message.content}
               </p>
               {message.suggestion && renderSuggestionActions(message.suggestion, isActionTaken)}
+              {message.showCheckResults && (
+                <div className="mt-3">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={onCheckResults}
+                    className="flex items-center gap-2"
+                  >
+                    <CheckCircle className="h-4 w-4" />
+                    Check Results
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         );

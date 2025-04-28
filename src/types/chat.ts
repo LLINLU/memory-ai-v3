@@ -10,4 +10,5 @@ export interface ChatMessage {
   suggestion?: NodeSuggestion;
   type?: 'suggestion' | 'text' | 'confirmation';
   isActionTaken?: boolean;
+  showCheckResults?: boolean;
 }
