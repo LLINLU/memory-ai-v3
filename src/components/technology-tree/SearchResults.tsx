@@ -10,13 +10,17 @@ export const SearchResults = () => {
   const [activeTab, setActiveTab] = React.useState("papers");
 
   useEffect(() => {
-    const handleRefresh = () => {
-      console.log("SearchResults component detected refresh event");
+    const handleRefresh = (event: Event) => {
+      console.log("SearchResults component detected refresh event:", event);
       
+      // Reset scroll position
       const sidebarContent = document.querySelector('[data-sidebar="content"]');
       if (sidebarContent) {
         sidebarContent.scrollTop = 0;
       }
+      
+      // Ensure we're on the papers tab
+      setActiveTab("papers");
     };
     
     document.addEventListener('refresh-papers', handleRefresh);

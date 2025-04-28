@@ -1,3 +1,4 @@
+
 import React from "react";
 import { ResizablePanel } from "@/components/ui/resizable";
 import { SidebarControls } from "@/components/technology-tree/SidebarControls";
@@ -15,6 +16,9 @@ interface TechTreeSidebarProps {
   onInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onSendMessage: () => void;
   onUseNode: (suggestion: NodeSuggestion) => void;
+  onEditNode?: (suggestion: NodeSuggestion) => void;
+  onRefine?: (suggestion: NodeSuggestion) => void;
+  onCheckResults?: () => void;
   onResize: () => void;
 }
 
@@ -29,12 +33,11 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
   onInputChange,
   onSendMessage,
   onUseNode,
+  onEditNode,
+  onRefine,
+  onCheckResults,
   onResize
 }) => {
-  const handleCheckResults = () => {
-    setSidebarTab("result");
-  };
-
   return (
     <ResizablePanel 
       defaultSize={isExpanded ? 100 : 40} 
@@ -59,9 +62,9 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
             onInputChange={onInputChange}
             onSendMessage={onSendMessage}
             onUseNode={onUseNode}
-            onEditNode={(suggestion) => console.log('Edit node:', suggestion)}
-            onRefine={(suggestion) => console.log('Refine node:', suggestion)}
-            onCheckResults={handleCheckResults}
+            onEditNode={onEditNode}
+            onRefine={onRefine}
+            onCheckResults={onCheckResults}
           />
         </div>
       </div>

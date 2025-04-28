@@ -60,6 +60,28 @@ const paperSets = {
       abstract: "Using advanced adaptive optics technology, this study maps the progressive degeneration of photoreceptor cells in patients with retinitis pigmentosa. The research provides new insights into disease progression patterns and potential therapeutic windows for intervention.",
       date: "2024-04-10"
     }
+  ],
+  customNode: [
+    {
+      title: {
+        english: "Recent Advances in Adaptive Optics for Custom Applications"
+      },
+      authors: "R. Stevens, K. Nakamura, J. Wilson",
+      journal: "Journal of Applied Optics",
+      tags: ["Custom", "Innovation"],
+      abstract: "This paper details the latest innovations in adaptive optics technology for specialized applications. Highlighting breakthroughs in wavefront sensing and deformable mirror technology, the authors demonstrate improved performance in challenging imaging environments.",
+      date: "2024-04-22"
+    },
+    {
+      title: {
+        english: "Application of Machine Learning to Improve Adaptive Optics Performance"
+      },
+      authors: "M. Johnson, S. Lee, T. Garcia",
+      journal: "Computational Optics",
+      tags: ["AI", "Machine Learning", "Optimization"],
+      abstract: "This groundbreaking study presents a novel approach to adaptive optics control using deep learning algorithms. By integrating neural networks into the control system, the researchers achieve faster response times and better correction of atmospheric turbulence effects.",
+      date: "2024-04-18"
+    }
   ]
 };
 
@@ -71,15 +93,39 @@ export const PaperList = () => {
   const [pageSize, setPageSize] = useState(5);
   
   useEffect(() => {
-    setPapers(paperSets[currentPaperSet]);
+    setPapers(paperSets[currentPaperSet] || paperSets.default);
   }, [currentPaperSet]);
 
   useEffect(() => {
-    const handleRefresh = () => {
-      console.log("Refreshing papers...");
-      setCurrentPaperSet('updated');
+    const handleRefresh = (event: Event) => {
+      console.log("Refreshing papers with event:", event);
+      // Check if event has detail (CustomEvent)
+      const customEvent = event as CustomEvent;
+      
+      if (customEvent.detail) {
+        console.log("Refresh detail:", customEvent.detail);
+        
+        // If it's a custom node selection, use the custom paper set
+        if (customEvent.detail.nodeId && customEvent.detail.nodeId.includes('refined')) {
+          setCurrentPaperSet('customNode');
+        } else {
+          setCurrentPaperSet('updated');
+        }
+      } else {
+        // Default behavior
+        setCurrentPaperSet('updated');
+      }
+      
       setRefreshKey(prev => prev + 1);
       setCurrentPage(1);
+      
+      // Scroll to top of results
+      setTimeout(() => {
+        const sidebarContent = document.querySelector('[data-sidebar="content"]');
+        if (sidebarContent) {
+          sidebarContent.scrollTop = 0;
+        }
+      }, 100);
     };
     
     document.addEventListener('refresh-papers', handleRefresh);
@@ -98,7 +144,7 @@ export const PaperList = () => {
       <ul className="w-full space-y-4">
         {visiblePapers.map((paper, index) => (
           <PaperCard
-            key={index}
+            key={`${refreshKey}-${index}`}
             title={paper.title}
             authors={paper.authors}
             journal={paper.journal}

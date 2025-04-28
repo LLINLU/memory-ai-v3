@@ -91,6 +91,17 @@ const TechnologyTree = () => {
     document.dispatchEvent(event);
   };
 
+  const handleCheckResults = () => {
+    console.log("Check Results button clicked, switching to result tab");
+    setSidebarTab("result");
+    
+    // Also trigger a refresh of the papers
+    const refreshEvent = new CustomEvent('refresh-papers', {
+      detail: { source: 'checkResults', timestamp: Date.now() }
+    });
+    document.dispatchEvent(refreshEvent);
+  };
+
   const handleUseNode = (suggestion: NodeSuggestion) => {
     if (chatMessages.length > 0) {
       // Try to find a message that mentions a level
@@ -146,6 +157,9 @@ const TechnologyTree = () => {
       onInputChange={handleInputChange}
       onSendMessage={handleSendMessage}
       onUseNode={handleUseNode}
+      onEditNode={(suggestion) => console.log('Edit node:', suggestion)}
+      onRefine={(suggestion) => console.log('Refine node:', suggestion)}
+      onCheckResults={handleCheckResults}
       onResize={handlePanelResize}
     />
   );

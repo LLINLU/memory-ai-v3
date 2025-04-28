@@ -48,18 +48,20 @@ export const LevelSelection = ({
   const handleNodeSelection = (level: string, nodeId: string) => {
     // Only show toast if actually selecting a new node
     if (selectedPath[level] !== nodeId) {
-      // Create custom event to refresh paper list
-      const refreshEvent = new CustomEvent('refresh-papers');
+      // Create custom event to refresh paper list with more information
+      const refreshEvent = new CustomEvent('refresh-papers', {
+        detail: { level, nodeId, timestamp: Date.now() }
+      });
       document.dispatchEvent(refreshEvent);
       
       // Show notification to user with 1-second duration
       toast({
         title: "Results updated",
         description: "The paper list has been updated based on your selection",
-        duration: 1000, // Explicitly set to 1 second
+        duration: 1000,
       });
       
-      console.log("Toast triggered for node selection", { level, nodeId });
+      console.log("Node selection event:", { level, nodeId, refreshEvent });
     }
     
     onNodeClick(level, nodeId);

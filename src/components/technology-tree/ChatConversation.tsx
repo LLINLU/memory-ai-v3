@@ -60,9 +60,6 @@ export const ChatConversation = ({
         const nextMessage = chatMessages[index + 1];
         const isActionTaken = nextMessage && nextMessage.content === "The node has been created 😊";
 
-        console.log("Message:", message); // Add this log to debug
-        console.log("showCheckResults:", message.showCheckResults); // Add this log to debug
-
         return (
           <div 
             key={index} 
@@ -79,13 +76,13 @@ export const ChatConversation = ({
                 {message.content}
               </p>
               {message.suggestion && renderSuggestionActions(message.suggestion, isActionTaken)}
-              {message.showCheckResults && (
+              {message.showCheckResults && onCheckResults && (
                 <div className="mt-3">
                   <Button 
                     variant="outline" 
                     size="sm"
                     onClick={onCheckResults}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 bg-blue-50 border-blue-200 hover:bg-blue-100"
                   >
                     <CheckCircle className="h-4 w-4" />
                     Check Results
