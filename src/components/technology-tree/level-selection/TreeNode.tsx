@@ -56,7 +56,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
                   : 'bg-[#4A7DFC] text-white'
                 : item.isCustom
                   ? 'bg-[#FFF4CB] border-2 border-[#FEE27E] text-[#554444]'
-                  : 'bg-[#EBF3FF] text-[#2E2E2E] hover:bg-[#D3E4FD]'
+                  : 'bg-[#E6F0FF] text-[#2E2E2E] hover:bg-[#D3E4FD]'
               }
               group
             `}
