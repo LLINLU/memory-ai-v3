@@ -73,8 +73,8 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
             ? 'bg-[#FFE194] border-2 border-[#FBCA17] text-[#483B3B]'
             : 'bg-[#4A7DFC] text-white'
           : item.isCustom
-            ? 'bg-[#FFF4CB] text-[#554444] hover:border-2 hover:border-blue-400'
-            : 'bg-[#E6F0FF] text-[#2E2E2E] hover:border-2 hover:border-blue-400'
+            ? 'bg-[#FFF4CB] text-[#554444] hover:border border-blue-400'
+            : 'bg-[#E6F0FF] text-[#2E2E2E] hover:border border-blue-400'
         }
         group
       `}
@@ -136,7 +136,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       </div>
       
       {item.info && (
-        <p className="text-xs mt-1 text-gray-600">{item.info}</p>
+        <p className={`text-xs mt-1 ${isSelected ? 'text-white' : 'text-gray-600'}`}>{item.info}</p>
       )}
       
       {/* Only display description when hovered */}
