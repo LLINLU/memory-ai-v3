@@ -26,6 +26,8 @@ export const useTechnologyTree = () => {
     hasUserMadeSelection, 
     handleNodeClick, 
     addCustomNode,
+    editNode,
+    deleteNode,
     level1Items,
     level2Items,
     level3Items
@@ -70,6 +72,8 @@ export const useTechnologyTree = () => {
     setChatMessages,
     setInputValue,
     addCustomNode,
+    editNode,
+    deleteNode,
     level1Items,
     level2Items,
     level3Items

@@ -1,12 +1,32 @@
 
 import React from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
 
 interface LevelItem {
   id: string;
@@ -22,6 +42,8 @@ interface LevelColumnProps {
   items: LevelItem[];
   selectedId: string;
   onNodeClick: (nodeId: string) => void;
+  onEditNode?: (nodeId: string, updatedNode: { title: string; description: string }) => void;
+  onDeleteNode?: (nodeId: string) => void;
 }
 
 export const LevelColumn: React.FC<LevelColumnProps> = ({
@@ -29,8 +51,15 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   subtitle,
   items,
   selectedId,
-  onNodeClick
+  onNodeClick,
+  onEditNode,
+  onDeleteNode
 }) => {
+  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+  const [editingNode, setEditingNode] = React.useState<LevelItem | null>(null);
+  const [editTitle, setEditTitle] = React.useState("");
+  const [editDescription, setEditDescription] = React.useState("");
+  
   const handleCustomNodeClick = () => {
     // Scroll to the top of the page
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -45,6 +74,31 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
       }
     });
     document.dispatchEvent(customEvent);
+  };
+
+  const handleEditClick = (e: React.MouseEvent, item: LevelItem) => {
+    e.stopPropagation(); // Prevent triggering node selection
+    setEditingNode(item);
+    setEditTitle(item.name);
+    setEditDescription(item.description || "");
+    setIsEditDialogOpen(true);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent, nodeId: string) => {
+    e.stopPropagation(); // Prevent triggering node selection
+    if (onDeleteNode) {
+      onDeleteNode(nodeId);
+    }
+  };
+
+  const handleSaveEdit = () => {
+    if (editingNode && onEditNode) {
+      onEditNode(editingNode.id, {
+        title: editTitle,
+        description: editDescription
+      });
+    }
+    setIsEditDialogOpen(false);
   };
 
   return (
@@ -68,6 +122,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
                         ? 'bg-[#FFF4CB] border-2 border-[#FEE27E] text-[#554444]'
                         : 'bg-blue-400 text-white hover:bg-blue-500'
                     }
+                    group
                   `}
                   onClick={() => onNodeClick(item.id)}
                   id={`level${title.slice(-1)}-${item.id}`}
@@ -76,6 +131,51 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
                     <h4 className="text-lg font-bold">{item.name}</h4>
                   </div>
                   {item.info && <p className="text-xs mt-1">{item.info}</p>}
+                  
+                  {/* Edit & Delete buttons */}
+                  <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-6 w-6 bg-white/30 hover:bg-white/50"
+                      onClick={(e) => handleEditClick(e, item)}
+                    >
+                      <Edit className="h-3 w-3" />
+                    </Button>
+                    
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-6 w-6 bg-white/30 hover:bg-red-100"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently delete the node "{item.name}". This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction 
+                            className="bg-red-600 hover:bg-red-700" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteClick(e, item.id);
+                            }}
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-[250px] text-sm">
@@ -99,6 +199,42 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
           </div>
         )}
       </div>
+
+      {/* Edit node dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Node</DialogTitle>
+            <DialogDescription>
+              Make changes to the node information.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <label htmlFor="title" className="text-sm font-medium">Title</label>
+              <input
+                id="title"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+              />
+            </div>
+            <div className="grid gap-2">
+              <label htmlFor="description" className="text-sm font-medium">Description</label>
+              <textarea
+                id="description"
+                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleSaveEdit}>Save changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

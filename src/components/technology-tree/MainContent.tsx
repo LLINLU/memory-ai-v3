@@ -14,6 +14,8 @@ interface MainContentProps {
   level2Items: Record<string, any[]>;
   level3Items: Record<string, any[]>;
   onNodeClick: (level: string, nodeId: string) => void;
+  onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
+  onDeleteNode?: (level: string, nodeId: string) => void;
   levelNames?: {
     level1: string;
     level2: string;
@@ -29,6 +31,8 @@ export const MainContent = ({
   level2Items,
   level3Items,
   onNodeClick,
+  onEditNode,
+  onDeleteNode,
   levelNames = {
     level1: "Main Domains",
     level2: "Sub-domains",
@@ -51,6 +55,8 @@ export const MainContent = ({
         level2Items={level2Items}
         level3Items={level3Items}
         onNodeClick={onNodeClick}
+        onEditNode={onEditNode}
+        onDeleteNode={onDeleteNode}
         levelNames={levelNames}
       />
     </div>

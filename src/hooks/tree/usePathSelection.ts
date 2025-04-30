@@ -134,11 +134,100 @@ export const usePathSelection = (initialPath = {
     });
   };
 
+  const editNode = (level: string, nodeId: string, updatedNode: { title: string; description: string }) => {
+    if (level === 'level1') {
+      setLevel1Items(prev => prev.map(item => 
+        item.id === nodeId 
+          ? { ...item, name: updatedNode.title, description: updatedNode.description } 
+          : item
+      ));
+    } 
+    else if (level === 'level2') {
+      setLevel2Items(prev => {
+        const updatedItems = { ...prev };
+        Object.keys(updatedItems).forEach(key => {
+          updatedItems[key] = updatedItems[key].map(item => 
+            item.id === nodeId 
+              ? { ...item, name: updatedNode.title, description: updatedNode.description } 
+              : item
+          );
+        });
+        return updatedItems;
+      });
+    } 
+    else if (level === 'level3') {
+      setLevel3Items(prev => {
+        const updatedItems = { ...prev };
+        Object.keys(updatedItems).forEach(key => {
+          updatedItems[key] = updatedItems[key].map(item => 
+            item.id === nodeId 
+              ? { ...item, name: updatedNode.title, description: updatedNode.description } 
+              : item
+          );
+        });
+        return updatedItems;
+      });
+    }
+  };
+
+  const deleteNode = (level: string, nodeId: string) => {
+    // Clear the selection if the deleted node is currently selected
+    setSelectedPath(prev => {
+      if (level === 'level1' && prev.level1 === nodeId) {
+        return { ...prev, level1: "", level2: "", level3: "" };
+      } else if (level === 'level2' && prev.level2 === nodeId) {
+        return { ...prev, level2: "", level3: "" };
+      } else if (level === 'level3' && prev.level3 === nodeId) {
+        return { ...prev, level3: "" };
+      }
+      return prev;
+    });
+
+    // Remove the node from state
+    if (level === 'level1') {
+      setLevel1Items(prev => prev.filter(item => item.id !== nodeId));
+      
+      // Also remove its children from level2Items
+      setLevel2Items(prev => {
+        const newLevel2Items = { ...prev };
+        delete newLevel2Items[nodeId];
+        return newLevel2Items;
+      });
+    } 
+    else if (level === 'level2') {
+      setLevel2Items(prev => {
+        const updatedItems = { ...prev };
+        Object.keys(updatedItems).forEach(key => {
+          updatedItems[key] = updatedItems[key].filter(item => item.id !== nodeId);
+        });
+        return updatedItems;
+      });
+      
+      // Also remove its children from level3Items
+      setLevel3Items(prev => {
+        const newLevel3Items = { ...prev };
+        delete newLevel3Items[nodeId];
+        return newLevel3Items;
+      });
+    } 
+    else if (level === 'level3') {
+      setLevel3Items(prev => {
+        const updatedItems = { ...prev };
+        Object.keys(updatedItems).forEach(key => {
+          updatedItems[key] = updatedItems[key].filter(item => item.id !== nodeId);
+        });
+        return updatedItems;
+      });
+    }
+  };
+
   return {
     selectedPath,
     hasUserMadeSelection,
     handleNodeClick,
     addCustomNode,
+    editNode,
+    deleteNode,
     level1Items,
     level2Items,
     level3Items

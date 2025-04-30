@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
 import { MainContent } from "@/components/technology-tree/MainContent";
@@ -41,6 +40,8 @@ const TechnologyTree = () => {
     toggleSidebar,
     hasUserMadeSelection,
     addCustomNode,
+    editNode,
+    deleteNode,
     level1Items,
     level2Items,
     level3Items
@@ -133,6 +134,25 @@ const TechnologyTree = () => {
     }
   };
 
+  const handleEditNodeFromChat = (suggestion: NodeSuggestion) => {
+    // Find which level the edit is for from chat messages
+    if (chatMessages.length > 0) {
+      // Try to find a message that mentions a level
+      for (const message of chatMessages) {
+        const levelMatch = message.content?.match(/Level (\d+)/i);
+        if (levelMatch) {
+          const levelNum = levelMatch[1];
+          const level = `level${levelNum}`;
+          // For now just add as new since we don't have node ID from chat
+          addCustomNode(level, suggestion);
+          return;
+        }
+      }
+      // Default to level2 if no specific level found
+      addCustomNode('level2', suggestion);
+    }
+  };
+
   const mainContent = (
     <MainContent
       selectedPath={selectedPath}
@@ -140,6 +160,8 @@ const TechnologyTree = () => {
       level2Items={level2Items}
       level3Items={level3Items}
       onNodeClick={handleNodeClick}
+      onEditNode={editNode}
+      onDeleteNode={deleteNode}
       levelNames={levelNames}
       hasUserMadeSelection={hasUserMadeSelection}
     />
@@ -157,7 +179,7 @@ const TechnologyTree = () => {
       onInputChange={handleInputChange}
       onSendMessage={handleSendMessage}
       onUseNode={handleUseNode}
-      onEditNode={(suggestion) => console.log('Edit node:', suggestion)}
+      onEditNode={handleEditNodeFromChat}
       onRefine={(suggestion) => console.log('Refine node:', suggestion)}
       onCheckResults={handleCheckResults}
       onResize={handlePanelResize}

@@ -21,6 +21,8 @@ interface LevelSelectionProps {
   level2Items: Record<string, LevelItem[]>;
   level3Items: Record<string, LevelItem[]>;
   onNodeClick: (level: string, nodeId: string) => void;
+  onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
+  onDeleteNode?: (level: string, nodeId: string) => void;
   levelNames: {
     level1: string;
     level2: string;
@@ -34,6 +36,8 @@ export const LevelSelection = ({
   level2Items,
   level3Items,
   onNodeClick,
+  onEditNode,
+  onDeleteNode,
   levelNames
 }: LevelSelectionProps) => {
   const visibleLevel2Items = selectedPath.level1 ? level2Items[selectedPath.level1] || [] : [];
@@ -67,6 +71,28 @@ export const LevelSelection = ({
     onNodeClick(level, nodeId);
   };
 
+  const handleEditNode = (level: string, nodeId: string, updatedNode: { title: string; description: string }) => {
+    if (onEditNode) {
+      onEditNode(level, nodeId, updatedNode);
+      toast({
+        title: "Node updated",
+        description: `Changes to "${updatedNode.title}" have been saved`,
+        duration: 2000,
+      });
+    }
+  };
+
+  const handleDeleteNode = (level: string, nodeId: string) => {
+    if (onDeleteNode) {
+      onDeleteNode(level, nodeId);
+      toast({
+        title: "Node removed",
+        description: "The node has been deleted successfully",
+        duration: 2000,
+      });
+    }
+  };
+
   return (
     <div className="flex flex-row gap-6 mb-8 relative" ref={containerRef}>
       <LevelColumn
@@ -75,6 +101,8 @@ export const LevelSelection = ({
         items={level1Items}
         selectedId={selectedPath.level1}
         onNodeClick={(nodeId) => handleNodeSelection('level1', nodeId)}
+        onEditNode={(nodeId, updatedNode) => handleEditNode('level1', nodeId, updatedNode)}
+        onDeleteNode={(nodeId) => handleDeleteNode('level1', nodeId)}
       />
 
       <LevelColumn
@@ -83,6 +111,8 @@ export const LevelSelection = ({
         items={visibleLevel2Items}
         selectedId={selectedPath.level2}
         onNodeClick={(nodeId) => handleNodeSelection('level2', nodeId)}
+        onEditNode={(nodeId, updatedNode) => handleEditNode('level2', nodeId, updatedNode)}
+        onDeleteNode={(nodeId) => handleDeleteNode('level2', nodeId)}
       />
 
       <LevelColumn
@@ -91,6 +121,8 @@ export const LevelSelection = ({
         items={visibleLevel3Items}
         selectedId={selectedPath.level3}
         onNodeClick={(nodeId) => handleNodeSelection('level3', nodeId)}
+        onEditNode={(nodeId, updatedNode) => handleEditNode('level3', nodeId, updatedNode)}
+        onDeleteNode={(nodeId) => handleDeleteNode('level3', nodeId)}
       />
 
       <ConnectionLines
