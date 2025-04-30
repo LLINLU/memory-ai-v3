@@ -65,7 +65,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
             <div className="flex items-center justify-center gap-2">
               <h4 className="text-lg font-bold">{item.name}</h4>
             </div>
-            {item.info && <p className="text-xs mt-1">{item.info}</p>}
+            {item.info && <p className="text-xs mt-1 transition-opacity group-hover:opacity-0">{item.info}</p>}
             
             {/* Edit & Delete buttons - moved down by 16px */}
             <div className="absolute bottom-1 left-0 right-0 flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity mt-8 pt-2">
