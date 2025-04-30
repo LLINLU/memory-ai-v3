@@ -82,6 +82,17 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
     }
   };
 
+  // Helper function to get text color
+  const getTextColor = () => {
+    if (item.isCustom && item.name.toLowerCase().includes('microscopy')) {
+      return 'text-white';
+    } else if (isSelected) {
+      return item.isCustom ? 'text-[#483B3B]' : 'text-white';
+    } else {
+      return item.isCustom ? 'text-[#483B3B]' : 'text-gray-600';
+    }
+  };
+
   return (
     <div
       ref={nodeRef}
@@ -148,12 +159,12 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       </div>
       
       {item.info && (
-        <p className={`text-xs mt-1 ${isSelected ? (item.name.toLowerCase().includes('microscopy') && item.isCustom ? 'text-white' : 'text-white') : 'text-gray-600'}`}>{item.info}</p>
+        <p className={`text-xs mt-1 ${getTextColor()}`}>{item.info}</p>
       )}
       
       {/* Only display description when hovered */}
       {isHovered && item.description && (
-        <p className="mt-3 text-sm">{item.description}</p>
+        <p className={`mt-3 text-sm ${getTextColor()}`}>{item.description}</p>
       )}
       
       {/* Only show buttons below if width is smaller than 250px and node is hovered */}
