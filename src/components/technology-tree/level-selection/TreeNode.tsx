@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Edit, Trash2 } from 'lucide-react';
 import {
   Tooltip,
@@ -43,77 +43,155 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   onEditClick,
   onDeleteClick
 }) => {
+  const nodeRef = useRef<HTMLDivElement>(null);
+  const [nodeWidth, setNodeWidth] = useState(0);
+
+  useEffect(() => {
+    // Update width on mount and window resize
+    const updateWidth = () => {
+      if (nodeRef.current) {
+        setNodeWidth(nodeRef.current.offsetWidth);
+      }
+    };
+
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
+
+  const buttonPositionClass = nodeWidth > 250 ? "absolute top-4 right-2" : "mt-2 flex justify-end";
+
   return (
-    <TooltipProvider>
-      <Tooltip delayDuration={100}>
-        <TooltipTrigger asChild>
-          <div
-            className={`
-              py-4 px-3 rounded-lg cursor-pointer transition-all relative
-              ${isSelected 
-                ? item.isCustom
-                  ? 'bg-[#FFE194] border-2 border-[#FBCA17] text-[#483B3B]'
-                  : 'bg-[#4A7DFC] text-white'
-                : item.isCustom
-                  ? 'bg-[#FFF4CB] text-[#554444]'
-                  : 'bg-[#E6F0FF] text-[#2E2E2E] hover:bg-[#D3E4FD]'
-              }
-              group
-            `}
-            onClick={onClick}
-          >
-            <div className="flex items-center justify-start gap-2">
-              <h4 className="text-lg font-medium">{item.name}</h4>
-            </div>
-            {item.info && <p className="text-xs mt-1 transition-opacity group-hover:opacity-0">{item.info}</p>}
+    <div
+      ref={nodeRef}
+      className={`
+        py-4 px-4 rounded-lg cursor-pointer transition-all relative
+        ${isSelected 
+          ? item.isCustom
+            ? 'bg-[#FFE194] border-2 border-[#FBCA17] text-[#483B3B]'
+            : 'bg-[#4A7DFC] text-white'
+          : item.isCustom
+            ? 'bg-[#FFF4CB] text-[#554444] hover:border-2 hover:border-blue-400'
+            : 'bg-[#E6F0FF] text-[#2E2E2E] hover:border-2 hover:border-blue-400'
+        }
+        group
+      `}
+      onClick={onClick}
+    >
+      <div className="flex items-center justify-between">
+        <h4 className="text-lg font-medium">{item.name}</h4>
+        
+        {nodeWidth > 250 && (
+          <div className={`flex gap-1`}>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-7 w-7 bg-white/70 hover:bg-white/90"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEditClick(e);
+              }}
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
             
-            {/* Edit & Delete buttons - moved down by 16px */}
-            <div className="absolute bottom-1 left-0 right-0 flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity mt-8 pt-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-6 w-6 bg-white/30 hover:bg-white/50"
-                onClick={onEditClick}
-              >
-                <Edit className="h-3 w-3" />
-              </Button>
-              
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-6 w-6 bg-white/30 hover:bg-red-100"
-                    onClick={(e) => e.stopPropagation()}
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-7 w-7 bg-white/70 hover:bg-red-100"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently delete the node "{item.name}". This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction 
+                    className="bg-red-600 hover:bg-red-700" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteClick(e);
+                    }}
                   >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This will permanently delete the node "{item.name}". This action cannot be undone.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction 
-                      className="bg-red-600 hover:bg-red-700" 
-                      onClick={onDeleteClick}
-                    >
-                      Delete
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
-        </TooltipTrigger>
-        <TooltipContent side="top" className="max-w-[250px] text-sm">
-          <p>{item.description || `Details about ${item.name}`}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+        )}
+      </div>
+      
+      {item.info && (
+        <p className="text-xs mt-1 text-gray-600">{item.info}</p>
+      )}
+      
+      {/* Display description inside the node */}
+      {item.description && (
+        <p className="mt-3 text-sm">{item.description}</p>
+      )}
+      
+      {/* Only show buttons below if width is smaller than 250px */}
+      {nodeWidth <= 250 && (
+        <div className={buttonPositionClass}>
+          <div className="flex gap-1">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-7 w-7 bg-white/70 hover:bg-white/90"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEditClick(e);
+              }}
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+            
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-7 w-7 bg-white/70 hover:bg-red-100"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently delete the node "{item.name}". This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction 
+                    className="bg-red-600 hover:bg-red-700" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteClick(e);
+                    }}
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
