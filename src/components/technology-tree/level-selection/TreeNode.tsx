@@ -45,6 +45,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
 }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
   const [nodeWidth, setNodeWidth] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     // Update width on mount and window resize
@@ -78,11 +79,13 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
         group
       `}
       onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <div className="flex items-center justify-between">
         <h4 className="text-lg font-medium">{item.name}</h4>
         
-        {nodeWidth > 250 && (
+        {isHovered && nodeWidth > 250 && (
           <div className={`flex gap-1`}>
             <Button 
               variant="ghost" 
@@ -136,13 +139,13 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
         <p className="text-xs mt-1 text-gray-600">{item.info}</p>
       )}
       
-      {/* Display description inside the node */}
-      {item.description && (
+      {/* Only display description when hovered */}
+      {isHovered && item.description && (
         <p className="mt-3 text-sm">{item.description}</p>
       )}
       
-      {/* Only show buttons below if width is smaller than 250px */}
-      {nodeWidth <= 250 && (
+      {/* Only show buttons below if width is smaller than 250px and node is hovered */}
+      {isHovered && nodeWidth <= 250 && (
         <div className={buttonPositionClass}>
           <div className="flex gap-1">
             <Button 
