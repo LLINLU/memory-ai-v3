@@ -31,7 +31,7 @@ export const SearchResults = () => {
   }, [toast]);
 
   return (
-    <div className="h-full p-4 overflow-auto bg-[#fffdf5]" data-sidebar="content">
+    <div className="h-full p-4 overflow-auto bg-[#fdfdfd]" data-sidebar="content">
       <ResultsHeader />
       <TabNavigator onValueChange={setActiveTab} />
       <TabContent activeTab={activeTab} />
