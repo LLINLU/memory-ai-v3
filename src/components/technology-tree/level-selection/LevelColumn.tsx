@@ -132,8 +132,8 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
                   </div>
                   {item.info && <p className="text-xs mt-1">{item.info}</p>}
                   
-                  {/* Edit & Delete buttons */}
-                  <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {/* Edit & Delete buttons - moved to bottom */}
+                  <div className="absolute bottom-1 left-0 right-0 flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity mt-2">
                     <Button 
                       variant="ghost" 
                       size="icon" 
