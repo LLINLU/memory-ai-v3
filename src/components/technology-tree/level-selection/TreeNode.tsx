@@ -53,10 +53,10 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
               ${isSelected 
                 ? item.isCustom
                   ? 'bg-[#FFE194] border-2 border-[#FBCA17] text-[#483B3B]'
-                  : 'bg-blue-500 text-white ring-2 ring-blue-600'
+                  : 'bg-[#4A7DFC] text-white'
                 : item.isCustom
                   ? 'bg-[#FFF4CB] border-2 border-[#FEE27E] text-[#554444]'
-                  : 'bg-white text-blue-700 hover:bg-blue-50 border border-blue-200'
+                  : 'bg-[#EBF3FF] text-[#2E2E2E] hover:bg-[#D3E4FD]'
               }
               group
             `}

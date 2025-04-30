@@ -10,7 +10,7 @@ export const CustomNodeButton: React.FC<CustomNodeButtonProps> = ({ onClick }) =
   return (
     <button
       onClick={onClick}
-      className="w-full py-3 px-3 rounded-lg border-2 border-dashed border-gray-300 text-gray-500 hover:border-blue-400 hover:text-blue-500 transition-colors flex items-center justify-center gap-2"
+      className="w-full py-3 px-3 rounded-lg border border-dashed border-[#4A7DFC] text-[#4A7DFC] hover:bg-[#EBF3FF] transition-colors flex items-center justify-center gap-2"
     >
       <Plus className="h-5 w-5" />
       Custom node
