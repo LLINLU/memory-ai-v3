@@ -62,15 +62,15 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
             `}
             onClick={onClick}
           >
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center justify-between">
               <h4 className="text-lg font-bold">{item.name}</h4>
-              {item.info && (
-                <div className="bg-white px-3 py-1 rounded-full text-xs font-medium text-[#1A1F2C]">
-                  {item.info.split('•')[0].trim()} / {item.info.split('•')[1].trim()}
-                </div>
-              )}
             </div>
-            {item.info && <p className="text-xs mt-2 transition-opacity group-hover:opacity-0">Papers / Implementations</p>}
+            
+            {item.info && (
+              <p className="text-xs mt-2 transition-opacity group-hover:opacity-0">
+                {item.info}
+              </p>
+            )}
             
             {/* Edit & Delete buttons - moved down by 16px */}
             <div className="absolute bottom-1 left-0 right-0 flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity mt-8 pt-2">
