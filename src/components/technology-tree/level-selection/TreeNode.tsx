@@ -49,21 +49,21 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
         <TooltipTrigger asChild>
           <div
             className={`
-              py-4 px-3 rounded-lg text-center cursor-pointer transition-all relative
+              py-4 px-3 rounded-lg cursor-pointer transition-all relative
               ${isSelected 
                 ? item.isCustom
                   ? 'bg-[#FFE194] border-2 border-[#FBCA17] text-[#483B3B]'
                   : 'bg-[#4A7DFC] text-white'
                 : item.isCustom
-                  ? 'bg-[#FFF4CB] border-2 border-[#FEE27E] text-[#554444]'
+                  ? 'bg-[#FFF4CB] text-[#554444]'
                   : 'bg-[#E6F0FF] text-[#2E2E2E] hover:bg-[#D3E4FD]'
               }
               group
             `}
             onClick={onClick}
           >
-            <div className="flex items-center justify-center gap-2">
-              <h4 className="text-lg font-bold">{item.name}</h4>
+            <div className="flex items-center justify-start gap-2">
+              <h4 className="text-lg font-medium">{item.name}</h4>
             </div>
             {item.info && <p className="text-xs mt-1 transition-opacity group-hover:opacity-0">{item.info}</p>}
             
