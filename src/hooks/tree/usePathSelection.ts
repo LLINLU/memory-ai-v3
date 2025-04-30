@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { NodeSuggestion } from "@/types/chat";
 import { toast } from "@/hooks/use-toast";
@@ -72,7 +73,8 @@ export const usePathSelection = (initialPath = {
       id: nodeId,
       name: node.title,
       info: "18 papers • 4 implementations",
-      isCustom: true
+      isCustom: true,
+      description: node.description || `Custom node for ${node.title}`
     };
     
     if (level === 'level1') {
@@ -86,7 +88,8 @@ export const usePathSelection = (initialPath = {
           id: childId,
           name: childNode.title,
           info: "18 papers • 4 implementations",
-          isCustom: true
+          isCustom: true,
+          description: childNode.description
         }]
       }));
       
@@ -109,7 +112,8 @@ export const usePathSelection = (initialPath = {
           id: childId,
           name: childNode.title,
           info: "18 papers • 4 implementations",
-          isCustom: true
+          isCustom: true,
+          description: childNode.description
         }]
       }));
       

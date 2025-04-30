@@ -62,20 +62,32 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   }, []);
 
   const buttonPositionClass = nodeWidth > 250 ? "absolute top-4 right-2" : "mt-2 flex justify-end";
+  
+  // Special color for microscopy custom nodes (RGB 72,58,59)
+  const getNodeStyle = () => {
+    if (item.isCustom && item.name.toLowerCase().includes('microscopy')) {
+      if (isSelected) {
+        return 'bg-[rgb(72,58,59)] border-2 border-[#FBCA17] text-white';
+      } else {
+        return 'bg-[rgb(72,58,59)] text-white hover:border border-blue-400';
+      }
+    } else if (isSelected) {
+      return item.isCustom
+        ? 'bg-[#FFE194] border-2 border-[#FBCA17] text-[#483B3B]'
+        : 'bg-[#4A7DFC] text-white';
+    } else {
+      return item.isCustom
+        ? 'bg-[#FFF4CB] text-[#554444] hover:border border-blue-400'
+        : 'bg-[#E6F0FF] text-[#2E2E2E] hover:border border-blue-400';
+    }
+  };
 
   return (
     <div
       ref={nodeRef}
       className={`
         py-4 px-4 rounded-lg cursor-pointer transition-all relative
-        ${isSelected 
-          ? item.isCustom
-            ? 'bg-[#FFE194] border-2 border-[#FBCA17] text-[#483B3B]'
-            : 'bg-[#4A7DFC] text-white'
-          : item.isCustom
-            ? 'bg-[#FFF4CB] text-[#554444] hover:border border-blue-400'
-            : 'bg-[#E6F0FF] text-[#2E2E2E] hover:border border-blue-400'
-        }
+        ${getNodeStyle()}
         group
       `}
       onClick={onClick}
@@ -136,7 +148,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       </div>
       
       {item.info && (
-        <p className={`text-xs mt-1 ${isSelected ? 'text-white' : 'text-gray-600'}`}>{item.info}</p>
+        <p className={`text-xs mt-1 ${isSelected ? (item.name.toLowerCase().includes('microscopy') && item.isCustom ? 'text-white' : 'text-white') : 'text-gray-600'}`}>{item.info}</p>
       )}
       
       {/* Only display description when hovered */}
