@@ -14,7 +14,7 @@ export const level2Items = {
   "adaptive-optics": [
     { id: "wavefront-sensing", name: "Wavefront Sensing", info: "28 papers • 7 implementations", description: "A technique used to measure how light waves are distorted as they pass through the eye. It maps these distortions, or aberrations, to help diagnose vision problems more precisely than standard methods." },
     { id: "medical-applications", name: "Medical Applications", info: "22 papers • 6 implementations" },
-    { id: "deformable-mirrors", name: "Deformable Mirrors", info: "25 papers • 8 implementations" },
+    { id: "deformable-mirrors", name: "Deformable Mirrors", info: "25 papers • 8 implementations", description: "An optical device with a surface that can be precisely adjusted to correct distortions in a light wavefront. It is commonly used in adaptive optics systems to improve image clarity." },
     { id: "ocular-structure", name: "By Ocular Structure", info: "20 papers • 5 implementations" }
   ],
   "medical-imaging": [
