@@ -79,7 +79,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   };
 
   return (
-    <div className="w-1/3 bg-blue-50 p-4 rounded-lg relative">
+    <div className="w-1/3 bg-white p-4 rounded-lg relative">
       <h2 className="text-lg font-semibold text-blue-700 mb-3">{title}</h2>
       <h3 className="text-sm text-blue-600 mb-4">{subtitle}</h3>
       
