@@ -138,11 +138,7 @@ export const usePathSelection = (initialPath = {
     if (level === 'level1') {
       setLevel1Items(prev => prev.map(item => 
         item.id === nodeId 
-          ? { 
-              ...item, 
-              name: updatedNode.title, 
-              description: updatedNode.description 
-            } 
+          ? { ...item, name: updatedNode.title, description: updatedNode.description } 
           : item
       ));
     } 
@@ -152,11 +148,7 @@ export const usePathSelection = (initialPath = {
         Object.keys(updatedItems).forEach(key => {
           updatedItems[key] = updatedItems[key].map(item => 
             item.id === nodeId 
-              ? { 
-                  ...item, 
-                  name: updatedNode.title, 
-                  description: updatedNode.description 
-                } 
+              ? { ...item, name: updatedNode.title, description: updatedNode.description } 
               : item
           );
         });
@@ -169,24 +161,13 @@ export const usePathSelection = (initialPath = {
         Object.keys(updatedItems).forEach(key => {
           updatedItems[key] = updatedItems[key].map(item => 
             item.id === nodeId 
-              ? { 
-                  ...item, 
-                  name: updatedNode.title, 
-                  description: updatedNode.description 
-                } 
+              ? { ...item, name: updatedNode.title, description: updatedNode.description } 
               : item
           );
         });
         return updatedItems;
       });
     }
-
-    // Add a toast to confirm the edit was saved
-    toast({
-      title: "Node updated",
-      description: `Updated description for "${updatedNode.title}"`,
-      duration: 2000,
-    });
   };
 
   const deleteNode = (level: string, nodeId: string) => {
