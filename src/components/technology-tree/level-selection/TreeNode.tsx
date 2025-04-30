@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Edit, Trash2 } from 'lucide-react';
 import {
   Tooltip,
@@ -43,6 +43,8 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   onEditClick,
   onDeleteClick
 }) => {
+  const [isHovering, setIsHovering] = useState(false);
+  
   return (
     <TooltipProvider>
       <Tooltip delayDuration={100}>
@@ -61,14 +63,16 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
               group
             `}
             onClick={onClick}
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
           >
             <div className="flex items-center justify-center gap-2">
               <h4 className="text-lg font-bold">{item.name}</h4>
             </div>
-            {item.info && <p className="text-xs mt-1">{item.info}</p>}
+            {item.info && !isHovering && <p className="text-xs mt-1">{item.info}</p>}
             
-            {/* Edit & Delete buttons - moved down by 12px */}
-            <div className="absolute bottom-1 left-0 right-0 flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity mt-6 pt-2">
+            {/* Edit & Delete buttons - moved down by 16px */}
+            <div className="absolute bottom-1 left-0 right-0 flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity mt-8 pt-2">
               <Button 
                 variant="ghost" 
                 size="icon" 
