@@ -5,7 +5,12 @@ import { ResultsHeader } from "./components/ResultsHeader";
 import { TabNavigator } from "./components/TabNavigator";
 import { TabContent } from "./components/TabContent";
 
-export const SearchResults = () => {
+interface SearchResultsProps {
+  selectedNodeTitle?: string;
+  selectedNodeDescription?: string;
+}
+
+export const SearchResults = ({ selectedNodeTitle, selectedNodeDescription }: SearchResultsProps) => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = React.useState("papers");
 
@@ -34,7 +39,11 @@ export const SearchResults = () => {
     <div className="h-full p-4 overflow-auto bg-[#fdfdfd]" data-sidebar="content">
       <ResultsHeader />
       <TabNavigator onValueChange={setActiveTab} />
-      <TabContent activeTab={activeTab} />
+      <TabContent 
+        activeTab={activeTab} 
+        selectedNodeTitle={selectedNodeTitle} 
+        selectedNodeDescription={selectedNodeDescription}
+      />
     </div>
   );
 };

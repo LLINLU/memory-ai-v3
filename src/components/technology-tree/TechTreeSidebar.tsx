@@ -20,6 +20,8 @@ interface TechTreeSidebarProps {
   onRefine?: (suggestion: NodeSuggestion) => void;
   onCheckResults?: () => void;
   onResize: () => void;
+  selectedNodeTitle?: string;
+  selectedNodeDescription?: string;
 }
 
 export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
@@ -36,7 +38,9 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
   onEditNode,
   onRefine,
   onCheckResults,
-  onResize
+  onResize,
+  selectedNodeTitle,
+  selectedNodeDescription
 }) => {
   return (
     <ResizablePanel 
@@ -65,6 +69,8 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
             onEditNode={onEditNode}
             onRefine={onRefine}
             onCheckResults={onCheckResults}
+            selectedNodeTitle={selectedNodeTitle}
+            selectedNodeDescription={selectedNodeDescription}
           />
         </div>
       </div>

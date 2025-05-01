@@ -74,7 +74,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
     } else if (isSelected) {
       return item.isCustom
         ? 'bg-[#FFE194] border-2 border-[#FBCA17] text-[#483B3B]'
-        : 'bg-[#4A7DFC] text-white';
+        : 'bg-[#4878e6] text-white';
     } else {
       return item.isCustom
         ? 'bg-[#FFF4CB] text-[#554444] hover:border border-blue-400'

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
 import { MainContent } from "@/components/technology-tree/MainContent";
@@ -58,9 +59,48 @@ const TechnologyTree = () => {
   } = useTechTreeChat();
 
   const [isExpanded, setIsExpanded] = useState(false);
+  const [selectedNodeInfo, setSelectedNodeInfo] = useState({
+    title: "",
+    description: ""
+  });
   
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  // Function to find the selected node's info
+  const getSelectedNodeInfo = () => {
+    let title = "";
+    let description = "";
+
+    // Check level 3 first (most specific)
+    if (selectedPath.level3) {
+      const level3Items = level3Items[selectedPath.level2] || [];
+      const selectedNode = level3Items.find(item => item.id === selectedPath.level3);
+      if (selectedNode) {
+        title = selectedNode.name;
+        description = selectedNode.description || "";
+      }
+    }
+    // Then check level 2
+    else if (selectedPath.level2) {
+      const level2Items = level2Items[selectedPath.level1] || [];
+      const selectedNode = level2Items.find(item => item.id === selectedPath.level2);
+      if (selectedNode) {
+        title = selectedNode.name;
+        description = selectedNode.description || "";
+      }
+    }
+    // Finally check level 1
+    else if (selectedPath.level1) {
+      const selectedNode = level1Items.find(item => item.id === selectedPath.level1);
+      if (selectedNode) {
+        title = selectedNode.name;
+        description = selectedNode.description || "";
+      }
+    }
+
+    return { title, description };
   };
 
   useEffect(() => {
@@ -84,6 +124,11 @@ const TechnologyTree = () => {
       document.removeEventListener('switch-to-chat', handleSwitchToChatEvent as EventListener);
     };
   }, [setSidebarTab, setShowSidebar]);
+
+  // Update selected node info when path changes
+  useEffect(() => {
+    setSelectedNodeInfo(getSelectedNodeInfo());
+  }, [selectedPath, level1Items, level2Items, level3Items]);
 
   const levelNames = getLevelNames(selectedPath);
 
@@ -183,6 +228,8 @@ const TechnologyTree = () => {
       onRefine={(suggestion) => console.log('Refine node:', suggestion)}
       onCheckResults={handleCheckResults}
       onResize={handlePanelResize}
+      selectedNodeTitle={selectedNodeInfo.title}
+      selectedNodeDescription={selectedNodeInfo.description}
     />
   );
 

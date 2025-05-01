@@ -16,6 +16,8 @@ interface SidebarContentProps {
   onEditNode?: (suggestion: NodeSuggestion) => void;
   onRefine?: (suggestion: NodeSuggestion) => void;
   onCheckResults?: () => void;
+  selectedNodeTitle?: string;
+  selectedNodeDescription?: string;
 }
 
 export const SidebarContent = ({
@@ -27,7 +29,9 @@ export const SidebarContent = ({
   onUseNode,
   onEditNode,
   onRefine,
-  onCheckResults
+  onCheckResults,
+  selectedNodeTitle,
+  selectedNodeDescription
 }: SidebarContentProps) => {
   console.log("SidebarContent chatMessages:", chatMessages); // Add debug log
   
@@ -35,7 +39,10 @@ export const SidebarContent = ({
     <div className="h-full flex flex-col">
       <TabsHorizontal value={sidebarTab} className="h-full flex-1">
         <TabsHorizontalContent value="result" className="h-full">
-          <SearchResults />
+          <SearchResults 
+            selectedNodeTitle={selectedNodeTitle} 
+            selectedNodeDescription={selectedNodeDescription}
+          />
         </TabsHorizontalContent>
 
         <TabsHorizontalContent value="chat" className="h-full flex flex-col bg-[#f6f6f6]">
