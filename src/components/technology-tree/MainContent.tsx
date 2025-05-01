@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { TechnologyHeader } from "./TechnologyHeader";
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
 
@@ -42,7 +41,6 @@ export const MainContent = ({
 }: MainContentProps) => {
   return (
     <div className="container mx-auto px-4 py-6">
-      <TechnologyHeader query={query} />
       <PathDisplay 
         selectedPath={selectedPath}
         level1Items={level1Items}
