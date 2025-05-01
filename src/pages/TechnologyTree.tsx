@@ -70,13 +70,17 @@ const TechnologyTree = () => {
 
   // Function to find the selected node's info
   const getSelectedNodeInfo = () => {
+    if (!level1Items || !level2Items || !level3Items) {
+      return { title: "", description: "" };
+    }
+    
     let title = "";
     let description = "";
 
     // Check level 3 first (most specific)
     if (selectedPath.level3) {
-      const level3Items = level3Items[selectedPath.level2] || [];
-      const selectedNode = level3Items.find(item => item.id === selectedPath.level3);
+      const level3NodeItems = level3Items[selectedPath.level2] || [];
+      const selectedNode = level3NodeItems.find(item => item.id === selectedPath.level3);
       if (selectedNode) {
         title = selectedNode.name;
         description = selectedNode.description || "";
@@ -84,8 +88,8 @@ const TechnologyTree = () => {
     }
     // Then check level 2
     else if (selectedPath.level2) {
-      const level2Items = level2Items[selectedPath.level1] || [];
-      const selectedNode = level2Items.find(item => item.id === selectedPath.level2);
+      const level2NodeItems = level2Items[selectedPath.level1] || [];
+      const selectedNode = level2NodeItems.find(item => item.id === selectedPath.level2);
       if (selectedNode) {
         title = selectedNode.name;
         description = selectedNode.description || "";
@@ -125,9 +129,11 @@ const TechnologyTree = () => {
     };
   }, [setSidebarTab, setShowSidebar]);
 
-  // Update selected node info when path changes
+  // Update selected node info when path changes or level items change
   useEffect(() => {
-    setSelectedNodeInfo(getSelectedNodeInfo());
+    if (level1Items && level2Items && level3Items) {
+      setSelectedNodeInfo(getSelectedNodeInfo());
+    }
   }, [selectedPath, level1Items, level2Items, level3Items]);
 
   const levelNames = getLevelNames(selectedPath);
