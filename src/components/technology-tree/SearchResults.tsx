@@ -1,7 +1,6 @@
 
 import React, { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { ResultsHeader } from "./components/ResultsHeader";
 import { TabNavigator } from "./components/TabNavigator";
 import { TabContent } from "./components/TabContent";
 
@@ -37,7 +36,6 @@ export const SearchResults = ({ selectedNodeTitle, selectedNodeDescription }: Se
 
   return (
     <div className="h-full p-4 overflow-auto bg-[#fdfdfd]" data-sidebar="content">
-      <ResultsHeader />
       <TabNavigator onValueChange={setActiveTab} />
       <TabContent 
         activeTab={activeTab} 
