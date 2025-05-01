@@ -20,8 +20,8 @@ export const SelectedNodeInfo: React.FC<SelectedNodeInfoProps> = ({ title, descr
   
   return (
     <Card className="mt-2 mb-4 bg-blue-50 border-none">
-      <CardContent className="p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">{title}</h2>
+      <CardContent className="py-4 px-6">
+        <h2 className="text-xl font-bold text-gray-800 py-1">{title}</h2>
         {description && (
           <p className="text-gray-600 leading-relaxed">{description}</p>
         )}
