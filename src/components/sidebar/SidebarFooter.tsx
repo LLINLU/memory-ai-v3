@@ -20,23 +20,21 @@ export function SidebarFooter() {
         <SidebarMenuItem>
           <SidebarMenuButton
             tooltip="Settings"
-            className="w-full flex justify-start pl-3"
           >
-            <Settings className="h-5 w-5" />
-            {isExpanded && <span className="ml-2">Settings</span>}
+            <Settings />
+            {isExpanded && <span>Settings</span>}
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>
           <SidebarMenuButton
             tooltip="Profile"
-            className="w-full flex justify-start pl-3"
           >
-            <Avatar className="size-5">
-              <AvatarFallback className="size-5 p-0">
+            <Avatar className="size-4">
+              <AvatarFallback className="size-4 p-0">
                 <UserRound className="size-4" />
               </AvatarFallback>
             </Avatar>
-            {isExpanded && <span className="ml-2">Profile</span>}
+            {isExpanded && <span>Profile</span>}
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

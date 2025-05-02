@@ -25,7 +25,7 @@ export const ChatInput = ({ value, onChange, onSend }: ChatInputProps) => {
   };
 
   return (
-    <div className="sticky bottom-0 bg-white border-t border-gray-100 p-4 w-full">
+    <div className="sticky bottom-0 bg-white border-t border-gray-100 p-4">
       <div className="bg-white">
         <Textarea 
           placeholder="Type your message here..."

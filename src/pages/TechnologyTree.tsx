@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
 import { MainContent } from "@/components/technology-tree/MainContent";
@@ -6,7 +7,6 @@ import { TechTreeSidebar } from "@/components/technology-tree/TechTreeSidebar";
 import { useTechnologyTree } from "@/hooks/useTechnologyTree";
 import { useTechTreeChat } from "@/hooks/tree/useTechTreeChat";
 import { NodeSuggestion } from '@/types/chat';
-import { SidebarProvider } from "@/components/ui/sidebar";
 
 const getLevelNames = (selectedPath: { level1: string }) => {
   if (selectedPath.level1.includes('optics')) {
@@ -132,21 +132,9 @@ const TechnologyTree = () => {
   // Update selected node info when path changes or level items change
   useEffect(() => {
     if (level1Items && level2Items && level3Items) {
-      const info = getSelectedNodeInfo();
-      setSelectedNodeInfo(info);
-      
-      // If we have a selected node with title, ensure sidebar is visible
-      if (info.title) {
-        setShowSidebar(true);
-      }
+      setSelectedNodeInfo(getSelectedNodeInfo());
     }
   }, [selectedPath, level1Items, level2Items, level3Items]);
-
-  useEffect(() => {
-    if (selectedNodeInfo.title && collapsedSidebar) {
-      toggleSidebar();
-    }
-  }, [selectedNodeInfo.title]);
 
   const levelNames = getLevelNames(selectedPath);
 
@@ -252,19 +240,17 @@ const TechnologyTree = () => {
   );
 
   return (
-    <SidebarProvider>
-      <TechTreeLayout
-        showSidebar={showSidebar}
-        collapsedSidebar={collapsedSidebar}
-        isExpanded={isExpanded}
-        toggleSidebar={toggleSidebar}
-        setShowSidebar={setShowSidebar}
-        handlePanelResize={handlePanelResize}
-        sidebarContent={sidebarContent}
-      >
-        {mainContent}
-      </TechTreeLayout>
-    </SidebarProvider>
+    <TechTreeLayout
+      showSidebar={showSidebar}
+      collapsedSidebar={collapsedSidebar}
+      isExpanded={isExpanded}
+      toggleSidebar={toggleSidebar}
+      setShowSidebar={setShowSidebar}
+      handlePanelResize={handlePanelResize}
+      sidebarContent={sidebarContent}
+    >
+      {mainContent}
+    </TechTreeLayout>
   );
 };
 

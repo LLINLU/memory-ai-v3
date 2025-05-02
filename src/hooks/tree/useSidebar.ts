@@ -4,7 +4,7 @@ import { useState } from "react";
 export const useSidebar = (initialTab = "result") => {
   const [sidebarTab, setSidebarTab] = useState(initialTab);
   const [showSidebar, setShowSidebar] = useState(true);
-  const [collapsedSidebar, setCollapsedSidebar] = useState(false); // Changed to not collapsed by default
+  const [collapsedSidebar, setCollapsedSidebar] = useState(false);
 
   const toggleSidebar = () => {
     if (collapsedSidebar) {
@@ -21,7 +21,6 @@ export const useSidebar = (initialTab = "result") => {
     collapsedSidebar,
     setSidebarTab,
     setShowSidebar,
-    setCollapsedSidebar,
     toggleSidebar
   };
 };

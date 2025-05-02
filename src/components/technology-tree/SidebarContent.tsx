@@ -33,31 +33,35 @@ export const SidebarContent = ({
   selectedNodeTitle,
   selectedNodeDescription
 }: SidebarContentProps) => {
+  console.log("SidebarContent chatMessages:", chatMessages); // Add debug log
+  
   return (
     <div className="h-full flex flex-col">
-      <TabsHorizontal value={sidebarTab} className="h-full flex flex-col">
-        <TabsHorizontalContent value="result" className="h-full flex-1">
+      <TabsHorizontal value={sidebarTab} className="h-full flex-1">
+        <TabsHorizontalContent value="result" className="h-full">
           <SearchResults 
             selectedNodeTitle={selectedNodeTitle} 
             selectedNodeDescription={selectedNodeDescription}
           />
         </TabsHorizontalContent>
 
-        <TabsHorizontalContent value="chat" className="h-full flex flex-col bg-[#f6f6f6] flex-1">
-          <div className="flex-1 overflow-hidden flex flex-col">
-            <ChatConversation 
-              chatMessages={chatMessages} 
-              onUseNode={onUseNode}
-              onEditNode={onEditNode}
-              onRefine={onRefine}
-              onCheckResults={onCheckResults}
-            />
-            <ChatInput 
-              value={inputValue} 
-              onChange={onInputChange} 
-              onSend={onSendMessage} 
-            />
-          </div>
+        <TabsHorizontalContent value="chat" className="h-full flex flex-col bg-[#f6f6f6]">
+          {sidebarTab === "chat" && (
+            <>
+              <ChatConversation 
+                chatMessages={chatMessages} 
+                onUseNode={onUseNode}
+                onEditNode={onEditNode}
+                onRefine={onRefine}
+                onCheckResults={onCheckResults}
+              />
+              <ChatInput 
+                value={inputValue} 
+                onChange={onInputChange} 
+                onSend={onSendMessage} 
+              />
+            </>
+          )}
         </TabsHorizontalContent>
       </TabsHorizontal>
     </div>

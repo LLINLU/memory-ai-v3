@@ -1,9 +1,10 @@
 
 import React from "react";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
-import { AppSidebar } from "@/components/AppSidebar";
+import { CollapsedSidebar } from "@/components/technology-tree/CollapsedSidebar";
 
 interface TechTreeLayoutProps {
   children: React.ReactNode;
@@ -28,12 +29,10 @@ export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
 }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Navigation />
+      
       <div className="flex flex-1 overflow-hidden">
-        {/* Left sidebar - identical to homepage */}
-        <AppSidebar />
-        
-        {/* Main content */}
-        <ResizablePanelGroup direction="horizontal" onLayout={handlePanelResize} className="flex-1">
+        <ResizablePanelGroup direction="horizontal" onLayout={handlePanelResize}>
           <ResizablePanel 
             defaultSize={60} 
             minSize={30}
@@ -43,20 +42,12 @@ export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
             {children}
           </ResizablePanel>
 
-          {showSidebar && !collapsedSidebar && (
-            <>
-              <ResizableHandle withHandle />
-              <ResizablePanel 
-                defaultSize={40} 
-                minSize={20}
-                maxSize={isExpanded ? 100 : 50}
-                onResize={handlePanelResize}
-              >
-                {sidebarContent}
-              </ResizablePanel>
-            </>
-          )}
+          <ResizableHandle withHandle />
+
+          {showSidebar && !collapsedSidebar && sidebarContent}
         </ResizablePanelGroup>
+
+        {collapsedSidebar && <CollapsedSidebar toggleSidebar={toggleSidebar} />}
 
         {!showSidebar && !collapsedSidebar && (
           <Button 

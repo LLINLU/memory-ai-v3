@@ -19,21 +19,19 @@ export function SidebarNavigation() {
         <SidebarMenuButton 
           asChild 
           tooltip="Search"
-          className="w-full flex justify-start pl-3"
         >
           <Link to="/">
-            <Search className="h-5 w-5" />
-            {isExpanded && <span className="ml-2">Search</span>}
+            <Search />
+            {isExpanded && <span>Search</span>}
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
       <SidebarMenuItem>
         <SidebarMenuButton 
           tooltip="History"
-          className="w-full flex justify-start pl-3"
         >
-          <History className="h-5 w-5" />
-          {isExpanded && <span className="ml-2">History</span>}
+          <History />
+          {isExpanded && <span>History</span>}
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>
