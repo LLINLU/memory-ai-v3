@@ -9,6 +9,8 @@ import { useTechTreeChat } from "@/hooks/tree/useTechTreeChat";
 import { useTechTreeSidebarActions } from "@/components/technology-tree/hooks/useTechTreeSidebarActions";
 import { useNodeInfo } from "@/hooks/tree/useNodeInfo";
 import { getLevelNames } from "@/utils/technologyTreeUtils";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 
 const TechnologyTree = () => {
   const {
@@ -113,17 +115,24 @@ const TechnologyTree = () => {
   );
 
   return (
-    <TechTreeLayout
-      showSidebar={showSidebar}
-      collapsedSidebar={collapsedSidebar}
-      isExpanded={isExpanded}
-      toggleSidebar={toggleSidebar}
-      setShowSidebar={setShowSidebar}
-      handlePanelResize={handlePanelResize}
-      sidebarContent={sidebarContent}
-    >
-      {mainContent}
-    </TechTreeLayout>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        <div className="flex-1">
+          <TechTreeLayout
+            showSidebar={showSidebar}
+            collapsedSidebar={collapsedSidebar}
+            isExpanded={isExpanded}
+            toggleSidebar={toggleSidebar}
+            setShowSidebar={setShowSidebar}
+            handlePanelResize={handlePanelResize}
+            sidebarContent={sidebarContent}
+          >
+            {mainContent}
+          </TechTreeLayout>
+        </div>
+      </div>
+    </SidebarProvider>
   );
 };
 
