@@ -136,6 +136,12 @@ const TechnologyTree = () => {
     }
   }, [selectedPath, level1Items, level2Items, level3Items]);
 
+  useEffect(() => {
+    if (selectedNodeInfo.title && collapsedSidebar) {
+      toggleSidebar();
+    }
+  }, [selectedNodeInfo.title]);
+
   const levelNames = getLevelNames(selectedPath);
 
   const handlePanelResize = () => {

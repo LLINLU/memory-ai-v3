@@ -43,9 +43,19 @@ export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
             {children}
           </ResizablePanel>
 
-          <ResizableHandle withHandle />
-
-          {showSidebar && !collapsedSidebar && sidebarContent}
+          {showSidebar && !collapsedSidebar && (
+            <>
+              <ResizableHandle withHandle />
+              <ResizablePanel 
+                defaultSize={40} 
+                minSize={20}
+                maxSize={isExpanded ? 100 : 50}
+                onResize={handlePanelResize}
+              >
+                {sidebarContent}
+              </ResizablePanel>
+            </>
+          )}
         </ResizablePanelGroup>
 
         {!showSidebar && !collapsedSidebar && (

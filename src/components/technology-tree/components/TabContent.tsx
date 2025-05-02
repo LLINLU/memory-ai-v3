@@ -22,8 +22,8 @@ export const TabContent = ({
   return (
     <>
       <SelectedNodeInfo 
-        title={selectedNodeTitle} 
-        description={selectedNodeDescription} 
+        title={selectedNodeTitle || "Retinal Imaging"} 
+        description={selectedNodeDescription || "A non-invasive technique that captures detailed images of the retina—the light-sensitive tissue at the back of the eye."} 
       />
       <div className="flex justify-between items-center mb-4">
         <span className="text-sm text-gray-600">32 papers • 9 implementations</span>

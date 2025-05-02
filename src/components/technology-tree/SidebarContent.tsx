@@ -33,8 +33,6 @@ export const SidebarContent = ({
   selectedNodeTitle,
   selectedNodeDescription
 }: SidebarContentProps) => {
-  console.log("SidebarContent chatMessages:", chatMessages); // Add debug log
-  
   return (
     <div className="h-full flex flex-col">
       <TabsHorizontal value={sidebarTab} className="h-full flex-1">
