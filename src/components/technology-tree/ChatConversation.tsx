@@ -55,7 +55,7 @@ export const ChatConversation = ({
   );
 
   return (
-    <div className="flex-1 overflow-y-auto p-4">
+    <div className="flex-1 overflow-y-auto p-4 w-full">
       {chatMessages.map((message, index) => {
         const nextMessage = chatMessages[index + 1];
         const isActionTaken = nextMessage && nextMessage.content === "The node has been created 😊";

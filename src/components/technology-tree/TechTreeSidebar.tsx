@@ -51,7 +51,7 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
         toggleExpand={toggleExpand}
       />
       
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden flex flex-col">
         <SidebarContent
           sidebarTab={sidebarTab}
           chatMessages={chatMessages}

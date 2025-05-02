@@ -21,6 +21,7 @@ export const useSidebar = (initialTab = "result") => {
     collapsedSidebar,
     setSidebarTab,
     setShowSidebar,
+    setCollapsedSidebar,
     toggleSidebar
   };
 };
