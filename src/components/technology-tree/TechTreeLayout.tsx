@@ -33,7 +33,7 @@ export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
         <AppSidebar />
         
         {/* Main content */}
-        <ResizablePanelGroup direction="horizontal" onLayout={handlePanelResize}>
+        <ResizablePanelGroup direction="horizontal" onLayout={handlePanelResize} className="flex-1">
           <ResizablePanel 
             defaultSize={60} 
             minSize={30}

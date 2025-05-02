@@ -34,7 +34,7 @@ export const SearchResults = ({ selectedNodeTitle, selectedNodeDescription }: Se
   }, [toast]);
 
   return (
-    <div className="h-full p-4 overflow-auto bg-[#fdfdfd]" data-sidebar="content">
+    <div className="h-full p-4 overflow-auto bg-[#fdfdfd] flex-1" data-sidebar="content">
       <TabContent 
         activeTab={activeTab} 
         onValueChange={setActiveTab}

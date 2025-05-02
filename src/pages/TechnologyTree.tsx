@@ -132,7 +132,13 @@ const TechnologyTree = () => {
   // Update selected node info when path changes or level items change
   useEffect(() => {
     if (level1Items && level2Items && level3Items) {
-      setSelectedNodeInfo(getSelectedNodeInfo());
+      const info = getSelectedNodeInfo();
+      setSelectedNodeInfo(info);
+      
+      // If we have a selected node with title, ensure sidebar is visible
+      if (info.title) {
+        setShowSidebar(true);
+      }
     }
   }, [selectedPath, level1Items, level2Items, level3Items]);
 

@@ -36,7 +36,7 @@ export const SidebarContent = ({
   return (
     <div className="h-full flex flex-col">
       <TabsHorizontal value={sidebarTab} className="h-full flex flex-col">
-        <TabsHorizontalContent value="result" className="h-full">
+        <TabsHorizontalContent value="result" className="h-full flex-1">
           <SearchResults 
             selectedNodeTitle={selectedNodeTitle} 
             selectedNodeDescription={selectedNodeDescription}
@@ -44,18 +44,20 @@ export const SidebarContent = ({
         </TabsHorizontalContent>
 
         <TabsHorizontalContent value="chat" className="h-full flex flex-col bg-[#f6f6f6] flex-1">
-          <ChatConversation 
-            chatMessages={chatMessages} 
-            onUseNode={onUseNode}
-            onEditNode={onEditNode}
-            onRefine={onRefine}
-            onCheckResults={onCheckResults}
-          />
-          <ChatInput 
-            value={inputValue} 
-            onChange={onInputChange} 
-            onSend={onSendMessage} 
-          />
+          <div className="flex-1 overflow-hidden flex flex-col">
+            <ChatConversation 
+              chatMessages={chatMessages} 
+              onUseNode={onUseNode}
+              onEditNode={onEditNode}
+              onRefine={onRefine}
+              onCheckResults={onCheckResults}
+            />
+            <ChatInput 
+              value={inputValue} 
+              onChange={onInputChange} 
+              onSend={onSendMessage} 
+            />
+          </div>
         </TabsHorizontalContent>
       </TabsHorizontal>
     </div>
