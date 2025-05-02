@@ -1,7 +1,6 @@
 
 import React from "react";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
-import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { CollapsedSidebar } from "@/components/technology-tree/CollapsedSidebar";
@@ -29,8 +28,6 @@ export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
 }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Navigation />
-      
       <div className="flex flex-1 overflow-hidden">
         <ResizablePanelGroup direction="horizontal" onLayout={handlePanelResize}>
           <ResizablePanel 
