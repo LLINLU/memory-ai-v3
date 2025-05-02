@@ -1,7 +1,7 @@
 
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Search, History, GitBranch } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Search, History } from "lucide-react";
 import { useSidebar } from "@/hooks/use-sidebar";
 import {
   SidebarMenu,
@@ -12,7 +12,6 @@ import {
 export function SidebarNavigation() {
   const { state } = useSidebar();
   const isExpanded = state === 'expanded';
-  const location = useLocation();
 
   return (
     <SidebarMenu>
@@ -20,7 +19,6 @@ export function SidebarNavigation() {
         <SidebarMenuButton 
           asChild 
           tooltip="Search"
-          isActive={location.pathname === '/'}
         >
           <Link to="/">
             <Search />
@@ -34,18 +32,6 @@ export function SidebarNavigation() {
         >
           <History />
           {isExpanded && <span>History</span>}
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-      <SidebarMenuItem>
-        <SidebarMenuButton 
-          asChild
-          tooltip="Technology Tree"
-          isActive={location.pathname === '/technology-tree'}
-        >
-          <Link to="/technology-tree">
-            <GitBranch />
-            {isExpanded && <span>Tech Tree</span>}
-          </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>
