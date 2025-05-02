@@ -32,13 +32,7 @@ export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
       <Navigation />
       
       <div className="flex flex-1 overflow-hidden">
-        {collapsedSidebar && <CollapsedSidebar toggleSidebar={toggleSidebar} />}
-        
         <ResizablePanelGroup direction="horizontal" onLayout={handlePanelResize}>
-          {showSidebar && !collapsedSidebar && sidebarContent}
-          
-          <ResizableHandle withHandle />
-          
           <ResizablePanel 
             defaultSize={60} 
             minSize={30}
@@ -47,11 +41,17 @@ export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
           >
             {children}
           </ResizablePanel>
+
+          <ResizableHandle withHandle />
+
+          {showSidebar && !collapsedSidebar && sidebarContent}
         </ResizablePanelGroup>
+
+        {collapsedSidebar && <CollapsedSidebar toggleSidebar={toggleSidebar} />}
 
         {!showSidebar && !collapsedSidebar && (
           <Button 
-            className="fixed left-4 bottom-4 rounded-full bg-blue-500 p-3"
+            className="fixed right-4 bottom-4 rounded-full bg-blue-500 p-3"
             onClick={() => setShowSidebar(true)}
             size="icon"
           >
