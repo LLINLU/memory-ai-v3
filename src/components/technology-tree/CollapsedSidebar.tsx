@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 interface CollapsedSidebarProps {
   toggleSidebar: () => void;
@@ -15,7 +15,7 @@ export const CollapsedSidebar = ({ toggleSidebar }: CollapsedSidebarProps) => {
         className="absolute top-2 left-2 w-[40px] h-[40px] p-0 flex items-center justify-center bg-[#1A1F2C] text-white" 
         onClick={toggleSidebar}
       >
-        <ArrowLeft className="h-5 w-5" />
+        <ArrowRight className="h-5 w-5" />
       </Button>
     </div>
   );
