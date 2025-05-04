@@ -1,5 +1,6 @@
 
 import React from "react";
+import { Separator } from "@/components/ui/separator";
 
 interface SelectedNodeInfoProps {
   title?: string;
@@ -17,10 +18,10 @@ export const SelectedNodeInfo: React.FC<SelectedNodeInfoProps> = ({ title, descr
   
   return (
     <div className="mt-2 mb-4">
-      {/* Title removed to avoid duplication with the header */}
       {description && (
         <p className="text-gray-600 leading-relaxed mb-4">{description}</p>
       )}
+      <Separator className="my-4" />
     </div>
   );
 };

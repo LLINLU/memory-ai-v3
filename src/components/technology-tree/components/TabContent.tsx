@@ -17,7 +17,6 @@ export const TabContent = ({
 }: TabContentProps) => {
   return (
     <>
-      <Separator className="my-4" />
       <div className="flex items-center justify-between mb-6">
         <TabNavigator onValueChange={onValueChange} />
         <FilterSort className="justify-end" />
