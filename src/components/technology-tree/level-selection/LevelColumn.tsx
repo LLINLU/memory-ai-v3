@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { TreeNode } from './TreeNode';
 import { EditNodeDialog } from './EditNodeDialog';
@@ -51,6 +50,12 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
       }
     });
     document.dispatchEvent(customEvent);
+    
+    // Find and open the chatbox
+    const chatbox = document.querySelector('[data-chatbox]');
+    if (chatbox) {
+      chatbox.setAttribute('data-chatbox-open', 'true');
+    }
   };
 
   const handleEditClick = (e: React.MouseEvent, item: LevelItem) => {
