@@ -25,11 +25,13 @@ export const TabContent = ({
         title={selectedNodeTitle} 
         description={selectedNodeDescription} 
       />
-      <div className="flex justify-between items-center mb-4">
-        <span className="text-sm text-gray-600">32 papers • 9 implementations</span>
+      <div className="flex items-center justify-between mb-4">
+        <TabNavigator onValueChange={onValueChange} />
         <FilterSort className="justify-end" />
       </div>
-      <TabNavigator onValueChange={onValueChange} />
+      <div className="text-sm text-gray-600 mb-4">
+        32 papers • 9 implementations
+      </div>
       {activeTab === "papers" ? <PaperList /> : <ImplementationList />}
     </>
   );

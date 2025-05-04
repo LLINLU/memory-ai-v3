@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Menu as FilterIcon, ArrowDownUp, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -44,7 +45,7 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
         </DropdownMenuTrigger>
         <DropdownMenuContent 
           className="w-56" 
-          align="start"
+          align="end"
           onCloseAutoFocus={(e) => {
             e.preventDefault();
           }}
@@ -161,7 +162,7 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
             Sort
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
+        <DropdownMenuContent align="end">
           <DropdownMenuItem onSelect={() => onSortChange?.("newest")}>
             Newest First
           </DropdownMenuItem>
