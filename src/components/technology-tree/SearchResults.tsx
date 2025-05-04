@@ -2,6 +2,7 @@
 import React, { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { TabContent } from "./components/TabContent";
+import { SelectedNodeInfo } from "./components/SelectedNodeInfo";
 
 interface SearchResultsProps {
   selectedNodeTitle?: string;
@@ -35,11 +36,13 @@ export const SearchResults = ({ selectedNodeTitle, selectedNodeDescription }: Se
 
   return (
     <div className="h-full p-4 overflow-auto bg-white" data-sidebar="content">
+      <SelectedNodeInfo 
+        selectedNodeTitle={selectedNodeTitle} 
+        selectedNodeDescription={selectedNodeDescription}
+      />
       <TabContent 
         activeTab={activeTab} 
         onValueChange={setActiveTab}
-        selectedNodeTitle={selectedNodeTitle} 
-        selectedNodeDescription={selectedNodeDescription}
       />
     </div>
   );
