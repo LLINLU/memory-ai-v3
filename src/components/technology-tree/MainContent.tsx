@@ -2,6 +2,7 @@
 import React from 'react';
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
+import { ScenarioSection } from "./ScenarioSection";
 
 interface MainContentProps {
   selectedPath: {
@@ -22,6 +23,8 @@ interface MainContentProps {
   };
   query?: string;
   hasUserMadeSelection: boolean;
+  scenario?: string;
+  onEditScenario?: () => void;
 }
 
 export const MainContent = ({
@@ -37,10 +40,14 @@ export const MainContent = ({
     level2: "Function",
     level3: "Measure/Technology"
   },
-  query
+  query,
+  scenario,
+  onEditScenario,
+  hasUserMadeSelection
 }: MainContentProps) => {
   return (
     <div className="container mx-auto px-4 py-6">
+      <ScenarioSection scenario={scenario} onEditScenario={onEditScenario} />
       <PathDisplay 
         selectedPath={selectedPath}
         level1Items={level1Items}

@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
 import { MainContent } from "@/components/technology-tree/MainContent";
 import { TechTreeLayout } from "@/components/technology-tree/TechTreeLayout";
@@ -11,8 +11,13 @@ import { useNodeInfo } from "@/hooks/tree/useNodeInfo";
 import { getLevelNames } from "@/utils/technologyTreeUtils";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { ChatBox } from "@/components/technology-tree/ChatBox";
 
 const TechnologyTree = () => {
+  const [scenario, setScenario] = useState(
+    "Medical professionals and patients with retinal disorders in clinical settings seeking non-invasive diagnostic methods for early detection of conditions"
+  );
+
   const {
     selectedPath,
     sidebarTab,
@@ -61,9 +66,17 @@ const TechnologyTree = () => {
     document.dispatchEvent(event);
   };
 
+  const handleEditScenario = () => {
+    const newScenario = prompt("Edit scenario:", scenario);
+    if (newScenario) {
+      setScenario(newScenario);
+    }
+  };
+
   useEffect(() => {
-    updateTabsHorizontalState(sidebarTab);
-  }, [sidebarTab]);
+    updateTabsHorizontalState("result"); // Default to result tab
+    setSidebarTab("result"); // Set default tab to result
+  }, [setSidebarTab]);
 
   useEffect(() => {
     initializeChat(sidebarTab);
@@ -71,8 +84,6 @@ const TechnologyTree = () => {
 
   useEffect(() => {
     const handleSwitchToChatEvent = (event: CustomEvent) => {
-      setSidebarTab("chat");
-      setShowSidebar(true);
       handleSwitchToChat(event.detail.message);
     };
 
@@ -81,7 +92,7 @@ const TechnologyTree = () => {
     return () => {
       document.removeEventListener('switch-to-chat', handleSwitchToChatEvent as EventListener);
     };
-  }, [setSidebarTab, setShowSidebar, handleSwitchToChat]);
+  }, [handleSwitchToChat]);
 
   const mainContent = (
     <MainContent
@@ -94,6 +105,8 @@ const TechnologyTree = () => {
       onDeleteNode={deleteNode}
       levelNames={levelNames}
       hasUserMadeSelection={hasUserMadeSelection}
+      scenario={scenario}
+      onEditScenario={handleEditScenario}
     />
   );
 
@@ -134,6 +147,14 @@ const TechnologyTree = () => {
           >
             {mainContent}
           </TechTreeLayout>
+          
+          {/* Add ChatBox component */}
+          <ChatBox
+            messages={chatMessages}
+            inputValue={inputValue}
+            onInputChange={handleInputChange}
+            onSendMessage={handleSendMessage}
+          />
         </div>
       </div>
     </SidebarProvider>

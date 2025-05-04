@@ -11,8 +11,6 @@ interface SidebarControlsProps {
 }
 
 export const SidebarControls = ({
-  sidebarTab,
-  setSidebarTab,
   toggleSidebar,
   isExpanded,
   toggleExpand,
@@ -20,26 +18,9 @@ export const SidebarControls = ({
   return (
     <div className="flex items-center justify-between border-b border-gray-200 h-12">
       <div className="flex flex-1 relative">
-        <button
-          onClick={() => setSidebarTab("result")}
-          className={`flex-1 h-full font-medium text-center px-4 relative ${
-            sidebarTab === 'result' 
-              ? 'text-blue-600' 
-              : 'text-gray-500'
-          }`}
-        >
-          Result
-        </button>
-        <button
-          onClick={() => setSidebarTab("chat")}
-          className={`flex-1 h-full font-medium text-center px-4 relative ${
-            sidebarTab === 'chat' 
-              ? 'text-blue-600' 
-              : 'text-gray-500'
-          }`}
-        >
-          Chat
-        </button>
+        <div className="flex-1 h-full font-medium text-center px-4 relative text-blue-600">
+          Results
+        </div>
       </div>
       <div className="flex items-center gap-2 mr-2">
         <Button 
