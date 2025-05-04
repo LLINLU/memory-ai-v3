@@ -19,9 +19,7 @@ export const SidebarControls = ({
 }: SidebarControlsProps) => {
   return (
     <div className="flex items-center justify-between p-4">
-      <div className="flex-1">
-        <h2 className="text-xl font-bold">{selectedNodeTitle || "Results"}</h2>
-      </div>
+      <h2 className="text-xl font-bold">{selectedNodeTitle || "Results"}</h2>
       <div className="flex items-center gap-2">
         <Button 
           variant="ghost" 
