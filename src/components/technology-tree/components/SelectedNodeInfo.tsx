@@ -1,6 +1,5 @@
 
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
 
 interface SelectedNodeInfoProps {
   title?: string;
@@ -10,22 +9,18 @@ interface SelectedNodeInfoProps {
 export const SelectedNodeInfo: React.FC<SelectedNodeInfoProps> = ({ title, description }) => {
   if (!title) {
     return (
-      <Card className="mt-2 mb-4 bg-blue-50 border-none">
-        <CardContent className="p-6">
-          <p className="text-sm text-gray-500">Select a node to view its details</p>
-        </CardContent>
-      </Card>
+      <div className="mt-2 mb-4">
+        <p className="text-sm text-gray-500">Select a node to view its details</p>
+      </div>
     );
   }
   
   return (
-    <Card className="mt-2 mb-4 bg-blue-50 border-none">
-      <CardContent className="py-4 px-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-2">{title}</h2>
-        {description && (
-          <p className="text-gray-600 leading-relaxed">{description}</p>
-        )}
-      </CardContent>
-    </Card>
+    <div className="mt-2 mb-4">
+      <h2 className="text-xl font-bold text-gray-800 mb-2">{title}</h2>
+      {description && (
+        <p className="text-gray-600 leading-relaxed mb-4">{description}</p>
+      )}
+    </div>
   );
 };

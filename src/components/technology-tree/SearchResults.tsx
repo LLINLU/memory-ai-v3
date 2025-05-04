@@ -37,8 +37,8 @@ export const SearchResults = ({ selectedNodeTitle, selectedNodeDescription }: Se
   return (
     <div className="h-full p-4 overflow-auto bg-white" data-sidebar="content">
       <SelectedNodeInfo 
-        selectedNodeTitle={selectedNodeTitle} 
-        selectedNodeDescription={selectedNodeDescription}
+        title={selectedNodeTitle} 
+        description={selectedNodeDescription}
       />
       <TabContent 
         activeTab={activeTab} 
