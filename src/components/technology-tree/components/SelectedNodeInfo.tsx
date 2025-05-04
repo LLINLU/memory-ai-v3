@@ -1,31 +1,22 @@
 
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
 
 interface SelectedNodeInfoProps {
   title?: string;
   description?: string;
 }
 
-export const SelectedNodeInfo: React.FC<SelectedNodeInfoProps> = ({ title, description }) => {
-  if (!title) {
-    return (
-      <Card className="mt-2 mb-4 bg-blue-50 border-none">
-        <CardContent className="p-6">
-          <p className="text-sm text-gray-500">Select a node to view its details</p>
-        </CardContent>
-      </Card>
-    );
-  }
+export const SelectedNodeInfo = ({ title, description }: SelectedNodeInfoProps) => {
+  if (!title) return null;
   
   return (
-    <Card className="mt-2 mb-4 bg-blue-50 border-none">
-      <CardContent className="py-4 px-6">
-        <h2 className="text-xl font-bold text-gray-800 py-1">{title}</h2>
-        {description && (
-          <p className="text-gray-600 leading-relaxed">{description}</p>
-        )}
-      </CardContent>
-    </Card>
+    <div className="mb-6">
+      <h2 className="text-2xl font-bold mb-3">{title}</h2>
+      {description && (
+        <p className="text-gray-600 mb-4 max-w-3xl">
+          {description}
+        </p>
+      )}
+    </div>
   );
 };

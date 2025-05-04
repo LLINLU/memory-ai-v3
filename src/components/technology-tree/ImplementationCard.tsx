@@ -41,16 +41,16 @@ export const ImplementationCard = ({
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg border border-gray-200">
+    <div className="bg-white p-6 rounded-lg border border-gray-200 mb-4">
       <div className="flex items-center justify-between mb-2">
-        <h4 className="font-semibold">{title}</h4>
+        <h4 className="text-lg font-semibold">{title}</h4>
         <Badge 
           className={cn(`ml-2 ${badgeColor} ${badgeTextColor} border-0 font-normal`)}
         >
           {releases} releases
         </Badge>
       </div>
-      <p className="text-gray-600 text-sm font-normal mb-3">
+      <p className="text-gray-600 text-sm mb-3">
         {description}
       </p>
       {pressReleases.length > 0 && (
@@ -90,14 +90,13 @@ export const ImplementationCard = ({
         </div>
       )}
       <Button
-        variant="ghost"
+        variant="outline"
         size="sm"
         onClick={handleSave}
-        className="w-full mt-2 text-gray-500 hover:text-gray-700"
+        className="mt-2 border-gray-300"
       >
         Save
       </Button>
     </div>
   );
 };
-
