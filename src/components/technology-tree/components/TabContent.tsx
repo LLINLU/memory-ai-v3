@@ -4,6 +4,7 @@ import { PaperList } from "../PaperList";
 import { ImplementationList } from "../ImplementationList";
 import { FilterSort } from "../FilterSort";
 import { TabNavigator } from "./TabNavigator";
+import { Separator } from "@/components/ui/separator";
 
 interface TabContentProps {
   activeTab: string;
@@ -16,6 +17,7 @@ export const TabContent = ({
 }: TabContentProps) => {
   return (
     <>
+      <Separator className="my-4" />
       <div className="flex items-center justify-between mb-6">
         <TabNavigator onValueChange={onValueChange} />
         <FilterSort className="justify-end" />
