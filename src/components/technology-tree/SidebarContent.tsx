@@ -1,4 +1,3 @@
-
 import React from "react";
 import { SearchResults } from "./SearchResults";
 import { NodeSuggestion } from "@/types/chat";
@@ -19,10 +18,15 @@ interface SidebarContentProps {
 
 export const SidebarContent = ({
   selectedNodeTitle,
-  selectedNodeDescription
+  selectedNodeDescription,
 }: SidebarContentProps) => {
   return (
     <div className="h-full flex flex-col">
+      {selectedNodeDescription && (
+        <div className="px-4 py-3 border-b border-gray-200 text-gray-600">
+          {selectedNodeDescription}
+        </div>
+      )}
       <SearchResults 
         selectedNodeTitle={selectedNodeTitle} 
         selectedNodeDescription={selectedNodeDescription}

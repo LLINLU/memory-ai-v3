@@ -8,21 +8,21 @@ interface SidebarControlsProps {
   toggleSidebar: () => void;
   isExpanded: boolean;
   toggleExpand: () => void;
+  selectedNodeTitle?: string;
 }
 
 export const SidebarControls = ({
   toggleSidebar,
   isExpanded,
   toggleExpand,
+  selectedNodeTitle
 }: SidebarControlsProps) => {
   return (
-    <div className="flex items-center justify-between border-b border-gray-200 h-12">
-      <div className="flex flex-1 relative">
-        <div className="flex-1 h-full font-medium text-center px-4 relative text-blue-600">
-          Results
-        </div>
+    <div className="flex items-center justify-between border-b border-gray-200 p-4">
+      <div className="flex-1">
+        <h2 className="text-xl font-bold">{selectedNodeTitle || "Results"}</h2>
       </div>
-      <div className="flex items-center gap-2 mr-2">
+      <div className="flex items-center gap-2">
         <Button 
           variant="ghost" 
           size="icon"
