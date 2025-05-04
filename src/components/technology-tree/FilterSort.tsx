@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Menu as FilterIcon, ArrowDownUp, Check } from "lucide-react";
+import { SlidersHorizontal, ArrowUpDown, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -38,8 +38,8 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
     <div className={`flex items-center gap-2 ${className || ''}`}>
       <DropdownMenu open={filterOpen} onOpenChange={setFilterOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="gap-2">
-            <FilterIcon className="h-4 w-4" />
+          <Button variant="ghost" size="sm" className="gap-2 text-gray-700">
+            <SlidersHorizontal className="h-4 w-4" />
             Filter
           </Button>
         </DropdownMenuTrigger>
@@ -157,8 +157,8 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="gap-2">
-            <ArrowDownUp className="h-4 w-4" />
+          <Button variant="ghost" size="sm" className="gap-2 text-gray-700">
+            <ArrowUpDown className="h-4 w-4" />
             Sort
           </Button>
         </DropdownMenuTrigger>

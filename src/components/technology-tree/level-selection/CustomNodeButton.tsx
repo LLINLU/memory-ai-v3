@@ -1,5 +1,30 @@
 
-// Fix the error by removing the argument from console.log that didn't expect any arguments
-// Note: This is just a small snippet replacement for the error line
+import React from 'react';
+import { Plus } from 'lucide-react';
 
-console.log("Add node button clicked");
+interface CustomNodeButtonProps {
+  onClick: () => void;
+}
+
+export const CustomNodeButton: React.FC<CustomNodeButtonProps> = ({ onClick }) => {
+  return (
+    <button
+      onClick={(e) => {
+        // Expand the chatbox when custom node button is clicked
+        const chatbox = document.querySelector('[data-chatbox]');
+        if (chatbox) {
+          // Set a custom attribute to indicate it should be opened
+          chatbox.setAttribute('data-chatbox-open', 'true');
+        }
+        
+        // Then call the original onClick handler
+        console.log("Add node button clicked");
+        onClick();
+      }}
+      className="w-full py-3 px-3 rounded-lg border border-dashed border-[#4A7DFC] text-[#4A7DFC] hover:bg-[#EBF3FF] transition-colors flex items-center justify-center gap-2"
+    >
+      <Plus className="h-5 w-5" />
+      Custom node
+    </button>
+  );
+};
