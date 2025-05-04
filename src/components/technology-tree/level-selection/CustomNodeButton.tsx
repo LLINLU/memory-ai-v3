@@ -9,7 +9,7 @@ interface CustomNodeButtonProps {
 export const CustomNodeButton: React.FC<CustomNodeButtonProps> = ({ onClick }) => {
   return (
     <button
-      onClick={() => {
+      onClick={(e) => {
         // Expand the chatbox when custom node button is clicked
         const chatbox = document.querySelector('[data-chatbox]');
         if (chatbox) {
@@ -18,7 +18,7 @@ export const CustomNodeButton: React.FC<CustomNodeButtonProps> = ({ onClick }) =
         }
         
         // Then call the original onClick handler
-        onClick();
+        onClick(e);
       }}
       className="w-full py-3 px-3 rounded-lg border border-dashed border-[#4A7DFC] text-[#4A7DFC] hover:bg-[#EBF3FF] transition-colors flex items-center justify-center gap-2"
     >

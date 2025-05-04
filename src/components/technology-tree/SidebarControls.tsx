@@ -16,8 +16,13 @@ export const SidebarControls = ({
   toggleExpand,
 }: SidebarControlsProps) => {
   return (
-    <div className="flex items-center justify-end border-b border-gray-200 h-12 px-2">
-      <div className="flex items-center gap-2">
+    <div className="flex items-center justify-between border-b border-gray-200 h-12">
+      <div className="flex flex-1 relative">
+        <div className="flex-1 h-full font-medium text-center px-4 relative text-blue-600">
+          Results
+        </div>
+      </div>
+      <div className="flex items-center gap-2 mr-2">
         <Button 
           variant="ghost" 
           size="icon"
