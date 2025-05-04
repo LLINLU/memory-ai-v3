@@ -33,9 +33,9 @@ export const MainContent = ({
   onEditNode,
   onDeleteNode,
   levelNames = {
-    level1: "Main Domains",
-    level2: "Sub-domains",
-    level3: "Specific Topics/Techniques"
+    level1: "Purpose (Why)",
+    level2: "Function (What)",
+    level3: "Measure/Technology (How)"
   },
   query
 }: MainContentProps) => {

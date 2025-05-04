@@ -50,7 +50,11 @@ const TechnologyTree = () => {
   } = useTechTreeSidebarActions(setChatMessages, addCustomNode, setSidebarTab);
 
   const selectedNodeInfo = useNodeInfo(selectedPath, level1Items, level2Items, level3Items);
-  const levelNames = getLevelNames(selectedPath);
+  const levelNames = {
+    level1: "Purpose (Why)",
+    level2: "Function (What)",
+    level3: "Measure/Technology (How)"
+  };
 
   const handlePanelResize = () => {
     const event = new CustomEvent('panel-resize');
