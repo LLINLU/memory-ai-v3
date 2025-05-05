@@ -241,22 +241,22 @@ const ResearchContext = () => {
           <div className="container py-8 px-4 mx-auto max-w-5xl flex-1 flex flex-col">
             {showInitialOptions ? (
               <div className="bg-white p-8 rounded-3xl shadow-sm">
-                <div className="bg-blue-50 p-6 rounded-2xl mb-8">
-                  <p className="text-lg text-blue-800 mb-4">
+                <div className="bg-blue-50 p-8 rounded-2xl mb-8 text-center">
+                  <p className="text-xl text-blue-800 mb-8">
                     Hi, I can help you find research papers regarding {initialQuery || '[your research interest]'}. 
                     Would you like quick results now or a more personalized search based on your specific interests?
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <div className="flex flex-col sm:flex-row gap-6 justify-center">
                     <Button 
                       onClick={() => handleInitialOption('quick')}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 h-auto text-lg"
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-10 py-6 h-auto text-xl font-normal rounded-lg"
                       disabled={!initialQuery.trim()}
                     >
                       Quick Results
                     </Button>
                     <Button 
                       onClick={() => handleInitialOption('personalized')}
-                      className="bg-blue-100 text-blue-800 hover:bg-blue-200 px-8 py-6 h-auto text-lg"
+                      className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-10 py-6 h-auto text-xl font-normal rounded-lg"
                       disabled={!initialQuery.trim()}
                     >
                       Personalized Search
