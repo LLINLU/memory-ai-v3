@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -287,11 +286,8 @@ const ResearchContext = () => {
         <div className="flex-1 bg-gray-50 flex flex-col">
           <div className="container py-8 px-4 mx-auto max-w-5xl flex-1 flex flex-col">
             <div className="bg-white p-8 rounded-3xl shadow-sm flex-1 flex flex-col">
-              <div className="flex items-center justify-between mb-6">
+              <div className="mb-6">
                 <h2 className="text-2xl font-semibold">Research Context Builder</h2>
-                {currentStep > 0 && (
-                  <span className="text-gray-500">Step {currentStep + 1} of 4</span>
-                )}
               </div>
 
               {/* Conversation history */}
