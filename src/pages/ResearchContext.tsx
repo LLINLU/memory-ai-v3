@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -249,8 +250,62 @@ const ResearchContext = () => {
   };
   
   const handleSkip = () => {
-    // Skip current question
-    handleSubmit();
+    // Skip the current question by moving to the next step without saving any input
+    const nextStep = currentStep + 1;
+    setCurrentStep(nextStep);
+    setInputValue("");
+    
+    // If there are more steps, add the next question
+    if (nextStep < steps.length) {
+      const nextQuestion = (
+        <div>
+          <div className="flex items-start gap-4">
+            <div className="bg-blue-600 text-white p-2 rounded-full">
+              {steps[nextStep].icon}
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold">{steps[nextStep].question}</h3>
+              <ul className="mt-2 space-y-1">
+                {steps[nextStep].subtitle.map((item, i) => (
+                  <li key={i} className="text-gray-700">{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <div className="mt-4">
+            <Button 
+              variant="outline"
+              onClick={handleSkip}
+            >
+              Skip
+            </Button>
+          </div>
+        </div>
+      );
+      
+      setConversationHistory(prev => [
+        ...prev,
+        { 
+          type: "system", 
+          content: nextQuestion,
+          questionType: Object.keys(answers)[nextStep]
+        }
+      ]);
+    } else {
+      // All steps completed, show completion message
+      setConversationHistory(prev => [
+        ...prev,
+        { 
+          type: "system", 
+          content: "Thank you for providing these details. I'll now build your personalized research map."
+        }
+      ]);
+      
+      // Wait a moment before navigating to give user time to read the completion message
+      setTimeout(() => {
+        proceedToTechnologyTree();
+      }, 1500);
+    }
   };
 
   const proceedToTechnologyTree = () => {
