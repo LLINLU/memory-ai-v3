@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+
+import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
-import { MainContent } from "@/components/technology-tree/MainContent";
 import { TechTreeLayout } from "@/components/technology-tree/TechTreeLayout";
 import { TechTreeSidebar } from "@/components/technology-tree/TechTreeSidebar";
 import { useTechnologyTree } from "@/hooks/useTechnologyTree";
@@ -11,15 +11,18 @@ import { useNodeInfo } from "@/hooks/tree/useNodeInfo";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { ChatBox } from "@/components/technology-tree/ChatBox";
+import { TechTreeMainContent } from "@/components/technology-tree/TechTreeMainContent";
+import { useScenarioState } from "@/hooks/tree/useScenarioState";
+import { useChatInitialization } from "@/hooks/tree/useChatInitialization";
+import { useNodeSelectionEffect } from "@/hooks/tree/useNodeSelectionEffect";
 
 const TechnologyTree = () => {
   const location = useLocation();
   const locationState = location.state as { query?: string; scenario?: string } | null;
   
-  const [scenario, setScenario] = useState(
-    locationState?.scenario || 
-    "Advancing adaptive optics technology to address challenges in astronomy, biomedicine, and defense applications"
-  );
+  const { scenario, handleEditScenario } = useScenarioState({ 
+    initialScenario: locationState?.scenario 
+  });
 
   const {
     selectedPath,
@@ -55,36 +58,9 @@ const TechnologyTree = () => {
     toggleExpand, 
     handleCheckResults, 
     handleUseNode, 
-    handleEditNodeFromChat 
+    handleEditNodeFromChat, 
+    handleRefineNode 
   } = useTechTreeSidebarActions(setChatMessages, addCustomNode, setSidebarTab);
-
-  const handleRefineNode = (suggestion: any) => {
-    setChatMessages(prev => [
-      ...prev,
-      {
-        isUser: true,
-        content: `Please refine "${suggestion.title}" to be more specific.`
-      }
-    ]);
-    
-    // Simulate AI response with a refined suggestion
-    setTimeout(() => {
-      const refinedTitle = `Refined: ${suggestion.title}`;
-      const refinedDescription = `${suggestion.description} Focused on early-stage detection with improved accuracy.`;
-      
-      setChatMessages(prev => [
-        ...prev,
-        {
-          content: `I've refined your node to be more specific:\n\n🔹Title: ${refinedTitle}\n🔹Description: ${refinedDescription}\n\nWould you like to:`,
-          isUser: false,
-          suggestion: {
-            title: refinedTitle,
-            description: refinedDescription
-          }
-        }
-      ]);
-    }, 500);
-  };
 
   const selectedNodeInfo = useNodeInfo(selectedPath, level1Items, level2Items, level3Items);
   const levelNames = {
@@ -98,76 +74,31 @@ const TechnologyTree = () => {
     document.dispatchEvent(event);
   };
 
-  const handleEditScenario = () => {
-    const newScenario = prompt("Edit scenario:", scenario);
-    if (newScenario) {
-      setScenario(newScenario);
-    }
-  };
+  // Initialize chat with context data
+  useChatInitialization({
+    locationState,
+    chatMessages,
+    setChatMessages,
+    handleSwitchToChat
+  });
 
+  // Handle node selection effects
+  useNodeSelectionEffect({
+    selectedPath,
+    setShowSidebar,
+    setSidebarTab
+  });
+
+  // Set default tabs
   useEffect(() => {
     updateTabsHorizontalState("result"); // Default to result tab
     setSidebarTab("result"); // Set default tab to result
   }, [setSidebarTab]);
 
+  // Initialize chat when sidebar tab changes
   useEffect(() => {
     initializeChat(sidebarTab);
-  }, [sidebarTab]);
-
-  useEffect(() => {
-    const handleSwitchToChatEvent = (event: CustomEvent) => {
-      handleSwitchToChat(event.detail.message);
-    };
-
-    document.addEventListener('switch-to-chat', handleSwitchToChatEvent as EventListener);
-    
-    return () => {
-      document.removeEventListener('switch-to-chat', handleSwitchToChatEvent as EventListener);
-    };
-  }, [handleSwitchToChat]);
-
-  useEffect(() => {
-    if (locationState?.scenario && chatMessages.length === 0) {
-      // Initialize chat with context data from ResearchContext
-      const contextData = `Based on your research interests in ${locationState.scenario}, I've created this technology tree. You can explore different branches or ask me for more specific information.`;
-      
-      setChatMessages([{
-        type: "text",
-        content: contextData,
-        isUser: false
-      }]);
-    }
-  }, [locationState, chatMessages.length, setChatMessages]);
-
-  // Add this useEffect to make sure sidebar opens when a node is clicked
-  useEffect(() => {
-    if (selectedPath.level3) {
-      setShowSidebar(true);
-      setSidebarTab("result");
-      
-      // Dispatch an event to refresh paper list with the selected node
-      const event = new CustomEvent('refresh-papers', {
-        detail: { nodeId: selectedPath.level3 }
-      });
-      document.dispatchEvent(event);
-    }
-  }, [selectedPath.level3, setShowSidebar, setSidebarTab]);
-
-  const mainContent = (
-    <MainContent
-      selectedPath={selectedPath}
-      level1Items={level1Items}
-      level2Items={level2Items}
-      level3Items={level3Items}
-      onNodeClick={handleNodeClick}
-      onEditNode={editNode}
-      onDeleteNode={deleteNode}
-      levelNames={levelNames}
-      hasUserMadeSelection={hasUserMadeSelection}
-      scenario={scenario}
-      onEditScenario={handleEditScenario}
-    />
-  );
+  }, [sidebarTab, initializeChat]);
 
   const sidebarContent = (
     <TechTreeSidebar
@@ -204,10 +135,21 @@ const TechnologyTree = () => {
             handlePanelResize={handlePanelResize}
             sidebarContent={sidebarContent}
           >
-            {mainContent}
+            <TechTreeMainContent
+              selectedPath={selectedPath}
+              level1Items={level1Items}
+              level2Items={level2Items}
+              level3Items={level3Items}
+              handleNodeClick={handleNodeClick}
+              editNode={editNode}
+              deleteNode={deleteNode}
+              levelNames={levelNames}
+              hasUserMadeSelection={hasUserMadeSelection}
+              scenario={scenario}
+              onEditScenario={handleEditScenario}
+            />
           </TechTreeLayout>
           
-          {/* ChatBox with node actions */}
           <ChatBox
             messages={chatMessages}
             inputValue={inputValue}
