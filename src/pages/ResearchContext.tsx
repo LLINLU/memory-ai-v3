@@ -48,11 +48,6 @@ const ResearchContext = () => {
                     onContinue={() => handleInitialOption('continue')}
                     onSkip={() => handleInitialOption('skip')}
                   />
-                ) : showScenarios ? (
-                  <ScenarioSelection 
-                    scenarios={generatedScenarios}
-                    onScenarioSelect={handleScenarioSelection}
-                  />
                 ) : (
                   <>
                     <ConversationDisplay conversationHistory={conversationHistory} />
@@ -65,6 +60,13 @@ const ResearchContext = () => {
                         onSubmit={handleSubmit}
                         onSkip={handleSkip}
                         showSkip={true}
+                      />
+                    )}
+                    
+                    {showScenarios && (
+                      <ScenarioSelection 
+                        scenarios={generatedScenarios}
+                        onScenarioSelect={handleScenarioSelection}
                       />
                     )}
                   </>
