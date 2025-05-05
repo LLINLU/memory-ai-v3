@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -43,42 +42,40 @@ const ResearchContext = () => {
 
   const steps: Step[] = [
     {
-      question: "WHO is involved in your research?",
+      question: "First, WHO is involved in this research area? You can consider",
       icon: <Users className="h-5 w-5" />,
       subtitle: [
         "Who are the practitioners or professionals?",
-        "Who are the end users or beneficiaries?",
-        "Are there other key stakeholders?"
+        "Who are the end users or beneficiaries?"
       ],
       placeholder: "E.g., Astronomers, ophthalmologists, defense engineers..."
     },
     {
-      question: "WHAT specific aspects of adaptive optics interest you?",
+      question: "Go it! WHAT specific aspects of this field are you interested in? You can consider",
       icon: <Search className="h-5 w-5" />,
       subtitle: [
-        "What technologies are you focused on?",
-        "What problems are you trying to solve?",
-        "What outcomes are you seeking?"
+        "What particular approach, technique, or application?",
+        "What is the purpose or objective?"
       ],
       placeholder: "E.g., Wavefront correction, image stabilization, real-time processing..."
     },
     {
-      question: "WHERE will this research be applied?",
+      question: "Now, WHERE is this research typically conducted or applied? You can consider",
       icon: <MapPin className="h-5 w-5" />,
       subtitle: [
-        "In what physical locations or environments?",
-        "In which industries or fields?",
-        "At what scale (local, national, global)?"
+        "In what settings or environments?",
+        "Are there specific clinical or research contexts?",
+        "Is there a geographical or institutional focus?"
       ],
       placeholder: "E.g., Observatories, hospitals, field operations..."
     },
     {
-      question: "WHEN is this research relevant?",
+      question: "Thank you! Finally, WHEN is this approach most relevant or applicable? You can consider",
       icon: <Clock className="h-5 w-5" />,
       subtitle: [
-        "What is the timeframe for implementation?",
-        "Are there historical contexts to consider?",
-        "Are there upcoming deadlines or milestones?"
+        "Under what conditions or circumstances?",
+        "Is there a specific time frame or stage?",
+        "Are there temporal factors that matter?"
       ],
       placeholder: "E.g., Current applications, future developments, within 5 years..."
     }
