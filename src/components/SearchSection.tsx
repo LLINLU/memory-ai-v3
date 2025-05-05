@@ -3,7 +3,7 @@ import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
-import { FormEvent, useState, useEffect } from "react";
+import { FormEvent, useState } from "react";
 
 interface SuggestionProps {
   label: string;
@@ -24,7 +24,7 @@ export const SearchSection = () => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (searchValue.trim()) {
-      navigate('/technology-tree', { state: { query: searchValue } });
+      navigate('/research-context', { state: { query: searchValue } });
     }
   };
 

@@ -1,4 +1,6 @@
+
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
 import { MainContent } from "@/components/technology-tree/MainContent";
 import { TechTreeLayout } from "@/components/technology-tree/TechTreeLayout";
@@ -7,13 +9,16 @@ import { useTechnologyTree } from "@/hooks/useTechnologyTree";
 import { useTechTreeChat } from "@/hooks/tree/useTechTreeChat";
 import { useTechTreeSidebarActions } from "@/components/technology-tree/hooks/useTechTreeSidebarActions";
 import { useNodeInfo } from "@/hooks/tree/useNodeInfo";
-import { getLevelNames } from "@/utils/technologyTreeUtils";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { ChatBox } from "@/components/technology-tree/ChatBox";
 
 const TechnologyTree = () => {
+  const location = useLocation();
+  const locationState = location.state as { query?: string; scenario?: string; contextAnswers?: Record<string, string> } | null;
+  
   const [scenario, setScenario] = useState(
+    locationState?.scenario || 
     "Advancing adaptive optics technology to address challenges in astronomy, biomedicine, and defense applications"
   );
 
@@ -92,6 +97,28 @@ const TechnologyTree = () => {
       document.removeEventListener('switch-to-chat', handleSwitchToChatEvent as EventListener);
     };
   }, [handleSwitchToChat]);
+
+  // Initialize chat with context if available
+  useEffect(() => {
+    if (locationState?.contextAnswers) {
+      // Only initialize if we have context answers
+      const filledAnswers = Object.entries(locationState.contextAnswers)
+        .filter(([_, value]) => value.trim() !== '')
+        .map(([key, value]) => `${key.toUpperCase()}: ${value}`)
+        .join('\n');
+      
+      if (filledAnswers) {
+        const contextMessage = `Research context:\n${filledAnswers}`;
+        setTimeout(() => {
+          const event = new CustomEvent('switch-to-chat', {
+            detail: { message: contextMessage }
+          });
+          document.dispatchEvent(event);
+          setSidebarTab("chat");
+        }, 1000);
+      }
+    }
+  }, [locationState, setSidebarTab]);
 
   const mainContent = (
     <MainContent
