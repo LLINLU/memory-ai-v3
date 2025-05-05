@@ -1,141 +1,152 @@
+
 export const paperSets = {
   default: [
     {
       title: {
-        japanese: "高解像度適応光学走査レーザー検眼鏡による糖尿病網膜症の細胞レベル評価",
-        english: "(Cellular-level Assessment of Diabetic Retinopathy Using High-resolution AO-SLO)"
+        english: "Advances in Laser Guide Star Adaptive Optics for Astronomical Observations"
       },
-      authors: "田中 健太, 佐藤 明子, 山田 雄一",
-      journal: "日本眼科学会誌",
-      tags: ["AO-SLO", "糖尿病網膜症"],
-      abstract: "This study investigates the application of adaptive optics scanning laser ophthalmoscopy (AO-SLO) for early detection of cellular changes in diabetic retinopathy. The research demonstrates improved visualization of retinal microvasculature and photoreceptor abnormalities before clinical symptoms appear.",
-      date: "2024-04-19"
+      authors: "M. Johnson, K. Suzuki, L. Martinez",
+      journal: "Journal of Astronomical Instrumentation",
+      tags: ["Laser Guide Star", "Astronomy"],
+      abstract: "This paper reviews recent developments in laser guide star technology for adaptive optics in ground-based telescopes, highlighting improvements in sodium layer excitation efficiency and Rayleigh scattering techniques.",
+      date: "2024-04-15"
     },
     {
       title: {
-        english: "Multi-Modal Adaptive Optics Imaging Combined with OCT for Enhanced Retinal Diagnostics"
+        english: "High-Resolution Retinal Imaging Using Adaptive Optics: Clinical Applications"
       },
-      authors: "J. Zhang, M. Williams, K. Yamada",
-      journal: "American Journal of Ophthalmology",
-      tags: ["AO-OCT", "Multi-Modal"],
-      abstract: "This paper presents a novel approach combining adaptive optics with optical coherence tomography for comprehensive retinal imaging. The multi-modal system achieves unprecedented resolution for in vivo assessment of retinal layers, offering new insights into pathophysiology of macular degeneration.",
-      date: "2024-04-19"
+      authors: "S. Williams, R. Chen, T. Nakamura",
+      journal: "Journal of Biomedical Optics",
+      tags: ["Retinal Imaging", "Clinical Applications"],
+      abstract: "This research demonstrates how adaptive optics can enable cellular-level visualization of retinal structures, providing new insights into the pathophysiology of retinal diseases and improving early diagnosis.",
+      date: "2024-04-12"
     }
   ],
   updated: [
     {
       title: {
-        japanese: "補償光学の眼科分野への利用",
-        english: "(Adaptive Optics in Ophthalmology)"
+        english: "Modal Decomposition Algorithms for Efficient Wavefront Reconstruction"
       },
-      authors: "鈴木 誠一, 高橋 直子, 山本 裕子",
-      journal: "先端医療技術研究",
-      tags: ["AO-SLO", "眼科", "イメージング"],
-      abstract: "This comprehensive review examines the growing applications of adaptive optics in ophthalmology. The paper discusses recent technological advancements, clinical implementations, and future directions for improving retinal imaging and diagnosis of ocular diseases.",
-      date: "2024-04-15"
+      authors: "L. Rodriguez, J. Kim, S. Peterson",
+      journal: "Optics Letters",
+      tags: ["Wavefront Reconstruction", "Algorithms"],
+      abstract: "This study presents novel modal decomposition techniques that significantly reduce computational complexity in wavefront reconstruction, enabling faster correction updates in adaptive optics systems for astronomy.",
+      date: "2024-04-18"
     },
     {
       title: {
-        english: "Clinical Value of Adaptive Optics in Diagnosis of Early-Stage Glaucoma"
+        english: "Real-Time Control Systems for Defense Applications of Adaptive Optics"
       },
-      authors: "L. Chen, A. Rodriguez, T. Nakamura",
-      journal: "Journal of Clinical Ophthalmology",
-      tags: ["Glaucoma", "Early Detection"],
-      abstract: "This research demonstrates how adaptive optics can significantly improve the early detection of glaucoma by enabling visualization of individual nerve fiber layer defects before conventional diagnostic methods can detect them. The study includes a 3-year follow-up comparison with standard OCT imaging.",
-      date: "2024-04-12"
+      authors: "D. Wilson, A. Garcia, M. Tanaka",
+      journal: "Journal of Defense Technology",
+      tags: ["Defense", "Real-Time Control"],
+      abstract: "This paper details advanced control algorithms optimized for military applications of adaptive optics, focusing on high-speed target tracking through atmospheric turbulence with minimal latency.",
+      date: "2024-04-14"
     },
     {
       title: {
-        english: "High-Resolution Imaging of Photoreceptor Mosaic in Retinitis Pigmentosa Using Adaptive Optics"
+        english: "Deformable Mirror Technology: Comparing High-Actuator Count Systems for Astronomical and Biomedical Applications"
       },
-      authors: "D. Johnson, M. Suzuki, H. Kim",
-      journal: "Retinal Disease Research",
-      tags: ["Retinitis Pigmentosa", "Photoreceptors"],
-      abstract: "Using advanced adaptive optics technology, this study maps the progressive degeneration of photoreceptor cells in patients with retinitis pigmentosa. The research provides new insights into disease progression patterns and potential therapeutic windows for intervention.",
+      authors: "K. Lee, S. Adams, P. Yamada",
+      journal: "Applied Optics",
+      tags: ["Deformable Mirrors", "Comparative Analysis"],
+      abstract: "A comprehensive comparison of different deformable mirror technologies and their performance characteristics across astronomical and biomedical imaging applications, with recommendations for specific use cases.",
       date: "2024-04-10"
     }
   ],
   customNode: [
     {
       title: {
-        english: "Recent Advances in Adaptive Optics for Custom Applications"
+        english: "Novel Applications of Adaptive Optics in Quantum Communication"
       },
-      authors: "R. Stevens, K. Nakamura, J. Wilson",
-      journal: "Journal of Applied Optics",
-      tags: ["Custom", "Innovation"],
-      abstract: "This paper details the latest innovations in adaptive optics technology for specialized applications. Highlighting breakthroughs in wavefront sensing and deformable mirror technology, the authors demonstrate improved performance in challenging imaging environments.",
-      date: "2024-04-22"
+      authors: "T. Chen, R. Williams, M. Singh",
+      journal: "Quantum Information Processing",
+      tags: ["Quantum", "Communication"],
+      abstract: "This groundbreaking study explores how adaptive optics can enhance free-space quantum key distribution by correcting atmospheric turbulence effects, significantly extending secure communication range.",
+      date: "2024-04-20"
     },
     {
       title: {
-        english: "Application of Machine Learning to Improve Adaptive Optics Performance"
+        english: "Machine Learning Approaches to Wavefront Prediction in Adaptive Optics"
       },
-      authors: "M. Johnson, S. Lee, T. Garcia",
-      journal: "Computational Optics",
-      tags: ["AI", "Machine Learning", "Optimization"],
-      abstract: "This groundbreaking study presents a novel approach to adaptive optics control using deep learning algorithms. By integrating neural networks into the control system, the researchers achieve faster response times and better correction of atmospheric turbulence effects.",
-      date: "2024-04-18"
-    }
-  ],
-  // Add node-specific paper sets
-  "adaptive-optics": [
-    {
-      title: {
-        english: "Advances in Adaptive Optics Systems for Astronomical Applications"
-      },
-      authors: "K. Johnson, M. Nakamura, P. Garcia",
-      journal: "Journal of Astronomy & Astrophysics",
-      tags: ["Astronomy", "Wavefront Sensing"],
-      abstract: "This paper reviews recent developments in adaptive optics technology for ground-based telescopes. The authors discuss innovations in wavefront sensing, deformable mirror design, and real-time control algorithms that have significantly improved image resolution in astronomical observations.",
-      date: "2024-04-20"
-    }
-  ],
-  "medical-applications": [
-    {
-      title: {
-        english: "Adaptive Optics in Medical Imaging: Current Status and Future Directions"
-      },
-      authors: "S. Williams, R. Chen, T. Suzuki",
-      journal: "Medical Imaging Technology",
-      tags: ["Medical", "Innovation"],
-      abstract: "This comprehensive review examines the rapidly evolving field of adaptive optics for medical applications. From retinal imaging to microscopy, the paper highlights how wavefront correction technologies are revolutionizing diagnostic capabilities across multiple medical specialties.",
+      authors: "A. Kumar, J. Martinez, L. Wong",
+      journal: "IEEE Transactions on Neural Networks",
+      tags: ["Machine Learning", "Prediction"],
+      abstract: "This paper presents neural network architectures that can predict wavefront evolution, enabling feed-forward correction that outperforms traditional adaptive optics in rapidly changing atmospheric conditions.",
       date: "2024-04-16"
     }
   ],
-  "medical-imaging": [
+  // Add node-specific paper sets matching the new structure
+  "astronomy": [
     {
       title: {
-        english: "Medical Imaging Breakthroughs with Modern Computational Methods"
+        english: "The Future of Ground-Based Astronomy with Adaptive Optics"
       },
-      authors: "L. Rodriguez, J. Kim, S. Peterson",
-      journal: "Biomedical Computing",
-      tags: ["Imaging", "AI", "Diagnostics"],
-      abstract: "This study explores how advanced computational techniques are transforming medical imaging analysis. The integration of machine learning algorithms with traditional imaging modalities has enabled more precise detection of pathological conditions and improved diagnostic accuracy.",
-      date: "2024-04-14"
+      authors: "D. Rodriguez, K. Lee, S. Thompson",
+      journal: "Astronomical Journal",
+      tags: ["Astronomy", "Future Trends"],
+      abstract: "This review examines how next-generation adaptive optics systems will transform ground-based astronomy, potentially achieving resolution comparable to space telescopes at a fraction of the cost.",
+      date: "2024-04-22"
     }
   ],
-  "ct-scanning": [
+  "biomedical": [
     {
       title: {
-        english: "Next-Generation CT Scanning: Lower Dose, Higher Resolution"
+        english: "Cellular-Level Diagnosis of Retinal Disorders Using Adaptive Optics"
       },
-      authors: "T. Anderson, Y. Zhang, R. Patel",
-      journal: "Radiological Science",
-      tags: ["CT", "Radiation Dose", "Resolution"],
-      abstract: "This research presents novel CT reconstruction algorithms that significantly reduce radiation exposure while maintaining or improving image quality. Clinical validation demonstrates successful application in pediatric patients where radiation dose minimization is particularly critical.",
-      date: "2024-04-12"
+      authors: "M. Tanaka, J. Wilson, A. Garcia",
+      journal: "Journal of Ophthalmology",
+      tags: ["Retina", "Diagnostics"],
+      abstract: "This clinical study demonstrates how adaptive optics enables early detection of photoreceptor abnormalities before symptoms appear, potentially revolutionizing treatment timelines for degenerative retinal conditions.",
+      date: "2024-04-19"
     }
   ],
-  "mri-techniques": [
+  "defense": [
     {
       title: {
-        english: "Advanced MRI Techniques for Neurological Disorder Diagnosis"
+        english: "Long-Range Atmospheric Beam Propagation: Challenges and Solutions"
       },
-      authors: "J. Martinez, H. Tanaka, S. Wilson",
-      journal: "Neuroimaging Journal",
-      tags: ["MRI", "Neurology", "Diagnosis"],
-      abstract: "This paper introduces multiple innovative MRI protocols specifically designed for early detection of neurodegenerative disorders. The techniques described offer improved visualization of subtle structural changes associated with disease progression before clinical symptoms become apparent.",
-      date: "2024-04-10"
+      authors: "S. Martinez, T. Jackson, K. Chen",
+      journal: "Journal of Defense Technology",
+      tags: ["Beam Propagation", "Long-Range"],
+      abstract: "This research addresses the unique challenges of propagating high-power laser beams through kilometers of turbulent atmosphere for defense applications, presenting novel compensation strategies.",
+      date: "2024-04-17"
+    }
+  ],
+  "laser-guide-star": [
+    {
+      title: {
+        english: "Multi-Conjugate Adaptive Optics with Multiple Laser Guide Stars"
+      },
+      authors: "K. Wilson, M. Rodriguez, S. Yamamoto",
+      journal: "Publications of the Astronomical Society",
+      tags: ["MCAO", "Laser Guide Stars"],
+      abstract: "This study presents results from implementing multiple laser guide stars in a multi-conjugate adaptive optics system, achieving wide-field correction for ground-based astronomical observations.",
+      date: "2024-04-21"
+    }
+  ],
+  "wavefront-sensors-bio": [
+    {
+      title: {
+        english: "Miniaturized Shack-Hartmann Sensors for In Vivo Retinal Imaging"
+      },
+      authors: "L. Chen, S. Williams, T. Kumar",
+      journal: "Biomedical Optics Express",
+      tags: ["Shack-Hartmann", "Miniaturization"],
+      abstract: "This paper describes the development of compact wavefront sensors suitable for integration into clinical ophthalmology instruments, enabling routine use of adaptive optics in standard patient care.",
+      date: "2024-04-18"
+    }
+  ],
+  "real-time-control": [
+    {
+      title: {
+        english: "Low-Latency FPGA Implementation for Adaptive Optics in Target Tracking"
+      },
+      authors: "R. Adams, K. Suzuki, J. Martinez",
+      journal: "IEEE Transactions on Aerospace Systems",
+      tags: ["FPGA", "Low-Latency"],
+      abstract: "This technical paper presents a hardware implementation of adaptive optics control algorithms achieving sub-millisecond latency, critical for tracking fast-moving objects through atmospheric turbulence.",
+      date: "2024-04-16"
     }
   ]
 };

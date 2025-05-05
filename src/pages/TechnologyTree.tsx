@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
 import { MainContent } from "@/components/technology-tree/MainContent";
@@ -15,7 +14,7 @@ import { ChatBox } from "@/components/technology-tree/ChatBox";
 
 const TechnologyTree = () => {
   const [scenario, setScenario] = useState(
-    "Medical professionals and patients with retinal disorders in clinical settings seeking non-invasive diagnostic methods for early detection of conditions"
+    "Advancing adaptive optics technology to address challenges in astronomy, biomedicine, and defense applications"
   );
 
   const {
@@ -58,7 +57,7 @@ const TechnologyTree = () => {
   const levelNames = {
     level1: "Purpose",
     level2: "Function",
-    level3: "Measure/Technology"
+    level3: "Technology"
   };
 
   const handlePanelResize = () => {

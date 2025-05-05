@@ -30,9 +30,9 @@ export const generateChildNode = (parentTitle: string, level: number): NodeSugge
 };
 
 export const usePathSelection = (initialPath = {
-  level1: "adaptive-optics",
-  level2: "medical-applications",
-  level3: "retinal-imaging"
+  level1: "astronomy",
+  level2: "turbulence-compensation",
+  level3: "laser-guide-star"
 }) => {
   const [selectedPath, setSelectedPath] = useState(initialPath);
   const [hasUserMadeSelection, setHasUserMadeSelection] = useState(false);
