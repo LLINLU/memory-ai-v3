@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
@@ -57,6 +58,34 @@ const TechnologyTree = () => {
     handleUseNode, 
     handleEditNodeFromChat 
   } = useTechTreeSidebarActions(setChatMessages, addCustomNode, setSidebarTab);
+
+  const handleRefineNode = (suggestion: any) => {
+    setChatMessages(prev => [
+      ...prev,
+      {
+        isUser: true,
+        content: `Please refine "${suggestion.title}" to be more specific.`
+      }
+    ]);
+    
+    // Simulate AI response with a refined suggestion
+    setTimeout(() => {
+      const refinedTitle = `Refined: ${suggestion.title}`;
+      const refinedDescription = `${suggestion.description} Focused on early-stage detection with improved accuracy.`;
+      
+      setChatMessages(prev => [
+        ...prev,
+        {
+          content: `I've refined your node to be more specific:\n\n🔹Title: ${refinedTitle}\n🔹Description: ${refinedDescription}\n\nWould you like to:`,
+          isUser: false,
+          suggestion: {
+            title: refinedTitle,
+            description: refinedDescription
+          }
+        }
+      ]);
+    }, 500);
+  };
 
   const selectedNodeInfo = useNodeInfo(selectedPath, level1Items, level2Items, level3Items);
   const levelNames = {
@@ -155,7 +184,7 @@ const TechnologyTree = () => {
       onSendMessage={handleSendMessage}
       onUseNode={handleUseNode}
       onEditNode={handleEditNodeFromChat}
-      onRefine={(suggestion) => console.log('Refine node:', suggestion)}
+      onRefine={handleRefineNode}
       onCheckResults={handleCheckResults}
       onResize={handlePanelResize}
       selectedNodeTitle={selectedNodeInfo.title}
@@ -180,13 +209,16 @@ const TechnologyTree = () => {
             {mainContent}
           </TechTreeLayout>
           
-          {/* Add ChatBox component with button click handler */}
+          {/* ChatBox with node actions */}
           <ChatBox
             messages={chatMessages}
             inputValue={inputValue}
             onInputChange={handleInputChange}
             onSendMessage={handleSendMessage}
             onButtonClick={handleButtonClick}
+            onUseNode={handleUseNode}
+            onEditNode={handleEditNodeFromChat}
+            onRefine={handleRefineNode}
           />
         </div>
       </div>

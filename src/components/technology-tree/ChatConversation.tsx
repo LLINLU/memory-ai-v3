@@ -20,7 +20,7 @@ export const ChatConversation = ({
   onCheckResults 
 }: ChatConversationProps) => {
   const renderSuggestionActions = (suggestion: NodeSuggestion, isDisabled: boolean) => (
-    <div className="flex gap-2 mt-3">
+    <div className="flex flex-wrap gap-2 mt-3">
       <Button 
         variant="outline" 
         size="sm"
@@ -69,7 +69,7 @@ export const ChatConversation = ({
               className={`inline-block max-w-[85%] p-4 rounded-2xl ${
                 message.isUser 
                   ? 'bg-blue-100 text-blue-900' 
-                  : 'bg-white text-gray-800'
+                  : 'bg-white text-gray-800 border border-gray-200'
               }`}
             >
               <p className="text-base leading-relaxed whitespace-pre-line">

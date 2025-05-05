@@ -1,6 +1,8 @@
 
 import React from "react";
 import { SearchResults } from "./SearchResults";
+import { ChatConversation } from "./ChatConversation";
+import { ChatInput } from "./ChatInput";
 import { NodeSuggestion } from "@/types/chat";
 
 interface SidebarContentProps {
@@ -18,9 +20,37 @@ interface SidebarContentProps {
 }
 
 export const SidebarContent = ({
+  sidebarTab,
+  chatMessages,
+  inputValue,
+  onInputChange,
+  onSendMessage,
+  onUseNode,
+  onEditNode,
+  onRefine,
+  onCheckResults,
   selectedNodeTitle,
   selectedNodeDescription,
 }: SidebarContentProps) => {
+  if (sidebarTab === "chat") {
+    return (
+      <div className="h-full flex flex-col">
+        <ChatConversation 
+          chatMessages={chatMessages} 
+          onUseNode={onUseNode}
+          onEditNode={onEditNode}
+          onRefine={onRefine}
+          onCheckResults={onCheckResults}
+        />
+        <ChatInput
+          value={inputValue}
+          onChange={onInputChange}
+          onSend={onSendMessage}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="h-full flex flex-col">
       <SearchResults 

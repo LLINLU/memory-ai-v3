@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Maximize2, Minimize2, MessageSquare, X } from "lucide-react";
+import { Send, Maximize2, Minimize2, MessageSquare, X, Check, Edit } from "lucide-react";
+import { NodeSuggestion } from "@/types/chat";
 
 interface ChatBoxProps {
   messages: any[];
@@ -10,6 +11,9 @@ interface ChatBoxProps {
   onInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onSendMessage: () => void;
   onButtonClick?: (action: string) => void;
+  onUseNode?: (suggestion: NodeSuggestion) => void;
+  onEditNode?: (suggestion: NodeSuggestion) => void;
+  onRefine?: (suggestion: NodeSuggestion) => void;
 }
 
 export const ChatBox = ({
@@ -17,7 +21,10 @@ export const ChatBox = ({
   inputValue,
   onInputChange,
   onSendMessage,
-  onButtonClick
+  onButtonClick,
+  onUseNode,
+  onEditNode,
+  onRefine
 }: ChatBoxProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -61,6 +68,38 @@ export const ChatBox = ({
       handleSend();
     }
   };
+
+  const renderSuggestionActions = (suggestion: NodeSuggestion) => (
+    <div className="flex flex-wrap gap-2 mt-3">
+      <Button 
+        variant="outline" 
+        size="sm"
+        onClick={() => onUseNode?.(suggestion)}
+        className="flex items-center gap-2"
+      >
+        <Check className="h-4 w-4" />
+        Use this
+      </Button>
+      <Button 
+        variant="outline" 
+        size="sm"
+        onClick={() => onEditNode?.(suggestion)}
+        className="flex items-center gap-2"
+      >
+        <Edit className="h-4 w-4" />
+        Edit
+      </Button>
+      <Button 
+        variant="outline" 
+        size="sm"
+        onClick={() => onRefine?.(suggestion)}
+        className="flex items-center gap-2"
+      >
+        <MessageSquare className="h-4 w-4" />
+        Refine further
+      </Button>
+    </div>
+  );
 
   return (
     <div data-chatbox>
@@ -111,48 +150,55 @@ export const ChatBox = ({
                 <p className="text-sm">Get help finding relevant papers, analyzing research, or understanding difficult concepts</p>
               </div>
             ) : (
-              messages.map((message, index) => (
-                <div 
-                  key={index} 
-                  className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-4`}
-                >
+              messages.map((message, index) => {
+                const nextMessage = messages[index + 1];
+                const isActionTaken = nextMessage && nextMessage.content === "The node has been created 😊";
+                
+                return (
                   <div 
-                    className={`inline-block max-w-[85%] ${
-                      message.type === 'welcome' 
-                        ? 'w-full' 
-                        : ''
-                    } ${
-                      message.isUser 
-                        ? 'bg-blue-100 text-blue-900 p-3 rounded-lg' 
-                        : message.type === 'welcome'
-                          ? 'bg-blue-50 p-4 rounded-xl w-full'
-                          : 'bg-white border border-gray-200 text-gray-800 p-3 rounded-lg'
-                    }`}
+                    key={index} 
+                    className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-4`}
                   >
-                    <p className={`${message.type === 'welcome' ? 'text-lg text-blue-800 mb-4' : 'text-sm'}`}>
-                      {message.content}
-                    </p>
-                    
-                    {message.buttons && (
-                      <div className="flex flex-col sm:flex-row gap-3 justify-center mt-2">
-                        {message.buttons.map((button: any, buttonIndex: number) => (
-                          <Button
-                            key={buttonIndex}
-                            onClick={() => onButtonClick && onButtonClick(button.action)}
-                            className={`${
-                              button.primary
-                                ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                                : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                            } px-4 py-2`}
-                          >
-                            {button.label}
-                          </Button>
-                        ))}
-                      </div>
-                    )}
+                    <div 
+                      className={`inline-block max-w-[85%] ${
+                        message.type === 'welcome' 
+                          ? 'w-full' 
+                          : ''
+                      } ${
+                        message.isUser 
+                          ? 'bg-blue-100 text-blue-900 p-3 rounded-lg' 
+                          : message.type === 'welcome'
+                            ? 'bg-blue-50 p-4 rounded-xl w-full'
+                            : 'bg-white border border-gray-200 text-gray-800 p-3 rounded-lg'
+                      }`}
+                    >
+                      <p className={`${message.type === 'welcome' ? 'text-lg text-blue-800 mb-4' : 'text-sm'} whitespace-pre-line`}>
+                        {message.content}
+                      </p>
+                      
+                      {message.suggestion && !isActionTaken && renderSuggestionActions(message.suggestion)}
+                      
+                      {message.buttons && (
+                        <div className="flex flex-col sm:flex-row gap-3 justify-center mt-2">
+                          {message.buttons.map((button: any, buttonIndex: number) => (
+                            <Button
+                              key={buttonIndex}
+                              onClick={() => onButtonClick && onButtonClick(button.action)}
+                              className={`${
+                                button.primary
+                                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                  : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                              } px-4 py-2`}
+                            >
+                              {button.label}
+                            </Button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
           
