@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Step } from "@/components/research-context/ResearchSteps";
 
 export interface ContextAnswers {
