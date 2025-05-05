@@ -282,36 +282,32 @@ const ResearchContext = () => {
         </div>
       );
       
-      // Fix: Replace the conversation history with previous items but add the new question
-      setTimeout(() => {
-        setConversationHistory(prev => {
-          // Keep all messages except the last system one (the current question)
-          const filteredHistory = prev.filter((msg, idx) => {
-            // Keep user messages and earlier system messages
-            return msg.type === "user" || idx < prev.length - 1;
-          });
-          
-          return [
-            ...filteredHistory,
-            { 
-              type: "system", 
-              content: nextQuestion,
-              questionType: Object.keys(answers)[nextStep]
-            }
-          ];
-        });
-      }, 100);
-    } else {
-      // All steps completed, show completion message
+      // Replace the current question with the next one
       setConversationHistory(prev => {
-        // Keep all messages except the last system one (the current question)
-        const filteredHistory = prev.filter((msg, idx) => {
-          // Keep user messages and earlier system messages
+        // Keep all messages except the last system one (which is the current question)
+        const updatedHistory = prev.filter((msg, idx) => {
           return msg.type === "user" || idx < prev.length - 1;
         });
         
         return [
-          ...filteredHistory,
+          ...updatedHistory,
+          { 
+            type: "system", 
+            content: nextQuestion,
+            questionType: Object.keys(answers)[nextStep]
+          }
+        ];
+      });
+    } else {
+      // All steps completed, show completion message
+      setConversationHistory(prev => {
+        // Keep all messages except the last system one (the current question)
+        const updatedHistory = prev.filter((msg, idx) => {
+          return msg.type === "user" || idx < prev.length - 1;
+        });
+        
+        return [
+          ...updatedHistory,
           { 
             type: "system", 
             content: "Thank you for providing these details. I'll now build your personalized research map."
