@@ -19,7 +19,6 @@ const ResearchContext = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
-  const [showInitialOptions, setShowInitialOptions] = useState(true);
   
   // Get the query from location state (passed from homepage)
   const locationState = location.state as { query?: string } || {};
@@ -40,6 +39,40 @@ const ResearchContext = () => {
     where: "",
     when: ""
   });
+
+  // Initial welcome message for the chat
+  const initialWelcomeMessage = (
+    <div className="bg-blue-50 p-6 rounded-2xl mb-8">
+      <p className="text-lg text-blue-800 mb-4">
+        Hi, I can help you find research papers regarding {initialQuery || '[your research interest]'}. 
+        Would you like quick results now or a more personalized search based on your specific interests?
+      </p>
+      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button 
+          onClick={() => handleInitialOption('quick')}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 h-auto text-lg"
+          disabled={!initialQuery.trim()}
+        >
+          Quick Results
+        </Button>
+        <Button 
+          onClick={() => handleInitialOption('personalized')}
+          className="bg-blue-100 text-blue-800 hover:bg-blue-200 px-8 py-6 h-auto text-lg"
+          disabled={!initialQuery.trim()}
+        >
+          Personalized Search
+        </Button>
+      </div>
+    </div>
+  );
+  
+  // Add initial welcome message if conversation is empty
+  if (conversationHistory.length === 0) {
+    setConversationHistory([{ 
+      type: "system", 
+      content: initialWelcomeMessage 
+    }]);
+  }
 
   const steps: Step[] = [
     {
@@ -97,9 +130,7 @@ const ResearchContext = () => {
     if (option === 'quick') {
       navigate('/technology-tree', { state: { query: initialQuery, quickSearch: true } });
     } else {
-      setShowInitialOptions(false);
-      
-      // Add system greeting as first message
+      // Replace the welcome message with the first question
       const initialMessage = (
         <div>
           <p className="mb-3">Let's quickly define your research context. These 4 questions help refine your results, but feel free to skip any.</p>
@@ -255,55 +286,33 @@ const ResearchContext = () => {
         <AppSidebar />
         <div className="flex-1 bg-gray-50 flex flex-col">
           <div className="container py-8 px-4 mx-auto max-w-5xl flex-1 flex flex-col">
-            {showInitialOptions ? (
-              <div className="bg-white p-8 rounded-3xl shadow-sm">
-                <div className="bg-blue-50 p-6 rounded-2xl mb-8">
-                  <p className="text-lg text-blue-800 mb-4">
-                    Hi, I can help you find research papers regarding {initialQuery || '[your research interest]'}. 
-                    Would you like quick results now or a more personalized search based on your specific interests?
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Button 
-                      onClick={() => handleInitialOption('quick')}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 h-auto text-lg"
-                      disabled={!initialQuery.trim()}
-                    >
-                      Quick Results
-                    </Button>
-                    <Button 
-                      onClick={() => handleInitialOption('personalized')}
-                      className="bg-blue-100 text-blue-800 hover:bg-blue-200 px-8 py-6 h-auto text-lg"
-                      disabled={!initialQuery.trim()}
-                    >
-                      Personalized Search
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-white p-8 rounded-3xl shadow-sm flex-1 flex flex-col">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-semibold">Research Context Builder</h2>
+            <div className="bg-white p-8 rounded-3xl shadow-sm flex-1 flex flex-col">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-semibold">Research Context Builder</h2>
+                {currentStep > 0 && (
                   <span className="text-gray-500">Step {currentStep + 1} of 4</span>
-                </div>
+                )}
+              </div>
 
-                {/* Conversation history */}
-                <div className="flex-1 overflow-y-auto mb-4 space-y-6">
-                  {conversationHistory.map((message, index) => (
-                    <div 
-                      key={index} 
-                      className={`${
-                        message.type === "user" 
-                          ? "bg-blue-50 border-l-4 border-blue-500 pl-4" 
-                          : "bg-white"
-                      } p-4 rounded-lg`}
-                    >
-                      {message.content}
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Input area */}
+              {/* Conversation history */}
+              <div className="flex-1 overflow-y-auto mb-4 space-y-6">
+                {conversationHistory.map((message, index) => (
+                  <div 
+                    key={index} 
+                    className={`${
+                      message.type === "user" 
+                        ? "bg-blue-50 border-l-4 border-blue-500 pl-4" 
+                        : "bg-white"
+                    } p-4 rounded-lg`}
+                  >
+                    {message.content}
+                  </div>
+                ))}
+              </div>
+              
+              {/* Input area - only show if we've moved beyond the welcome screen */}
+              {conversationHistory.length > 0 && 
+               !conversationHistory[0].content.toString().includes("quick results now") && (
                 <div className="mt-auto border-t pt-4">
                   <div className="flex gap-2">
                     <Textarea
@@ -324,8 +333,8 @@ const ResearchContext = () => {
                     </Button>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
