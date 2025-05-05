@@ -25,26 +25,28 @@ export const ChatConversationBox = ({
           <p className="text-gray-500 text-sm">Ask a question about your research topic...</p>
         </div>
       ) : (
-        messages.map((message, index) => {
-          const nextMessage = messages[index + 1];
-          const isActionTaken = nextMessage && nextMessage.content === "The node has been created 😊";
-          
-          return (
-            <div 
-              key={index} 
-              className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-4`}
-            >
-              <ChatMessage 
-                message={message}
-                isActionTaken={isActionTaken}
-                onButtonClick={onButtonClick}
-                onUseNode={onUseNode}
-                onEditNode={onEditNode}
-                onRefine={onRefine}
-              />
-            </div>
-          );
-        })
+        <div className="space-y-6">
+          {messages.map((message, index) => {
+            const nextMessage = messages[index + 1];
+            const isActionTaken = nextMessage && nextMessage.content === "The node has been created 😊";
+            
+            return (
+              <div 
+                key={index} 
+                className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+              >
+                <ChatMessage 
+                  message={message}
+                  isActionTaken={isActionTaken}
+                  onButtonClick={onButtonClick}
+                  onUseNode={onUseNode}
+                  onEditNode={onEditNode}
+                  onRefine={onRefine}
+                />
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );

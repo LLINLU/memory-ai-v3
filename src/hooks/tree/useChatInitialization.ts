@@ -20,19 +20,28 @@ export const useChatInitialization = ({
     if (chatMessages.length === 0) {
       const storedHistory = localStorage.getItem('researchContextHistory');
       if (storedHistory) {
-        const parsedHistory = JSON.parse(storedHistory);
-        const chatHistoryMessages = parsedHistory.map((msg: any) => ({
-          type: "text",
-          content: typeof msg.content === 'string' ? msg.content : 'User response',
-          isUser: msg.type === 'user'
-        }));
-        
-        setChatMessages(prev => chatHistoryMessages);
+        try {
+          const parsedHistory = JSON.parse(storedHistory);
+          
+          // Properly convert the history with the actual content
+          const chatHistoryMessages = parsedHistory.map((msg: any) => ({
+            type: "text",
+            // For user messages, display the exact content
+            content: typeof msg.content === 'string' 
+              ? msg.content 
+              : (msg.type === 'system' ? 'AI Assistant' : (msg.questionType || 'User response')),
+            isUser: msg.type === 'user'
+          }));
+          
+          setChatMessages(prev => chatHistoryMessages);
+        } catch (error) {
+          console.error("Failed to parse research context history:", error);
+        }
       } else if (locationState?.scenario) {
         // If no stored history, show the scenario message
         const contextData = `Based on your research interests in ${locationState.scenario}, I've created this technology tree. You can explore different branches or ask me for more specific information.`;
         
-        setChatMessages(prev => [{
+        setChatMessages([{
           type: "text",
           content: contextData,
           isUser: false
