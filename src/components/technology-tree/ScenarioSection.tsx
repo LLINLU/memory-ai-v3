@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 
 interface ScenarioSectionProps {
   scenario?: string;
@@ -12,17 +11,6 @@ export const ScenarioSection = ({
   scenario = "Medical professionals and patients with retinal disorders in clinical settings seeking non-invasive diagnostic methods for early detection of conditions",
   onEditScenario 
 }: ScenarioSectionProps) => {
-  const navigate = useNavigate();
-  
-  const handleEditScenario = () => {
-    if (onEditScenario) {
-      onEditScenario();
-    } else {
-      // If no handler is provided, navigate back to research context
-      navigate('/research-context', { state: { editingScenario: true } });
-    }
-  };
-  
   return (
     <div className="bg-blue-50 rounded-lg p-6 mb-6">
       <div className="flex justify-between items-start">
@@ -34,7 +22,7 @@ export const ScenarioSection = ({
           variant="outline" 
           size="sm" 
           className="text-blue-600 border-blue-200 hover:bg-blue-100"
-          onClick={handleEditScenario}
+          onClick={onEditScenario}
         >
           Edit Scenario
         </Button>
