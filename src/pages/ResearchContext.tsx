@@ -8,13 +8,21 @@ import { InitialOptions } from "@/components/research-context/InitialOptions";
 import { ScenarioSelection } from "@/components/research-context/ScenarioSelection";
 import { useResearchSteps } from "@/components/research-context/ResearchSteps";
 import { useResearchContext } from "@/hooks/useResearchContext";
+import { useEffect } from "react";
 
 const ResearchContext = () => {
   const location = useLocation();
   
   // Get the query from location state (passed from homepage)
-  const locationState = location.state as { query?: string } || {};
+  const locationState = location.state as { 
+    query?: string;
+    editingScenario?: boolean;
+    scenario?: string;
+  } || {};
+  
   const initialQuery = locationState.query || "";
+  const isEditingScenario = locationState.editingScenario || false;
+  const currentScenario = locationState.scenario || "";
   
   // Get steps and research context logic
   const steps = useResearchSteps();
@@ -30,7 +38,22 @@ const ResearchContext = () => {
     handleSubmit,
     handleSkip,
     handleScenarioSelection,
+    loadStoredConversation
   } = useResearchContext(initialQuery, steps);
+
+  // Load conversation history if editing a scenario
+  useEffect(() => {
+    if (isEditingScenario) {
+      loadStoredConversation();
+      
+      // If there are generated scenarios, add the current scenario to them
+      if (currentScenario && !generatedScenarios.includes(currentScenario)) {
+        // We'll ensure the current scenario is displayed in the selection
+        const updatedScenarios = [currentScenario, ...generatedScenarios.slice(0, 2)];
+        // Logic to update scenarios is handled in the hooks
+      }
+    }
+  }, [isEditingScenario, currentScenario, loadStoredConversation]);
 
   return (
     <SidebarProvider>
@@ -42,7 +65,7 @@ const ResearchContext = () => {
               <div className="mb-8">
                 <h1 className="text-3xl font-bold mb-8">Research Context Builder</h1>
                 
-                {showInitialOptions ? (
+                {showInitialOptions && !isEditingScenario ? (
                   <InitialOptions 
                     initialQuery={initialQuery}
                     onContinue={() => handleInitialOption('continue')}

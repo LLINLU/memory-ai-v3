@@ -2,6 +2,7 @@
 import { Step } from "@/components/research-context/ResearchSteps";
 import { useConversationState } from "./research-context/useConversationState";
 import { useNavigationHandlers } from "./research-context/useNavigationHandlers";
+import { useCallback } from "react";
 
 export const useResearchContext = (initialQuery: string, steps: Step[]) => {
   // Use the extracted hooks
@@ -24,7 +25,8 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     generatedScenarios,
     handleInitialOption,
     proceedToTechnologyTree,
-    selectScenario
+    selectScenario,
+    setGeneratedScenarios
   } = useNavigationHandlers({
     initialQuery,
     answers,
@@ -93,6 +95,24 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     selectScenario(selectedScenario);
   };
 
+  // Load conversation history from localStorage
+  const loadStoredConversation = useCallback(() => {
+    try {
+      const storedHistory = localStorage.getItem('researchContextHistory');
+      if (storedHistory) {
+        const parsedHistory = JSON.parse(storedHistory);
+        setConversationHistory(parsedHistory);
+        
+        // When returning to edit, we want to show scenarios immediately
+        setTimeout(() => {
+          proceedToTechnologyTree();
+        }, 300);
+      }
+    } catch (error) {
+      console.error("Error loading stored conversation:", error);
+    }
+  }, [setConversationHistory, proceedToTechnologyTree]);
+
   return {
     showInitialOptions,
     showScenarios,
@@ -105,6 +125,7 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     handleSubmit,
     handleSkip,
     handleScenarioSelection,
+    loadStoredConversation,
     steps,
   };
 };
