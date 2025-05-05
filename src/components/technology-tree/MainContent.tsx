@@ -24,7 +24,7 @@ interface MainContentProps {
   query?: string;
   hasUserMadeSelection: boolean;
   scenario?: string;
-  onEditScenario?: () => void;
+  onEditScenario?: (newScenario: string) => void;
 }
 
 export const MainContent = ({
