@@ -22,18 +22,19 @@ export const InputSection: React.FC<InputSectionProps> = ({
   showSkip = false,
 }) => {
   return (
-    <div className="sticky bottom-0 bg-white p-6 border-t border-gray-100 shadow-md">
+    <div className="mt-auto">
       {showSkip && (
-        <div className="mb-4">
+        <div className="mt-2">
           <Button 
             variant="outline"
             onClick={onSkip}
+            className="mb-4"
           >
             Skip
           </Button>
         </div>
       )}
-      <div className="relative">
+      <div className="relative mb-4">
         <Textarea
           placeholder={placeholder}
           value={inputValue}

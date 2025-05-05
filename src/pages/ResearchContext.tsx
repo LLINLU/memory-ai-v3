@@ -57,7 +57,7 @@ const ResearchContext = () => {
         <div className="flex-1 bg-gray-50 flex flex-col">
           <div className="container py-8 px-4 mx-auto max-w-5xl flex-1 flex flex-col">
             <div className="bg-white p-8 rounded-3xl shadow-sm flex-1 flex flex-col">
-              <div className="mb-8 overflow-y-auto pb-16">
+              <div className="mb-8">
                 <h1 className="text-3xl font-bold mb-8">Research Context Builder</h1>
                 
                 {isEditingScenario && (
@@ -80,6 +80,17 @@ const ResearchContext = () => {
                       <ConversationDisplay conversationHistory={conversationHistory} />
                     )}
                     
+                    {currentStep < steps.length && !showScenarios && !isEditingScenario && (
+                      <InputSection
+                        inputValue={inputValue}
+                        placeholder={steps[currentStep]?.placeholder}
+                        onInputChange={handleInputChange}
+                        onSubmit={handleSubmit}
+                        onSkip={handleSkip}
+                        showSkip={true}
+                      />
+                    )}
+                    
                     {showScenarios && (
                       <ScenarioSelection 
                         scenarios={isEditingScenario ? 
@@ -91,17 +102,6 @@ const ResearchContext = () => {
                   </>
                 )}
               </div>
-              
-              {currentStep < steps.length && !showScenarios && !isEditingScenario && !showInitialOptions && (
-                <InputSection
-                  inputValue={inputValue}
-                  placeholder={steps[currentStep]?.placeholder}
-                  onInputChange={handleInputChange}
-                  onSubmit={handleSubmit}
-                  onSkip={handleSkip}
-                  showSkip={true}
-                />
-              )}
             </div>
           </div>
         </div>
