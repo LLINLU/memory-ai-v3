@@ -10,11 +10,8 @@ export const useScenarioState = ({ initialScenario }: ScenarioStateProps = {}) =
   
   const [scenario, setScenario] = useState(initialScenario || defaultScenario);
 
-  const handleEditScenario = () => {
-    const newScenario = prompt("Edit scenario:", scenario);
-    if (newScenario) {
-      setScenario(newScenario);
-    }
+  const handleEditScenario = (newScenario: string) => {
+    setScenario(newScenario);
   };
 
   return {
