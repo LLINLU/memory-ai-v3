@@ -283,7 +283,6 @@ const ResearchContext = () => {
                             <li key={i} className="text-gray-700">{item}</li>
                           ))}
                         </ul>
-                        {/* Moved Skip button here */}
                         <Button 
                           variant="outline"
                           onClick={handleSkip}
@@ -310,20 +309,17 @@ const ResearchContext = () => {
               
               {!showInitialOptions && (
                 <div className="mt-auto">
-                  <div className="mb-4">
+                  <div className="relative mb-4">
                     <Textarea
                       placeholder={steps[currentStep]?.placeholder}
                       value={inputValue}
                       onChange={handleInputChange}
-                      className="w-full resize-none p-4 border rounded-2xl text-base"
+                      className="w-full resize-none p-4 pr-16 border rounded-2xl text-base"
                       rows={3}
                     />
-                  </div>
-                  <div className="flex justify-end">
-                    {/* Removed Skip button from here */}
                     <Button 
                       onClick={handleSubmit}
-                      className="bg-blue-600 hover:bg-blue-700"
+                      className="absolute right-3 bottom-3 bg-blue-600 hover:bg-blue-700 rounded-xl"
                     >
                       <span>Next</span>
                       <ArrowRight className="ml-2 h-4 w-4" />
