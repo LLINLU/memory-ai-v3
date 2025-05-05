@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -283,23 +282,42 @@ const ResearchContext = () => {
         </div>
       );
       
-      setConversationHistory(prev => [
-        ...prev,
-        { 
-          type: "system", 
-          content: nextQuestion,
-          questionType: Object.keys(answers)[nextStep]
-        }
-      ]);
+      // Fix: Replace the conversation history with previous items but add the new question
+      setTimeout(() => {
+        setConversationHistory(prev => {
+          // Keep all messages except the last system one (the current question)
+          const filteredHistory = prev.filter((msg, idx) => {
+            // Keep user messages and earlier system messages
+            return msg.type === "user" || idx < prev.length - 1;
+          });
+          
+          return [
+            ...filteredHistory,
+            { 
+              type: "system", 
+              content: nextQuestion,
+              questionType: Object.keys(answers)[nextStep]
+            }
+          ];
+        });
+      }, 100);
     } else {
       // All steps completed, show completion message
-      setConversationHistory(prev => [
-        ...prev,
-        { 
-          type: "system", 
-          content: "Thank you for providing these details. I'll now build your personalized research map."
-        }
-      ]);
+      setConversationHistory(prev => {
+        // Keep all messages except the last system one (the current question)
+        const filteredHistory = prev.filter((msg, idx) => {
+          // Keep user messages and earlier system messages
+          return msg.type === "user" || idx < prev.length - 1;
+        });
+        
+        return [
+          ...filteredHistory,
+          { 
+            type: "system", 
+            content: "Thank you for providing these details. I'll now build your personalized research map."
+          }
+        ];
+      });
       
       // Wait a moment before navigating to give user time to read the completion message
       setTimeout(() => {
