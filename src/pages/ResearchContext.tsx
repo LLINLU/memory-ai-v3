@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -336,7 +335,7 @@ const ResearchContext = () => {
                           {message.type === "system" ? (
                             <div>{message.content}</div>
                           ) : (
-                            <div className="bg-blue-100 text-blue-900 p-3 rounded-lg max-w-[85%]">
+                            <div className="bg-blue-100 text-blue-900 p-3 rounded-lg max-w-[60%]">
                               <p>{message.content}</p>
                             </div>
                           )}
