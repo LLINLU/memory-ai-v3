@@ -89,8 +89,22 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     }
   };
 
+  // Handler for scenario selection
   const handleScenarioSelection = (selectedScenario: string) => {
     selectScenario(selectedScenario);
+  };
+
+  // Load stored conversation history from localStorage
+  const loadStoredConversation = () => {
+    const storedHistory = localStorage.getItem('researchContextHistory');
+    if (storedHistory) {
+      try {
+        const parsedHistory = JSON.parse(storedHistory);
+        setConversationHistory(parsedHistory);
+      } catch (error) {
+        console.error("Failed to parse research context history:", error);
+      }
+    }
   };
 
   return {
@@ -105,6 +119,7 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     handleSubmit,
     handleSkip,
     handleScenarioSelection,
+    loadStoredConversation,
     steps,
   };
 };
