@@ -121,9 +121,11 @@ export const useNavigationHandlers = ({
   return {
     showInitialOptions,
     showScenarios,
+    setShowScenarios,
     generatedScenarios,
     handleInitialOption,
     proceedToTechnologyTree,
+    generateScenarios,
     selectScenario
   };
 };

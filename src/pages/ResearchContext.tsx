@@ -8,13 +8,21 @@ import { InitialOptions } from "@/components/research-context/InitialOptions";
 import { ScenarioSelection } from "@/components/research-context/ScenarioSelection";
 import { useResearchSteps } from "@/components/research-context/ResearchSteps";
 import { useResearchContext } from "@/hooks/useResearchContext";
+import { useEffect } from "react";
 
 const ResearchContext = () => {
   const location = useLocation();
   
   // Get the query from location state (passed from homepage)
-  const locationState = location.state as { query?: string } || {};
+  const locationState = location.state as { 
+    query?: string, 
+    editingScenario?: boolean,
+    currentScenario?: string 
+  } || {};
+  
   const initialQuery = locationState.query || "";
+  const isEditingScenario = locationState.editingScenario || false;
+  const currentScenario = locationState.currentScenario || "";
   
   // Get steps and research context logic
   const steps = useResearchSteps();
@@ -30,7 +38,17 @@ const ResearchContext = () => {
     handleSubmit,
     handleSkip,
     handleScenarioSelection,
+    proceedToScenarios,
+    setShowScenarios
   } = useResearchContext(initialQuery, steps);
+
+  // If user is redirected to edit scenario, show scenario selection right away
+  useEffect(() => {
+    if (isEditingScenario && currentScenario) {
+      // Skip the conversation and go straight to scenario selection
+      proceedToScenarios();
+    }
+  }, [isEditingScenario, currentScenario, proceedToScenarios]);
 
   return (
     <SidebarProvider>
@@ -42,7 +60,15 @@ const ResearchContext = () => {
               <div className="mb-8">
                 <h1 className="text-3xl font-bold mb-8">Research Context Builder</h1>
                 
-                {showInitialOptions ? (
+                {isEditingScenario && (
+                  <div className="bg-blue-50 p-4 rounded-md mb-6">
+                    <p className="text-blue-700">
+                      You're editing your research scenario. Please select a new scenario below or create your own.
+                    </p>
+                  </div>
+                )}
+                
+                {showInitialOptions && !isEditingScenario ? (
                   <InitialOptions 
                     initialQuery={initialQuery}
                     onContinue={() => handleInitialOption('continue')}
@@ -50,9 +76,11 @@ const ResearchContext = () => {
                   />
                 ) : (
                   <>
-                    <ConversationDisplay conversationHistory={conversationHistory} />
+                    {!isEditingScenario && (
+                      <ConversationDisplay conversationHistory={conversationHistory} />
+                    )}
                     
-                    {currentStep < steps.length && (
+                    {currentStep < steps.length && !showScenarios && !isEditingScenario && (
                       <InputSection
                         inputValue={inputValue}
                         placeholder={steps[currentStep]?.placeholder}
@@ -65,7 +93,9 @@ const ResearchContext = () => {
                     
                     {showScenarios && (
                       <ScenarioSelection 
-                        scenarios={generatedScenarios}
+                        scenarios={isEditingScenario ? 
+                          [currentScenario, ...generatedScenarios.filter(s => s !== currentScenario).slice(0, 2)] : 
+                          generatedScenarios}
                         onScenarioSelect={handleScenarioSelection}
                       />
                     )}

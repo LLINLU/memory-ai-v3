@@ -24,7 +24,9 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     generatedScenarios,
     handleInitialOption,
     proceedToTechnologyTree,
-    selectScenario
+    selectScenario,
+    setShowScenarios,
+    generateScenarios
   } = useNavigationHandlers({
     initialQuery,
     answers,
@@ -93,6 +95,11 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     selectScenario(selectedScenario);
   };
 
+  // Function to directly proceed to scenarios without going through conversation
+  const proceedToScenarios = () => {
+    generateScenarios();
+  };
+
   return {
     showInitialOptions,
     showScenarios,
@@ -105,6 +112,8 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     handleSubmit,
     handleSkip,
     handleScenarioSelection,
+    proceedToScenarios,
+    setShowScenarios,
     steps,
   };
 };
