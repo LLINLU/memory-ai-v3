@@ -6,7 +6,7 @@ import { ConversationDisplay } from "@/components/research-context/ConversationD
 import { InputSection } from "@/components/research-context/InputSection";
 import { InitialOptions } from "@/components/research-context/InitialOptions";
 import { useResearchSteps } from "@/components/research-context/ResearchSteps";
-import { useResearchContext } from "@/hooks/useResearchContext";
+import { useResearchContext } from "@/hooks/useResearchContext"; // This import remains the same, but now points to the .tsx file
 
 const ResearchContext = () => {
   const location = useLocation();
