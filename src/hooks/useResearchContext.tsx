@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -231,6 +230,9 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
           .map(([key, value]) => `${key}: ${value}`)
           .join(', ');
     }
+    
+    // Store conversation history in localStorage before navigating
+    localStorage.setItem('researchContextHistory', JSON.stringify(conversationHistory));
     
     navigate('/technology-tree', { 
       state: { 

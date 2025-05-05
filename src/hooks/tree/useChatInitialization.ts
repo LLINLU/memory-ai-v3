@@ -15,16 +15,29 @@ export const useChatInitialization = ({
   setChatMessages,
   handleSwitchToChat
 }: ChatInitializationProps) => {
-  // Initialize chat with context data from ResearchContext
+  // Initialize chat with stored research context conversations
   useEffect(() => {
-    if (locationState?.scenario && chatMessages.length === 0) {
-      const contextData = `Based on your research interests in ${locationState.scenario}, I've created this technology tree. You can explore different branches or ask me for more specific information.`;
-      
-      setChatMessages(prev => [{
-        type: "text",
-        content: contextData,
-        isUser: false
-      }]);
+    if (chatMessages.length === 0) {
+      const storedHistory = localStorage.getItem('researchContextHistory');
+      if (storedHistory) {
+        const parsedHistory = JSON.parse(storedHistory);
+        const chatHistoryMessages = parsedHistory.map((msg: any) => ({
+          type: "text",
+          content: typeof msg.content === 'string' ? msg.content : 'User response',
+          isUser: msg.type === 'user'
+        }));
+        
+        setChatMessages(prev => chatHistoryMessages);
+      } else if (locationState?.scenario) {
+        // If no stored history, show the scenario message
+        const contextData = `Based on your research interests in ${locationState.scenario}, I've created this technology tree. You can explore different branches or ask me for more specific information.`;
+        
+        setChatMessages(prev => [{
+          type: "text",
+          content: contextData,
+          isUser: false
+        }]);
+      }
     }
   }, [locationState, chatMessages.length, setChatMessages]);
 
