@@ -1,8 +1,6 @@
-
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Users, Search, MapPin, Clock } from "lucide-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -18,10 +16,15 @@ interface Step {
 
 const ResearchContext = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
-  const [initialQuery, setInitialQuery] = useState("");
   const [showInitialOptions, setShowInitialOptions] = useState(true);
+  
+  // Get the query from location state (passed from homepage)
+  const locationState = location.state as { query?: string } || {};
+  const initialQuery = locationState.query || "";
+  
   const [answers, setAnswers] = useState({
     who: "",
     what: "",
@@ -157,21 +160,6 @@ const ResearchContext = () => {
           <div className="container py-8 px-4 mx-auto max-w-5xl">
             {showInitialOptions ? (
               <div className="bg-white p-8 rounded-3xl shadow-sm">
-                <h1 className="text-4xl font-bold text-center mb-6">Welcome to Memory AI</h1>
-                <p className="text-lg text-gray-600 text-center mb-10">
-                  I'll help you define your research scenario using the 4W framework to build a personalized research map.
-                </p>
-                
-                <div className="w-full mb-8">
-                  <Input
-                    type="text"
-                    placeholder="Enter your research interest (e.g., adaptive optics in astronomy)"
-                    className="w-full h-16 pl-6 pr-14 text-lg rounded-2xl border border-gray-200"
-                    value={initialQuery}
-                    onChange={(e) => setInitialQuery(e.target.value)}
-                  />
-                </div>
-
                 <div className="bg-blue-50 p-6 rounded-2xl mb-8">
                   <p className="text-lg text-blue-800 mb-4">
                     Hi, I can help you find research papers regarding {initialQuery || '[your research interest]'}. 
