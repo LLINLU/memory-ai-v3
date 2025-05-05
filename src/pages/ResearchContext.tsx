@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+
+import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -6,8 +7,6 @@ import { Users, Search, MapPin, Clock } from "lucide-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useToast } from "@/hooks/use-toast";
-import { ChatBox } from "@/components/technology-tree/ChatBox";
-import { ChatMessage } from "@/types/chat";
 
 interface Step {
   question: string;
@@ -41,82 +40,6 @@ const ResearchContext = () => {
     where: "",
     when: ""
   });
-
-  // Chat box state
-  const [chatInputValue, setChatInputValue] = useState("");
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-
-  // Initialize chat with welcome message
-  useEffect(() => {
-    setChatMessages([
-      {
-        type: "welcome",
-        content: `Hi, I can help you find research papers regarding ${initialQuery || '[your research interest]'}. Would you like quick results now or a more personalized search based on your specific interests?`,
-        isUser: false,
-        buttons: [
-          {
-            label: "Quick Results",
-            action: "quick",
-            primary: true
-          },
-          {
-            label: "Personalized Search",
-            action: "personalized",
-            primary: false
-          }
-        ]
-      }
-    ]);
-  }, [initialQuery]);
-
-  const handleChatInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setChatInputValue(e.target.value);
-  };
-
-  const handleSendChatMessage = () => {
-    if (chatInputValue.trim()) {
-      const userMessage: ChatMessage = {
-        content: chatInputValue,
-        isUser: true,
-        type: "text"
-      };
-      
-      setChatMessages(prev => [...prev, userMessage]);
-      setChatInputValue("");
-    }
-  };
-
-  const handleChatButtonClick = (action: string) => {
-    if (action === 'quick') {
-      // Handle quick results
-      navigate('/technology-tree', { state: { query: initialQuery, quickSearch: true } });
-    } else if (action === 'personalized') {
-      // Handle personalized search - use the existing flow
-      setShowInitialOptions(false);
-      
-      // Add system greeting as first message
-      const initialMessage = (
-        <div>
-          <p className="mb-3">Let's quickly define your research context. These 4 questions help refine your results, but feel free to skip any.</p>
-          <div className="flex items-start gap-4">
-            <div className="bg-blue-600 text-white p-2 rounded-full">
-              {steps[0].icon}
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold">{steps[0].question}</h3>
-              <ul className="mt-2 space-y-1">
-                {steps[0].subtitle.map((item, i) => (
-                  <li key={i} className="text-gray-700">{item}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      );
-      
-      setConversationHistory([{ type: "system", content: initialMessage, questionType: "who" }]);
-    }
-  };
 
   const steps: Step[] = [
     {
@@ -395,15 +318,6 @@ const ResearchContext = () => {
               </div>
             )}
           </div>
-
-          {/* Always visible chat box */}
-          <ChatBox
-            messages={chatMessages}
-            inputValue={chatInputValue}
-            onInputChange={handleChatInputChange}
-            onSendMessage={handleSendChatMessage}
-            onButtonClick={handleChatButtonClick}
-          />
         </div>
       </div>
     </SidebarProvider>
