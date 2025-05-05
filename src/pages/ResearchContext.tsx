@@ -116,6 +116,14 @@ const ResearchContext = () => {
               </ul>
             </div>
           </div>
+          <div className="mt-4">
+            <Button 
+              variant="outline"
+              onClick={handleSkip}
+            >
+              Skip
+            </Button>
+          </div>
         </div>
       );
       
@@ -169,6 +177,14 @@ const ResearchContext = () => {
                 ))}
               </ul>
             </div>
+          </div>
+          <div className="mt-4">
+            <Button 
+              variant="outline"
+              onClick={handleSkip}
+            >
+              Skip
+            </Button>
           </div>
         </div>
       );
@@ -299,14 +315,7 @@ const ResearchContext = () => {
                       disabled={currentStep >= steps.length}
                     />
                   </div>
-                  <div className="flex justify-between mt-3">
-                    <Button 
-                      variant="outline"
-                      onClick={handleSkip}
-                      disabled={currentStep >= steps.length}
-                    >
-                      Skip
-                    </Button>
+                  <div className="flex justify-end mt-3">
                     <Button 
                       onClick={handleSubmit}
                       disabled={currentStep >= steps.length}
