@@ -24,22 +24,22 @@ export const useChatInitialization = ({
           const parsedHistory = JSON.parse(storedHistory);
           
           // Convert the history to chat messages format with correct updater function
-          setChatMessages(() => {
+          setChatMessages((prevMessages) => {
             // Create properly formatted chat messages from the history
             return parsedHistory.map((msg: any) => ({
               type: "text",
-              // For messages with React components (like questions), display the question type
+              // For messages with React components (like questions), display the question type with exact text
               content: typeof msg.content === 'string' 
                 ? msg.content 
                 : (msg.type === 'system' 
                     ? (msg.questionType === 'who' 
-                        ? 'Who is involved in this research area?' 
+                        ? 'WHO is involved in this research area?' 
                         : msg.questionType === 'what' 
-                          ? 'What specific aspects of this field are you interested in?' 
+                          ? 'WHAT specific aspects of this field are you interested in?' 
                           : msg.questionType === 'where' 
-                            ? 'Where is this research typically conducted or applied?' 
+                            ? 'WHERE is this research typically conducted or applied?' 
                             : msg.questionType === 'when' 
-                              ? 'When is this approach most relevant or applicable?' 
+                              ? 'WHEN is this approach most relevant or applicable?' 
                               : 'AI Assistant')
                     : msg.content === 'Skipped' ? 'Skipped' : msg.content),
               isUser: msg.type === 'user'
