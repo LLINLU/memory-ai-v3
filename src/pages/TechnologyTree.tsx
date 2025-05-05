@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
@@ -154,6 +153,20 @@ const TechnologyTree = () => {
       }
     }
   }, [locationState, setSidebarTab]);
+
+  // Add this useEffect to make sure sidebar opens when a node is clicked
+  useEffect(() => {
+    if (selectedPath.level3) {
+      setShowSidebar(true);
+      setSidebarTab("result");
+      
+      // Dispatch an event to refresh paper list with the selected node
+      const event = new CustomEvent('refresh-papers', {
+        detail: { nodeId: selectedPath.level3 }
+      });
+      document.dispatchEvent(event);
+    }
+  }, [selectedPath.level3, setShowSidebar, setSidebarTab]);
 
   const mainContent = (
     <MainContent
