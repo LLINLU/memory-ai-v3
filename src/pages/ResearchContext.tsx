@@ -281,11 +281,19 @@ const ResearchContext = () => {
                       </div>
                       <div>
                         <h3 className="text-xl font-semibold">{steps[currentStep]?.question}</h3>
-                        <ul className="mt-2 space-y-1">
+                        <ul className="mt-2 space-y-1 mb-4">
                           {steps[currentStep]?.subtitle.map((item, i) => (
                             <li key={i} className="text-gray-700">{item}</li>
                           ))}
                         </ul>
+                        {/* Moved Skip button here */}
+                        <Button 
+                          variant="outline"
+                          onClick={handleSkip}
+                          className="mt-2"
+                        >
+                          Skip
+                        </Button>
                       </div>
                     </div>
 
@@ -314,13 +322,8 @@ const ResearchContext = () => {
                       rows={3}
                     />
                   </div>
-                  <div className="flex justify-between">
-                    <Button 
-                      variant="outline"
-                      onClick={handleSkip}
-                    >
-                      Skip
-                    </Button>
+                  <div className="flex justify-end">
+                    {/* Removed Skip button from here */}
                     <Button 
                       onClick={handleSubmit}
                       className="bg-blue-600 hover:bg-blue-700"
