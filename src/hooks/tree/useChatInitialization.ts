@@ -20,7 +20,7 @@ export const useChatInitialization = ({
     if (locationState?.scenario && chatMessages.length === 0) {
       const contextData = `Based on your research interests in ${locationState.scenario}, I've created this technology tree. You can explore different branches or ask me for more specific information.`;
       
-      setChatMessages([{
+      setChatMessages(prev => [{
         type: "text",
         content: contextData,
         isUser: false

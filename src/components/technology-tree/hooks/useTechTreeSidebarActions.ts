@@ -62,6 +62,19 @@ export const useTechTreeSidebarActions = (
     });
   };
 
+  const handleRefineNode = (suggestion: NodeSuggestion) => {
+    if (!suggestion) return;
+    
+    // Add more detailed prompt for refinement
+    setChatMessages(prev => [
+      ...prev,
+      {
+        content: `I'll help you refine this node further. What specific aspects would you like to develop about "${suggestion.title}"?`,
+        isUser: false
+      }
+    ]);
+  };
+
   const findLevel = (messages: ChatMessage[]) => {
     // Try to find a message that mentions a level
     for (const message of messages) {
@@ -80,5 +93,6 @@ export const useTechTreeSidebarActions = (
     handleCheckResults,
     handleUseNode,
     handleEditNodeFromChat,
+    handleRefineNode,
   };
 };
