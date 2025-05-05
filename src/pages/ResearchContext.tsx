@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -200,8 +201,69 @@ const ResearchContext = () => {
   };
   
   const handleSkip = () => {
-    // Skip current question
-    handleSubmit();
+    // Skip current question but still add it to the conversation history
+    const currentKey = Object.keys(answers)[currentStep] as keyof typeof answers;
+    
+    // Add skip message to conversation
+    setConversationHistory(prev => [
+      ...prev,
+      { type: "user", content: "Skipped" }
+    ]);
+    
+    // Move to next step
+    const nextStep = currentStep + 1;
+    setCurrentStep(nextStep);
+    
+    // Clear input field
+    setInputValue("");
+    
+    // If there are more steps, add the next question
+    if (nextStep < steps.length) {
+      const nextQuestion = (
+        <div>
+          <div className="flex items-start gap-4">
+            <div className="bg-blue-600 rounded-full p-2 text-white">
+              {steps[nextStep].icon}
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold">{steps[nextStep].question}</h3>
+              <ul className="mt-2 space-y-1">
+                {steps[nextStep].subtitle.map((item, i) => (
+                  <li key={i} className="text-gray-700">{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      );
+      
+      setTimeout(() => {
+        setConversationHistory(prev => [
+          ...prev,
+          { 
+            type: "system", 
+            content: nextQuestion,
+            questionType: Object.keys(answers)[nextStep]
+          }
+        ]);
+      }, 300);
+    } else {
+      // All steps completed, show completion message
+      setTimeout(() => {
+        setConversationHistory(prev => [
+          ...prev,
+          { 
+            type: "system", 
+            content: "Thank you for providing these details. I'll now build your personalized research map."
+          }
+        ]);
+        
+        // Wait a moment before navigating to give user time to read the completion message
+        setTimeout(() => {
+          proceedToTechnologyTree();
+        }, 1500);
+      }, 300);
+    }
   };
 
   const proceedToTechnologyTree = () => {
@@ -267,47 +329,37 @@ const ResearchContext = () => {
                   </div>
                 ) : (
                   <>
-                    <div className="mb-6">
-                      <p className="text-lg mb-4">Let's quickly define your research context. These 4 questions help refine your results, but feel free to skip any.</p>
+                    <div className="flex-1 overflow-y-auto mb-4">
+                      {/* Display the full conversation history */}
+                      {conversationHistory.map((message, index) => (
+                        <div key={index} className={`mb-6 ${message.type === "user" ? "pl-12" : ""}`}>
+                          {message.type === "system" ? (
+                            <div>{message.content}</div>
+                          ) : (
+                            <div className="border-l-4 border-blue-500 pl-4 py-2 bg-blue-50">
+                              <p>{message.content}</p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
                     
-                    {/* Current Step */}
-                    <div className="flex items-start gap-4 mb-8">
-                      <div className="bg-blue-600 text-white p-2 rounded-full">
-                        {steps[currentStep]?.icon}
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-semibold">{steps[currentStep]?.question}</h3>
-                        <ul className="mt-2 space-y-1 mb-4">
-                          {steps[currentStep]?.subtitle.map((item, i) => (
-                            <li key={i} className="text-gray-700">{item}</li>
-                          ))}
-                        </ul>
+                    {currentStep < steps.length && (
+                      <div className="mt-2">
                         <Button 
                           variant="outline"
                           onClick={handleSkip}
-                          className="mt-2"
+                          className="mb-4"
                         >
                           Skip
                         </Button>
                       </div>
-                    </div>
-
-                    {/* Conversation history displayed dynamically */}
-                    <div className="flex-1 mb-4">
-                      {conversationHistory.map((message, index) => (
-                        message.type === "user" && (
-                          <div key={index} className="mb-6 border-l-4 border-blue-500 pl-4 py-2 bg-blue-50">
-                            <p>{message.content}</p>
-                          </div>
-                        )
-                      ))}
-                    </div>
+                    )}
                   </>
                 )}
               </div>
               
-              {!showInitialOptions && (
+              {!showInitialOptions && currentStep < steps.length && (
                 <div className="mt-auto">
                   <div className="relative mb-4">
                     <Textarea
