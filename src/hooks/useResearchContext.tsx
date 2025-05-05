@@ -26,7 +26,8 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     handleInitialOption,
     proceedToTechnologyTree,
     selectScenario,
-    setGeneratedScenarios
+    setGeneratedScenarios,
+    setShowScenarios
   } = useNavigationHandlers({
     initialQuery,
     answers,
