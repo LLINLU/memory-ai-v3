@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -208,67 +207,8 @@ const ResearchContext = () => {
   };
   
   const handleSkip = () => {
-    // Skip current question by leaving the answer empty and moving to next question
-    const nextStep = currentStep + 1;
-    setCurrentStep(nextStep);
-    
-    // Clear input field
-    setInputValue("");
-    
-    // If there are more steps, add the next question
-    if (nextStep < steps.length) {
-      const nextQuestion = (
-        <div>
-          <div className="flex items-start gap-4">
-            <div className="bg-blue-600 rounded-full p-2 text-white">
-              {steps[nextStep].icon}
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold">{steps[nextStep].question}</h3>
-              <ul className="mt-2 space-y-1">
-                {steps[nextStep].subtitle.map((item, i) => (
-                  <li key={i} className="text-gray-700">{item}</li>
-                ))}
-              </ul>
-              <Button 
-                variant="outline"
-                onClick={handleSkip}
-                className="mt-2"
-              >
-                Skip
-              </Button>
-            </div>
-          </div>
-        </div>
-      );
-      
-      setTimeout(() => {
-        setConversationHistory(prev => [
-          ...prev,
-          { 
-            type: "system", 
-            content: nextQuestion,
-            questionType: Object.keys(answers)[nextStep]
-          }
-        ]);
-      }, 300);
-    } else {
-      // All steps completed, show completion message
-      setTimeout(() => {
-        setConversationHistory(prev => [
-          ...prev,
-          { 
-            type: "system", 
-            content: "Thank you for providing these details. I'll now build your personalized research map."
-          }
-        ]);
-        
-        // Wait a moment before navigating to give user time to read the completion message
-        setTimeout(() => {
-          proceedToTechnologyTree();
-        }, 1500);
-      }, 300);
-    }
+    // Skip current question
+    handleSubmit();
   };
 
   const proceedToTechnologyTree = () => {
