@@ -8,21 +8,13 @@ import { InitialOptions } from "@/components/research-context/InitialOptions";
 import { ScenarioSelection } from "@/components/research-context/ScenarioSelection";
 import { useResearchSteps } from "@/components/research-context/ResearchSteps";
 import { useResearchContext } from "@/hooks/useResearchContext";
-import { useEffect } from "react";
 
 const ResearchContext = () => {
   const location = useLocation();
   
-  // Get the query and editingScenario flag from location state
-  const locationState = location.state as { 
-    query?: string;
-    editingScenario?: boolean;
-    scenario?: string; // Added to handle the passed scenario
-  } || {};
-
+  // Get the query from location state (passed from homepage)
+  const locationState = location.state as { query?: string } || {};
   const initialQuery = locationState.query || "";
-  const isEditingScenario = locationState.editingScenario || false;
-  const passedScenario = locationState.scenario || "";
   
   // Get steps and research context logic
   const steps = useResearchSteps();
@@ -38,16 +30,7 @@ const ResearchContext = () => {
     handleSubmit,
     handleSkip,
     handleScenarioSelection,
-    loadStoredConversation
   } = useResearchContext(initialQuery, steps);
-
-  // Load previous conversation if editing scenario
-  useEffect(() => {
-    if (isEditingScenario) {
-      console.log("Loading stored conversation for editing scenario");
-      loadStoredConversation(passedScenario);
-    }
-  }, [isEditingScenario, loadStoredConversation, passedScenario]);
 
   return (
     <SidebarProvider>
@@ -59,7 +42,7 @@ const ResearchContext = () => {
               <div className="mb-8">
                 <h1 className="text-3xl font-bold mb-8">Research Context Builder</h1>
                 
-                {showInitialOptions && !isEditingScenario ? (
+                {showInitialOptions ? (
                   <InitialOptions 
                     initialQuery={initialQuery}
                     onContinue={() => handleInitialOption('continue')}
