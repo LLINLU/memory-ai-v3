@@ -37,7 +37,18 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
   const handleInitialOptionWrapper = (option: 'continue' | 'skip') => {
     const shouldContinue = handleInitialOption(option);
     if (shouldContinue) {
-      addInitialMessage();
+      // For "continue" option, show a welcome message instead of the first question
+      if (option === 'continue') {
+        setConversationHistory([{ 
+          type: "system", 
+          content: "Starting the research process. Please answer the questions to help refine your results." 
+        }]);
+        // Add the first question immediately
+        addNextQuestion(0);
+      } else {
+        // If skipping, proceed directly to scenarios
+        proceedToScenarios();
+      }
     }
   };
 
@@ -75,7 +86,7 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     
     // Process the skip
     addUserResponse(null);
-    const nextStep = currentStep;
+    const nextStep = currentStep + 1;
     
     // If there are more steps, add the next question
     if (nextStep < steps.length) {
