@@ -31,7 +31,6 @@ export const useTechTreeChat = () => {
   };
 
   const initializeChat = (sidebarTab: string) => {
-    // No longer initialize with default welcome message
     // Empty implementation to maintain the API
   };
 

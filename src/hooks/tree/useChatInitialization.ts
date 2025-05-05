@@ -15,46 +15,16 @@ export const useChatInitialization = ({
   setChatMessages,
   handleSwitchToChat
 }: ChatInitializationProps) => {
-  // Initialize chat with stored research context conversations
+  // Initialize chat with a welcome message
   useEffect(() => {
     if (chatMessages.length === 0) {
-      const storedHistory = localStorage.getItem('researchContextHistory');
-      if (storedHistory) {
-        try {
-          const parsedHistory = JSON.parse(storedHistory);
-          
-          // Convert the history to chat messages format with correct updater function
-          setChatMessages((prevMessages) => {
-            // Create properly formatted chat messages from the history
-            return parsedHistory.map((msg: any) => ({
-              type: "text",
-              // For messages with React components (like questions), display the question type with exact text
-              content: typeof msg.content === 'string' 
-                ? msg.content 
-                : (msg.type === 'system' 
-                    ? (msg.questionType === 'who' 
-                        ? 'WHO is involved in this research area?' 
-                        : msg.questionType === 'what' 
-                          ? 'WHAT specific aspects of this field are you interested in?' 
-                          : msg.questionType === 'where' 
-                            ? 'WHERE is this research typically conducted or applied?' 
-                            : msg.questionType === 'when' 
-                              ? 'WHEN is this approach most relevant or applicable?' 
-                              : 'AI Assistant')
-                    : msg.content === 'Skipped' ? 'Skipped' : msg.content),
-              isUser: msg.type === 'user'
-            }));
-          });
-        } catch (error) {
-          console.error("Failed to parse research context history:", error);
-        }
-      } else if (locationState?.scenario) {
-        // If no stored history, show the scenario message with correct updater function
-        const contextData = `Based on your research interests in ${locationState.scenario}, I've created this technology tree. You can explore different branches or ask me for more specific information.`;
+      if (locationState?.scenario) {
+        // If there's a scenario, just show a welcome message that doesn't include previous research context
+        const welcomeMessage = `Welcome to your research on ${locationState.scenario}. How can I assist you?`;
         
         setChatMessages(() => [{
           type: "text",
-          content: contextData,
+          content: welcomeMessage,
           isUser: false
         }]);
       }
