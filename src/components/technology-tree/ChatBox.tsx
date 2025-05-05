@@ -144,10 +144,9 @@ export const ChatBox = ({
           
           <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
             {messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
-                <MessageSquare className="h-12 w-12 mb-2 text-gray-400" />
-                <p className="mb-1">Ask the AI Research Assistant</p>
-                <p className="text-sm">Get help finding relevant papers, analyzing research, or understanding difficult concepts</p>
+              <div className="flex flex-col items-center justify-center h-full p-4">
+                {/* Empty state with just a subtle prompt */}
+                <p className="text-gray-500 text-sm">Ask a question about your research topic...</p>
               </div>
             ) : (
               messages.map((message, index) => {

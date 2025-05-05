@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
@@ -127,11 +126,18 @@ const TechnologyTree = () => {
     };
   }, [handleSwitchToChat]);
 
-  // Initialize chat with welcome message
   useEffect(() => {
-    // Trigger chat initialization when component mounts
-    initializeChat('chat');
-  }, []);
+    if (locationState?.scenario && chatMessages.length === 0) {
+      // Initialize chat with context data from ResearchContext
+      const contextData = `Based on your research interests in ${locationState.scenario}, I've created this technology tree. You can explore different branches or ask me for more specific information.`;
+      
+      setChatMessages([{
+        type: "text",
+        content: contextData,
+        isUser: false
+      }]);
+    }
+  }, [locationState, chatMessages.length, setChatMessages]);
 
   // Add this useEffect to make sure sidebar opens when a node is clicked
   useEffect(() => {

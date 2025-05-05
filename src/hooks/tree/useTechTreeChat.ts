@@ -31,27 +31,8 @@ export const useTechTreeChat = () => {
   };
 
   const initializeChat = (sidebarTab: string) => {
-    if (sidebarTab === 'chat' && chatMessages.length === 0) {
-      setChatMessages([
-        {
-          type: "welcome",
-          content: "Hi, I can help you find research papers regarding srtst. Would you like quick results now or a more personalized search based on your specific interests?",
-          isUser: false,
-          buttons: [
-            {
-              label: "Quick Results",
-              action: "quick",
-              primary: true
-            },
-            {
-              label: "Personalized Search",
-              action: "personalized",
-              primary: false
-            }
-          ]
-        }
-      ]);
-    }
+    // No longer initialize with default welcome message
+    // Empty implementation to maintain the API
   };
 
   const handleSwitchToChat = (message: string) => {
