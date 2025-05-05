@@ -1,13 +1,5 @@
 
-import React from "react";
-import { MainContent } from "@/components/technology-tree/MainContent";
-import { TreeNode } from "@/types/tree";
-
-interface LevelNames {
-  level1: string;
-  level2: string;
-  level3: string;
-}
+import { MainContent } from "./MainContent";
 
 interface TechTreeMainContentProps {
   selectedPath: {
@@ -15,19 +7,23 @@ interface TechTreeMainContentProps {
     level2: string;
     level3: string;
   };
-  level1Items: TreeNode[];
-  level2Items: Record<string, TreeNode[]>;
-  level3Items: Record<string, TreeNode[]>;
+  level1Items: any[];
+  level2Items: Record<string, any[]>;
+  level3Items: Record<string, any[]>;
   handleNodeClick: (level: string, nodeId: string) => void;
   editNode: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   deleteNode: (level: string, nodeId: string) => void;
-  levelNames: LevelNames;
+  levelNames: {
+    level1: string;
+    level2: string;
+    level3: string;
+  };
   hasUserMadeSelection: boolean;
-  scenario: string;
-  onEditScenario: () => void;
+  scenario?: string;
+  onEditScenario?: (newScenario: string) => void;
 }
 
-export const TechTreeMainContent: React.FC<TechTreeMainContentProps> = ({
+export const TechTreeMainContent = ({
   selectedPath,
   level1Items,
   level2Items,
@@ -39,7 +35,7 @@ export const TechTreeMainContent: React.FC<TechTreeMainContentProps> = ({
   hasUserMadeSelection,
   scenario,
   onEditScenario
-}) => {
+}: TechTreeMainContentProps) => {
   return (
     <MainContent
       selectedPath={selectedPath}
