@@ -95,24 +95,24 @@ const ResearchContext = () => {
       placeholder: "E.g., Wavefront correction, image stabilization, real-time processing..."
     },
     {
-      question: "WHERE will this research be applied?",
+      question: "Now, WHERE is this research typically conducted or applied?",
       icon: <MapPin className="h-5 w-5" />,
       subtitle: [
-        "In what physical locations or environments?",
-        "In which industries or fields?",
-        "At what scale (local, national, global)?"
+        "In what settings or environments?",
+        "Are there specific clinical or research contexts?",
+        "Is there a geographical or institutional focus?"
       ],
       placeholder: "E.g., Observatories, hospitals, field operations..."
     },
     {
-      question: "WHEN is this research relevant?",
+      question: "Got it. Thanks for explaining where this research takes place. Finally, WHEN is this approach most relevant or applicable? You can consider",
       icon: <Clock className="h-5 w-5" />,
       subtitle: [
-        "What is the timeframe for implementation?",
-        "Are there historical contexts to consider?",
-        "Are there upcoming deadlines or milestones?"
+        "Under what conditions or circumstances?",
+        "Is there a specific time frame or stage?",
+        "Are there temporal factors that matter?"
       ],
-      placeholder: "E.g., Current applications, future developments, within 5 years..."
+      placeholder: "E.g., During specific procedures, in emergency situations, seasonal conditions..."
     }
   ];
 
