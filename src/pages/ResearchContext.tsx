@@ -5,8 +5,9 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { ConversationDisplay } from "@/components/research-context/ConversationDisplay";
 import { InputSection } from "@/components/research-context/InputSection";
 import { InitialOptions } from "@/components/research-context/InitialOptions";
+import { ScenarioSelection } from "@/components/research-context/ScenarioSelection";
 import { useResearchSteps } from "@/components/research-context/ResearchSteps";
-import { useResearchContext } from "@/hooks/useResearchContext"; // This import remains the same, but now points to the .tsx file
+import { useResearchContext } from "@/hooks/useResearchContext";
 
 const ResearchContext = () => {
   const location = useLocation();
@@ -19,6 +20,8 @@ const ResearchContext = () => {
   const steps = useResearchSteps();
   const {
     showInitialOptions,
+    showScenarios,
+    generatedScenarios,
     currentStep,
     inputValue,
     conversationHistory,
@@ -26,6 +29,7 @@ const ResearchContext = () => {
     handleInputChange,
     handleSubmit,
     handleSkip,
+    handleScenarioSelection,
   } = useResearchContext(initialQuery, steps);
 
   return (
@@ -43,6 +47,11 @@ const ResearchContext = () => {
                     initialQuery={initialQuery}
                     onContinue={() => handleInitialOption('continue')}
                     onSkip={() => handleInitialOption('skip')}
+                  />
+                ) : showScenarios ? (
+                  <ScenarioSelection 
+                    scenarios={generatedScenarios}
+                    onScenarioSelect={handleScenarioSelection}
                   />
                 ) : (
                   <>

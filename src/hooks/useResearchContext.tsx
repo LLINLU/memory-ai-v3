@@ -2,6 +2,7 @@
 import { Step } from "@/components/research-context/ResearchSteps";
 import { useConversationState } from "./research-context/useConversationState";
 import { useNavigationHandlers } from "./research-context/useNavigationHandlers";
+import { useState } from "react";
 
 export const useResearchContext = (initialQuery: string, steps: Step[]) => {
   // Use the extracted hooks
@@ -20,8 +21,11 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
 
   const {
     showInitialOptions,
+    showScenarios,
+    generatedScenarios,
     handleInitialOption,
-    proceedToTechnologyTree
+    proceedToTechnologyTree,
+    selectScenario
   } = useNavigationHandlers({
     initialQuery,
     answers,
@@ -54,10 +58,10 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     if (nextStep < steps.length) {
       addNextQuestion(nextStep);
     } else {
-      // All steps completed, show completion message and navigate
+      // All steps completed, show completion message and generate scenarios
       addCompletionMessage();
       
-      // Wait a moment before navigating
+      // Wait a moment before showing scenarios
       setTimeout(() => {
         proceedToTechnologyTree();
       }, 1500);
@@ -76,18 +80,24 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     if (nextStep < steps.length) {
       addNextQuestion(nextStep);
     } else {
-      // All steps completed, show completion message and navigate
+      // All steps completed, show completion message and generate scenarios
       addCompletionMessage();
       
-      // Wait a moment before navigating
+      // Wait a moment before showing scenarios
       setTimeout(() => {
         proceedToTechnologyTree();
       }, 1500);
     }
   };
 
+  const handleScenarioSelection = (selectedScenario: string) => {
+    selectScenario(selectedScenario);
+  };
+
   return {
     showInitialOptions,
+    showScenarios,
+    generatedScenarios,
     currentStep,
     inputValue,
     conversationHistory,
@@ -95,6 +105,7 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     handleInputChange,
     handleSubmit,
     handleSkip,
+    handleScenarioSelection,
     steps,
   };
 };
