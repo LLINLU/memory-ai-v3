@@ -2,6 +2,7 @@
 import { Step } from "@/components/research-context/ResearchSteps";
 import { useConversationState } from "./research-context/useConversationState";
 import { useNavigationHandlers } from "./research-context/useNavigationHandlers";
+import { useEffect } from "react";
 
 export const useResearchContext = (initialQuery: string, steps: Step[]) => {
   // Use the extracted hooks
@@ -24,7 +25,8 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     generatedScenarios,
     handleInitialOption,
     proceedToTechnologyTree,
-    selectScenario
+    selectScenario,
+    setGeneratedScenarios
   } = useNavigationHandlers({
     initialQuery,
     answers,
@@ -97,15 +99,45 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
   // Load stored conversation history from localStorage
   const loadStoredConversation = () => {
     const storedHistory = localStorage.getItem('researchContextHistory');
+    const storedScenarios = localStorage.getItem('generatedScenarios');
+    
     if (storedHistory) {
       try {
         const parsedHistory = JSON.parse(storedHistory);
         setConversationHistory(parsedHistory);
+        
+        // Show scenarios if the conversation is completed
+        const isComplete = parsedHistory.some(
+          (msg: any) => msg.type === 'system' && typeof msg.content === 'string' && 
+                       msg.content.includes('Based on your answers')
+        );
+        
+        if (isComplete && storedScenarios) {
+          try {
+            const parsedScenarios = JSON.parse(storedScenarios);
+            setGeneratedScenarios(parsedScenarios);
+            setShowScenarios(true);
+          } catch (error) {
+            console.error("Failed to parse stored scenarios:", error);
+          }
+        }
       } catch (error) {
         console.error("Failed to parse research context history:", error);
       }
     }
   };
+
+  // Determine if we've completed all steps based on conversation history
+  useEffect(() => {
+    const hasCompletionMessage = conversationHistory.some(
+      msg => msg.type === 'system' && typeof msg.content === 'string' && 
+            msg.content.includes('Based on your answers')
+    );
+    
+    if (hasCompletionMessage && !showScenarios) {
+      setShowScenarios(true);
+    }
+  }, [conversationHistory, showScenarios]);
 
   return {
     showInitialOptions,

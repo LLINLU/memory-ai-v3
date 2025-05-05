@@ -57,6 +57,9 @@ export const useNavigationHandlers = ({
     setGeneratedScenarios(scenarios);
     setShowScenarios(true);
     
+    // Store generated scenarios in localStorage for later retrieval
+    localStorage.setItem('generatedScenarios', JSON.stringify(scenarios));
+    
     return scenarios;
   };
   
@@ -124,6 +127,8 @@ export const useNavigationHandlers = ({
     generatedScenarios,
     handleInitialOption,
     proceedToTechnologyTree,
-    selectScenario
+    selectScenario,
+    setShowScenarios,
+    setGeneratedScenarios
   };
 };

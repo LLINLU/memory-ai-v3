@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { Edit } from "lucide-react";
 
 interface ScenarioSectionProps {
   scenario?: string;
@@ -18,7 +19,7 @@ export const ScenarioSection = ({
     if (onEditScenario) {
       onEditScenario();
     } else {
-      // If no handler is provided, navigate back to research context
+      // Always navigate back to research context with the editingScenario flag
       navigate('/research-context', { state: { editingScenario: true } });
     }
   };
@@ -36,6 +37,7 @@ export const ScenarioSection = ({
           className="text-blue-600 border-blue-200 hover:bg-blue-100"
           onClick={handleEditScenario}
         >
+          <Edit className="h-4 w-4 mr-1" />
           Edit Scenario
         </Button>
       </div>
