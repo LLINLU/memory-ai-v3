@@ -165,6 +165,13 @@ const ResearchContext = () => {
                   <li key={i} className="text-gray-700">{item}</li>
                 ))}
               </ul>
+              <Button 
+                variant="outline"
+                onClick={handleSkip}
+                className="mt-2"
+              >
+                Skip
+              </Button>
             </div>
           </div>
         </div>
@@ -271,36 +278,19 @@ const ResearchContext = () => {
                       <p className="text-lg mb-4">Let's quickly define your research context. These 4 questions help refine your results, but feel free to skip any.</p>
                     </div>
                     
-                    {/* Current Step */}
-                    <div className="flex items-start gap-4 mb-8">
-                      <div className="bg-blue-600 text-white p-2 rounded-full">
-                        {steps[currentStep]?.icon}
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-semibold">{steps[currentStep]?.question}</h3>
-                        <ul className="mt-2 space-y-1 mb-4">
-                          {steps[currentStep]?.subtitle.map((item, i) => (
-                            <li key={i} className="text-gray-700">{item}</li>
-                          ))}
-                        </ul>
-                        <Button 
-                          variant="outline"
-                          onClick={handleSkip}
-                          className="mt-2"
-                        >
-                          Skip
-                        </Button>
-                      </div>
-                    </div>
-
                     {/* Conversation history displayed dynamically */}
                     <div className="flex-1 mb-4">
                       {conversationHistory.map((message, index) => (
-                        message.type === "user" && (
-                          <div key={index} className="mb-6 border-l-4 border-blue-500 pl-4 py-2 bg-blue-50">
-                            <p>{message.content}</p>
-                          </div>
-                        )
+                        <div key={index} className="mb-6">
+                          {message.type === "system" && (
+                            <div>{message.content}</div>
+                          )}
+                          {message.type === "user" && (
+                            <div className="border-l-4 border-blue-500 pl-4 py-2 bg-blue-50">
+                              <p>{message.content}</p>
+                            </div>
+                          )}
+                        </div>
                       ))}
                     </div>
                   </>
