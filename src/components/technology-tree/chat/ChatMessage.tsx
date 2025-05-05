@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { NodeSuggestion } from "@/types/chat";
 import { SuggestionActions } from './SuggestionActions';
+import { Users, Search, MapPin, Clock } from "lucide-react";
 
 interface ChatMessageProps {
   message: {
@@ -33,6 +34,76 @@ export const ChatMessage = ({
 }: ChatMessageProps) => {
   const isSkipped = message.isUser && message.content === "Skipped";
   
+  // Determine if the content is a research context question and render appropriate icon
+  const getResearchQuestionContent = (content: string) => {
+    if (content.includes('Who is involved')) {
+      return (
+        <div className="flex items-start gap-4">
+          <div className="bg-blue-600 rounded-full p-2 text-white">
+            <Users className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold">First, WHO is involved in this research area?</h3>
+            <ul className="mt-2 space-y-1">
+              <li className="text-gray-700">Who are the practitioners or professionals?</li>
+              <li className="text-gray-700">Who are the end users or beneficiaries?</li>
+            </ul>
+          </div>
+        </div>
+      );
+    } else if (content.includes('What specific aspects')) {
+      return (
+        <div className="flex items-start gap-4">
+          <div className="bg-blue-600 rounded-full p-2 text-white">
+            <Search className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold">WHAT specific aspects of this field are you interested in?</h3>
+            <ul className="mt-2 space-y-1">
+              <li className="text-gray-700">What particular approach, technique, or application?</li>
+              <li className="text-gray-700">What is the purpose or objective?</li>
+            </ul>
+          </div>
+        </div>
+      );
+    } else if (content.includes('Where is this research')) {
+      return (
+        <div className="flex items-start gap-4">
+          <div className="bg-blue-600 rounded-full p-2 text-white">
+            <MapPin className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold">WHERE is this research typically conducted or applied?</h3>
+            <ul className="mt-2 space-y-1">
+              <li className="text-gray-700">In what settings or environments?</li>
+              <li className="text-gray-700">Are there specific clinical or research contexts?</li>
+              <li className="text-gray-700">Is there a geographical or institutional focus?</li>
+            </ul>
+          </div>
+        </div>
+      );
+    } else if (content.includes('When is this approach')) {
+      return (
+        <div className="flex items-start gap-4">
+          <div className="bg-blue-600 rounded-full p-2 text-white">
+            <Clock className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold">WHEN is this approach most relevant or applicable?</h3>
+            <ul className="mt-2 space-y-1">
+              <li className="text-gray-700">Under what conditions or circumstances?</li>
+              <li className="text-gray-700">Is there a specific time frame or stage?</li>
+              <li className="text-gray-700">Are there temporal factors that matter?</li>
+            </ul>
+          </div>
+        </div>
+      );
+    }
+    
+    // Default return the content as is
+    return <p className="text-base whitespace-pre-line">{content}</p>;
+  };
+  
   return (
     <div 
       className={`inline-block max-w-[85%] ${
@@ -55,9 +126,15 @@ export const ChatMessage = ({
             ? 'bg-blue-50 p-4 rounded-xl w-full'
             : 'bg-blue-50 text-blue-900 p-4 rounded-xl'
         }`}>
-          <p className={`${message.type === 'welcome' ? 'text-lg text-blue-800 mb-4' : 'text-base'} whitespace-pre-line`}>
-            {message.content}
-          </p>
+          {message.content.includes('Who is involved') || 
+           message.content.includes('What specific aspects') || 
+           message.content.includes('Where is this research') || 
+           message.content.includes('When is this approach') 
+            ? getResearchQuestionContent(message.content)
+            : <p className={`${message.type === 'welcome' ? 'text-lg text-blue-800 mb-4' : 'text-base'} whitespace-pre-line`}>
+                {message.content}
+              </p>
+          }
           
           {message.suggestion && !isActionTaken && (
             <SuggestionActions 

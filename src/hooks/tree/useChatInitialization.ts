@@ -28,10 +28,20 @@ export const useChatInitialization = ({
             // Create properly formatted chat messages from the history
             return parsedHistory.map((msg: any) => ({
               type: "text",
-              // For user messages, display the exact content
+              // For messages with React components (like questions), display the question type
               content: typeof msg.content === 'string' 
                 ? msg.content 
-                : (msg.type === 'system' ? 'AI Assistant' : (msg.questionType || 'User response')),
+                : (msg.type === 'system' 
+                    ? (msg.questionType === 'who' 
+                        ? 'Who is involved in this research area?' 
+                        : msg.questionType === 'what' 
+                          ? 'What specific aspects of this field are you interested in?' 
+                          : msg.questionType === 'where' 
+                            ? 'Where is this research typically conducted or applied?' 
+                            : msg.questionType === 'when' 
+                              ? 'When is this approach most relevant or applicable?' 
+                              : 'AI Assistant')
+                    : msg.content === 'Skipped' ? 'Skipped' : msg.content),
               isUser: msg.type === 'user'
             }));
           });
