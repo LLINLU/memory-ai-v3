@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
@@ -14,7 +15,7 @@ import { ChatBox } from "@/components/technology-tree/ChatBox";
 
 const TechnologyTree = () => {
   const location = useLocation();
-  const locationState = location.state as { query?: string; scenario?: string; contextAnswers?: Record<string, string> } | null;
+  const locationState = location.state as { query?: string; scenario?: string } | null;
   
   const [scenario, setScenario] = useState(
     locationState?.scenario || 
@@ -131,28 +132,6 @@ const TechnologyTree = () => {
     // Trigger chat initialization when component mounts
     initializeChat('chat');
   }, []);
-
-  // Initialize chat with context if available
-  useEffect(() => {
-    if (locationState?.contextAnswers) {
-      // Only initialize if we have context answers
-      const filledAnswers = Object.entries(locationState.contextAnswers)
-        .filter(([_, value]) => value.trim() !== '')
-        .map(([key, value]) => `${key.toUpperCase()}: ${value}`)
-        .join('\n');
-      
-      if (filledAnswers) {
-        const contextMessage = `Research context:\n${filledAnswers}`;
-        setTimeout(() => {
-          const event = new CustomEvent('switch-to-chat', {
-            detail: { message: contextMessage }
-          });
-          document.dispatchEvent(event);
-          setSidebarTab("chat");
-        }, 1000);
-      }
-    }
-  }, [locationState, setSidebarTab]);
 
   // Add this useEffect to make sure sidebar opens when a node is clicked
   useEffect(() => {
