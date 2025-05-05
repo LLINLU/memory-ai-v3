@@ -14,15 +14,9 @@ interface ConversationDisplayProps {
 export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({ 
   conversationHistory 
 }) => {
-  // Filter out research context question messages (who, what, where, when)
-  const filteredMessages = conversationHistory.filter(message => {
-    // Skip messages with questionType (the research context questions)
-    return !message.questionType;
-  });
-
   return (
     <div className="flex-1 overflow-y-auto mb-4">
-      {filteredMessages.map((message, index) => (
+      {conversationHistory.map((message, index) => (
         <div key={index} className={`mb-6 ${message.type === "user" ? "flex justify-end" : ""}`}>
           {message.type === "system" ? (
             <div>{message.content}</div>
