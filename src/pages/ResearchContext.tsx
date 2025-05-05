@@ -17,12 +17,9 @@ const ResearchContext = () => {
   const locationState = location.state as { 
     query?: string;
     editingScenario?: boolean;
-    scenario?: string;
   } || {};
-  
   const initialQuery = locationState.query || "";
   const isEditingScenario = locationState.editingScenario || false;
-  const currentScenario = locationState.scenario || "";
   
   // Get steps and research context logic
   const steps = useResearchSteps();
@@ -41,19 +38,12 @@ const ResearchContext = () => {
     loadStoredConversation
   } = useResearchContext(initialQuery, steps);
 
-  // Load conversation history if editing a scenario
+  // Load previous conversation if editing scenario
   useEffect(() => {
     if (isEditingScenario) {
       loadStoredConversation();
-      
-      // If there are generated scenarios, add the current scenario to them
-      if (currentScenario && !generatedScenarios.includes(currentScenario)) {
-        // We'll ensure the current scenario is displayed in the selection
-        const updatedScenarios = [currentScenario, ...generatedScenarios.slice(0, 2)];
-        // Logic to update scenarios is handled in the hooks
-      }
     }
-  }, [isEditingScenario, currentScenario, loadStoredConversation]);
+  }, [isEditingScenario, loadStoredConversation]);
 
   return (
     <SidebarProvider>

@@ -18,13 +18,8 @@ export const ScenarioSection = ({
     if (onEditScenario) {
       onEditScenario();
     } else {
-      // Navigate to research context page with editingScenario flag
-      navigate('/research-context', { 
-        state: { 
-          editingScenario: true,
-          scenario 
-        } 
-      });
+      // If no handler is provided, navigate back to research context
+      navigate('/research-context', { state: { editingScenario: true } });
     }
   };
   

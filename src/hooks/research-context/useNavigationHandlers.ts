@@ -122,7 +122,6 @@ export const useNavigationHandlers = ({
     showInitialOptions,
     showScenarios,
     generatedScenarios,
-    setGeneratedScenarios, // Expose this function
     handleInitialOption,
     proceedToTechnologyTree,
     selectScenario

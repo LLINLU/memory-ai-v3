@@ -2,7 +2,6 @@
 import { Step } from "@/components/research-context/ResearchSteps";
 import { useConversationState } from "./research-context/useConversationState";
 import { useNavigationHandlers } from "./research-context/useNavigationHandlers";
-import { useCallback } from "react";
 
 export const useResearchContext = (initialQuery: string, steps: Step[]) => {
   // Use the extracted hooks
@@ -25,8 +24,7 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     generatedScenarios,
     handleInitialOption,
     proceedToTechnologyTree,
-    selectScenario,
-    setGeneratedScenarios
+    selectScenario
   } = useNavigationHandlers({
     initialQuery,
     answers,
@@ -91,27 +89,23 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     }
   };
 
+  // Handler for scenario selection
   const handleScenarioSelection = (selectedScenario: string) => {
     selectScenario(selectedScenario);
   };
 
-  // Load conversation history from localStorage
-  const loadStoredConversation = useCallback(() => {
-    try {
-      const storedHistory = localStorage.getItem('researchContextHistory');
-      if (storedHistory) {
+  // Load stored conversation history from localStorage
+  const loadStoredConversation = () => {
+    const storedHistory = localStorage.getItem('researchContextHistory');
+    if (storedHistory) {
+      try {
         const parsedHistory = JSON.parse(storedHistory);
         setConversationHistory(parsedHistory);
-        
-        // When returning to edit, we want to show scenarios immediately
-        setTimeout(() => {
-          proceedToTechnologyTree();
-        }, 300);
+      } catch (error) {
+        console.error("Failed to parse research context history:", error);
       }
-    } catch (error) {
-      console.error("Error loading stored conversation:", error);
     }
-  }, [setConversationHistory, proceedToTechnologyTree]);
+  };
 
   return {
     showInitialOptions,
