@@ -332,11 +332,11 @@ const ResearchContext = () => {
                     <div className="flex-1 overflow-y-auto mb-4">
                       {/* Display the full conversation history */}
                       {conversationHistory.map((message, index) => (
-                        <div key={index} className={`mb-6 ${message.type === "user" ? "pl-12" : ""}`}>
+                        <div key={index} className={`mb-6 ${message.type === "user" ? "flex justify-end" : ""}`}>
                           {message.type === "system" ? (
                             <div>{message.content}</div>
                           ) : (
-                            <div className="border-l-4 border-blue-500 pl-4 py-2 bg-blue-50">
+                            <div className="bg-blue-100 text-blue-900 p-3 rounded-lg max-w-[85%]">
                               <p>{message.content}</p>
                             </div>
                           )}
