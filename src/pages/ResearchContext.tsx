@@ -13,13 +13,16 @@ import { useEffect } from "react";
 const ResearchContext = () => {
   const location = useLocation();
   
-  // Get the query from location state (passed from homepage)
+  // Get the query and editingScenario flag from location state
   const locationState = location.state as { 
     query?: string;
     editingScenario?: boolean;
+    scenario?: string; // Added to handle the passed scenario
   } || {};
+
   const initialQuery = locationState.query || "";
   const isEditingScenario = locationState.editingScenario || false;
+  const passedScenario = locationState.scenario || "";
   
   // Get steps and research context logic
   const steps = useResearchSteps();
@@ -41,9 +44,10 @@ const ResearchContext = () => {
   // Load previous conversation if editing scenario
   useEffect(() => {
     if (isEditingScenario) {
-      loadStoredConversation();
+      console.log("Loading stored conversation for editing scenario");
+      loadStoredConversation(passedScenario);
     }
-  }, [isEditingScenario, loadStoredConversation]);
+  }, [isEditingScenario, loadStoredConversation, passedScenario]);
 
   return (
     <SidebarProvider>

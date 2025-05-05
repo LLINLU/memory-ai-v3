@@ -97,8 +97,8 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     selectScenario(selectedScenario);
   };
 
-  // Load stored conversation history from localStorage
-  const loadStoredConversation = () => {
+  // Load stored conversation history from localStorage with optional passed scenario
+  const loadStoredConversation = (passedScenario?: string) => {
     const storedHistory = localStorage.getItem('researchContextHistory');
     const storedScenarios = localStorage.getItem('generatedScenarios');
     
@@ -113,13 +113,37 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
                        msg.content.includes('Based on your answers')
         );
         
-        if (isComplete && storedScenarios) {
-          try {
-            const parsedScenarios = JSON.parse(storedScenarios);
-            setGeneratedScenarios(parsedScenarios);
+        if (isComplete) {
+          if (passedScenario) {
+            // If we have a specific scenario passed from TechnologyTree
             setShowScenarios(true);
-          } catch (error) {
-            console.error("Failed to parse stored scenarios:", error);
+            // If we have a passed scenario, ensure it's in the scenarios list
+            if (storedScenarios) {
+              try {
+                let parsedScenarios = JSON.parse(storedScenarios);
+                // If the passed scenario isn't in the list, add it
+                if (!parsedScenarios.includes(passedScenario)) {
+                  parsedScenarios = [passedScenario, ...parsedScenarios];
+                }
+                setGeneratedScenarios(parsedScenarios);
+              } catch (error) {
+                console.error("Failed to parse stored scenarios:", error);
+                // Fallback to just the passed scenario
+                setGeneratedScenarios([passedScenario]);
+              }
+            } else {
+              // No stored scenarios, just use the passed one
+              setGeneratedScenarios([passedScenario]);
+            }
+          } else if (storedScenarios) {
+            // Use stored scenarios if no specific one was passed
+            try {
+              const parsedScenarios = JSON.parse(storedScenarios);
+              setGeneratedScenarios(parsedScenarios);
+              setShowScenarios(true);
+            } catch (error) {
+              console.error("Failed to parse stored scenarios:", error);
+            }
           }
         }
       } catch (error) {
@@ -138,7 +162,7 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     if (hasCompletionMessage && !showScenarios) {
       setShowScenarios(true);
     }
-  }, [conversationHistory, showScenarios]);
+  }, [conversationHistory, showScenarios, setShowScenarios]);
 
   return {
     showInitialOptions,

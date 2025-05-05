@@ -19,8 +19,14 @@ export const ScenarioSection = ({
     if (onEditScenario) {
       onEditScenario();
     } else {
-      // Always navigate back to research context with the editingScenario flag
-      navigate('/research-context', { state: { editingScenario: true } });
+      // Use direct navigation with state to ensure it works consistently
+      navigate('/research-context', { 
+        state: { 
+          editingScenario: true,
+          scenario: scenario // Pass the current scenario back to the research context
+        },
+        replace: true // Use replace to prevent back button issues
+      });
     }
   };
   
