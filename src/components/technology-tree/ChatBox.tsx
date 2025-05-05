@@ -9,13 +9,15 @@ interface ChatBoxProps {
   inputValue: string;
   onInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onSendMessage: () => void;
+  onButtonClick?: (action: string) => void;
 }
 
 export const ChatBox = ({
   messages = [],
   inputValue,
   onInputChange,
-  onSendMessage
+  onSendMessage,
+  onButtonClick
 }: ChatBoxProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -115,13 +117,39 @@ export const ChatBox = ({
                   className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-4`}
                 >
                   <div 
-                    className={`inline-block max-w-[85%] p-3 rounded-lg ${
+                    className={`inline-block max-w-[85%] ${
+                      message.type === 'welcome' 
+                        ? 'w-full' 
+                        : ''
+                    } ${
                       message.isUser 
-                        ? 'bg-blue-100 text-blue-900' 
-                        : 'bg-white border border-gray-200 text-gray-800'
+                        ? 'bg-blue-100 text-blue-900 p-3 rounded-lg' 
+                        : message.type === 'welcome'
+                          ? 'bg-blue-50 p-4 rounded-xl w-full'
+                          : 'bg-white border border-gray-200 text-gray-800 p-3 rounded-lg'
                     }`}
                   >
-                    <p className="text-sm">{message.content}</p>
+                    <p className={`${message.type === 'welcome' ? 'text-lg text-blue-800 mb-4' : 'text-sm'}`}>
+                      {message.content}
+                    </p>
+                    
+                    {message.buttons && (
+                      <div className="flex flex-col sm:flex-row gap-3 justify-center mt-2">
+                        {message.buttons.map((button: any, buttonIndex: number) => (
+                          <Button
+                            key={buttonIndex}
+                            onClick={() => onButtonClick && onButtonClick(button.action)}
+                            className={`${
+                              button.primary
+                                ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                            } px-4 py-2`}
+                          >
+                            {button.label}
+                          </Button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))

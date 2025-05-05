@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
@@ -47,6 +46,7 @@ const TechnologyTree = () => {
     handleSendMessage,
     initializeChat,
     handleSwitchToChat,
+    handleButtonClick,
     setChatMessages
   } = useTechTreeChat();
 
@@ -97,6 +97,12 @@ const TechnologyTree = () => {
       document.removeEventListener('switch-to-chat', handleSwitchToChatEvent as EventListener);
     };
   }, [handleSwitchToChat]);
+
+  // Initialize chat with welcome message
+  useEffect(() => {
+    // Trigger chat initialization when component mounts
+    initializeChat('chat');
+  }, []);
 
   // Initialize chat with context if available
   useEffect(() => {
@@ -174,12 +180,13 @@ const TechnologyTree = () => {
             {mainContent}
           </TechTreeLayout>
           
-          {/* Add ChatBox component */}
+          {/* Add ChatBox component with button click handler */}
           <ChatBox
             messages={chatMessages}
             inputValue={inputValue}
             onInputChange={handleInputChange}
             onSendMessage={handleSendMessage}
+            onButtonClick={handleButtonClick}
           />
         </div>
       </div>

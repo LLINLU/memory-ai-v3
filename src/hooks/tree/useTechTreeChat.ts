@@ -34,9 +34,21 @@ export const useTechTreeChat = () => {
     if (sidebarTab === 'chat' && chatMessages.length === 0) {
       setChatMessages([
         {
-          type: "text", // Changed from "agent" to "text"
-          content: "I've found research on\nAdaptive Optics → Medical Applications → Retinal Imaging\nHow can I refine this for you?",
-          isUser: false
+          type: "welcome",
+          content: "Hi, I can help you find research papers regarding srtst. Would you like quick results now or a more personalized search based on your specific interests?",
+          isUser: false,
+          buttons: [
+            {
+              label: "Quick Results",
+              action: "quick",
+              primary: true
+            },
+            {
+              label: "Personalized Search",
+              action: "personalized",
+              primary: false
+            }
+          ]
         }
       ]);
     }
@@ -44,10 +56,37 @@ export const useTechTreeChat = () => {
 
   const handleSwitchToChat = (message: string) => {
     setChatMessages([{
-      type: "text", // Changed from "agent" to "text"
+      type: "text",
       content: message,
       isUser: false
     }]);
+  };
+  
+  const handleButtonClick = (action: string) => {
+    if (action === 'quick') {
+      // Handle quick results action
+      setChatMessages(prev => [
+        ...prev,
+        {
+          type: "text",
+          content: "Retrieving quick results for your query...",
+          isUser: false
+        }
+      ]);
+      
+      // Here you would typically trigger some action to fetch results
+      
+    } else if (action === 'personalized') {
+      // Handle personalized search action
+      setChatMessages(prev => [
+        ...prev,
+        {
+          type: "text",
+          content: "Let's personalize your search. What specific aspects of this topic are you most interested in?",
+          isUser: false
+        }
+      ]);
+    }
   };
 
   return {
@@ -57,6 +96,7 @@ export const useTechTreeChat = () => {
     handleSendMessage,
     initializeChat,
     handleSwitchToChat,
+    handleButtonClick,
     setChatMessages
   };
 };
