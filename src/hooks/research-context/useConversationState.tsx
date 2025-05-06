@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Step } from "@/components/research-context/ResearchSteps";
 
@@ -134,7 +135,7 @@ export const useConversationState = (steps: Step[]) => {
   const addInitialMessage = () => {
     const initialMessage = (
       <div>
-        <p className="mb-4">研究コンテキストを手早く定義しましょう。これらの質問に答えることで結果をより絞り込めますが、スキップしてもかまいません。</p>
+        <p className="mb-6">研究コンテキストを手早く定義しましょう。これらの質問に答えることで結果をより絞り込めますが、スキップしてもかまいません。</p>
         <div className="flex items-start gap-4">
           <div className="bg-blue-600 rounded-full p-2 text-white">
             {steps[0].icon}
