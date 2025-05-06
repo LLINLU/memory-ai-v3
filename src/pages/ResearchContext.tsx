@@ -10,6 +10,7 @@ import { useResearchSteps } from "@/components/research-context/ResearchSteps";
 import { useResearchContext } from "@/hooks/useResearchContext";
 import { useEffect } from "react";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const ResearchContext = () => {
   const location = useLocation();
@@ -56,12 +57,12 @@ const ResearchContext = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+      <div className="h-screen flex w-full overflow-hidden">
         <AppSidebar />
-        <div className="flex-1 bg-gray-50 flex flex-col">
-          <ResizablePanelGroup direction="horizontal">
+        <div className="flex-1 bg-gray-50 flex flex-col overflow-hidden">
+          <ResizablePanelGroup direction="horizontal" className="h-full">
             <ResizablePanel defaultSize={65} minSize={40}>
-              <div className="flex flex-col h-screen p-4">
+              <div className="flex flex-col h-full p-4">
                 <div className="flex-none">
                   <h1 className="text-2xl font-bold mb-4">Research Context Builder</h1>
                   
@@ -74,35 +75,37 @@ const ResearchContext = () => {
                   )}
                 </div>
                 
-                <div className="flex-1 overflow-y-auto">
-                  {showInitialOptions && !isEditingScenario ? (
-                    <InitialOptions 
-                      initialQuery={initialQuery}
-                      onContinue={() => handleInitialOption('continue')}
-                      onSkip={() => handleInitialOption('skip')}
-                    />
-                  ) : (
-                    <>
-                      {!isEditingScenario && (
-                        <ConversationDisplay 
-                          conversationHistory={conversationHistory} 
-                          onEditReply={handleEditUserReply}
-                        />
-                      )}
-                      
-                      {showScenarios && (
-                        <div className="mt-6">
-                          <div className="bg-blue-50 p-4 rounded-md">
-                            <h2 className="text-xl font-semibold mb-2">Research Scenario Ready</h2>
-                            <p className="text-blue-700">
-                              Based on your responses, we've generated research scenarios for you.
-                              Please select a scenario from the preview panel on the right.
-                            </p>
+                <div className="flex-1 overflow-hidden">
+                  <ScrollArea className="h-full">
+                    {showInitialOptions && !isEditingScenario ? (
+                      <InitialOptions 
+                        initialQuery={initialQuery}
+                        onContinue={() => handleInitialOption('continue')}
+                        onSkip={() => handleInitialOption('skip')}
+                      />
+                    ) : (
+                      <>
+                        {!isEditingScenario && (
+                          <ConversationDisplay 
+                            conversationHistory={conversationHistory} 
+                            onEditReply={handleEditUserReply}
+                          />
+                        )}
+                        
+                        {showScenarios && (
+                          <div className="mt-6">
+                            <div className="bg-blue-50 p-4 rounded-md">
+                              <h2 className="text-xl font-semibold mb-2">Research Scenario Ready</h2>
+                              <p className="text-blue-700">
+                                Based on your responses, we've generated research scenarios for you.
+                                Please select a scenario from the preview panel on the right.
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </>
-                  )}
+                        )}
+                      </>
+                    )}
+                  </ScrollArea>
                 </div>
                 
                 <div className="flex-none">
@@ -123,7 +126,7 @@ const ResearchContext = () => {
             <ResizableHandle />
 
             <ResizablePanel defaultSize={35} minSize={25}>
-              <div className="h-screen bg-gray-100 border-l border-gray-200">
+              <div className="h-full bg-gray-100 border-l border-gray-200">
                 <ScenarioPreview
                   initialQuery={initialQuery}
                   answers={answers}
