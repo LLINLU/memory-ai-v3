@@ -95,10 +95,10 @@ export const useConversationState = (steps: Step[]) => {
               {steps[nextStep].icon}
             </div>
             <div>
-              <h3 className="text-xl font-semibold">{steps[nextStep].question}</h3>
+              <h3 className="text-[16px] font-semibold">{steps[nextStep].question}</h3>
               <ul className="mt-2 space-y-1">
                 {steps[nextStep].subtitle.map((item, i) => (
-                  <li key={i} className="text-gray-700">{item}</li>
+                  <li key={i} className="text-gray-700 text-[14px]">{item}</li>
                 ))}
               </ul>
             </div>
@@ -134,16 +134,16 @@ export const useConversationState = (steps: Step[]) => {
   const addInitialMessage = () => {
     const initialMessage = (
       <div>
-        <p className="mb-4">Let's quickly define your research context. These 4 questions help refine your results, but feel free to skip any.</p>
+        <p className="mb-4">研究コンテキストを手早く定義しましょう。これらの質問に答えることで結果をより絞り込めますが、スキップしてもかまいません。</p>
         <div className="flex items-start gap-4">
           <div className="bg-blue-600 rounded-full p-2 text-white">
             {steps[0].icon}
           </div>
           <div>
-            <h3 className="text-xl font-semibold">{steps[0].question}</h3>
+            <h3 className="text-[16px] font-semibold">{steps[0].question}</h3>
             <ul className="mt-2 space-y-1">
               {steps[0].subtitle.map((item, i) => (
-                <li key={i} className="text-gray-700">{item}</li>
+                <li key={i} className="text-gray-700 text-[14px]">{item}</li>
               ))}
             </ul>
           </div>

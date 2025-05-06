@@ -12,11 +12,12 @@ export interface Step {
 export const useResearchSteps = () => {
   const steps: Step[] = [
     {
-      question: "まず、この研究分野に誰が関わっていますか？以下を考慮してください",
+      question: "この研究分野には"誰"が関わっていますか？ 以下を考えてみてください：",
       icon: <Users className="h-5 w-5" />,
       subtitle: [
-        "実務者や専門家は誰ですか？",
-        "最終ユーザーや受益者は誰ですか？"
+        "- 解決策を実装する専門家や実務者は誰ですか？",
+        "- 最終的な利用者や恩恵を受ける人は誰ですか？",
+        "- 他に重要な関係者はいますか？"
       ],
       placeholder: "例：天文学者、眼科医、防衛エンジニアなど..."
     },
