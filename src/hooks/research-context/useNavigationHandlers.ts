@@ -80,6 +80,7 @@ export const useNavigationHandlers = ({
     setShowScenarios,
     generateScenarios,
     resetNavigation,
-    researchAreasRef
+    researchAreasRef,
+    setGeneratedScenarios
   };
 };

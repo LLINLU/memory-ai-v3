@@ -50,17 +50,12 @@ const ResearchContext = () => {
     handleReset,
     handleGenerateResult,
     researchAreasRef,
-    shouldShowInputSection
-  } = useResearchContext(initialQuery, steps);
+    shouldShowInputSection,
+    isEditingScenario: isEditing
+  } = useResearchContext(initialQuery, steps, isEditingScenario, currentScenario);
 
-  // If user is redirected to edit scenario, show scenario selection right away
-  useEffect(() => {
-    if (isEditingScenario && currentScenario) {
-      // Skip the conversation and go straight to scenario selection
-      proceedToScenarios();
-    }
-  }, [isEditingScenario, currentScenario, proceedToScenarios]);
-
+  // No need for the effect anymore as the useResearchContext hook now handles this logic
+  
   return (
     <SidebarProvider>
       <div className="h-screen flex w-full overflow-hidden">
@@ -147,7 +142,7 @@ const ResearchContext = () => {
                   answers={answers}
                   generatedScenarios={generatedScenarios}
                   selectedScenario={selectedScenario}
-                  showScenarios={showScenarios}
+                  showScenarios={showScenarios || isEditingScenario}
                   onScenarioSelect={handleScenarioSelection}
                   researchAreasRef={researchAreasRef}
                   onGenerateResult={handleGenerateResult}

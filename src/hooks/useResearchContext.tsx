@@ -2,13 +2,13 @@
 import { Step } from "@/components/research-context/ResearchSteps";
 import { useConversationState } from "./research-context/useConversationState";
 import { useNavigationHandlers } from "./research-context/useNavigationHandlers";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-export const useResearchContext = (initialQuery: string, steps: Step[]) => {
+export const useResearchContext = (initialQuery: string, steps: Step[], isEditingScenario: boolean = false, currentScenario: string = "") => {
   const navigate = useNavigate();
   // Track selected scenario
-  const [selectedScenario, setSelectedScenario] = useState<string>("");
+  const [selectedScenario, setSelectedScenario] = useState<string>(currentScenario || "");
 
   // Use the extracted hooks
   const {
@@ -37,12 +37,36 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     setShowScenarios,
     generateScenarios,
     resetNavigation,
-    researchAreasRef
+    researchAreasRef,
+    setGeneratedScenarios
   } = useNavigationHandlers({
     initialQuery,
     answers,
     conversationHistory
   });
+
+  // Handle scenario editing mode on component mount
+  useEffect(() => {
+    if (isEditingScenario) {
+      // Skip the conversation and show scenarios
+      setShowScenarios(true);
+      
+      // Generate scenarios including the current one
+      const scenarios = generateScenarios();
+      
+      // If the current scenario is not in the generated list, add it
+      if (currentScenario && !scenarios.includes(currentScenario)) {
+        const updatedScenarios = [currentScenario, ...scenarios];
+        setGeneratedScenarios(updatedScenarios);
+      }
+      
+      // Select the current scenario
+      if (currentScenario) {
+        setSelectedScenario(currentScenario);
+        selectScenario(currentScenario);
+      }
+    }
+  }, [isEditingScenario, currentScenario]);
 
   // Core handler for initial option selection
   const handleInitialOptionWrapper = (option: 'continue' | 'skip') => {
@@ -161,6 +185,7 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     handleGenerateResult,
     steps,
     researchAreasRef,
-    shouldShowInputSection
+    shouldShowInputSection,
+    isEditingScenario
   };
 };
