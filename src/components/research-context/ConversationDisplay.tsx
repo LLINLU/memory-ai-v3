@@ -1,8 +1,9 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Copy, Edit } from "lucide-react";
+import { Copy, Edit, Check, X } from "lucide-react";
 import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
 
 interface Message {
   type: "system" | "user";
@@ -19,6 +20,9 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
   conversationHistory,
   onEditReply
 }) => {
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editValue, setEditValue] = useState("");
+
   const handleCopy = (content: string) => {
     if (typeof content === "string") {
       navigator.clipboard.writeText(content);
@@ -27,8 +31,20 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
   };
 
   const handleEdit = (content: string, index: number) => {
-    if (typeof content === "string" && onEditReply) {
-      onEditReply(content, index);
+    setEditingIndex(index);
+    setEditValue(content);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingIndex(null);
+    setEditValue("");
+  };
+
+  const handleUpdateEdit = () => {
+    if (editingIndex !== null && onEditReply && editValue.trim()) {
+      onEditReply(editValue, editingIndex);
+      setEditingIndex(null);
+      setEditValue("");
     }
   };
 
@@ -38,6 +54,33 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
         <div key={index} className={`mb-6 ${message.type === "user" ? "flex flex-col items-end" : "flex flex-col items-start"}`}>
           {message.type === "system" ? (
             <div className="max-w-[80%]">{message.content}</div>
+          ) : editingIndex === index ? (
+            <div className="w-full max-w-3xl">
+              <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
+                <Textarea 
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  className="w-full resize-none border-0 p-0 focus-visible:ring-0"
+                  rows={4}
+                />
+                <div className="text-xs text-gray-500 mt-2">
+                  <span>Editing this message will update the scenario</span>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 mt-3">
+                <Button 
+                  variant="outline" 
+                  onClick={handleCancelEdit}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleUpdateEdit}
+                >
+                  Update
+                </Button>
+              </div>
+            </div>
           ) : (
             <div className="flex flex-col items-end">
               <div className="bg-blue-100 text-blue-900 p-3 rounded-lg max-w-[80%]">
