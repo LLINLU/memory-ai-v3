@@ -1,4 +1,3 @@
-
 import { useLocation } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -65,7 +64,7 @@ const ResearchContext = () => {
         <div className="flex-1 bg-gray-50 flex flex-col overflow-hidden">
           <ResizablePanelGroup direction="horizontal" className="h-full">
             <ResizablePanel defaultSize={65} minSize={40}>
-              <div className="flex flex-col h-full p-4">
+              <div className="flex flex-col h-full px-8 py-4">
                 <div className="flex-none flex justify-between items-center mb-4">
                   <h1 className="text-2xl font-bold">研究コンテキストビルダー</h1>
                   <Button
@@ -145,7 +144,7 @@ const ResearchContext = () => {
                   generatedScenarios={generatedScenarios}
                   selectedScenario={selectedScenario}
                   showScenarios={showScenarios || isEditingScenario}
-                  showGenerateButton={showGenerateButton} // Pass the flag to control button visibility
+                  showGenerateButton={showGenerateButton}
                   onScenarioSelect={handleScenarioSelection}
                   researchAreasRef={researchAreasRef}
                   onGenerateResult={handleGenerateResult}
