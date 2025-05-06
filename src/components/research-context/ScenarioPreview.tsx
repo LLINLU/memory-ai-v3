@@ -56,22 +56,22 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
             <div className="space-y-2">
               <div className="flex">
                 <span className="text-gray-500 w-16">Who:</span>
-                <span className="text-gray-800">{answers.who || '...'}</span>
+                <span className="text-gray-800 text-[14px]">{answers.who || '...'}</span>
               </div>
               
               <div className="flex">
                 <span className="text-gray-500 w-16">What:</span>
-                <span className="text-gray-800">{answers.what || '...'}</span>
+                <span className="text-gray-800 text-[14px]">{answers.what || '...'}</span>
               </div>
               
               <div className="flex">
                 <span className="text-gray-500 w-16">Where:</span>
-                <span className="text-gray-800">{answers.where || '...'}</span>
+                <span className="text-gray-800 text-[14px]">{answers.where || '...'}</span>
               </div>
               
               <div className="flex">
                 <span className="text-gray-500 w-16">When:</span>
-                <span className="text-gray-800">{answers.when || '...'}</span>
+                <span className="text-gray-800 text-[14px]">{answers.when || '...'}</span>
               </div>
             </div>
           </div>
