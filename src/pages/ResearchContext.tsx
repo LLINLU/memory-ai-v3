@@ -48,7 +48,8 @@ const ResearchContext = () => {
     setShowScenarios,
     handleEditUserReply,
     handleReset,
-    researchAreasRef
+    researchAreasRef,
+    shouldShowInputSection
   } = useResearchContext(initialQuery, steps);
 
   // If user is redirected to edit scenario, show scenario selection right away
@@ -122,7 +123,7 @@ const ResearchContext = () => {
                 </div>
                 
                 <div className="flex-none">
-                  {currentStep < steps.length && !showScenarios && !isEditingScenario && (
+                  {shouldShowInputSection && (
                     <InputSection
                       inputValue={inputValue}
                       placeholder={steps[currentStep]?.placeholder}

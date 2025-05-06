@@ -124,6 +124,9 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     setSelectedScenario("");
   };
 
+  // Check if we should show the input section
+  const shouldShowInputSection = !showInitialOptions && !showScenarios && currentStep < steps.length;
+
   return {
     showInitialOptions,
     showScenarios,
@@ -143,6 +146,7 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     handleEditUserReply,
     handleReset,
     steps,
-    researchAreasRef
+    researchAreasRef,
+    shouldShowInputSection
   };
 };
