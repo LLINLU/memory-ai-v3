@@ -2,15 +2,13 @@
 import { Step } from "@/components/research-context/ResearchSteps";
 import { useConversationState } from "./research-context/useConversationState";
 import { useNavigationHandlers } from "./research-context/useNavigationHandlers";
-import { useState, useEffect } from "react";
+import { useScenarioHandlers } from "./research-context/useScenarioHandlers";
 import { useNavigate } from "react-router-dom";
 
 export const useResearchContext = (initialQuery: string, steps: Step[], isEditingScenario: boolean = false, currentScenario: string = "") => {
   const navigate = useNavigate();
-  // Track selected scenario
-  const [selectedScenario, setSelectedScenario] = useState<string>(currentScenario || "");
 
-  // Use the extracted hooks
+  // Use the conversation state hook
   const {
     currentStep,
     inputValue,
@@ -21,12 +19,12 @@ export const useResearchContext = (initialQuery: string, steps: Step[], isEditin
     addNextQuestion,
     addCompletionMessage,
     addInitialMessage,
-    setConversationHistory,
     updateUserResponse,
     setInputValue,
     resetConversation
   } = useConversationState(steps);
 
+  // Use the navigation handlers hook
   const {
     showInitialOptions,
     showScenarios,
@@ -45,28 +43,24 @@ export const useResearchContext = (initialQuery: string, steps: Step[], isEditin
     conversationHistory
   });
 
-  // Handle scenario editing mode on component mount
-  useEffect(() => {
-    if (isEditingScenario) {
-      // Skip the conversation and show scenarios
-      setShowScenarios(true);
-      
-      // Generate scenarios including the current one
-      const scenarios = generateScenarios();
-      
-      // If the current scenario is not in the generated list, add it
-      if (currentScenario && !scenarios.includes(currentScenario)) {
-        const updatedScenarios = [currentScenario, ...scenarios];
-        setGeneratedScenarios(updatedScenarios);
-      }
-      
-      // Select the current scenario
-      if (currentScenario) {
-        setSelectedScenario(currentScenario);
-        selectScenario(currentScenario);
-      }
-    }
-  }, [isEditingScenario, currentScenario]);
+  // Use the scenario handlers hook
+  const {
+    selectedScenario,
+    handleScenarioSelection,
+    handleReset,
+    handleGenerateResult
+  } = useScenarioHandlers({
+    initialQuery,
+    navigate,
+    isEditingScenario,
+    currentScenario,
+    generateScenarios,
+    setShowScenarios,
+    setGeneratedScenarios,
+    selectScenario,
+    resetNavigation,
+    resetConversation
+  });
 
   // Core handler for initial option selection
   const handleInitialOptionWrapper = (option: 'continue' | 'skip') => {
@@ -74,6 +68,7 @@ export const useResearchContext = (initialQuery: string, steps: Step[], isEditin
     if (shouldContinue) {
       addInitialMessage();
     }
+    return shouldContinue;
   };
 
   // Core handler for form submission
@@ -127,48 +122,10 @@ export const useResearchContext = (initialQuery: string, steps: Step[], isEditin
     }
   };
 
-  const handleScenarioSelection = (selectedScenarioText: string) => {
-    setSelectedScenario(selectedScenarioText);
-    selectScenario(selectedScenarioText);
-  };
-
-  // Function to directly proceed to scenarios without going through conversation
-  const proceedToScenarios = () => {
-    generateScenarios();
-  };
-
   // Handle editing a user reply
   const handleEditUserReply = (content: string, index: number) => {
     updateUserResponse(content, index);
     setInputValue(content);
-  };
-
-  // Handle resetting the conversation
-  const handleReset = () => {
-    // Reset conversation state
-    resetConversation();
-    
-    // Reset navigation state
-    resetNavigation();
-    
-    // Reset selected scenario
-    setSelectedScenario("");
-    
-    // Force navigation to the same page to ensure a clean state
-    const currentPath = window.location.pathname;
-    const searchParams = new URLSearchParams(window.location.search);
-    navigate(currentPath + "?" + searchParams.toString(), { replace: true });
-  };
-
-  // Function to generate search results and navigate to technology tree
-  const handleGenerateResult = () => {
-    // Navigate to the technology tree page with the selected scenario
-    navigate('/technology-tree', {
-      state: {
-        query: initialQuery,
-        scenario: selectedScenario || `Research on ${initialQuery}`
-      }
-    });
   };
 
   // Check if we should show the input section
@@ -188,12 +145,11 @@ export const useResearchContext = (initialQuery: string, steps: Step[], isEditin
     handleSubmit,
     handleSkip,
     handleScenarioSelection,
-    proceedToScenarios,
+    proceedToScenarios: proceedToTechnologyTree,
     setShowScenarios,
     handleEditUserReply,
     handleReset,
     handleGenerateResult,
-    steps,
     researchAreasRef,
     shouldShowInputSection,
     isEditingScenario
