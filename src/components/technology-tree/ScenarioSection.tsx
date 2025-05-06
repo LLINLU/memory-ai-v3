@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { Edit } from "lucide-react";
 
 interface ScenarioSectionProps {
   scenario?: string;
@@ -33,11 +34,13 @@ export const ScenarioSection = ({
         </div>
         <Button 
           variant="outline" 
-          size="sm" 
+          size="icon" 
           className="text-blue-600 border-blue-200 hover:bg-blue-100"
           onClick={handleEditScenario}
+          title="Edit Scenario"
         >
-          Edit Scenario
+          <Edit className="h-4 w-4" />
+          <span className="sr-only">Edit Scenario</span>
         </Button>
       </div>
     </div>
