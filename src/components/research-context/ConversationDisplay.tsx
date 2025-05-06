@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Copy, Edit, Check, X } from "lucide-react";
+import { Copy, Edit } from "lucide-react";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -69,7 +69,7 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
   });
 
   return (
-    <div className="overflow-y-auto mb-4 max-h-[calc(100vh-250px)]">
+    <div className="mb-4">
       {filteredHistory.map((message, index) => (
         <div key={index} className={`mb-4 ${message.type === "user" ? "flex flex-col items-end" : "flex flex-col items-start"}`}>
           {message.type === "system" ? (
@@ -136,4 +136,4 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
       ))}
     </div>
   );
-};
+}
