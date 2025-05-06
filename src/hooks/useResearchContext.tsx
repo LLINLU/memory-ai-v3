@@ -77,7 +77,9 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     
     // Process the skip
     addUserResponse(null);
-    const nextStep = currentStep;
+    
+    // Fixed: Get the next step by incrementing currentStep
+    const nextStep = currentStep + 1;
     
     // If there are more steps, add the next question
     if (nextStep < steps.length) {
