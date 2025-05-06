@@ -62,13 +62,13 @@ const ResearchContext = () => {
         <div className="flex-1 bg-gray-50 flex flex-col">
           <ResizablePanelGroup direction="horizontal">
             <ResizablePanel defaultSize={65} minSize={40}>
-              <div className="container py-8 px-4 mx-auto max-w-5xl flex-1 flex flex-col h-screen">
-                <div className="flex-1 flex flex-col">
-                  <div className="mb-8">
-                    <h1 className="text-3xl font-bold mb-8">Research Context Builder</h1>
+              <div className="container py-4 px-4 mx-auto max-w-5xl h-screen overflow-y-auto">
+                <div className="flex flex-col h-full">
+                  <div>
+                    <h1 className="text-2xl font-bold mb-4">Research Context Builder</h1>
                     
                     {isEditingScenario && (
-                      <div className="bg-blue-50 p-4 rounded-md mb-6">
+                      <div className="bg-blue-50 p-3 rounded-md mb-4">
                         <p className="text-blue-700">
                           You're editing your research scenario. Please select a new scenario below or create your own.
                         </p>

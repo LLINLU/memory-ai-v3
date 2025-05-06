@@ -22,32 +22,33 @@ export const InputSection: React.FC<InputSectionProps> = ({
   showSkip = false,
 }) => {
   return (
-    <div className="mt-auto">
+    <div className="mt-2">
       {showSkip && (
-        <div className="mt-2">
+        <div className="mb-2">
           <Button 
             variant="outline"
+            size="sm"
             onClick={onSkip}
-            className="mb-4"
           >
             Skip
           </Button>
         </div>
       )}
-      <div className="relative mb-4">
+      <div className="relative">
         <Textarea
           placeholder={placeholder}
           value={inputValue}
           onChange={onInputChange}
-          className="w-full resize-none p-4 pr-16 border rounded-2xl text-base"
-          rows={3}
+          className="w-full resize-none p-3 pr-16 border rounded-xl text-base"
+          rows={2}
         />
         <Button 
           onClick={onSubmit}
-          className="absolute right-3 bottom-3 bg-blue-600 hover:bg-blue-700 rounded-xl"
+          size="sm"
+          className="absolute right-2 bottom-2 bg-blue-600 hover:bg-blue-700 rounded-lg"
         >
           <span>Next</span>
-          <ArrowRight className="ml-2 h-4 w-4" />
+          <ArrowRight className="ml-1 h-3 w-3" />
         </Button>
       </div>
     </div>

@@ -71,7 +71,7 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
       // Wait a moment before showing scenarios
       setTimeout(() => {
         proceedToTechnologyTree();
-      }, 1500);
+      }, 1000);
     }
   };
   
@@ -82,7 +82,6 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     // Process the skip
     addUserResponse(null);
     
-    // Fixed: Get the next step by incrementing currentStep
     const nextStep = currentStep + 1;
     
     // If there are more steps, add the next question
@@ -95,7 +94,7 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
       // Wait a moment before showing scenarios
       setTimeout(() => {
         proceedToTechnologyTree();
-      }, 1500);
+      }, 1000);
     }
   };
 

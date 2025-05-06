@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Copy, Edit, Check, X } from "lucide-react";
@@ -68,32 +69,34 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
   });
 
   return (
-    <div className="flex-1 overflow-y-auto mb-4">
+    <div className="overflow-y-auto mb-4 max-h-[calc(100vh-250px)]">
       {filteredHistory.map((message, index) => (
-        <div key={index} className={`mb-6 ${message.type === "user" ? "flex flex-col items-end" : "flex flex-col items-start"}`}>
+        <div key={index} className={`mb-4 ${message.type === "user" ? "flex flex-col items-end" : "flex flex-col items-start"}`}>
           {message.type === "system" ? (
             <div className="max-w-[80%]">{message.content}</div>
           ) : editingIndex === index ? (
             <div className="w-full max-w-3xl">
-              <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
+              <div className="border border-gray-200 rounded-lg p-3 bg-white shadow-sm">
                 <Textarea 
                   value={editValue}
                   onChange={(e) => setEditValue(e.target.value)}
                   className="w-full resize-none border-0 p-0 focus-visible:ring-0"
-                  rows={4}
+                  rows={3}
                 />
-                <div className="text-xs text-gray-500 mt-2">
+                <div className="text-xs text-gray-500 mt-1">
                   <span>Editing this message will update the scenario</span>
                 </div>
               </div>
-              <div className="flex justify-end gap-2 mt-3">
+              <div className="flex justify-end gap-2 mt-2">
                 <Button 
                   variant="outline" 
+                  size="sm"
                   onClick={handleCancelEdit}
                 >
                   Cancel
                 </Button>
                 <Button 
+                  size="sm"
                   onClick={handleUpdateEdit}
                 >
                   Update
@@ -102,7 +105,7 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
             </div>
           ) : (
             <div className="flex flex-col items-end">
-              <div className="bg-blue-100 text-blue-900 p-3 rounded-lg max-w-[80%]">
+              <div className="bg-blue-100 text-blue-900 p-2 rounded-lg max-w-[80%]">
                 <p>{message.content}</p>
               </div>
               {typeof message.content === 'string' && (
@@ -110,7 +113,7 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="h-6 w-6 p-0.5 hover:bg-blue-200"
+                    className="h-5 w-5 p-0.5 hover:bg-blue-200"
                     onClick={() => handleCopy(message.content as string)}
                   >
                     <Copy className="h-3 w-3" />
@@ -119,7 +122,7 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="h-6 w-6 p-0.5 hover:bg-blue-200"
+                    className="h-5 w-5 p-0.5 hover:bg-blue-200"
                     onClick={() => handleEdit(message.content as string, index)}
                   >
                     <Edit className="h-3 w-3" />
