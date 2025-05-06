@@ -12,7 +12,7 @@ interface ScenarioPreviewProps {
   generatedScenarios: string[];
   selectedScenario?: string;
   showScenarios: boolean;
-  showGenerateButton: boolean; // New prop to control button visibility
+  showGenerateButton: boolean;
   onScenarioSelect?: (scenario: string) => void;
   researchAreasRef?: React.RefObject<HTMLDivElement>;
   onGenerateResult?: () => void;
@@ -24,7 +24,7 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
   generatedScenarios,
   selectedScenario,
   showScenarios,
-  showGenerateButton, // Added prop
+  showGenerateButton,
   onScenarioSelect,
   researchAreasRef,
   onGenerateResult
@@ -34,7 +34,7 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
   return (
     <div className="flex flex-col h-full">
       <div className="bg-white p-4 border-b flex justify-between items-center">
-        <h2 className="text-xl font-bold">Preview</h2>
+        <h2 className="text-xl font-bold">プレビュー</h2>
         {showGenerateButton && (
           <Button 
             variant="default" 
@@ -51,7 +51,7 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
         {/* Building Your Scenario Section */}
         <Card className="bg-blue-50 border-blue-100">
           <div className="p-4">
-            <h3 className="text-blue-700 font-semibold mb-3">Building Your Scenario</h3>
+            <h3 className="text-blue-700 font-semibold mb-3">シナリオの構築</h3>
             
             <div className="space-y-2">
               <div className="flex">
@@ -168,7 +168,7 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
         
         {!hasAnswers && !showScenarios && (
           <div className="flex items-center justify-center h-40 text-gray-500">
-            Complete the questions to build your research context
+            質問に答えて研究コンテキストを構築しましょう
           </div>
         )}
       </div>
