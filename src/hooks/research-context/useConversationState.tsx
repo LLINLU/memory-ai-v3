@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Step } from "@/components/research-context/ResearchSteps";
 
@@ -155,6 +154,19 @@ export const useConversationState = (steps: Step[]) => {
     setConversationHistory([{ type: "system", content: initialMessage, questionType: "who" }]);
   };
 
+  // Reset conversation to initial state
+  const resetConversation = () => {
+    setCurrentStep(0);
+    setInputValue("");
+    setConversationHistory([]);
+    setAnswers({
+      who: "",
+      what: "",
+      where: "",
+      when: ""
+    });
+  };
+
   return {
     currentStep,
     inputValue,
@@ -167,6 +179,7 @@ export const useConversationState = (steps: Step[]) => {
     addInitialMessage,
     setConversationHistory,
     updateUserResponse,
-    setInputValue
+    setInputValue,
+    resetConversation
   };
 };

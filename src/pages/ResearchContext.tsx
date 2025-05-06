@@ -11,6 +11,8 @@ import { useResearchContext } from "@/hooks/useResearchContext";
 import { useEffect } from "react";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { RefreshCcw } from "lucide-react";
 
 const ResearchContext = () => {
   const location = useLocation();
@@ -44,7 +46,8 @@ const ResearchContext = () => {
     handleScenarioSelection,
     proceedToScenarios,
     setShowScenarios,
-    handleEditUserReply
+    handleEditUserReply,
+    handleReset
   } = useResearchContext(initialQuery, steps);
 
   // If user is redirected to edit scenario, show scenario selection right away
@@ -63,17 +66,26 @@ const ResearchContext = () => {
           <ResizablePanelGroup direction="horizontal" className="h-full">
             <ResizablePanel defaultSize={65} minSize={40}>
               <div className="flex flex-col h-full p-4">
-                <div className="flex-none">
-                  <h1 className="text-2xl font-bold mb-4">Research Context Builder</h1>
-                  
-                  {isEditingScenario && (
-                    <div className="bg-blue-50 p-3 rounded-md mb-4">
-                      <p className="text-blue-700">
-                        You're editing your research scenario. Please select a new scenario in the preview panel.
-                      </p>
-                    </div>
-                  )}
+                <div className="flex-none flex justify-between items-center mb-4">
+                  <h1 className="text-2xl font-bold">Research Context Builder</h1>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleReset}
+                    className="flex items-center gap-1"
+                  >
+                    <RefreshCcw className="h-4 w-4" />
+                    Reset
+                  </Button>
                 </div>
+                
+                {isEditingScenario && (
+                  <div className="flex-none bg-blue-50 p-3 rounded-md mb-4">
+                    <p className="text-blue-700">
+                      You're editing your research scenario. Please select a new scenario in the preview panel.
+                    </p>
+                  </div>
+                )}
                 
                 <div className="flex-1 overflow-hidden">
                   <ScrollArea className="h-full">

@@ -1,8 +1,7 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
-import { ContextAnswers, ConversationMessage } from "./useConversationState";
+import { ContextAnswers } from "./useConversationState";
+import { ConversationMessage } from "./useConversationState";
 
 interface NavigationHandlersProps {
   initialQuery: string;
@@ -10,122 +9,68 @@ interface NavigationHandlersProps {
   conversationHistory: ConversationMessage[];
 }
 
-export const useNavigationHandlers = ({
-  initialQuery,
-  answers,
-  conversationHistory
+export const useNavigationHandlers = ({ 
+  initialQuery, 
+  answers, 
+  conversationHistory 
 }: NavigationHandlersProps) => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
   const [showInitialOptions, setShowInitialOptions] = useState(true);
   const [showScenarios, setShowScenarios] = useState(false);
   const [generatedScenarios, setGeneratedScenarios] = useState<string[]>([]);
 
   const handleInitialOption = (option: 'continue' | 'skip') => {
-    if (!initialQuery.trim()) {
-      toast({
-        title: "Please enter a search query",
-        description: "Enter a brief description of your research interest.",
-        variant: "destructive"
-      });
+    setShowInitialOptions(false);
+    
+    // For continue, we return true to indicate we should show the first question
+    // For skip, we immediately proceed to scenario generation
+    if (option === 'skip') {
+      proceedToTechnologyTree();
       return false;
     }
     
-    if (option === 'skip') {
-      navigate('/technology-tree', { state: { query: initialQuery, quickSearch: true } });
-    } else {
-      setShowInitialOptions(false);
-      return true; // Signal to parent hook to add initial message
-    }
-    
-    return false;
+    return true;
   };
 
   const generateScenarios = () => {
-    // Filter out empty answers
-    const filledAnswers = Object.fromEntries(
-      Object.entries(answers).filter(([_, value]) => value.trim() !== '')
-    );
-    
-    // Generate three different scenarios based on the user's answers
-    const scenarios = [
-      generateScenario(initialQuery, filledAnswers, 1),
-      generateScenario(initialQuery, filledAnswers, 2),
-      generateScenario(initialQuery, filledAnswers, 3)
+    // In a real app, this could be a call to an API
+    // For now, we'll generate mock scenarios based on the query and answers
+    const scenarioTemplates = [
+      `Research on ${initialQuery} focusing on ${answers.who || 'general audience'} and ${answers.what || 'general aspects'}`,
+      `Exploring ${initialQuery} in the context of ${answers.where || 'various settings'} with emphasis on ${answers.who || 'practitioners'}`,
+      `Analysis of ${initialQuery} applications for ${answers.who || 'professionals'} with focus on ${answers.when || 'current timeframe'}`
     ];
     
-    setGeneratedScenarios(scenarios);
-    setShowScenarios(true);
-    
-    return scenarios;
-  };
-  
-  const generateScenario = (query: string, filledAnswers: Record<string, string>, variant: number) => {
-    // Base scenario is always the initial query
-    let scenario = query;
-    
-    // If we have additional context, generate a more specific scenario
-    if (Object.keys(filledAnswers).length > 0) {
-      // Different variants emphasize different aspects of the research context
-      switch(variant) {
-        case 1:
-          // Variant 1: Emphasize WHO and WHAT
-          scenario = `${query} focusing on ${filledAnswers.who || 'researchers'} 
-            working with ${filledAnswers.what || 'advanced techniques'} 
-            ${filledAnswers.where ? `in ${filledAnswers.where}` : ''} 
-            ${filledAnswers.when ? `during ${filledAnswers.when}` : ''}`;
-          break;
-        case 2:
-          // Variant 2: Emphasize WHERE and WHEN
-          scenario = `${query} applications 
-            ${filledAnswers.where ? `in ${filledAnswers.where}` : 'in various settings'} 
-            ${filledAnswers.when ? `during ${filledAnswers.when}` : 'at different stages'} 
-            involving ${filledAnswers.who || 'various stakeholders'} 
-            ${filledAnswers.what ? `addressing ${filledAnswers.what}` : ''}`;
-          break;
-        case 3:
-          // Variant 3: Balanced approach with different phrasing
-          scenario = `Research on ${query} 
-            ${filledAnswers.what ? `with emphasis on ${filledAnswers.what}` : ''} 
-            ${filledAnswers.who ? `conducted by or benefiting ${filledAnswers.who}` : ''} 
-            ${filledAnswers.where ? `within ${filledAnswers.where} contexts` : ''} 
-            ${filledAnswers.when ? `particularly relevant ${filledAnswers.when}` : ''}`;
-          break;
-      }
-    }
-    
-    // Clean up any double spaces and trim
-    return scenario.replace(/\s+/g, ' ').trim();
-  };
-
-  const selectScenario = (selectedScenario: string) => {
-    // Store conversation history in localStorage before navigating
-    localStorage.setItem('researchContextHistory', JSON.stringify(conversationHistory));
-    
-    navigate('/technology-tree', { 
-      state: { 
-        query: initialQuery,
-        scenario: selectedScenario,
-        contextAnswers: answers 
-      } 
-    });
+    setGeneratedScenarios(scenarioTemplates);
+    return scenarioTemplates;
   };
 
   const proceedToTechnologyTree = () => {
-    // Generate scenarios after completing all questions
     const scenarios = generateScenarios();
-    
+    setShowScenarios(true);
     return scenarios;
+  };
+
+  const selectScenario = (selectedScenario: string) => {
+    // In a real app, this would navigate to the technology tree with the selected scenario
+    console.log(`Selected scenario: ${selectedScenario}`);
+  };
+
+  // Reset navigation state
+  const resetNavigation = () => {
+    setShowInitialOptions(true);
+    setShowScenarios(false);
+    setGeneratedScenarios([]);
   };
 
   return {
     showInitialOptions,
     showScenarios,
-    setShowScenarios,
     generatedScenarios,
     handleInitialOption,
     proceedToTechnologyTree,
+    selectScenario,
+    setShowScenarios,
     generateScenarios,
-    selectScenario
+    resetNavigation
   };
 };
