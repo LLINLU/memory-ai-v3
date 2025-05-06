@@ -1,9 +1,10 @@
 
 import React from "react";
-import { Check } from "lucide-react";
+import { Check, ChevronRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ContextAnswers } from "@/hooks/research-context/useConversationState";
+import { Button } from "@/components/ui/button";
 
 interface ScenarioPreviewProps {
   initialQuery: string;
@@ -11,6 +12,7 @@ interface ScenarioPreviewProps {
   generatedScenarios: string[];
   selectedScenario?: string;
   showScenarios: boolean;
+  onScenarioSelect?: (scenario: string) => void;
 }
 
 export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
@@ -18,7 +20,8 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
   answers,
   generatedScenarios,
   selectedScenario,
-  showScenarios
+  showScenarios,
+  onScenarioSelect
 }) => {
   const hasAnswers = Object.values(answers).some(answer => answer.trim() !== '');
   
@@ -62,26 +65,47 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
         {showScenarios && (
           <>
             <div>
-              <h3 className="text-gray-700 font-medium mb-2">Suggested scenarios</h3>
+              <h3 className="text-xl font-semibold mb-3">Choose a Research Scenario</h3>
+              <p className="text-gray-700 mb-4">
+                Based on your responses, we've generated the following research scenarios. 
+                Please select the one that best matches your interest:
+              </p>
               
               {generatedScenarios.map((scenario, index) => (
-                <div key={index} className="mb-2">
-                  <div 
-                    className={`rounded-md p-3 border ${
-                      selectedScenario === scenario 
-                        ? 'bg-blue-50 border-blue-300' 
-                        : 'bg-gray-50 border-gray-200'
-                    }`}
-                  >
-                    {selectedScenario === scenario && (
-                      <div className="flex items-center gap-2 mb-1">
-                        <Check size={16} className="text-blue-600" />
-                        <span className="text-blue-600 text-sm font-medium">Selected</span>
-                      </div>
-                    )}
-                    <p className={selectedScenario === scenario ? "text-blue-800" : "text-gray-700"}>
-                      {scenario}
-                    </p>
+                <div 
+                  key={index} 
+                  className={`mb-3 border rounded-md p-4 cursor-pointer transition-colors ${
+                    selectedScenario === scenario 
+                      ? 'bg-blue-50 border-blue-300' 
+                      : 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                  }`}
+                  onClick={() => onScenarioSelect && onScenarioSelect(scenario)}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center font-semibold flex-shrink-0">
+                      {index + 1}
+                    </div>
+                    <div className="flex-1">
+                      <p className={selectedScenario === scenario ? "text-blue-700" : "text-gray-800"}>
+                        {scenario}
+                      </p>
+                      {selectedScenario === scenario ? (
+                        <div className="flex items-center gap-1 text-blue-600 text-sm mt-2">
+                          <Check size={16} />
+                          <span>Selected</span>
+                        </div>
+                      ) : (
+                        <Button 
+                          className="mt-3" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onScenarioSelect && onScenarioSelect(scenario);
+                          }}
+                        >
+                          Select This Scenario
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}

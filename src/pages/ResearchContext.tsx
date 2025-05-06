@@ -5,7 +5,6 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { ConversationDisplay } from "@/components/research-context/ConversationDisplay";
 import { InputSection } from "@/components/research-context/InputSection";
 import { InitialOptions } from "@/components/research-context/InitialOptions";
-import { ScenarioSelection } from "@/components/research-context/ScenarioSelection";
 import { ScenarioPreview } from "@/components/research-context/ScenarioPreview";
 import { useResearchSteps } from "@/components/research-context/ResearchSteps";
 import { useResearchContext } from "@/hooks/useResearchContext";
@@ -70,7 +69,7 @@ const ResearchContext = () => {
                     {isEditingScenario && (
                       <div className="bg-blue-50 p-3 rounded-md mb-4">
                         <p className="text-blue-700">
-                          You're editing your research scenario. Please select a new scenario below or create your own.
+                          You're editing your research scenario. Please select a new scenario in the preview panel.
                         </p>
                       </div>
                     )}
@@ -102,12 +101,15 @@ const ResearchContext = () => {
                         )}
                         
                         {showScenarios && (
-                          <ScenarioSelection 
-                            scenarios={isEditingScenario ? 
-                              [currentScenario, ...generatedScenarios.filter(s => s !== currentScenario).slice(0, 2)] : 
-                              generatedScenarios}
-                            onScenarioSelect={handleScenarioSelection}
-                          />
+                          <div className="mt-6">
+                            <div className="bg-blue-50 p-4 rounded-md">
+                              <h2 className="text-xl font-semibold mb-2">Research Scenario Ready</h2>
+                              <p className="text-blue-700">
+                                Based on your responses, we've generated research scenarios for you.
+                                Please select a scenario from the preview panel on the right.
+                              </p>
+                            </div>
+                          </div>
                         )}
                       </>
                     )}
@@ -126,6 +128,7 @@ const ResearchContext = () => {
                   generatedScenarios={generatedScenarios}
                   selectedScenario={selectedScenario}
                   showScenarios={showScenarios}
+                  onScenarioSelect={handleScenarioSelection}
                 />
               </div>
             </ResizablePanel>
