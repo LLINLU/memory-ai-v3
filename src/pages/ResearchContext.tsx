@@ -54,7 +54,9 @@ const ResearchContext = () => {
     isEditingScenario: isEditing
   } = useResearchContext(initialQuery, steps, isEditingScenario, currentScenario);
 
-  // No need for the effect anymore as the useResearchContext hook now handles this logic
+  // Determine when to show the generate button
+  // Show it when we're not in initial state (either in conversation or showing scenarios)
+  const showGenerateButton = !showInitialOptions || showScenarios || isEditingScenario;
   
   return (
     <SidebarProvider>
@@ -143,6 +145,7 @@ const ResearchContext = () => {
                   generatedScenarios={generatedScenarios}
                   selectedScenario={selectedScenario}
                   showScenarios={showScenarios || isEditingScenario}
+                  showGenerateButton={showGenerateButton} // Pass the flag to control button visibility
                   onScenarioSelect={handleScenarioSelection}
                   researchAreasRef={researchAreasRef}
                   onGenerateResult={handleGenerateResult}

@@ -12,6 +12,7 @@ interface ScenarioPreviewProps {
   generatedScenarios: string[];
   selectedScenario?: string;
   showScenarios: boolean;
+  showGenerateButton: boolean; // New prop to control button visibility
   onScenarioSelect?: (scenario: string) => void;
   researchAreasRef?: React.RefObject<HTMLDivElement>;
   onGenerateResult?: () => void;
@@ -23,6 +24,7 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
   generatedScenarios,
   selectedScenario,
   showScenarios,
+  showGenerateButton, // Added prop
   onScenarioSelect,
   researchAreasRef,
   onGenerateResult
@@ -33,14 +35,16 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
     <div className="flex flex-col h-full">
       <div className="bg-white p-4 border-b flex justify-between items-center">
         <h2 className="text-xl font-bold">Preview</h2>
-        <Button 
-          variant="default" 
-          size="sm" 
-          onClick={onGenerateResult}
-          className="bg-blue-500 hover:bg-blue-600"
-        >
-          Generate Search Result
-        </Button>
+        {showGenerateButton && (
+          <Button 
+            variant="default" 
+            size="sm" 
+            onClick={onGenerateResult}
+            className="bg-blue-500 hover:bg-blue-600"
+          >
+            Generate Search Result
+          </Button>
+        )}
       </div>
       
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
