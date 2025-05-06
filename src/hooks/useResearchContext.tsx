@@ -145,9 +145,19 @@ export const useResearchContext = (initialQuery: string, steps: Step[], isEditin
 
   // Handle resetting the conversation
   const handleReset = () => {
+    // Reset conversation state
     resetConversation();
+    
+    // Reset navigation state
     resetNavigation();
+    
+    // Reset selected scenario
     setSelectedScenario("");
+    
+    // Force navigation to the same page to ensure a clean state
+    const currentPath = window.location.pathname;
+    const searchParams = new URLSearchParams(window.location.search);
+    navigate(currentPath + "?" + searchParams.toString(), { replace: true });
   };
 
   // Function to generate search results and navigate to technology tree
