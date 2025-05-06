@@ -12,7 +12,7 @@ export interface Step {
 export const useResearchSteps = () => {
   const steps: Step[] = [
     {
-      question: "この研究分野には"誰"が関わっていますか？ 以下を考えてみてください：",
+      question: "この研究分野には\"誰\"が関わっていますか？ 以下を考えてみてください：",
       icon: <Users className="h-5 w-5" />,
       subtitle: [
         "- 解決策を実装する専門家や実務者は誰ですか？",
