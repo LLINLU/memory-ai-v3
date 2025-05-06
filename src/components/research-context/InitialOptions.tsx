@@ -25,14 +25,12 @@ export const InitialOptions: React.FC<InitialOptionsProps> = ({
         <Button 
           onClick={onContinue}
           className="bg-blue-600 hover:bg-blue-700"
-          disabled={!initialQuery.trim()}
         >
           Continue
         </Button>
         <Button 
           onClick={onSkip}
           variant="outline"
-          disabled={!initialQuery.trim()}
         >
           Skip
         </Button>
