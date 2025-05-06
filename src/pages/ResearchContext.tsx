@@ -39,7 +39,8 @@ const ResearchContext = () => {
     handleSkip,
     handleScenarioSelection,
     proceedToScenarios,
-    setShowScenarios
+    setShowScenarios,
+    handleEditUserReply
   } = useResearchContext(initialQuery, steps);
 
   // If user is redirected to edit scenario, show scenario selection right away
@@ -77,7 +78,10 @@ const ResearchContext = () => {
                 ) : (
                   <>
                     {!isEditingScenario && (
-                      <ConversationDisplay conversationHistory={conversationHistory} />
+                      <ConversationDisplay 
+                        conversationHistory={conversationHistory} 
+                        onEditReply={handleEditUserReply}
+                      />
                     )}
                     
                     {currentStep < steps.length && !showScenarios && !isEditingScenario && (

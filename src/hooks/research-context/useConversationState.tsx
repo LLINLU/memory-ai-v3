@@ -57,6 +57,36 @@ export const useConversationState = (steps: Step[]) => {
     setCurrentStep(prev => prev + 1);
   };
 
+  // Function to update a user response when edited
+  const updateUserResponse = (content: string, index: number) => {
+    // Find which question this response was for
+    const questionBeforeIndex = index - 1;
+    let questionType = "";
+    
+    if (questionBeforeIndex >= 0 && conversationHistory[questionBeforeIndex].questionType) {
+      questionType = conversationHistory[questionBeforeIndex].questionType || "";
+    }
+
+    // Update the conversation history
+    setConversationHistory(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], content };
+      return updated;
+    });
+
+    // Also update the answers state if we can determine which one to update
+    if (questionType && Object.keys(answers).includes(questionType)) {
+      setAnswers(prev => ({
+        ...prev,
+        [questionType]: content
+      }));
+    }
+
+    // Reset current step to the next question after this edited response
+    const nextQuestionIndex = Math.floor((index + 2) / 2);
+    setCurrentStep(nextQuestionIndex);
+  };
+
   const addNextQuestion = (nextStep: number) => {
     if (nextStep < steps.length) {
       const nextQuestion = (
@@ -135,6 +165,8 @@ export const useConversationState = (steps: Step[]) => {
     addNextQuestion,
     addCompletionMessage,
     addInitialMessage,
-    setConversationHistory
+    setConversationHistory,
+    updateUserResponse,
+    setInputValue
   };
 };

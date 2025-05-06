@@ -15,7 +15,8 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     addNextQuestion,
     addCompletionMessage,
     addInitialMessage,
-    setConversationHistory
+    setConversationHistory,
+    updateUserResponse
   } = useConversationState(steps);
 
   const {
@@ -100,6 +101,12 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     generateScenarios();
   };
 
+  // Handle editing a user reply
+  const handleEditUserReply = (content: string, index: number) => {
+    updateUserResponse(content, index);
+    setInputValue(content);
+  };
+
   return {
     showInitialOptions,
     showScenarios,
@@ -114,6 +121,7 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     handleScenarioSelection,
     proceedToScenarios,
     setShowScenarios,
+    handleEditUserReply,
     steps,
   };
 };
