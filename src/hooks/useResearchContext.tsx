@@ -21,8 +21,7 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     addInitialMessage,
     setConversationHistory,
     updateUserResponse,
-    setInputValue,
-    resetConversation
+    setInputValue
   } = useConversationState(steps);
 
   const {
@@ -33,8 +32,7 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     proceedToTechnologyTree,
     selectScenario,
     setShowScenarios,
-    generateScenarios,
-    resetNavigation
+    generateScenarios
   } = useNavigationHandlers({
     initialQuery,
     answers,
@@ -116,13 +114,6 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     setInputValue(content);
   };
 
-  // Handle reset conversation
-  const handleReset = () => {
-    resetConversation();
-    resetNavigation();
-    setSelectedScenario("");
-  };
-
   return {
     showInitialOptions,
     showScenarios,
@@ -140,7 +131,6 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     proceedToScenarios,
     setShowScenarios,
     handleEditUserReply,
-    handleReset,
     steps,
   };
 };

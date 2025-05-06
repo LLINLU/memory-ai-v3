@@ -1,10 +1,8 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Copy, Edit, RefreshCw } from "lucide-react";
+import { Copy, Edit } from "lucide-react";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Message {
   type: "system" | "user";
@@ -15,13 +13,11 @@ interface Message {
 interface ConversationDisplayProps {
   conversationHistory: Message[];
   onEditReply?: (content: string, index: number) => void;
-  onReset?: () => void;
 }
 
 export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({ 
   conversationHistory,
-  onEditReply,
-  onReset
+  onEditReply
 }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -51,12 +47,6 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
     }
   };
 
-  const handleReset = () => {
-    if (onReset) {
-      onReset();
-    }
-  };
-
   // Filter out duplicate messages with the same questionType
   const filteredHistory = conversationHistory.filter((message, index, array) => {
     // Always keep user messages
@@ -78,88 +68,71 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
   });
 
   return (
-    <div className="flex flex-col h-full">
-      {onReset && (
-        <div className="flex justify-end mb-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1"
-            onClick={handleReset}
-          >
-            <RefreshCw className="h-3 w-3" />
-            Reset
-          </Button>
-        </div>
-      )}
-      <ScrollArea className="flex-grow pr-2">
-        <div>
-          {filteredHistory.map((message, index) => (
-            <div key={index} className={`mb-4 ${message.type === "user" ? "flex flex-col items-end" : "flex flex-col items-start"}`}>
-              {message.type === "system" ? (
-                <div className="max-w-[80%]">{message.content}</div>
-              ) : editingIndex === index ? (
-                <div className="w-full max-w-3xl">
-                  <div className="border border-gray-200 rounded-lg p-3 bg-white shadow-sm">
-                    <Textarea 
-                      value={editValue}
-                      onChange={(e) => setEditValue(e.target.value)}
-                      className="w-full resize-none border-0 p-0 focus-visible:ring-0"
-                      rows={3}
-                    />
-                    <div className="text-xs text-gray-500 mt-1">
-                      <span>Editing this message will update the scenario</span>
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-2 mt-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={handleCancelEdit}
-                    >
-                      Cancel
-                    </Button>
-                    <Button 
-                      size="sm"
-                      onClick={handleUpdateEdit}
-                    >
-                      Update
-                    </Button>
-                  </div>
+    <div>
+      {filteredHistory.map((message, index) => (
+        <div key={index} className={`mb-4 ${message.type === "user" ? "flex flex-col items-end" : "flex flex-col items-start"}`}>
+          {message.type === "system" ? (
+            <div className="max-w-[80%]">{message.content}</div>
+          ) : editingIndex === index ? (
+            <div className="w-full max-w-3xl">
+              <div className="border border-gray-200 rounded-lg p-3 bg-white shadow-sm">
+                <Textarea 
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  className="w-full resize-none border-0 p-0 focus-visible:ring-0"
+                  rows={3}
+                />
+                <div className="text-xs text-gray-500 mt-1">
+                  <span>Editing this message will update the scenario</span>
                 </div>
-              ) : (
-                <div className="flex flex-col items-end">
-                  <div className="bg-blue-100 text-blue-900 p-2 rounded-lg max-w-[80%]">
-                    <p>{message.content}</p>
-                  </div>
-                  {typeof message.content === 'string' && (
-                    <div className="flex gap-1 mt-1">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-5 w-5 p-0.5 hover:bg-blue-200"
-                        onClick={() => handleCopy(message.content as string)}
-                      >
-                        <Copy className="h-3 w-3" />
-                        <span className="sr-only">Copy</span>
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-5 w-5 p-0.5 hover:bg-blue-200"
-                        onClick={() => handleEdit(message.content as string, index)}
-                      >
-                        <Edit className="h-3 w-3" />
-                        <span className="sr-only">Edit</span>
-                      </Button>
-                    </div>
-                  )}
+              </div>
+              <div className="flex justify-end gap-2 mt-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleCancelEdit}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  size="sm"
+                  onClick={handleUpdateEdit}
+                >
+                  Update
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-end">
+              <div className="bg-blue-100 text-blue-900 p-2 rounded-lg max-w-[80%]">
+                <p>{message.content}</p>
+              </div>
+              {typeof message.content === 'string' && (
+                <div className="flex gap-1 mt-1">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-5 w-5 p-0.5 hover:bg-blue-200"
+                    onClick={() => handleCopy(message.content as string)}
+                  >
+                    <Copy className="h-3 w-3" />
+                    <span className="sr-only">Copy</span>
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-5 w-5 p-0.5 hover:bg-blue-200"
+                    onClick={() => handleEdit(message.content as string, index)}
+                  >
+                    <Edit className="h-3 w-3" />
+                    <span className="sr-only">Edit</span>
+                  </Button>
                 </div>
               )}
             </div>
-          ))}
+          )}
         </div>
-      </ScrollArea>
+      ))}
     </div>
   );
 }

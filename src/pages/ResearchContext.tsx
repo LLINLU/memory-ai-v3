@@ -44,8 +44,7 @@ const ResearchContext = () => {
     handleScenarioSelection,
     proceedToScenarios,
     setShowScenarios,
-    handleEditUserReply,
-    handleReset
+    handleEditUserReply
   } = useResearchContext(initialQuery, steps);
 
   // If user is redirected to edit scenario, show scenario selection right away
@@ -77,35 +76,36 @@ const ResearchContext = () => {
                 </div>
                 
                 <div className="flex-1 overflow-hidden">
-                  {showInitialOptions && !isEditingScenario ? (
-                    <InitialOptions 
-                      initialQuery={initialQuery}
-                      onContinue={() => handleInitialOption('continue')}
-                      onSkip={() => handleInitialOption('skip')}
-                    />
-                  ) : (
-                    <>
-                      {!isEditingScenario && (
-                        <ConversationDisplay 
-                          conversationHistory={conversationHistory} 
-                          onEditReply={handleEditUserReply}
-                          onReset={handleReset}
-                        />
-                      )}
-                      
-                      {showScenarios && (
-                        <div className="mt-6">
-                          <div className="bg-blue-50 p-4 rounded-md">
-                            <h2 className="text-xl font-semibold mb-2">Research Scenario Ready</h2>
-                            <p className="text-blue-700">
-                              Based on your responses, we've generated research scenarios for you.
-                              Please select a scenario from the preview panel on the right.
-                            </p>
+                  <ScrollArea className="h-full">
+                    {showInitialOptions && !isEditingScenario ? (
+                      <InitialOptions 
+                        initialQuery={initialQuery}
+                        onContinue={() => handleInitialOption('continue')}
+                        onSkip={() => handleInitialOption('skip')}
+                      />
+                    ) : (
+                      <>
+                        {!isEditingScenario && (
+                          <ConversationDisplay 
+                            conversationHistory={conversationHistory} 
+                            onEditReply={handleEditUserReply}
+                          />
+                        )}
+                        
+                        {showScenarios && (
+                          <div className="mt-6">
+                            <div className="bg-blue-50 p-4 rounded-md">
+                              <h2 className="text-xl font-semibold mb-2">Research Scenario Ready</h2>
+                              <p className="text-blue-700">
+                                Based on your responses, we've generated research scenarios for you.
+                                Please select a scenario from the preview panel on the right.
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </>
-                  )}
+                        )}
+                      </>
+                    )}
+                  </ScrollArea>
                 </div>
                 
                 <div className="flex-none">
