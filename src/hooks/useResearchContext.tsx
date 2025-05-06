@@ -2,8 +2,12 @@
 import { Step } from "@/components/research-context/ResearchSteps";
 import { useConversationState } from "./research-context/useConversationState";
 import { useNavigationHandlers } from "./research-context/useNavigationHandlers";
+import { useState } from "react";
 
 export const useResearchContext = (initialQuery: string, steps: Step[]) => {
+  // Track selected scenario
+  const [selectedScenario, setSelectedScenario] = useState<string>("");
+
   // Use the extracted hooks
   const {
     currentStep,
@@ -95,8 +99,9 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     }
   };
 
-  const handleScenarioSelection = (selectedScenario: string) => {
-    selectScenario(selectedScenario);
+  const handleScenarioSelection = (selectedScenarioText: string) => {
+    setSelectedScenario(selectedScenarioText);
+    selectScenario(selectedScenarioText);
   };
 
   // Function to directly proceed to scenarios without going through conversation
@@ -117,6 +122,8 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     currentStep,
     inputValue,
     conversationHistory,
+    answers,
+    selectedScenario,
     handleInitialOption: handleInitialOptionWrapper,
     handleInputChange,
     handleSubmit,
