@@ -96,7 +96,7 @@ export const LevelSelection = ({
   return (
     <div className="flex flex-row gap-6 mb-8 relative" ref={containerRef}>
       <LevelColumn
-        title="Level 1"
+        title="レベル1"
         subtitle={levelNames.level1}
         items={level1Items}
         selectedId={selectedPath.level1}
@@ -106,7 +106,7 @@ export const LevelSelection = ({
       />
 
       <LevelColumn
-        title="Level 2"
+        title="レベル2"
         subtitle={levelNames.level2}
         items={visibleLevel2Items}
         selectedId={selectedPath.level2}
@@ -116,7 +116,7 @@ export const LevelSelection = ({
       />
 
       <LevelColumn
-        title="Level 3"
+        title="レベル3"
         subtitle={levelNames.level3}
         items={visibleLevel3Items}
         selectedId={selectedPath.level3}

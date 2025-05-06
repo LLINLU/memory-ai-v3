@@ -63,9 +63,9 @@ const TechnologyTree = () => {
 
   const selectedNodeInfo = useNodeInfo(selectedPath, level1Items, level2Items, level3Items);
   const levelNames = {
-    level1: "Purpose",
-    level2: "Function",
-    level3: "Technology"
+    level1: "目的",
+    level2: "機能",
+    level3: "手段／技術"
   };
 
   const handlePanelResize = () => {

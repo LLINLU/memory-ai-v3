@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { TreeNode } from './TreeNode';
 import { EditNodeDialog } from './EditNodeDialog';
@@ -41,7 +42,11 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
     // Extract the level number from the title (e.g., "Level 1" -> "1")
-    const levelNumber = title.slice(-1);
+    // Updated to handle Japanese title format
+    const levelNumber = title === "レベル1" ? "1" : 
+                        title === "レベル2" ? "2" : 
+                        title === "レベル3" ? "3" : 
+                        title.slice(-1);
     
     // Update sidebar tab to chat with level-specific message
     const customEvent = new CustomEvent('switch-to-chat', {
