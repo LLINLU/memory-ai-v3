@@ -28,7 +28,7 @@ export const ChatInput = ({ value, onChange, onSend }: ChatInputProps) => {
     <div className="sticky bottom-0 bg-white border-t border-gray-100 p-4">
       <div className="bg-white">
         <Textarea 
-          placeholder="Type your message here..."
+          placeholder="メッセージを入力してください..."
           className="w-full resize-none border bg-gray-50 focus-visible:ring-0 text-sm px-4 py-3 rounded-xl"
           value={value}
           onChange={onChange}
@@ -44,7 +44,7 @@ export const ChatInput = ({ value, onChange, onSend }: ChatInputProps) => {
             onClick={handleSend}
             disabled={!value.trim()}
           >
-            Send <Send className="h-4 w-4 ml-1.5" />
+            送信 <Send className="h-4 w-4 ml-1.5" />
           </Button>
         </div>
       </div>

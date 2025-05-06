@@ -8,9 +8,9 @@ export const Navigation = () => {
         <Link to="/" className="text-2xl font-bold text-gray-800">Memory AI</Link>
       </div>
       <div className="flex items-center space-x-8">
-        <Link to="/saved" className="text-gray-600 hover:text-gray-900">Saved</Link>
-        <Link to="/help" className="text-gray-600 hover:text-gray-900">Help</Link>
-        <Link to="/account" className="text-gray-600 hover:text-gray-900">Account</Link>
+        <Link to="/saved" className="text-gray-600 hover:text-gray-900">保存済み</Link>
+        <Link to="/help" className="text-gray-600 hover:text-gray-900">ヘルプ</Link>
+        <Link to="/account" className="text-gray-600 hover:text-gray-900">アカウント</Link>
       </div>
     </nav>
   );

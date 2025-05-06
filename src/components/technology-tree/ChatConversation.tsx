@@ -29,7 +29,7 @@ export const ChatConversation = ({
         disabled={isDisabled}
       >
         <Check className="h-4 w-4" />
-        Use this
+        使用する
       </Button>
       <Button 
         variant="outline" 
@@ -39,7 +39,7 @@ export const ChatConversation = ({
         disabled={isDisabled}
       >
         <Edit className="h-4 w-4" />
-        Edit
+        編集
       </Button>
       <Button 
         variant="outline" 
@@ -49,7 +49,7 @@ export const ChatConversation = ({
         disabled={isDisabled}
       >
         <MessageSquare className="h-4 w-4" />
-        {suggestion.title.includes('Refined') ? 'Narrow further' : 'Refine further'}
+        {suggestion.title.includes('Refined') ? 'さらに絞り込む' : 'さらに改良する'}
       </Button>
     </div>
   );
@@ -58,7 +58,7 @@ export const ChatConversation = ({
     <div className="flex-1 overflow-y-auto p-4">
       {chatMessages.map((message, index) => {
         const nextMessage = chatMessages[index + 1];
-        const isActionTaken = nextMessage && nextMessage.content === "The node has been created 😊";
+        const isActionTaken = nextMessage && nextMessage.content === "ノードが作成されました 😊";
 
         return (
           <div 
@@ -85,7 +85,7 @@ export const ChatConversation = ({
                     className="flex items-center gap-2 bg-blue-50 border-blue-200 hover:bg-blue-100"
                   >
                     <CheckCircle className="h-4 w-4" />
-                    Check Results
+                    結果を確認
                   </Button>
                 </div>
               )}

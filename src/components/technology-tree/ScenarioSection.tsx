@@ -10,7 +10,7 @@ interface ScenarioSectionProps {
 }
 
 export const ScenarioSection = ({ 
-  scenario = "Medical professionals and patients with retinal disorders in clinical settings seeking non-invasive diagnostic methods for early detection of conditions",
+  scenario = "網膜疾患を持つ医療専門家と患者が、早期発見のための非侵襲的診断方法を求める臨床環境",
   onEditScenario 
 }: ScenarioSectionProps) => {
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ export const ScenarioSection = ({
     <div className="bg-blue-50 rounded-lg p-6 mb-6">
       <div className="flex justify-between items-start">
         <div>
-          <h2 className="text-sm font-medium text-blue-600 mb-1">Current Scenario:</h2>
+          <h2 className="text-sm font-medium text-blue-600 mb-1">現在のシナリオ:</h2>
           <p className="text-gray-800 text-base">{scenario}</p>
         </div>
         <Button 
@@ -37,10 +37,10 @@ export const ScenarioSection = ({
           size="icon" 
           className="text-blue-600 border-blue-200 hover:bg-blue-100"
           onClick={handleEditScenario}
-          title="Edit Scenario"
+          title="シナリオを編集"
         >
           <Edit className="h-4 w-4" />
-          <span className="sr-only">Edit Scenario</span>
+          <span className="sr-only">シナリオを編集</span>
         </Button>
       </div>
     </div>

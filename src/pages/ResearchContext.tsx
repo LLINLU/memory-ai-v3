@@ -67,7 +67,7 @@ const ResearchContext = () => {
             <ResizablePanel defaultSize={65} minSize={40}>
               <div className="flex flex-col h-full p-4">
                 <div className="flex-none flex justify-between items-center mb-4">
-                  <h1 className="text-2xl font-bold">Research Context Builder</h1>
+                  <h1 className="text-2xl font-bold">研究コンテキストビルダー</h1>
                   <Button
                     variant="outline"
                     size="sm"
@@ -75,14 +75,14 @@ const ResearchContext = () => {
                     className="flex items-center gap-1"
                   >
                     <RefreshCcw className="h-4 w-4" />
-                    Reset
+                    リセット
                   </Button>
                 </div>
                 
                 {isEditingScenario && (
                   <div className="flex-none bg-blue-50 p-3 rounded-md mb-4">
                     <p className="text-blue-700">
-                      You're editing your research scenario. Please select a new scenario in the preview panel.
+                      研究シナリオを編集しています。プレビューパネルから新しいシナリオを選択してください。
                     </p>
                   </div>
                 )}
@@ -107,10 +107,10 @@ const ResearchContext = () => {
                         {showScenarios && (
                           <div className="mt-6">
                             <div className="bg-blue-50 p-4 rounded-md">
-                              <h2 className="text-xl font-semibold mb-2">Research Scenario Ready</h2>
+                              <h2 className="text-xl font-semibold mb-2">研究シナリオの準備完了</h2>
                               <p className="text-blue-700">
-                                Based on your responses, we've generated research scenarios for you.
-                                Please select a scenario from the preview panel on the right.
+                                あなたの回答に基づいて、研究シナリオを生成しました。
+                                右側のプレビューパネルからシナリオを選択してください。
                               </p>
                             </div>
                           </div>

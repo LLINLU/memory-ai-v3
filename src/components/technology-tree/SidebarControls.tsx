@@ -19,7 +19,7 @@ export const SidebarControls = ({
 }: SidebarControlsProps) => {
   return (
     <div className="flex items-center justify-between px-4 pt-4">
-      <h2 className="text-xl font-bold">{selectedNodeTitle || "Results"}</h2>
+      <h2 className="text-xl font-bold">{selectedNodeTitle || "結果"}</h2>
       <div className="flex items-center gap-2">
         <Button 
           variant="ghost" 

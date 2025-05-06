@@ -36,9 +36,9 @@ export const MainContent = ({
   onEditNode,
   onDeleteNode,
   levelNames = {
-    level1: "Purpose",
-    level2: "Function",
-    level3: "Measure/Technology"
+    level1: "目的",
+    level2: "機能",
+    level3: "測定/技術"
   },
   query,
   scenario,

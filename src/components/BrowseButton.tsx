@@ -13,7 +13,7 @@ export const BrowseButton = () => {
       onClick={() => navigate('/technology-tree')}
     >
       <Share2 className="h-5 w-5" />
-      Explore Technology Tree
+      テクノロジーツリーを探索
     </Button>
   );
 };

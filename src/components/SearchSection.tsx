@@ -34,13 +34,13 @@ export const SearchSection = () => {
 
   return (
     <div className="bg-white p-8 rounded-3xl shadow-sm max-w-5xl mx-auto">
-      <h1 className="text-4xl font-bold text-center mb-12">Discover Research and Applications</h1>
+      <h1 className="text-4xl font-bold text-center mb-12">研究と応用を発見する</h1>
       
       <form onSubmit={handleSubmit} className="w-full mx-auto mb-8">
         <div className="relative">
           <Input 
             type="text" 
-            placeholder="e.g.補償光学の眼科分野への利用"
+            placeholder="例：補償光学の眼科分野への利用"
             className="w-full h-16 pl-6 pr-14 text-lg rounded-2xl border border-gray-200 focus-visible:ring-1 focus-visible:ring-gray-200 placeholder:text-gray-400"
             value={searchValue}
             onChange={handleSearchChange}
@@ -57,11 +57,11 @@ export const SearchSection = () => {
       </form>
       
       <div className="flex items-center gap-3 justify-center">
-        <span className="text-gray-600 text-sm">Try:</span>
+        <span className="text-gray-600 text-sm">試してみる：</span>
         <div className="flex gap-2">
-          <SearchSuggestion label="Solid state batteries" />
-          <SearchSuggestion label="Quantum computing" />
-          <SearchSuggestion label="Sustainable materials" />
+          <SearchSuggestion label="全固体電池" />
+          <SearchSuggestion label="量子コンピューティング" />
+          <SearchSuggestion label="持続可能な材料" />
         </div>
       </div>
     </div>

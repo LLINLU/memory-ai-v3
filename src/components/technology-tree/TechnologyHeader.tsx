@@ -17,7 +17,7 @@ export const TechnologyHeader = ({ query: propQuery }: TechnologyHeaderProps) =>
         {displayQuery}
       </h1>
       <p className="text-gray-600 mt-2">
-        Click on nodes below to refine your search and update results.
+        下のノードをクリックして検索を絞り込み、結果を更新してください。
       </p>
     </div>
   );

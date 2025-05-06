@@ -30,7 +30,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
             size="sm"
             onClick={onSkip}
           >
-            Skip
+            スキップ
           </Button>
         </div>
       )}
@@ -47,7 +47,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
           size="sm"
           className="absolute right-2 bottom-2 bg-blue-600 hover:bg-blue-700 rounded-lg"
         >
-          <span>Next</span>
+          <span>次へ</span>
           <ArrowRight className="ml-1 h-3 w-3" />
         </Button>
       </div>

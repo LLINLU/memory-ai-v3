@@ -12,42 +12,42 @@ export interface Step {
 export const useResearchSteps = () => {
   const steps: Step[] = [
     {
-      question: "First, WHO is involved in this research area? You can consider",
+      question: "まず、この研究分野に誰が関わっていますか？以下を考慮してください",
       icon: <Users className="h-5 w-5" />,
       subtitle: [
-        "Who are the practitioners or professionals?",
-        "Who are the end users or beneficiaries?"
+        "実務者や専門家は誰ですか？",
+        "最終ユーザーや受益者は誰ですか？"
       ],
-      placeholder: "E.g., Astronomers, ophthalmologists, defense engineers..."
+      placeholder: "例：天文学者、眼科医、防衛エンジニアなど..."
     },
     {
-      question: "Go it! WHAT specific aspects of this field are you interested in? You can consider",
+      question: "わかりました！この分野のどの具体的な側面に興味がありますか？以下を考慮してください",
       icon: <Search className="h-5 w-5" />,
       subtitle: [
-        "What particular approach, technique, or application?",
-        "What is the purpose or objective?"
+        "特定のアプローチ、技術、または応用は何ですか？",
+        "目的や目標は何ですか？"
       ],
-      placeholder: "E.g., Wavefront correction, image stabilization, real-time processing..."
+      placeholder: "例：波面補正、画像安定化、リアルタイム処理など..."
     },
     {
-      question: "Now, WHERE is this research typically conducted or applied? You can consider",
+      question: "この研究はどこで通常行われたり、適用されたりしますか？以下を考慮してください",
       icon: <MapPin className="h-5 w-5" />,
       subtitle: [
-        "In what settings or environments?",
-        "Are there specific clinical or research contexts?",
-        "Is there a geographical or institutional focus?"
+        "どのような環境や設定で行われますか？",
+        "特定の臨床または研究コンテキストはありますか？",
+        "地理的または機関的な焦点はありますか？"
       ],
-      placeholder: "E.g., Observatories, hospitals, field operations..."
+      placeholder: "例：観測所、病院、フィールド作業など..."
     },
     {
-      question: "Thank you! Finally, WHEN is this approach most relevant or applicable? You can consider",
+      question: "ありがとうございます！最後に、このアプローチはいつ最も関連性や適用性がありますか？以下を考慮してください",
       icon: <Clock className="h-5 w-5" />,
       subtitle: [
-        "Under what conditions or circumstances?",
-        "Is there a specific time frame or stage?",
-        "Are there temporal factors that matter?"
+        "どのような条件や状況下で関連しますか？",
+        "特定の時間枠や段階はありますか？",
+        "重要な時間的要因はありますか？"
       ],
-      placeholder: "E.g., Current applications, future developments, within 5 years..."
+      placeholder: "例：現在の応用、将来の開発、5年以内など..."
     }
   ];
 

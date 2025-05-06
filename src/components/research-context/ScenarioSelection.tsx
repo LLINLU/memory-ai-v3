@@ -13,10 +13,10 @@ export const ScenarioSelection: React.FC<ScenarioSelectionProps> = ({
 }) => {
   return (
     <div className="mt-8">
-      <h2 className="text-2xl font-bold mb-4">Choose a Research Scenario</h2>
+      <h2 className="text-2xl font-bold mb-4">研究シナリオを選択</h2>
       <p className="text-gray-700 mb-6">
-        Based on your responses, we've generated the following research scenarios. 
-        Please select the one that best matches your interest:
+        あなたの回答に基づいて、以下の研究シナリオを生成しました。
+        興味に最も合うものを選択してください：
       </p>
       
       <div className="space-y-4">
@@ -39,7 +39,7 @@ export const ScenarioSelection: React.FC<ScenarioSelectionProps> = ({
                     onScenarioSelect(scenario);
                   }}
                 >
-                  Select This Scenario
+                  このシナリオを選択
                 </Button>
               </div>
             </div>

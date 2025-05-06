@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 import {
@@ -79,7 +80,7 @@ export const PaperCard = ({
             <Button variant="outline" className="text-sm flex items-center gap-2">
               DOI <ExternalLink size={16} />
             </Button>
-            <Button variant="outline" className="text-sm">Save</Button>
+            <Button variant="outline" className="text-sm">保存</Button>
           </div>
         </div>
       </div>

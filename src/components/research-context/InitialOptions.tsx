@@ -17,8 +17,7 @@ export const InitialOptions: React.FC<InitialOptionsProps> = ({
     <div>
       <div className="mb-8">
         <p className="text-lg">
-          Hi, I can help you find research papers regarding {initialQuery || "[user's query]"}. I'll help you define your research scenario using 
-          the 4W framework to build a personalized research map.
+          こんにちは、{initialQuery || "[ユーザーのクエリ]"}に関する研究論文を見つけるお手伝いをします。4Wフレームワークを使用してパーソナライズされた研究マップを作成するお手伝いをします。
         </p>
       </div>
       <div className="flex gap-3">
@@ -26,13 +25,13 @@ export const InitialOptions: React.FC<InitialOptionsProps> = ({
           onClick={onContinue}
           className="bg-blue-600 hover:bg-blue-700"
         >
-          Continue
+          続ける
         </Button>
         <Button 
           onClick={onSkip}
           variant="outline"
         >
-          Skip
+          スキップ
         </Button>
       </div>
     </div>

@@ -5,40 +5,40 @@ export const RecentSearches = () => {
   // Mock data for recent searches
   const recentSearches = [
     {
-      title: "Nanomaterial Composites",
+      title: "ナノ材料複合材",
       paperCount: 15,
       implementationCount: 4,
       tags: [
-        { label: "Materials", variant: "materials" as const },
-        { label: "Engineering", variant: "engineering" as const },
+        { label: "材料", variant: "materials" as const },
+        { label: "工学", variant: "engineering" as const },
       ],
-      timeAgo: "2 days ago",
+      timeAgo: "2日前",
     },
     {
-      title: "Bioinformatics AI",
+      title: "バイオインフォマティクスAI",
       paperCount: 28,
       implementationCount: 7,
       tags: [
         { label: "AI/ML", variant: "aiml" as const },
-        { label: "Healthcare", variant: "healthcare" as const },
+        { label: "医療", variant: "healthcare" as const },
       ],
-      timeAgo: "1 week ago",
+      timeAgo: "1週間前",
     },
     {
-      title: "Green Hydrogen Storage",
+      title: "グリーン水素貯蔵",
       paperCount: 21,
       implementationCount: 2,
       tags: [
-        { label: "Energy", variant: "energy" as const },
-        { label: "Sustainability", variant: "sustainability" as const },
+        { label: "エネルギー", variant: "energy" as const },
+        { label: "持続可能性", variant: "sustainability" as const },
       ],
-      timeAgo: "2 weeks ago",
+      timeAgo: "2週間前",
     },
   ];
 
   return (
     <section className="mt-12">
-      <h2 className="text-2xl font-bold mb-6">Recent Searches</h2>
+      <h2 className="text-2xl font-bold mb-6">最近の検索</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {recentSearches.map((search, index) => (
           <SearchCard key={index} {...search} />
