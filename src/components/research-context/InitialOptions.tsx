@@ -16,7 +16,7 @@ export const InitialOptions: React.FC<InitialOptionsProps> = ({
   return (
     <div>
       <div className="mb-8">
-        <p className="text-lg">
+        <p className="text-base leading-6">
           こんにちは、{initialQuery || "[ユーザーのクエリ]"}に関する研究論文を見つけるお手伝いをします。4Wフレームワークを使用してパーソナライズされた研究マップを作成するお手伝いをします。
         </p>
       </div>
