@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Copy, Edit, Check, X } from "lucide-react";
@@ -48,24 +47,23 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
     }
   };
 
-  // Filter out duplicate consecutive messages with the same questionType
+  // Filter out duplicate messages with the same questionType
   const filteredHistory = conversationHistory.filter((message, index, array) => {
-    if (index === 0) return true;
+    // Always keep user messages
+    if (message.type === "user") return true;
     
-    const prevMessage = array[index - 1];
-    
-    // If this is a system message with a questionType that matches the previous message's questionType
-    // and they're not separated by a user message, filter it out
-    if (
-      message.type === "system" && 
-      prevMessage.type === "system" && 
-      message.questionType && 
-      prevMessage.questionType && 
-      message.questionType === prevMessage.questionType
-    ) {
-      return false;
+    // If it's a system message with a questionType
+    if (message.type === "system" && message.questionType) {
+      // Check if this is the first occurrence of this questionType
+      const firstIndex = array.findIndex(
+        m => m.type === "system" && m.questionType === message.questionType
+      );
+      
+      // If this is the first occurrence, keep it
+      return firstIndex === index;
     }
     
+    // Keep all other messages (system messages without questionType)
     return true;
   });
 
