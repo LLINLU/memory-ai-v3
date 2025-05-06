@@ -16,7 +16,8 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     addCompletionMessage,
     addInitialMessage,
     setConversationHistory,
-    updateUserResponse
+    updateUserResponse,
+    setInputValue
   } = useConversationState(steps);
 
   const {
