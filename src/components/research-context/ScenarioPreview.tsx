@@ -14,6 +14,7 @@ interface ScenarioPreviewProps {
   showScenarios: boolean;
   onScenarioSelect?: (scenario: string) => void;
   researchAreasRef?: React.RefObject<HTMLDivElement>;
+  onGenerateResult?: () => void;
 }
 
 export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
@@ -23,14 +24,23 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
   selectedScenario,
   showScenarios,
   onScenarioSelect,
-  researchAreasRef
+  researchAreasRef,
+  onGenerateResult
 }) => {
   const hasAnswers = Object.values(answers).some(answer => answer.trim() !== '');
   
   return (
     <div className="flex flex-col h-full">
-      <div className="bg-white p-4 border-b">
+      <div className="bg-white p-4 border-b flex justify-between items-center">
         <h2 className="text-xl font-bold">Preview</h2>
+        <Button 
+          variant="default" 
+          size="sm" 
+          onClick={onGenerateResult}
+          className="bg-blue-500 hover:bg-blue-600"
+        >
+          Generate Search Result
+        </Button>
       </div>
       
       <div className="flex-1 overflow-y-auto p-4 space-y-4">

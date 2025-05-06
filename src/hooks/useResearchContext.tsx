@@ -3,8 +3,10 @@ import { Step } from "@/components/research-context/ResearchSteps";
 import { useConversationState } from "./research-context/useConversationState";
 import { useNavigationHandlers } from "./research-context/useNavigationHandlers";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const useResearchContext = (initialQuery: string, steps: Step[]) => {
+  const navigate = useNavigate();
   // Track selected scenario
   const [selectedScenario, setSelectedScenario] = useState<string>("");
 
@@ -124,6 +126,17 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     setSelectedScenario("");
   };
 
+  // Function to generate search results and navigate to technology tree
+  const handleGenerateResult = () => {
+    // Navigate to the technology tree page with the selected scenario
+    navigate('/technology-tree', {
+      state: {
+        query: initialQuery,
+        scenario: selectedScenario || `Research on ${initialQuery}`
+      }
+    });
+  };
+
   // Check if we should show the input section
   const shouldShowInputSection = !showInitialOptions && !showScenarios && currentStep < steps.length;
 
@@ -145,6 +158,7 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     setShowScenarios,
     handleEditUserReply,
     handleReset,
+    handleGenerateResult,
     steps,
     researchAreasRef,
     shouldShowInputSection

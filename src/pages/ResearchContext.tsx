@@ -48,6 +48,7 @@ const ResearchContext = () => {
     setShowScenarios,
     handleEditUserReply,
     handleReset,
+    handleGenerateResult,
     researchAreasRef,
     shouldShowInputSection
   } = useResearchContext(initialQuery, steps);
@@ -149,6 +150,7 @@ const ResearchContext = () => {
                   showScenarios={showScenarios}
                   onScenarioSelect={handleScenarioSelection}
                   researchAreasRef={researchAreasRef}
+                  onGenerateResult={handleGenerateResult}
                 />
               </div>
             </ResizablePanel>
