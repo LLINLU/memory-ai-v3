@@ -35,16 +35,16 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
   return (
     <div className="flex-1 overflow-y-auto mb-4">
       {conversationHistory.map((message, index) => (
-        <div key={index} className={`mb-6 ${message.type === "user" ? "flex flex-col items-end" : ""}`}>
+        <div key={index} className={`mb-6 ${message.type === "user" ? "flex flex-col items-end" : "flex flex-col items-start"}`}>
           {message.type === "system" ? (
-            <div>{message.content}</div>
+            <div className="max-w-[80%]">{message.content}</div>
           ) : (
-            <div className="flex flex-col">
-              <div className="bg-blue-100 text-blue-900 p-3 rounded-lg max-w-[60%]">
+            <div className="flex flex-col items-end">
+              <div className="bg-blue-100 text-blue-900 p-3 rounded-lg max-w-[80%]">
                 <p>{message.content}</p>
               </div>
               {typeof message.content === 'string' && (
-                <div className="flex gap-1 mt-1 justify-end">
+                <div className="flex gap-1 mt-1">
                   <Button 
                     variant="ghost" 
                     size="sm" 
