@@ -18,20 +18,20 @@ export function SidebarNavigation() {
       <SidebarMenuItem>
         <SidebarMenuButton 
           asChild 
-          tooltip="Search"
+          tooltip="検索"
         >
           <Link to="/">
             <Search />
-            {isExpanded && <span>Search</span>}
+            {isExpanded && <span>検索</span>}
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
       <SidebarMenuItem>
         <SidebarMenuButton 
-          tooltip="History"
+          tooltip="履歴"
         >
           <History />
-          {isExpanded && <span>History</span>}
+          {isExpanded && <span>履歴</span>}
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>

@@ -19,22 +19,22 @@ export function SidebarFooter() {
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton
-            tooltip="Settings"
+            tooltip="設定"
           >
             <Settings />
-            {isExpanded && <span>Settings</span>}
+            {isExpanded && <span>設定</span>}
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>
           <SidebarMenuButton
-            tooltip="Profile"
+            tooltip="プロフィール"
           >
             <Avatar className="size-4">
               <AvatarFallback className="size-4 p-0">
                 <UserRound className="size-4" />
               </AvatarFallback>
             </Avatar>
-            {isExpanded && <span>Profile</span>}
+            {isExpanded && <span>プロフィール</span>}
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
