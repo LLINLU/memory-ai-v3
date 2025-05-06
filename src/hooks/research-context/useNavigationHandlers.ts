@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ContextAnswers } from "./useConversationState";
 import { ConversationMessage } from "./useConversationState";
 
@@ -17,6 +17,7 @@ export const useNavigationHandlers = ({
   const [showInitialOptions, setShowInitialOptions] = useState(true);
   const [showScenarios, setShowScenarios] = useState(false);
   const [generatedScenarios, setGeneratedScenarios] = useState<string[]>([]);
+  const researchAreasRef = useRef<HTMLDivElement | null>(null);
 
   const handleInitialOption = (option: 'continue' | 'skip') => {
     setShowInitialOptions(false);
@@ -53,6 +54,13 @@ export const useNavigationHandlers = ({
   const selectScenario = (selectedScenario: string) => {
     // In a real app, this would navigate to the technology tree with the selected scenario
     console.log(`Selected scenario: ${selectedScenario}`);
+    
+    // Scroll to research areas after a short delay to ensure content is rendered
+    setTimeout(() => {
+      if (researchAreasRef.current) {
+        researchAreasRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   // Reset navigation state
@@ -71,6 +79,7 @@ export const useNavigationHandlers = ({
     selectScenario,
     setShowScenarios,
     generateScenarios,
-    resetNavigation
+    resetNavigation,
+    researchAreasRef
   };
 };

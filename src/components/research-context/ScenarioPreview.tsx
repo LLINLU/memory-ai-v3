@@ -13,6 +13,7 @@ interface ScenarioPreviewProps {
   selectedScenario?: string;
   showScenarios: boolean;
   onScenarioSelect?: (scenario: string) => void;
+  researchAreasRef?: React.RefObject<HTMLDivElement>;
 }
 
 export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
@@ -21,7 +22,8 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
   generatedScenarios,
   selectedScenario,
   showScenarios,
-  onScenarioSelect
+  onScenarioSelect,
+  researchAreasRef
 }) => {
   const hasAnswers = Object.values(answers).some(answer => answer.trim() !== '');
   
@@ -114,7 +116,7 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
             {selectedScenario && (
               <div>
                 <Separator className="my-4" />
-                <div className="bg-white border rounded-md p-4">
+                <div className="bg-white border rounded-md p-4" ref={researchAreasRef}>
                   <h3 className="font-medium mb-3">Potential Research Areas</h3>
                   <div className="bg-gray-50 rounded-md p-3 mb-4">
                     <p className="text-sm text-gray-600 mb-2">Based on your selection:</p>

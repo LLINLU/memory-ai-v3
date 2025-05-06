@@ -1,3 +1,4 @@
+
 import { Step } from "@/components/research-context/ResearchSteps";
 import { useConversationState } from "./research-context/useConversationState";
 import { useNavigationHandlers } from "./research-context/useNavigationHandlers";
@@ -33,7 +34,8 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     selectScenario,
     setShowScenarios,
     generateScenarios,
-    resetNavigation
+    resetNavigation,
+    researchAreasRef
   } = useNavigationHandlers({
     initialQuery,
     answers,
@@ -141,5 +143,6 @@ export const useResearchContext = (initialQuery: string, steps: Step[]) => {
     handleEditUserReply,
     handleReset,
     steps,
+    researchAreasRef
   };
 };

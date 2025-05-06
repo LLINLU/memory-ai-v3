@@ -47,7 +47,8 @@ const ResearchContext = () => {
     proceedToScenarios,
     setShowScenarios,
     handleEditUserReply,
-    handleReset
+    handleReset,
+    researchAreasRef
   } = useResearchContext(initialQuery, steps);
 
   // If user is redirected to edit scenario, show scenario selection right away
@@ -146,6 +147,7 @@ const ResearchContext = () => {
                   selectedScenario={selectedScenario}
                   showScenarios={showScenarios}
                   onScenarioSelect={handleScenarioSelection}
+                  researchAreasRef={researchAreasRef}
                 />
               </div>
             </ResizablePanel>
