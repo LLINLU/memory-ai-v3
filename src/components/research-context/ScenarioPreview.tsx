@@ -34,7 +34,7 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
   return (
     <div className="flex flex-col h-full">
       <div className="bg-white p-4 border-b flex justify-between items-center">
-        <h2 className="text-xl font-bold">プレビュー</h2>
+        <h2 className="text-[1rem] font-bold">プレビュー</h2>
         {showGenerateButton && (
           <Button 
             variant="default" 
