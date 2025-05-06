@@ -59,7 +59,7 @@ export const SearchSection = () => {
       <div className="flex items-center gap-3 justify-center">
         <span className="text-gray-600 text-sm">試してみる：</span>
         <div className="flex gap-2">
-          <SearchSuggestion label="全固体電池" />
+          <SearchSuggestion label="固体電池" />
           <SearchSuggestion label="量子コンピューティング" />
           <SearchSuggestion label="持続可能な材料" />
         </div>

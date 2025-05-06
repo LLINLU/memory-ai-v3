@@ -5,7 +5,7 @@ export const RecentSearches = () => {
   // Mock data for recent searches
   const recentSearches = [
     {
-      title: "ナノ材料複合材",
+      title: "ナノ材料複合体",
       paperCount: 15,
       implementationCount: 4,
       tags: [
@@ -19,7 +19,7 @@ export const RecentSearches = () => {
       paperCount: 28,
       implementationCount: 7,
       tags: [
-        { label: "AI/ML", variant: "aiml" as const },
+        { label: "人工知能・機械学習", variant: "aiml" as const },
         { label: "医療", variant: "healthcare" as const },
       ],
       timeAgo: "1週間前",

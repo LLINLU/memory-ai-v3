@@ -36,24 +36,24 @@ function SearchSection({ title, searches }: SearchSectionProps) {
 }
 
 const recentSearches = [
-  "Quantum computing applications",
-  "Machine learning in healthcare",
-  "Climate change mitigation",
-  "Neural network architectures",
-  "Sustainable energy solutions"
+  "量子コンピューティングの応用",
+  "医療分野における機械学習",
+  "気候変動の緩和",
+  "ニューラルネットワークの構造",
+  "持続可能なエネルギーソリューション"
 ];
 
 const previousSearches = [
-  "Blockchain technology applications",
-  "Genetic algorithms optimization",
-  "Virtual reality in education"
+  "ブロックチェーン技術の応用",
+  "遺伝的アルゴリズムによる最適化",
+  "教育における仮想現実"
 ];
 
 export function SidebarSearches() {
   return (
     <>
-      <SearchSection title="Recent Searches" searches={recentSearches} />
-      <SearchSection title="Previous searches" searches={previousSearches} />
+      <SearchSection title="最近の検索" searches={recentSearches} />
+      <SearchSection title="過去の検索" searches={previousSearches} />
     </>
   );
 }
