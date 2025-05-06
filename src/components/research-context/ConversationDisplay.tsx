@@ -48,9 +48,30 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
     }
   };
 
+  // Filter out duplicate consecutive messages with the same questionType
+  const filteredHistory = conversationHistory.filter((message, index, array) => {
+    if (index === 0) return true;
+    
+    const prevMessage = array[index - 1];
+    
+    // If this is a system message with a questionType that matches the previous message's questionType
+    // and they're not separated by a user message, filter it out
+    if (
+      message.type === "system" && 
+      prevMessage.type === "system" && 
+      message.questionType && 
+      prevMessage.questionType && 
+      message.questionType === prevMessage.questionType
+    ) {
+      return false;
+    }
+    
+    return true;
+  });
+
   return (
     <div className="flex-1 overflow-y-auto mb-4">
-      {conversationHistory.map((message, index) => (
+      {filteredHistory.map((message, index) => (
         <div key={index} className={`mb-6 ${message.type === "user" ? "flex flex-col items-end" : "flex flex-col items-start"}`}>
           {message.type === "system" ? (
             <div className="max-w-[80%]">{message.content}</div>
