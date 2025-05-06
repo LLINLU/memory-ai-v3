@@ -57,7 +57,7 @@ const ResearchContext = () => {
         <AppSidebar />
         <div className="flex-1 bg-gray-50 flex flex-col">
           <div className="container py-8 px-4 mx-auto max-w-5xl flex-1 flex flex-col">
-            <div className="bg-white p-8 rounded-3xl shadow-sm flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col">
               <div className="mb-8">
                 <h1 className="text-3xl font-bold mb-8">Research Context Builder</h1>
                 
