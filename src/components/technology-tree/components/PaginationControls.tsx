@@ -34,7 +34,9 @@ export const PaginationControls = ({
               onClick={() => onPageChange(Math.max(1, currentPage - 1))}
               aria-disabled={currentPage === 1}
               className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-            />
+            >
+              前へ
+            </PaginationPrevious>
           </PaginationItem>
           
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -53,7 +55,9 @@ export const PaginationControls = ({
               onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
               aria-disabled={currentPage === totalPages}
               className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
-            />
+            >
+              次へ
+            </PaginationNext>
           </PaginationItem>
         </PaginationContent>
       </Pagination>
@@ -66,10 +70,10 @@ export const PaginationControls = ({
           <SelectValue placeholder="Papers per page" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="5">5 per page</SelectItem>
-          <SelectItem value="10">10 per page</SelectItem>
-          <SelectItem value="15">15 per page</SelectItem>
-          <SelectItem value="20">20 per page</SelectItem>
+          <SelectItem value="5">5件ずつ表示</SelectItem>
+          <SelectItem value="10">10件ずつ表示</SelectItem>
+          <SelectItem value="15">15件ずつ表示</SelectItem>
+          <SelectItem value="20">20件ずつ表示</SelectItem>
         </SelectContent>
       </Select>
     </div>
