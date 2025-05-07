@@ -1,5 +1,12 @@
+
 import React, { useRef, useEffect, useState } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Edit, Trash2 } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,6 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 interface LevelItem {
   id: string;
@@ -102,40 +110,28 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
         
         {isHovered && nodeWidth > 250 && (
           <div className={`flex gap-1`}>
-            <button 
-              title="編集"
-              className="inline-flex items-center justify-center p-0 leading-none bg-white/70 hover:bg-white/90 h-7 w-7 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-7 w-7 bg-white/70 hover:bg-white/90"
               onClick={(e) => {
                 e.stopPropagation();
                 onEditClick(e);
               }}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-4 w-4"
-              >
-                <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path>
-              </svg>
-            </button>
+              <Edit className="h-4 w-4" />
+            </Button>
             
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <button 
-                  title="削除"
-                  className="inline-flex items-center justify-center p-0 leading-none bg-white/70 hover:bg-red-100 h-7 w-7 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-7 w-7 bg-white/70 hover:bg-red-100"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Trash2 className="h-4 w-4" />
-                </button>
+                </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
@@ -175,40 +171,28 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       {isHovered && nodeWidth <= 250 && (
         <div className={buttonPositionClass}>
           <div className="flex gap-1">
-            <button 
-              title="編集"
-              className="inline-flex items-center justify-center p-0 leading-none bg-white/70 hover:bg-white/90 h-7 w-7 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-7 w-7 bg-white/70 hover:bg-white/90"
               onClick={(e) => {
                 e.stopPropagation();
                 onEditClick(e);
               }}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-4 w-4"
-              >
-                <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path>
-              </svg>
-            </button>
+              <Edit className="h-4 w-4" />
+            </Button>
             
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <button 
-                  title="削除"
-                  className="inline-flex items-center justify-center p-0 leading-none bg-white/70 hover:bg-red-100 h-7 w-7 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-7 w-7 bg-white/70 hover:bg-red-100"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Trash2 className="h-4 w-4" />
-                </button>
+                </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
