@@ -135,13 +135,13 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogTitle>本当に削除しますか？</AlertDialogTitle>
                   <AlertDialogDescription>
                     This will permanently delete the node "{item.name}". This action cannot be undone.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>キャンセル</AlertDialogCancel>
                   <AlertDialogAction 
                     className="bg-red-600 hover:bg-red-700" 
                     onClick={(e) => {
@@ -149,7 +149,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
                       onDeleteClick(e);
                     }}
                   >
-                    Delete
+                    削除
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -196,13 +196,13 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogTitle>本当に削除しますか？</AlertDialogTitle>
                   <AlertDialogDescription>
                     This will permanently delete the node "{item.name}". This action cannot be undone.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>キャンセル</AlertDialogCancel>
                   <AlertDialogAction 
                     className="bg-red-600 hover:bg-red-700" 
                     onClick={(e) => {
@@ -210,7 +210,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
                       onDeleteClick(e);
                     }}
                   >
-                    Delete
+                    削除
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
