@@ -86,8 +86,8 @@ export const LevelSelection = ({
     if (onDeleteNode) {
       onDeleteNode(level, nodeId);
       toast({
-        title: "Node removed",
-        description: "The node has been deleted successfully",
+        title: "ノードが削除されました",
+        description: "ノードは正常に削除されました",
         duration: 2000,
       });
     }

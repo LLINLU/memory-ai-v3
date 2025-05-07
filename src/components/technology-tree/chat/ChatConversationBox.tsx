@@ -28,7 +28,7 @@ export const ChatConversationBox = ({
         <div className="space-y-6">
           {messages.map((message, index) => {
             const nextMessage = messages[index + 1];
-            const isActionTaken = nextMessage && nextMessage.content === "The node has been created 😊";
+            const isActionTaken = nextMessage && nextMessage.content === "ノードが作成されました 😊";
             
             return (
               <div 
