@@ -5,6 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ContextAnswers } from "@/hooks/research-context/useConversationState";
 import { Button } from "@/components/ui/button";
+import { ChartContainer } from "@/components/ui/chart";
+import { Treemap, ResponsiveContainer, Tooltip } from "recharts";
 
 interface ScenarioPreviewProps {
   initialQuery: string;
@@ -30,6 +32,90 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
   onGenerateResult
 }) => {
   const hasAnswers = Object.values(answers).some(answer => answer.trim() !== '');
+  
+  // Research area data for visualization
+  const researchAreasData = [
+    {
+      name: "Retinal Imaging",
+      size: 42,
+      fill: "#4D82F3", // Blue
+      papers: 42
+    },
+    {
+      name: "Wavefront Sensing",
+      size: 28,
+      fill: "#4ADE80", // Green
+      papers: 28
+    },
+    {
+      name: "Clinical Applications",
+      size: 18,
+      fill: "#A855F7", // Purple
+      papers: 18
+    },
+    {
+      name: "Other Fields",
+      size: 12,
+      fill: "#F59E0B", // Amber
+      papers: 12
+    }
+  ];
+  
+  // Custom treemap content renderer
+  const CustomTreemapContent = (props: any) => {
+    const { x, y, width, height, name, fill, size } = props;
+    
+    // Don't render if dimensions are too small
+    if (width < 30 || height < 30) return null;
+    
+    return (
+      <g>
+        <rect
+          x={x}
+          y={y}
+          width={width}
+          height={height}
+          fill={fill}
+          className="stroke-white stroke-opacity-50"
+          strokeWidth={2}
+        />
+        <text
+          x={x + width / 2}
+          y={y + height / 2 - 10}
+          textAnchor="middle"
+          fill="white"
+          fontSize={width < 100 ? 12 : 16}
+          fontWeight="medium"
+        >
+          {name}
+        </text>
+        <text
+          x={x + width / 2}
+          y={y + height / 2 + 10}
+          textAnchor="middle"
+          fill="white"
+          fontSize={width < 100 ? 14 : 18}
+          fontWeight="bold"
+        >
+          {size}%
+        </text>
+      </g>
+    );
+  };
+
+  // Custom tooltip for the treemap
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-white p-2 border border-gray-200 shadow-md rounded-md">
+          <p className="font-medium">{data.name}</p>
+          <p className="text-gray-600">{data.papers} 論文</p>
+        </div>
+      );
+    }
+    return null;
+  };
   
   return (
     <div className="flex flex-col h-full">
@@ -134,13 +220,21 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
                   <h3 className="font-medium mb-3">潜在的な研究分野</h3>
                   <div className="bg-gray-50 rounded-md p-3 mb-4">
                     <p className="text-sm text-gray-600 mb-2">選択内容に基づく：</p>
-                    <p className="text-blue-700">{selectedScenario && selectedScenario.includes("eraeraewrcqwer") ? 
-                      "一般視聴者と一般的側面に焦点を当てたeraeraewrcqwerに関する研究" : selectedScenario}</p>
+                    <p className="text-blue-700">{selectedScenario}</p>
                   </div>
                   
-                  {/* Placeholder for research areas visualization */}
-                  <div className="aspect-video bg-gray-100 rounded-md flex items-center justify-center mb-3">
-                    <p className="text-gray-500">研究分野の可視化</p>
+                  {/* Research areas visualization */}
+                  <div className="aspect-video mb-4">
+                    <ChartContainer config={{}} className="w-full h-[270px]">
+                      <Tooltip content={<CustomTooltip />} />
+                      <Treemap
+                        data={researchAreasData}
+                        dataKey="size"
+                        nameKey="name"
+                        fill="#8884d8"
+                        content={<CustomTreemapContent />}
+                      />
+                    </ChartContainer>
                   </div>
                   
                   <div className="space-y-2 text-sm">
