@@ -39,8 +39,8 @@ const generateNodeSuggestion = (message: string): NodeSuggestion => {
     }
   } else {
     // Default if no keywords match
-    title = "Deep Learning for Retinal Disease Detection";
-    description = "Uses convolutional neural networks to automatically detect and classify retinal diseases from OCT scans with high accuracy.";
+    title = "網膜疾患検出のための深層学習";
+    description = "畳み込みニューラルネットワークを使用して、OCTスキャンから網膜疾患を高精度で自動的に検出および分類します。";
   }
   
   return {

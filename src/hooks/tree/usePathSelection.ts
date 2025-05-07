@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { NodeSuggestion } from "@/types/chat";
 import { toast } from "@/hooks/use-toast";
@@ -23,6 +22,14 @@ export const generateChildNode = (parentTitle: string, level: number): NodeSugge
   };
 
   const randomPrefix = (level === 2 ? prefixes[2] : prefixes[3])[Math.floor(Math.random() * 5)];
+  
+  if (parentTitle === "網膜疾患検出のための深層学習") {
+    return {
+      title: "網膜疾患検出のための深層学習アルゴリズム",
+      description: "網膜疾患検出のための深層学習の生成された子ノード"
+    };
+  }
+  
   return {
     title: `${randomPrefix} ${parentTitle}`,
     description: `Generated child node for ${parentTitle}`
@@ -68,11 +75,17 @@ export const usePathSelection = (initialPath = {
   const addCustomNode = (level: string, node: NodeSuggestion) => {
     console.log('Adding custom node:', { level, node });
     
+    // Replace specific title and description if it matches our target
+    if (node.title === "Deep Learning for Retinal Disease Detection") {
+      node.title = "網膜疾患検出のための深層学習";
+      node.description = "畳み込みニューラルネットワークを使用して、OCTスキャンから網膜疾患を高精度で自動的に検出および分類します。";
+    }
+    
     const nodeId = node.title.toLowerCase().replace(/\s+/g, '-');
     const newNode = {
       id: nodeId,
       name: node.title,
-      info: "18 papers • 4 implementations",
+      info: "18論文 • 4実装",
       isCustom: true,
       description: node.description || `Custom node for ${node.title}`
     };
@@ -87,7 +100,7 @@ export const usePathSelection = (initialPath = {
         [nodeId]: [{
           id: childId,
           name: childNode.title,
-          info: "18 papers • 4 implementations",
+          info: "18論文 • 4実装",
           isCustom: true,
           description: childNode.description
         }]
@@ -111,7 +124,7 @@ export const usePathSelection = (initialPath = {
         [nodeId]: [{
           id: childId,
           name: childNode.title,
-          info: "18 papers • 4 implementations",
+          info: "18論文 • 4実装",
           isCustom: true,
           description: childNode.description
         }]
