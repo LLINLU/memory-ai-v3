@@ -40,7 +40,7 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className="gap-2 text-gray-700">
             <SlidersHorizontal className="h-4 w-4" />
-            Filter
+            フィルター
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent 
@@ -159,7 +159,7 @@ export const FilterSort = ({ onFilterChange, onSortChange, className }: FilterSo
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className="gap-2 text-gray-700">
             <ArrowUpDown className="h-4 w-4" />
-            Sort
+            並び替え
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">

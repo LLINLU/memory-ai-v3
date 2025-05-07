@@ -126,7 +126,7 @@ export const useConversationState = (steps: Step[]) => {
         ...prev,
         { 
           type: "system", 
-          content: "Thank you for providing these details. I'll now build your personalized research map."
+          content: "ご回答いただきありがとうございます。"
         }
       ]);
     }, 300);

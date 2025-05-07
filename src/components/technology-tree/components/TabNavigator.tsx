@@ -16,14 +16,14 @@ export const TabNavigator = ({ onValueChange }: TabNavigatorProps) => {
           className="flex items-center data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 px-0 py-2 rounded-none bg-transparent text-gray-600 hover:text-blue-600"
         >
           <FileText className="w-4 h-4 mr-2" />
-          Papers
+          論文
         </TabsTrigger>
         <TabsTrigger 
           value="implementation" 
           className="flex items-center data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 px-0 py-2 rounded-none bg-transparent text-gray-600 hover:text-blue-600"
         >
           <Code className="w-4 h-4 mr-2" />
-          Implementations
+          実装
         </TabsTrigger>
       </TabsList>
     </Tabs>

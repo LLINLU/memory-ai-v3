@@ -16,10 +16,10 @@ export const ResultsTabs = () => {
       <Tabs defaultValue="papers" className="w-full" onValueChange={setActiveTab}>
         <TabsList className="inline-flex mb-6">
           <TabsTrigger value="papers" className={`${activeTab === "papers" ? "bg-blue-500 text-white" : "bg-gray-100"} rounded-md py-2 px-6 text-base`}>
-            Papers
+            論文
           </TabsTrigger>
           <TabsTrigger value="implementations" className={`${activeTab === "implementations" ? "bg-blue-500 text-white" : "bg-gray-100"} rounded-md py-2 px-6 text-base`}>
-            Implementations
+            実装
           </TabsTrigger>
           <TabsTrigger value="researchers" className={`${activeTab === "researchers" ? "bg-blue-500 text-white" : "bg-gray-100"} rounded-md py-2 px-6 text-base`}>
             Researchers
