@@ -13,8 +13,9 @@ export const CustomNodeButton: React.FC<CustomNodeButtonProps> = ({ onClick }) =
         // Expand the chatbox when custom node button is clicked
         const chatbox = document.querySelector('[data-chatbox]');
         if (chatbox) {
-          // Set a custom attribute to indicate it should be opened
+          // Set a custom attribute to indicate it should be opened and expanded
           chatbox.setAttribute('data-chatbox-open', 'true');
+          chatbox.setAttribute('data-chatbox-expanded', 'true');
         }
         
         // Then call the original onClick handler

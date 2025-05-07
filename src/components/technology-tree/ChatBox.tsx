@@ -38,14 +38,24 @@ export const ChatBox = ({
   useEffect(() => {
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
-        if (
-          mutation.type === "attributes" && 
-          mutation.attributeName === "data-chatbox-open" &&
-          (mutation.target as HTMLElement).getAttribute("data-chatbox-open") === "true"
-        ) {
-          setIsOpen(true);
-          // Reset the attribute
-          (mutation.target as HTMLElement).removeAttribute("data-chatbox-open");
+        if (mutation.type === "attributes") {
+          const target = mutation.target as HTMLElement;
+          
+          // Handle open state
+          if (mutation.attributeName === "data-chatbox-open" &&
+              target.getAttribute("data-chatbox-open") === "true") {
+            setIsOpen(true);
+            // Reset the attribute
+            target.removeAttribute("data-chatbox-open");
+          }
+          
+          // Handle expanded state
+          if (mutation.attributeName === "data-chatbox-expanded" &&
+              target.getAttribute("data-chatbox-expanded") === "true") {
+            setIsExpanded(true);
+            // Reset the attribute
+            target.removeAttribute("data-chatbox-expanded");
+          }
         }
       });
     });
