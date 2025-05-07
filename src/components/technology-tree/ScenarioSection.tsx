@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Edit } from "lucide-react";
+import { Pencil } from "lucide-react";
 
 interface ScenarioSectionProps {
   scenario?: string;
@@ -81,12 +81,11 @@ export const ScenarioSection = ({
         </div>
         <Button 
           variant="outline" 
-          size="icon" 
-          className="text-blue-600 border-blue-200 hover:bg-blue-100 h-10 w-10"
+          className="text-blue-600 border-blue-200 hover:bg-blue-100 h-8 w-8 p-0 flex items-center justify-center"
           onClick={handleEditScenario}
           title="シナリオを編集"
         >
-          <Edit className="h-4 w-4" />
+          <Pencil className="h-4 w-4" />
           <span className="sr-only">シナリオを編集</span>
         </Button>
       </div>
