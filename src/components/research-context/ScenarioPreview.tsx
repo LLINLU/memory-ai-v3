@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { ContextAnswers } from "@/hooks/research-context/useConversationState";
 import { Button } from "@/components/ui/button";
 import { ChartContainer } from "@/components/ui/chart";
-import { Treemap, Tooltip } from "recharts";
+import { Treemap, Tooltip, ResponsiveContainer } from "recharts";
 
 interface ScenarioPreviewProps {
   initialQuery: string;
@@ -240,9 +240,8 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
                         dataKey="size"
                         nameKey="name"
                         fill="#8884d8"
-                        content={CustomTreemapContent}
                       >
-                        <Tooltip content={CustomTooltip} />
+                        <Tooltip content={<CustomTooltip />} />
                       </Treemap>
                     </ChartContainer>
                   </div>
@@ -280,3 +279,4 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
     </div>
   );
 };
+
