@@ -82,7 +82,7 @@ export const ScenarioSection = ({
         <Button 
           variant="outline" 
           size="icon" 
-          className="text-blue-600 border-blue-200 hover:bg-blue-100"
+          className="text-blue-600 border-blue-200 hover:bg-blue-100 h-10 w-10"
           onClick={handleEditScenario}
           title="シナリオを編集"
         >
