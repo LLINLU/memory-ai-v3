@@ -1,63 +1,63 @@
 
 export const level1Items = [
-  { id: "astronomy", name: "Improve Astronomical Observations", info: "42 papers • 15 implementations", description: "Enhancing vision through Earth's turbulent atmosphere to achieve near-diffraction-limited resolution for astronomical observations." },
-  { id: "biomedical", name: "Advance Biomedical Imaging", info: "38 papers • 14 implementations", description: "Applying adaptive optics to medical and biological imaging to improve resolution and clarity at the cellular level." },
-  { id: "defense", name: "Support Defense and Surveillance", info: "35 papers • 12 implementations", description: "Using adaptive optics in defense applications for enhanced imaging, targeting, and laser propagation through atmosphere." }
+  { id: "astronomy", name: "天文観測の改善", info: "42論文 • 15実装", description: "天文観測のために、地球の乱流大気を通して視界を強化し、回折限界に近い解像度を達成する。" },
+  { id: "biomedical", name: "生体医学イメージングの進歩", info: "38論文 • 14実装", description: "細胞レベルでの解像度と明瞭さを向上させるため、医療および生物学的イメージングに適応光学を応用する。" },
+  { id: "defense", name: "防衛と監視の支援", info: "35論文 • 12実装", description: "大気を通した強化されたイメージング、ターゲティング、およびレーザー伝播のために防衛アプリケーションで適応光学を使用する。" }
 ];
 
 export const level2Items = {
   "astronomy": [
-    { id: "turbulence-compensation", name: "Atmospheric Turbulence Compensation", info: "18 papers • 6 implementations", description: "Techniques to correct for optical distortions caused by atmospheric turbulence to achieve clearer astronomical imaging." },
-    { id: "wavefront-reconstruction", name: "Wavefront Reconstruction", info: "14 papers • 5 implementations", description: "Methods to analyze and mathematically reconstruct the wavefront of light distorted by atmospheric turbulence." },
-    { id: "wavefront-correction", name: "Wavefront Correction", info: "16 papers • 4 implementations", description: "Technologies that physically manipulate light waves to compensate for atmospheric distortions." }
+    { id: "turbulence-compensation", name: "大気乱流補正", info: "18論文 • 6実装", description: "より明確な天文イメージングを達成するために、大気乱流によって引き起こされる光学的歪みを補正するための技術。" },
+    { id: "wavefront-reconstruction", name: "波面再構成", info: "14論文 • 5実装", description: "大気乱流によって歪められた光の波面を分析し数学的に再構成する方法。" },
+    { id: "wavefront-correction", name: "波面補正", info: "16論文 • 4実装", description: "大気の歪みを補正するために光波を物理的に操作する技術。" }
   ],
   "biomedical": [
-    { id: "high-resolution-microscopy", name: "High-Resolution Microscopy / Retinal Imaging", info: "20 papers • 7 implementations", description: "Applications of adaptive optics to achieve cellular-level resolution in microscopy and retinal imaging for medical diagnostics." },
-    { id: "depth-correction", name: "Depth Correction in OCT", info: "12 papers • 4 implementations", description: "Methods to improve optical coherence tomography by correcting for depth-dependent aberrations." },
-    { id: "live-imaging", name: "Live Imaging Feedback", info: "14 papers • 3 implementations", description: "Systems that provide real-time adaptive correction for live tissue imaging in medical applications." }
+    { id: "high-resolution-microscopy", name: "高解像度顕微鏡法／網膜イメージング", info: "20論文 • 7実装", description: "医学診断のための細胞レベルの解像度を達成するために適応光学を顕微鏡法と網膜イメージングに応用すること。" },
+    { id: "depth-correction", name: "OCTにおける深度補正", info: "12論文 • 4実装", description: "深度依存の収差を補正することによって光コヒーレンストモグラフィーを改善する方法。" },
+    { id: "live-imaging", name: "ライブイメージングフィードバック", info: "14論文 • 3実装", description: "医学応用における生体組織の生体内イメージングのためのリアルタイム適応補正を提供するシステム。" }
   ],
   "defense": [
-    { id: "image-stabilization", name: "Image Stabilization and Target Tracking", info: "16 papers • 5 implementations", description: "Technologies for maintaining stable imaging of moving targets through atmospheric disturbances." },
-    { id: "beam-propagation", name: "Atmospheric Compensation for Beam Propagation", info: "13 papers • 4 implementations", description: "Systems that pre-compensate laser beams to counteract atmospheric effects for long-range propagation." },
-    { id: "precision-guidance", name: "Precision Guidance Systems", info: "14 papers • 3 implementations", description: "Adaptive optics technologies integrated with guidance systems for improved accuracy and performance." }
+    { id: "image-stabilization", name: "画像安定化とターゲット追跡", info: "16論文 • 5実装", description: "大気の乱れを通して移動するターゲットの安定したイメージングを維持するための技術。" },
+    { id: "beam-propagation", name: "ビーム伝播のための大気補正", info: "13論文 • 4実装", description: "長距離伝播のための大気効果に対抗するためにレーザービームを事前補正するシステム。" },
+    { id: "precision-guidance", name: "精密誘導システム", info: "14論文 • 3実装", description: "精度と性能を向上させるために誘導システムと統合された適応光学技術。" }
   ]
 };
 
 export const level3Items = {
   "turbulence-compensation": [
-    { id: "laser-guide-star", name: "Laser Guide Star Systems", info: "10 papers • 3 implementations", description: "Artificial reference stars created using lasers to measure atmospheric distortion for adaptive optics systems, including Sodium Layer and Rayleigh techniques." },
-    { id: "shack-hartmann-astronomy", name: "Shack-Hartmann Sensor", info: "8 papers • 3 implementations", description: "Optical device that measures the distortion of wavefronts using an array of lenslets and a camera sensor, commonly used in astronomical adaptive optics." }
+    { id: "laser-guide-star", name: "レーザーガイドスターシステム", info: "10論文 • 3実装", description: "ナトリウム層技術とレイリー技術を含む適応光学システムのための大気歪みを測定するためにレーザーを使用して作成された人工参照星。" },
+    { id: "shack-hartmann-astronomy", name: "シャック・ハルトマンセンサー", info: "8論文 • 3実装", description: "レンズレットアレイとカメラセンサーを使用して波面の歪みを測定する光学装置で、天文学的適応光学でよく使用される。" }
   ],
   "wavefront-reconstruction": [
-    { id: "matrix-vector", name: "Matrix-Vector Processing", info: "7 papers • 2 implementations", description: "Computational methods using matrix operations to efficiently process wavefront sensor data and calculate correction commands." },
-    { id: "modal-decomposition", name: "Modal Decomposition Algorithms", info: "7 papers • 3 implementations", description: "Mathematical techniques that break down complex wavefront aberrations into simpler components (modes) for more efficient correction." }
+    { id: "matrix-vector", name: "行列ベクトル処理", info: "7論文 • 2実装", description: "波面センサーデータを効率的に処理し、補正コマンドを計算するための行列演算を用いた計算方法。" },
+    { id: "modal-decomposition", name: "モード分解アルゴリズム", info: "7論文 • 3実装", description: "より効率的な補正のために複雑な波面収差をより単純な成分（モード）に分解する数学的技術。" }
   ],
   "wavefront-correction": [
-    { id: "deformable-mirrors-astronomy", name: "Deformable Mirrors", info: "9 papers • 2 implementations", description: "High-precision mirrors with large-actuator counts that can rapidly change shape to correct wavefront aberrations in astronomical observations." },
-    { id: "tip-tilt-astronomy", name: "Tip-Tilt Mirrors", info: "7 papers • 2 implementations", description: "Fast-steering mirrors that correct for the largest atmospheric aberrations (tip and tilt) to stabilize the image position." }
+    { id: "deformable-mirrors-astronomy", name: "可変形ミラー", info: "9論文 • 2実装", description: "天文観測における波面収差を補正するために形状を急速に変化させることができる大型アクチュエータを備えた高精度ミラー。" },
+    { id: "tip-tilt-astronomy", name: "チップ・チルトミラー", info: "7論文 • 2実装", description: "画像位置を安定させるために最大の大気収差（チップとチルト）を補正する高速ステアリングミラー。" }
   ],
   "high-resolution-microscopy": [
-    { id: "wavefront-sensors-bio", name: "Wavefront Sensors", info: "11 papers • 4 implementations", description: "Optical devices used in biomedical imaging to measure wavefront distortions, including Shack-Hartmann and Curvature sensing approaches." },
-    { id: "deformable-mirrors-bio", name: "Deformable Mirrors", info: "9 papers • 3 implementations", description: "Adaptive mirrors that correct for optical aberrations in biological tissue to enable high-resolution cellular imaging." }
+    { id: "wavefront-sensors-bio", name: "波面センサー", info: "11論文 • 4実装", description: "シャック・ハルトマンセンシングと曲率センシングアプローチを含む、生物医学イメージングにおいて波面歪みを測定するために使用される光学装置。" },
+    { id: "deformable-mirrors-bio", name: "可変形ミラー", info: "9論文 • 3実装", description: "高解像度細胞イメージングを可能にするために生物学的組織の光学収差を補正する適応型ミラー。" }
   ],
   "depth-correction": [
-    { id: "ao-oct", name: "Adaptive Optics OCT Modules", info: "6 papers • 2 implementations", description: "Specialized modules that integrate adaptive optics with optical coherence tomography to improve imaging depth and resolution in tissue." },
-    { id: "fpga-controllers", name: "Low-Latency FPGA Controllers", info: "6 papers • 2 implementations", description: "Field-programmable gate array systems designed for high-speed, low-latency processing of wavefront sensing data for real-time correction." }
+    { id: "ao-oct", name: "適応光学OCTモジュール", info: "6論文 • 2実装", description: "組織内のイメージング深度と解像度を向上させるために適応光学と光コヒーレンストモグラフィーを統合した特殊モジュール。" },
+    { id: "fpga-controllers", name: "低レイテンシーFPGAコントローラー", info: "6論文 • 2実装", description: "リアルタイム補正のための波面センシングデータの高速、低レイテンシー処理用に設計されたフィールドプログラマブルゲートアレイシステム。" }
   ],
   "live-imaging": [
-    { id: "real-time-imaging", name: "Real-Time Imaging Systems", info: "8 papers • 2 implementations", description: "Integrated systems that provide continuous adaptive correction during live tissue imaging for medical diagnostics and procedures." },
-    { id: "control-algorithms", name: "Control Algorithms", info: "6 papers • 1 implementation", description: "Specialized software algorithms that optimize the performance of adaptive optics systems for biomedical applications." }
+    { id: "real-time-imaging", name: "リアルタイムイメージングシステム", info: "8論文 • 2実装", description: "医療診断および処置中の生体組織イメージング中に継続的な適応補正を提供する統合システム。" },
+    { id: "control-algorithms", name: "制御アルゴリズム", info: "6論文 • 1実装", description: "生物医学応用のための適応光学システムの性能を最適化する特殊ソフトウェアアルゴリズム。" }
   ],
   "image-stabilization": [
-    { id: "tip-tilt-defense", name: "Tip-Tilt Mirrors", info: "9 papers • 3 implementations", description: "Fast-steering mirrors used in defense systems to rapidly compensate for platform motion and atmospheric effects." },
-    { id: "real-time-sensors", name: "Real-Time Sensors and Controllers", info: "7 papers • 2 implementations", description: "High-speed sensing and control systems optimized for tracking moving targets through atmospheric turbulence." }
+    { id: "tip-tilt-defense", name: "チップ・チルトミラー", info: "9論文 • 3実装", description: "プラットフォームの動きと大気効果を迅速に補償するために防衛システムで使用される高速ステアリングミラー。" },
+    { id: "real-time-sensors", name: "リアルタイムセンサーとコントローラー", info: "7論文 • 2実装", description: "大気乱流を通して移動するターゲットを追跡するために最適化された高速センシングおよび制御システム。" }
   ],
   "beam-propagation": [
-    { id: "deformable-mirrors-defense", name: "Deformable Mirrors", info: "7 papers • 2 implementations", description: "Advanced mirror systems that pre-shape laser beams to compensate for atmospheric distortion in long-range targeting and communication." },
-    { id: "shack-hartmann-defense", name: "Shack-Hartmann Sensor", info: "6 papers • 2 implementations", description: "Wavefront sensors adapted for defense applications to measure atmospheric distortion for beam propagation correction." }
+    { id: "deformable-mirrors-defense", name: "可変形ミラー", info: "7論文 • 2実装", description: "長距離ターゲティングと通信における大気歪みを補償するためにレーザービームを事前に形成する先進的なミラーシステム。" },
+    { id: "shack-hartmann-defense", name: "シャック・ハルトマンセンサー", info: "6論文 • 2実装", description: "ビーム伝播補正のための大気歪みを測定するために防衛応用に適応された波面センサー。" }
   ],
   "precision-guidance": [
-    { id: "adaptive-tracking", name: "Adaptive Laser Tracking", info: "8 papers • 2 implementations", description: "Advanced tracking systems that use adaptive optics to maintain lock on targets through atmospheric turbulence." },
-    { id: "real-time-control", name: "Real-Time Control Algorithms", info: "6 papers • 1 implementation", description: "Specialized algorithms optimized for high-speed decision making in guidance systems with adaptive optics." }
+    { id: "adaptive-tracking", name: "適応型レーザー追跡", info: "8論文 • 2実装", description: "大気乱流を通してターゲットへのロックを維持するために適応光学を使用する先進的な追跡システム。" },
+    { id: "real-time-control", name: "リアルタイム制御アルゴリズム", info: "6論文 • 1実装", description: "適応光学を備えた誘導システムにおける高速の意思決定のために最適化された特殊アルゴリズム。" }
   ]
 };
