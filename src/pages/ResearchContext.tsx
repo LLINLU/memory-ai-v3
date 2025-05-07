@@ -109,7 +109,7 @@ const ResearchContext = () => {
                             <div className="bg-blue-50 p-4 rounded-md">
                               <h2 className="text-xl font-semibold mb-2">研究シナリオの準備完了</h2>
                               <p className="text-blue-700">
-                                あなたの回答に基づいて、研究シナリオを生成しました。
+                                ご回答に基づき、研究シナリオを生成しました。
                                 右側のプレビューパネルからシナリオを選択してください。
                               </p>
                             </div>

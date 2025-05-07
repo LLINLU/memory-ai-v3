@@ -15,8 +15,8 @@ export const ScenarioSelection: React.FC<ScenarioSelectionProps> = ({
     <div className="mt-8">
       <h2 className="text-2xl font-bold mb-4">研究シナリオを選択</h2>
       <p className="text-gray-700 mb-6">
-        あなたの回答に基づいて、以下の研究シナリオを生成しました。
-        興味に最も合うものを選択してください：
+        ご回答に基づき、以下の研究シナリオを生成しました。
+        ご関心に最も近いものをお選びください：
       </p>
       
       <div className="space-y-4">

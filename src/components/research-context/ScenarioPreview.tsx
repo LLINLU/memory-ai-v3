@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Check, ChevronRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -42,7 +41,7 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
             onClick={onGenerateResult}
             className="bg-blue-500 hover:bg-blue-600"
           >
-            Generate Search Result
+            検索結果へ
           </Button>
         )}
       </div>
@@ -81,10 +80,10 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
         {showScenarios && (
           <>
             <div>
-              <h3 className="text-xl font-semibold mb-3">Choose a Research Scenario</h3>
+              <h3 className="text-xl font-semibold mb-3">研究シナリオを選択してください</h3>
               <p className="text-gray-700 mb-4">
-                Based on your responses, we've generated the following research scenarios. 
-                Please select the one that best matches your interest:
+                ご回答に基づき、以下の研究シナリオを生成しました。
+                ご関心に最も近いものをお選びください。
               </p>
               
               {generatedScenarios.map((scenario, index) => (
@@ -108,7 +107,7 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
                       {selectedScenario === scenario ? (
                         <div className="flex items-center gap-1 text-blue-600 text-sm mt-2">
                           <Check size={16} />
-                          <span>Selected</span>
+                          <span>選択済み</span>
                         </div>
                       ) : (
                         <Button 
@@ -118,7 +117,7 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
                             onScenarioSelect && onScenarioSelect(scenario);
                           }}
                         >
-                          Select This Scenario
+                          このシナリオを選択
                         </Button>
                       )}
                     </div>
