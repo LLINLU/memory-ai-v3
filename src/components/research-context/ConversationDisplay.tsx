@@ -73,7 +73,7 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
       {filteredHistory.map((message, index) => (
         <div key={index} className={`mb-4 ${message.type === "user" ? "flex flex-col items-end" : "flex flex-col items-start"}`}>
           {message.type === "system" ? (
-            <div className="max-w-[80%]">{message.content}</div>
+            <div>{message.content}</div>
           ) : editingIndex === index ? (
             <div className="w-full max-w-3xl">
               <div className="border border-gray-200 rounded-lg p-3 bg-white shadow-sm">
