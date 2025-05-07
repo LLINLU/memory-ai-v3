@@ -25,12 +25,16 @@ export const ScenarioSection = ({
     });
   };
 
+  // Format the template text
+  const templateText = "[WHAT：] を [WHO：対象ユーザー] に対して [WHO：実施者] が [WHERE：環境] で実施し、[WHAT：] によって [WHEN：条件や状況] に対応するものです。";
+
   return (
     <div className="bg-blue-50 rounded-lg p-6 mb-6">
       <div className="flex justify-between items-start">
         <div>
           <h2 className="text-sm font-medium text-blue-600 mb-1">現在のシナリオ:</h2>
-          <p className="text-gray-800 text-base">{scenario}</p>
+          <p className="text-gray-800 text-base mb-2">{scenario}</p>
+          <p className="text-gray-500 text-sm italic">{templateText}</p>
         </div>
         <Button 
           variant="outline" 
