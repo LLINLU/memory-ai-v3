@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { SkipForward } from "lucide-react";
 
 interface InitialOptionsProps {
   initialQuery: string;
@@ -30,8 +31,10 @@ export const InitialOptions: React.FC<InitialOptionsProps> = ({
         <Button 
           onClick={onSkip}
           variant="outline"
+          className="whitespace-nowrap flex items-center gap-1"
         >
-          スキップ
+          <SkipForward className="h-3 w-3" />
+          <span>スキップ</span>
         </Button>
       </div>
     </div>

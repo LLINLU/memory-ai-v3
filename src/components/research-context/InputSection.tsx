@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, SkipForward } from "lucide-react";
 
 interface InputSectionProps {
   inputValue: string;
@@ -29,8 +29,10 @@ export const InputSection: React.FC<InputSectionProps> = ({
             variant="outline"
             size="sm"
             onClick={onSkip}
+            className="whitespace-nowrap flex items-center gap-1"
           >
-            スキップ
+            <SkipForward className="h-3 w-3" />
+            <span>スキップ</span>
           </Button>
         </div>
       )}
