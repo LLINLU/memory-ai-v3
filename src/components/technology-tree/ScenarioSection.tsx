@@ -72,16 +72,12 @@ export const ScenarioSection = ({
 
   const { what, whoTarget, whoImplementer, where, when } = extractScenarioComponents(scenario);
 
-  // Format the 4W template
-  const formattedTemplate = `[WHAT：${what}] を [WHO：${whoTarget}] に対して [WHO：${whoImplementer}] が [WHERE：${where}] で実施し、[WHAT：${what}] によって [WHEN：${when}] に対応するものです。`;
-
   return (
     <div className="bg-blue-50 rounded-lg p-6 mb-6">
       <div className="flex justify-between items-start">
         <div>
           <h2 className="text-sm font-medium text-blue-600 mb-1">現在のシナリオ:</h2>
           <p className="text-gray-800 text-base mb-3">{scenario}</p>
-          <p className="text-gray-700 text-sm">{formattedTemplate}</p>
         </div>
         <Button 
           variant="outline" 
