@@ -105,8 +105,8 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
             </div>
           ) : (
             <div className="flex flex-col items-end">
-              <div className="bg-blue-100 text-blue-900 p-2 rounded-lg max-w-[80%]">
-                <p>{message.content === "Skipped" ? "スキップ" : message.content}</p>
+              <div className="bg-blue-100 text-blue-900 p-2 rounded-lg">
+                <p>{message.content === "Skipped" ? <span className="whitespace-nowrap">スキップ</span> : message.content}</p>
               </div>
               {typeof message.content === 'string' && (
                 <div className="flex gap-1 mt-1">

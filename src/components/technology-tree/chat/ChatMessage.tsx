@@ -35,7 +35,7 @@ export const ChatMessage = ({
   
   return (
     <div 
-      className={`inline-block max-w-[85%] ${
+      className={`inline-block ${
         message.type === 'welcome' 
           ? 'w-full' 
           : ''
@@ -44,7 +44,7 @@ export const ChatMessage = ({
       {message.isUser ? (
         <div className={`${isSkipped ? 'ml-auto bg-blue-50 px-4 py-2 rounded-lg' : 'bg-white border border-gray-200 px-4 py-3 rounded-lg'}`}>
           {isSkipped ? (
-            <span className="text-blue-700 font-medium">Skipped</span>
+            <span className="text-blue-700 font-medium whitespace-nowrap">スキップ</span>
           ) : (
             <p className="text-base">{message.content}</p>
           )}
