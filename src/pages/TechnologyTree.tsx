@@ -99,6 +99,11 @@ const TechnologyTree = () => {
     initializeChat(sidebarTab);
   }, [sidebarTab, initializeChat]);
 
+  // Update page title to reflect the new text if needed
+  useEffect(() => {
+    document.title = "研究背景を整理します | Technology Tree";
+  }, []);
+
   const sidebarContent = (
     <TechTreeSidebar
       sidebarTab={sidebarTab}
