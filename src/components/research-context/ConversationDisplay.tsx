@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Copy, Edit } from "lucide-react";
@@ -105,7 +106,7 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
           ) : (
             <div className="flex flex-col items-end">
               <div className="bg-blue-100 text-blue-900 p-2 rounded-lg max-w-[80%]">
-                <p>{message.content}</p>
+                <p>{message.content === "Skipped" ? "スキップ" : message.content}</p>
               </div>
               {typeof message.content === 'string' && (
                 <div className="flex gap-1 mt-1">
