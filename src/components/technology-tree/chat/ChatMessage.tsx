@@ -35,7 +35,7 @@ export const ChatMessage = ({
   
   return (
     <div 
-      className={`inline-block max-w-[85%] ${
+      className={`inline-block ${
         message.type === 'welcome' 
           ? 'w-full' 
           : ''
