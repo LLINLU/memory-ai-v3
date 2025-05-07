@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { ContextAnswers } from "@/hooks/research-context/useConversationState";
 import { Button } from "@/components/ui/button";
 import { ChartContainer } from "@/components/ui/chart";
-import { Treemap, ResponsiveContainer, Tooltip } from "recharts";
+import { Treemap, Tooltip } from "recharts";
 
 interface ScenarioPreviewProps {
   initialQuery: string;
@@ -127,6 +127,7 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
             size="sm" 
             onClick={onGenerateResult}
             className="bg-blue-500 hover:bg-blue-600"
+            disabled={!selectedScenario} // Disable button if no scenario is selected
           >
             検索結果へ
           </Button>
@@ -225,15 +226,15 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
                   
                   {/* Research areas visualization */}
                   <div className="aspect-video mb-4">
-                    <ChartContainer config={{}} className="w-full h-[270px]">
-                      <Tooltip content={<CustomTooltip />} />
-                      <Treemap
-                        data={researchAreasData}
-                        dataKey="size"
-                        nameKey="name"
-                        fill="#8884d8"
-                        content={<CustomTreemapContent />}
-                      />
+                    <ChartContainer className="w-full h-[270px]">
+                      {React.createElement(Treemap, {
+                        data: researchAreasData,
+                        dataKey: "size",
+                        nameKey: "name",
+                        fill: "#8884d8",
+                        content: CustomTreemapContent
+                      })}
+                      {React.createElement(Tooltip, { content: CustomTooltip })}
                     </ChartContainer>
                   </div>
                   
