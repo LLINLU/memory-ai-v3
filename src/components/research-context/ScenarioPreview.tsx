@@ -226,15 +226,24 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
                   
                   {/* Research areas visualization */}
                   <div className="aspect-video mb-4">
-                    <ChartContainer className="w-full h-[270px]">
-                      {React.createElement(Treemap, {
-                        data: researchAreasData,
-                        dataKey: "size",
-                        nameKey: "name",
-                        fill: "#8884d8",
-                        content: CustomTreemapContent
-                      })}
-                      {React.createElement(Tooltip, { content: CustomTooltip })}
+                    <ChartContainer 
+                      className="w-full h-[270px]"
+                      config={{
+                        "retinal": { color: "#4D82F3" },
+                        "wavefront": { color: "#4ADE80" },
+                        "clinical": { color: "#A855F7" },
+                        "other": { color: "#F59E0B" }
+                      }}
+                    >
+                      <Treemap
+                        data={researchAreasData}
+                        dataKey="size"
+                        nameKey="name"
+                        fill="#8884d8"
+                        content={CustomTreemapContent}
+                      >
+                        <Tooltip content={CustomTooltip} />
+                      </Treemap>
                     </ChartContainer>
                   </div>
                   
