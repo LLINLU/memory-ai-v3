@@ -38,7 +38,7 @@ export const RecentSearches = () => {
 
   return (
     <section className="mt-12">
-      <h2 className="text-2xl font-bold mb-6">最近の検索</h2>
+      <h2 className="text-[1.2rem] font-bold mb-6">最近の検索</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {recentSearches.map((search, index) => (
           <SearchCard key={index} {...search} />
