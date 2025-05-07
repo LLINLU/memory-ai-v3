@@ -9,7 +9,7 @@ interface TechnologyHeaderProps {
 export const TechnologyHeader = ({ query: propQuery }: TechnologyHeaderProps) => {
   const location = useLocation();
   const stateQuery = location.state?.query;
-  const displayQuery = stateQuery || propQuery || '補償光学の眼科分野への利用';
+  const displayQuery = stateQuery || propQuery || 'アダプティブオプティクス技術の高度化を 研究者や技術者が天文学のユーザーに対して 天文台で実施し、精密な波面補正技術によって大気のゆらぎや光学的な歪みなどの状況に対応するものです。他の方法と比較しては、高精度かつ複数分野に応用可能な技術基盤に位置づけられます。';
 
   return (
     <div className="bg-blue-50 rounded-lg p-6 mb-6">
