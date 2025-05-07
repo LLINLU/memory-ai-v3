@@ -1,3 +1,4 @@
+
 import { Step } from "@/components/research-context/ResearchSteps";
 import { useConversationState } from "./research-context/useConversationState";
 import { useNavigationHandlers } from "./research-context/useNavigationHandlers";
@@ -97,6 +98,9 @@ export const useResearchContext = (initialQuery: string, steps: Step[], isEditin
         proceedToTechnologyTree();
       }, 1000);
     }
+    
+    // Reset the input value after submission
+    setInputValue("");
   };
   
   // Core handler for skip action
@@ -129,7 +133,8 @@ export const useResearchContext = (initialQuery: string, steps: Step[], isEditin
   };
 
   // Check if we should show the input section
-  const shouldShowInputSection = !showInitialOptions && !showScenarios && currentStep < steps.length;
+  // Modified to ensure the input is shown even after all questions are answered
+  const shouldShowInputSection = !showInitialOptions && currentStep <= steps.length;
 
   return {
     showInitialOptions,
