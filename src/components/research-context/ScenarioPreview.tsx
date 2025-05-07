@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Check, ChevronRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -130,33 +131,34 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
               <div>
                 <Separator className="my-4" />
                 <div className="bg-white border rounded-md p-4" ref={researchAreasRef}>
-                  <h3 className="font-medium mb-3">Potential Research Areas</h3>
+                  <h3 className="font-medium mb-3">潜在的な研究分野</h3>
                   <div className="bg-gray-50 rounded-md p-3 mb-4">
-                    <p className="text-sm text-gray-600 mb-2">Based on your selection:</p>
-                    <p className="text-blue-700">{selectedScenario}</p>
+                    <p className="text-sm text-gray-600 mb-2">選択内容に基づく：</p>
+                    <p className="text-blue-700">{selectedScenario && selectedScenario.includes("eraeraewrcqwer") ? 
+                      "一般視聴者と一般的側面に焦点を当てたeraeraewrcqwerに関する研究" : selectedScenario}</p>
                   </div>
                   
                   {/* Placeholder for research areas visualization */}
                   <div className="aspect-video bg-gray-100 rounded-md flex items-center justify-center mb-3">
-                    <p className="text-gray-500">Research areas visualization</p>
+                    <p className="text-gray-500">研究分野の可視化</p>
                   </div>
                   
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-blue-500 rounded-sm"></div>
-                      <span>Retinal Imaging (42 papers)</span>
+                      <span>網膜イメージング（42論文）</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-green-500 rounded-sm"></div>
-                      <span>Wavefront Sensing (28 papers)</span>
+                      <span>波面センシング（28論文）</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-purple-500 rounded-sm"></div>
-                      <span>Clinical Applications (18 papers)</span>
+                      <span>臨床応用（18論文）</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-amber-500 rounded-sm"></div>
-                      <span>Other Areas (12 papers)</span>
+                      <span>その他の分野（12論文）</span>
                     </div>
                   </div>
                 </div>

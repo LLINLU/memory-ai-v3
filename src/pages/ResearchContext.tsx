@@ -67,7 +67,7 @@ const ResearchContext = () => {
             <ResizablePanel defaultSize={65} minSize={40}>
               <div className="flex flex-col h-full px-8 py-4">
                 <div className="flex-none flex justify-between items-center mb-4">
-                  <h1 className="text-[1.2rem] font-bold">研究コンテキストビルダー</h1>
+                  <h1 className="text-[1.2rem] font-bold">研究背景を整理します</h1>
                   <Button
                     variant="outline"
                     size="sm"

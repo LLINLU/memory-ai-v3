@@ -34,7 +34,7 @@ export const SearchSection = () => {
 
   return (
     <div className="bg-white p-8 rounded-3xl shadow-sm max-w-5xl mx-auto">
-      <h1 className="text-4xl font-bold text-center mb-12">研究と応用を発見する</h1>
+      <h1 className="text-4xl font-bold text-center mb-12">研究情報を俯瞰する</h1>
       
       <form onSubmit={handleSubmit} className="w-full mx-auto mb-8">
         <div className="relative">
