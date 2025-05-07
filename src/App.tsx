@@ -1,5 +1,5 @@
 
-import React from "react";
+import { StrictMode } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -21,7 +21,7 @@ const queryClient = new QueryClient({
 
 const App = () => {
   return (
-    <React.StrictMode>
+    <StrictMode>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
@@ -37,7 +37,7 @@ const App = () => {
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
-    </React.StrictMode>
+    </StrictMode>
   );
 };
 
