@@ -132,8 +132,8 @@ export const usePathSelection = (initialPath = {
     }
     
     toast({
-      title: "Node added",
-      description: `Added "${node.title}" to Level ${level.charAt(5)}`,
+      title: "ノードが追加されました",
+      description: `「${node.title}」をレベル ${level.charAt(5)}に追加しました`,
       duration: 2000,
     });
   };

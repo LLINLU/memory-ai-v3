@@ -58,7 +58,7 @@ export const ChatConversation = ({
     <div className="flex-1 overflow-y-auto p-4">
       {chatMessages.map((message, index) => {
         const nextMessage = chatMessages[index + 1];
-        const isActionTaken = nextMessage && nextMessage.content === "ノードが作成されました 😊";
+        const isActionTaken = nextMessage && nextMessage.content === "ノードが追加されました 😊";
 
         return (
           <div 

@@ -45,7 +45,7 @@ export const useTechTreeSidebarActions = (
       addCustomNode(level, suggestion);
 
       return [...prev, {
-        content: "ノードが作成されました 😊",
+        content: "ノードが追加されました 😊",
         isUser: false,
         showCheckResults: true
       }];
