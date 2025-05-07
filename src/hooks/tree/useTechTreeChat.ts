@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { processUserMessage } from '@/utils/chatUtils';
 import { ChatMessage } from "@/types/chat";
@@ -69,6 +68,14 @@ export const useTechTreeChat = () => {
     }
   };
 
+  const handleUseNode = (suggestion) => {
+    setChatMessages(prev => [...prev, {
+      content: "ノードが作成されました 😊",
+      isUser: false,
+      showCheckResults: true
+    }]);
+  };
+
   return {
     inputValue,
     chatMessages,
@@ -77,6 +84,7 @@ export const useTechTreeChat = () => {
     initializeChat,
     handleSwitchToChat,
     handleButtonClick,
-    setChatMessages
+    setChatMessages,
+    handleUseNode
   };
 };

@@ -26,7 +26,7 @@ export const SuggestionActions = ({
         className="flex items-center gap-2"
       >
         <Check className="h-4 w-4" />
-        Use this
+        使用する
       </Button>
       <Button 
         variant="outline" 
@@ -35,7 +35,7 @@ export const SuggestionActions = ({
         className="flex items-center gap-2"
       >
         <Edit className="h-4 w-4" />
-        Edit
+        編集
       </Button>
       <Button 
         variant="outline" 
@@ -44,7 +44,7 @@ export const SuggestionActions = ({
         className="flex items-center gap-2"
       >
         <MessageSquare className="h-4 w-4" />
-        Refine further
+        {suggestion.title.includes('Refined') ? 'さらに絞り込む' : 'さらに改良する'}
       </Button>
     </div>
   );

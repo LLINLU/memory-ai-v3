@@ -53,7 +53,7 @@ export const processUserMessage = (message: string): ChatMessage => {
   const suggestion = generateNodeSuggestion(message);
 
   return {
-    content: `Got it — let's work together to create a node that matches what you have in mind.\n\nHere's my suggestion:\n🔹Title: ${suggestion.title}\n🔹Description: ${suggestion.description}\n\nWould you like to:`,
+    content: `了解しました — あなたの考えに合ったノードを一緒に作成しましょう。\n\nこちらが私の提案です：\n◆タイトル：${suggestion.title}\n◆説明：${suggestion.description}\n\nいかがでしょうか：`,
     isUser: false,
     suggestion,
     type: 'suggestion'

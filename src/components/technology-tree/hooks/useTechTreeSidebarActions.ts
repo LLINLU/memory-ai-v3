@@ -45,7 +45,7 @@ export const useTechTreeSidebarActions = (
       addCustomNode(level, suggestion);
 
       return [...prev, {
-        content: "The node has been created 😊",
+        content: "ノードが作成されました 😊",
         isUser: false,
         showCheckResults: true
       }];
@@ -69,7 +69,7 @@ export const useTechTreeSidebarActions = (
     setChatMessages(prev => [
       ...prev,
       {
-        content: `I'll help you refine this node further. What specific aspects would you like to develop about "${suggestion.title}"?`,
+        content: `このノードをさらに改良するのをお手伝いします。「${suggestion.title}」についてどの側面をより詳しく説明したいですか？`,
         isUser: false
       }
     ]);
