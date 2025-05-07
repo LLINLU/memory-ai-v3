@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { NavigateFunction } from "react-router-dom";
+import { ContextAnswers } from "./useConversationState";
 
 interface ScenarioHandlersProps {
   initialQuery: string;
@@ -13,6 +14,7 @@ interface ScenarioHandlersProps {
   selectScenario: (scenario: string) => void;
   resetNavigation: () => void;
   resetConversation: () => void;
+  answers: ContextAnswers;
 }
 
 export const useScenarioHandlers = ({
@@ -25,7 +27,8 @@ export const useScenarioHandlers = ({
   setGeneratedScenarios,
   selectScenario,
   resetNavigation,
-  resetConversation
+  resetConversation,
+  answers
 }: ScenarioHandlersProps) => {
   // Track selected scenario
   const [selectedScenario, setSelectedScenario] = useState<string>(currentScenario || "");
@@ -76,11 +79,12 @@ export const useScenarioHandlers = ({
 
   // Function to generate search results and navigate to technology tree
   const handleGenerateResult = () => {
-    // Navigate to the technology tree page with the selected scenario
+    // Navigate to the technology tree page with the selected scenario and research answers
     navigate('/technology-tree', {
       state: {
         query: initialQuery,
-        scenario: selectedScenario || `Research on ${initialQuery}`
+        scenario: selectedScenario || `Research on ${initialQuery}`,
+        researchAnswers: answers
       }
     });
   };

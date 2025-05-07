@@ -1,4 +1,3 @@
-
 import { Step } from "@/components/research-context/ResearchSteps";
 import { useConversationState } from "./research-context/useConversationState";
 import { useNavigationHandlers } from "./research-context/useNavigationHandlers";
@@ -59,7 +58,8 @@ export const useResearchContext = (initialQuery: string, steps: Step[], isEditin
     setGeneratedScenarios,
     selectScenario,
     resetNavigation,
-    resetConversation
+    resetConversation,
+    answers // Pass the answers to the scenario handlers
   });
 
   // Core handler for initial option selection
