@@ -84,7 +84,7 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
                   rows={3}
                 />
                 <div className="text-xs text-gray-500 mt-1">
-                  <span>Editing this message will update the scenario</span>
+                  <span>このメッセージを編集するとシナリオが更新されます</span>
                 </div>
               </div>
               <div className="flex justify-end gap-2 mt-2">
@@ -93,13 +93,13 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
                   size="sm"
                   onClick={handleCancelEdit}
                 >
-                  Cancel
+                  キャンセル
                 </Button>
                 <Button 
                   size="sm"
                   onClick={handleUpdateEdit}
                 >
-                  Update
+                  更新する
                 </Button>
               </div>
             </div>
