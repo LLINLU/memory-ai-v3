@@ -106,7 +106,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="flex items-center justify-between">
-        <h4 className="text-lg font-medium">{item.name}</h4>
+        <h4 className="text-base leading-6 font-medium">{item.name}</h4>
         
         {isHovered && nodeWidth > 250 && (
           <div className={`flex gap-1`}>
