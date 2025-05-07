@@ -41,7 +41,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
     // Scroll to the top of the page
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
-    // Extract the level number from the title (e.g., "Level 1" -> "1")
+    // Extract the level number from the title (e.g., "レベル1" -> "1")
     // Updated to handle Japanese title format
     const levelNumber = title === "レベル1" ? "1" : 
                         title === "レベル2" ? "2" : 
@@ -51,7 +51,9 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
     // Update sidebar tab to chat with level-specific message
     const customEvent = new CustomEvent('switch-to-chat', {
       detail: {
-        message: `👋 Hi there!\nReady to add a new node under Level ${levelNumber}? Here's how you can start:\n🔹 Option 1: Enter a clear Title and Description yourself.\n🔹 Option 2: Just describe your idea in natural language — I'll help turn it into a well-structured node!`
+        message: `👋 こんにちは！レベル${levelNumber}の下に新しいノードを追加する準備はできていますか？始め方は次のとおりです：
+🔹 オプション1：タイトルと説明を自分ではっきりと入力してください。
+🔹 オプション2：自然な言葉であなたのアイデアを説明するだけでいいです — 私がそれを適切に構造化されたノードに変換するお手伝いをします！`
       }
     });
     document.dispatchEvent(customEvent);
