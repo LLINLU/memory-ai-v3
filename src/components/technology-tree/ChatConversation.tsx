@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Check, Edit, MessageSquare, CheckCircle } from 'lucide-react';
 import { ChatMessage, NodeSuggestion } from '@/types/chat';
@@ -19,6 +19,16 @@ export const ChatConversation = ({
   onRefine,
   onCheckResults 
 }: ChatConversationProps) => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatMessages]);
+
   const renderSuggestionActions = (suggestion: NodeSuggestion, isDisabled: boolean) => (
     <div className="flex flex-wrap gap-2 mt-3">
       <Button 
@@ -93,6 +103,7 @@ export const ChatConversation = ({
           </div>
         );
       })}
+      <div ref={messagesEndRef} />
     </div>
   );
 };

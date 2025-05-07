@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { ChatMessage } from './ChatMessage';
 import { NodeSuggestion } from "@/types/chat";
 
@@ -18,6 +18,16 @@ export const ChatConversationBox = ({
   onEditNode,
   onRefine
 }: ChatConversationBoxProps) => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   return (
     <div className="flex-1 overflow-y-auto p-4 bg-gray-50 relative">
       {messages.length === 0 ? (
@@ -46,6 +56,7 @@ export const ChatConversationBox = ({
               </div>
             );
           })}
+          <div ref={messagesEndRef} />
         </div>
       )}
     </div>
