@@ -19,7 +19,7 @@ export const ResultsTabs = () => {
             論文
           </TabsTrigger>
           <TabsTrigger value="implementations" className={`${activeTab === "implementations" ? "bg-blue-500 text-white" : "bg-gray-100"} rounded-md py-2 px-6 text-base`}>
-            実装
+            事例
           </TabsTrigger>
           <TabsTrigger value="researchers" className={`${activeTab === "researchers" ? "bg-blue-500 text-white" : "bg-gray-100"} rounded-md py-2 px-6 text-base`}>
             Researchers
@@ -68,19 +68,19 @@ export const ResultsTabs = () => {
         
         <TabsContent value="implementations" className="mt-0">
           <div className="bg-white p-6 border border-gray-200 rounded-md">
-            <h3 className="text-xl font-bold mb-4">Implementation Examples</h3>
-            <p className="text-gray-600 mb-4">Implementation data will be displayed here.</p>
+            <h3 className="text-xl font-bold mb-4">事例の例</h3>
+            <p className="text-gray-600 mb-4">事例データがここに表示されます。</p>
             <div className="space-y-4">
               <div className="border-b pb-4">
-                <h4 className="font-semibold mb-2">Commercial AO-SLO System by OptiVision</h4>
+                <h4 className="font-semibold mb-2">OptiVision社による商用AO-SLOシステム</h4>
                 <p className="text-sm text-gray-600">
-                  Commercially available adaptive optics system for clinical ophthalmology applications. Featuring real-time wavefront sensing and high-speed image acquisition for cellular-level retinal assessment.
+                  臨床眼科アプリケーション向けの市販の適応光学システム。細胞レベルの網膜評価のためのリアルタイム波面センシングと高速画像取得機能を備えています。
                 </p>
               </div>
               <div className="border-b pb-4">
-                <h4 className="font-semibold mb-2">Research-Grade AO Platform at Tokyo Medical University</h4>
+                <h4 className="font-semibold mb-2">東京医科大学の研究グレードAOプラットフォーム</h4>
                 <p className="text-sm text-gray-600">
-                  Custom-built adaptive optics system integrating multiple imaging modalities for advanced research applications. The platform enables simultaneous fluorescence imaging and structural assessment.
+                  高度な研究アプリケーション向けに複数のイメージングモダリティを統合したカスタムビルドの適応光学システム。このプラットフォームにより、蛍光イメージングと構造評価を同時に行うことが可能です。
                 </p>
               </div>
             </div>
@@ -89,19 +89,19 @@ export const ResultsTabs = () => {
         
         <TabsContent value="researchers" className="mt-0">
           <div className="bg-white p-6 border border-gray-200 rounded-md">
-            <h3 className="text-xl font-bold mb-4">Key Researchers</h3>
-            <p className="text-gray-600 mb-4">Researcher profiles will be displayed here.</p>
+            <h3 className="text-xl font-bold mb-4">主要研究者</h3>
+            <p className="text-gray-600 mb-4">研究者のプロフィールがここに表示されます。</p>
             <div className="space-y-4">
               <div className="border-b pb-4">
-                <h4 className="font-semibold mb-2">Dr. Keiko Suzuki - University of Tokyo</h4>
+                <h4 className="font-semibold mb-2">鈴木 恵子 博士 - 東京大学</h4>
                 <p className="text-sm text-gray-600">
-                  Leading researcher in adaptive optics applications for ophthalmic imaging with over 45 publications. Pioneer in developing novel wavefront sensing techniques for improved retinal visualization.
+                  眼科イメージングのための適応光学アプリケーションの第一線の研究者で、45以上の出版物があります。網膜視覚化の向上のための新しい波面センシング技術の先駆者。
                 </p>
               </div>
               <div className="border-b pb-4">
-                <h4 className="font-semibold mb-2">Prof. Michael Chen - Stanford University</h4>
+                <h4 className="font-semibold mb-2">マイケル・チェン教授 - スタンフォード大学</h4>
                 <p className="text-sm text-gray-600">
-                  Principal investigator focusing on computational approaches to enhance adaptive optics imaging. His work bridges optical engineering and clinical applications for early disease detection.
+                  適応光学イメージングを強化するための計算アプローチに焦点を当てる主任研究者。彼の研究は、早期疾患検出のための光学工学と臨床応用を橋渡ししています。
                 </p>
               </div>
             </div>
@@ -110,19 +110,19 @@ export const ResultsTabs = () => {
         
         <TabsContent value="patents" className="mt-0">
           <div className="bg-white p-6 border border-gray-200 rounded-md">
-            <h3 className="text-xl font-bold mb-4">Related Patents</h3>
-            <p className="text-gray-600 mb-4">Patent information will be displayed here.</p>
+            <h3 className="text-xl font-bold mb-4">関連特許</h3>
+            <p className="text-gray-600 mb-4">特許情報がここに表示されます。</p>
             <div className="space-y-4">
               <div className="border-b pb-4">
-                <h4 className="font-semibold mb-2">JP2023-178456: Advanced Wavefront Correction System</h4>
+                <h4 className="font-semibold mb-2">JP2023-178456：先進的波面補正システム</h4>
                 <p className="text-sm text-gray-600">
-                  Patent covering novel deformable mirror technology with enhanced stroke and spatial resolution for improved correction of high-order aberrations in ophthalmic imaging systems.
+                  眼科イメージングシステムにおける高次収差の補正を向上させるための、拡張されたストロークと空間解像度を持つ新しい可変形ミラー技術に関する特許。
                 </p>
               </div>
               <div className="border-b pb-4">
-                <h4 className="font-semibold mb-2">US10,892,345: Multi-conjugate Adaptive Optics for Retinal Imaging</h4>
+                <h4 className="font-semibold mb-2">US10,892,345：網膜イメージングのためのマルチコンジュゲート適応光学</h4>
                 <p className="text-sm text-gray-600">
-                  Patented approach using multiple deformable mirrors to correct aberrations at different depths in the eye, enabling volumetric imaging with consistent quality throughout retinal layers.
+                  目の中の異なる深さで収差を補正するために複数の可変形ミラーを使用する特許取得済みのアプローチで、網膜層全体を通じて一貫した品質の体積画像を可能にします。
                 </p>
               </div>
             </div>

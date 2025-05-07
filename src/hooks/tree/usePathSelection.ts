@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { NodeSuggestion } from "@/types/chat";
 import { toast } from "@/hooks/use-toast";
@@ -85,7 +86,7 @@ export const usePathSelection = (initialPath = {
     const newNode = {
       id: nodeId,
       name: node.title,
-      info: "18論文 • 4実装",
+      info: "18論文 • 4事例",
       isCustom: true,
       description: node.description || `Custom node for ${node.title}`
     };
@@ -100,7 +101,7 @@ export const usePathSelection = (initialPath = {
         [nodeId]: [{
           id: childId,
           name: childNode.title,
-          info: "18論文 • 4実装",
+          info: "18論文 • 4事例",
           isCustom: true,
           description: childNode.description
         }]
@@ -124,7 +125,7 @@ export const usePathSelection = (initialPath = {
         [nodeId]: [{
           id: childId,
           name: childNode.title,
-          info: "18論文 • 4実装",
+          info: "18論文 • 4事例",
           isCustom: true,
           description: childNode.description
         }]

@@ -35,7 +35,7 @@ export const ImplementationCard = ({
 
   const handleSave = () => {
     toast({
-      title: "実装を保存しました",
+      title: "事例を保存しました",
       description: `${title}があなたのライブラリに保存されました`
     });
   };

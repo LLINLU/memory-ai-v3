@@ -66,7 +66,7 @@ export const ChatConversation = ({
             className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-4`}
           >
             <div 
-              className={`inline-block max-w-[85%] p-4 rounded-2xl ${
+              className={`inline-block max-w-[85%] ${
                 message.isUser 
                   ? 'bg-blue-100 text-blue-900' 
                   : 'bg-white text-gray-800 border border-gray-200'
