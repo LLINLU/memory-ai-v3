@@ -1,10 +1,21 @@
 
+import React, { useEffect } from "react";
 import { SearchSection } from "@/components/SearchSection";
 import { RecentSearches } from "@/components/RecentSearches";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 const Index = () => {
+  // Force sidebar to be open when component mounts
+  useEffect(() => {
+    try {
+      // Set cookie to ensure sidebar is expanded
+      document.cookie = "sidebar:state=true; path=/; max-age=604800";
+    } catch (e) {
+      console.error("Failed to set sidebar cookie:", e);
+    }
+  }, []);
+
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen flex w-full items-center justify-center">

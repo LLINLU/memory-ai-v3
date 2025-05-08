@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { SearchBar } from "@/components/search-results/SearchBar";
 import { SearchCriteria } from "@/components/search-results/SearchCriteria";
@@ -9,6 +9,16 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 const SearchResults = () => {
+  // Force sidebar to be open when component mounts
+  useEffect(() => {
+    try {
+      // Set cookie to ensure sidebar is expanded
+      document.cookie = "sidebar:state=true; path=/; max-age=604800";
+    } catch (e) {
+      console.error("Failed to set sidebar cookie:", e);
+    }
+  }, []);
+
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen flex w-full">

@@ -30,22 +30,27 @@ export const SidebarProvider = React.forwardRef<
     const [_open, _setOpen] = React.useState(defaultOpen)
     const open = openProp ?? _open
     
+    // Initialize sidebar state from cookie or default
     React.useEffect(() => {
       try {
         const cookieValue = document.cookie
           .split('; ')
           .find(row => row.startsWith(`${SIDEBAR_COOKIE_NAME}=`))
           ?.split('=')[1];
-          
-        if (cookieValue === undefined) {
-          _setOpen(true); // Default to true (expanded) if no cookie found
-        } else {
+        
+        // If we have a cookie value, use it, otherwise use the defaultOpen prop
+        if (cookieValue !== undefined) {
           _setOpen(cookieValue === 'true');
+        } else {
+          _setOpen(defaultOpen);
+          // Set cookie to match defaultOpen
+          document.cookie = `${SIDEBAR_COOKIE_NAME}=${defaultOpen}; path=/; max-age=${60 * 60 * 24 * 7}`;
         }
       } catch (e) {
-        _setOpen(true); // Default to true (expanded) if error
+        console.error("Error reading sidebar cookie:", e);
+        _setOpen(defaultOpen);
       }
-    }, []);
+    }, [defaultOpen]);
     
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {

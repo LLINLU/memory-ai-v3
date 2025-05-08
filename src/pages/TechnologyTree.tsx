@@ -91,6 +91,8 @@ const TechnologyTree = () => {
 
   // Set sidebar to collapsed by default for Technology Tree page
   useEffect(() => {
+    // Force sidebar to be collapsed for this page
+    document.cookie = "sidebar:state=false; path=/; max-age=604800";
     setShowSidebar(false);
     setSidebarTab("result");
     updateTabsHorizontalState("result");
