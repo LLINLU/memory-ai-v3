@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
@@ -132,7 +131,7 @@ const TechnologyTree = () => {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen flex w-full">
-        <AppSidebar />
+        <AppSidebar defaultCollapsed={true} />
         <div className="flex-1">
           <TechTreeLayout
             showSidebar={showSidebar}

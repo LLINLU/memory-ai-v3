@@ -12,9 +12,13 @@ import { SidebarNavigation } from "./sidebar/SidebarNavigation";
 import { SidebarSearches } from "./sidebar/SidebarSearches";
 import { SidebarFooter as CustomSidebarFooter } from "./sidebar/SidebarFooter";
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  defaultCollapsed?: boolean;
+}
+
+export function AppSidebar({ defaultCollapsed }: AppSidebarProps = {}) {
   return (
-    <Sidebar>
+    <Sidebar defaultCollapsed={defaultCollapsed}>
       <SidebarHeader>
         <CustomSidebarHeader />
       </SidebarHeader>
