@@ -67,7 +67,13 @@ export const useResearchContext = (initialQuery: string, steps: Step[], isEditin
   const handleInitialOptionWrapper = (option: 'continue' | 'skip') => {
     const shouldContinue = handleInitialOption(option);
     if (shouldContinue) {
+      // Add the initial message and first question
       addInitialMessage();
+    } else if (option === 'skip') {
+      // Even if skipping the questions flow, we should show scenarios
+      setTimeout(() => {
+        proceedToTechnologyTree();
+      }, 1000);
     }
     return shouldContinue;
   };
@@ -133,7 +139,6 @@ export const useResearchContext = (initialQuery: string, steps: Step[], isEditin
   };
 
   // Check if we should show the input section
-  // Modified to ensure the input is shown even after all questions are answered
   const shouldShowInputSection = !showInitialOptions && currentStep <= steps.length;
 
   return {

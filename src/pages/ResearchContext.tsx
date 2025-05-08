@@ -107,22 +107,22 @@ const ResearchContext = () => {
                       onSkip={() => handleInitialOption('skip')}
                     />
                   ) : (
-                    <div className="flex flex-col h-full">
+                    <div className="flex flex-col h-full relative">
                       {/* Scrollable conversation area - takes available space */}
-                      <div className="flex-grow overflow-hidden">
-                        {!isEditingScenario && (
+                      {!isEditingScenario && (
+                        <div className="flex-grow overflow-hidden mb-4">
                           <ScrollArea className="h-full pr-4">
                             <ConversationDisplay 
                               conversationHistory={conversationHistory} 
                               onEditReply={handleEditUserReply}
                             />
                           </ScrollArea>
-                        )}
-                      </div>
+                        </div>
+                      )}
                       
                       {/* Scenario message - positioned at bottom above input */}
                       {showScenarios && !isEditingScenario && (
-                        <div className="mt-4 mb-4" ref={scenarioMessageRef}>
+                        <div className="mb-4" ref={scenarioMessageRef}>
                           <div className="bg-blue-50 p-4 rounded-md">
                             <h2 className="text-xl font-semibold mb-2">研究シナリオの準備完了</h2>
                             <p className="text-blue-700">
@@ -134,8 +134,8 @@ const ResearchContext = () => {
                       )}
                       
                       {/* Input section always at bottom */}
-                      <div className="mt-2">
-                        {(!showInitialOptions || shouldShowInputSection) && !isEditingScenario && (
+                      {(!showInitialOptions || shouldShowInputSection) && !isEditingScenario && (
+                        <div className="mt-auto">
                           <InputSection
                             inputValue={inputValue}
                             placeholder={steps[Math.min(currentStep, steps.length - 1)]?.placeholder}
@@ -144,8 +144,8 @@ const ResearchContext = () => {
                             onSkip={handleSkip}
                             showSkip={currentStep < steps.length}
                           />
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
