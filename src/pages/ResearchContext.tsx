@@ -1,4 +1,3 @@
-
 import { useLocation } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -65,7 +64,7 @@ const ResearchContext = () => {
         <AppSidebar />
         <div className="flex-1 bg-gray-50 flex flex-col overflow-hidden">
           <ResizablePanelGroup direction="horizontal" className="h-full">
-            <ResizablePanel defaultSize={65} minSize={40}>
+            <ResizablePanel defaultSize={50} minSize={40}>
               <div className="flex flex-col h-full px-8 py-4">
                 <div className="flex-none flex justify-between items-center mb-4">
                   <h1 className="text-[1.2rem] font-bold">研究背景を整理します</h1>
@@ -130,7 +129,7 @@ const ResearchContext = () => {
 
             <ResizableHandle />
 
-            <ResizablePanel defaultSize={35} minSize={25}>
+            <ResizablePanel defaultSize={50} minSize={25}>
               <div className="h-full bg-gray-100 border-l border-gray-200">
                 <ScenarioPreview
                   initialQuery={initialQuery}
