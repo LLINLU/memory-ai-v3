@@ -1,25 +1,28 @@
 
-import React from 'react';
+import React, { useContext } from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 interface ScenarioSectionProps {
   scenario?: string;
   onEditScenario?: (newScenario: string) => void;
+  conversationHistory?: any[];
 }
 
 export const ScenarioSection = ({ 
   scenario = "網膜疾患を持つ医療専門家と患者が、早期発見のための非侵襲的診断方法を求める臨床環境",
-  onEditScenario 
+  onEditScenario,
+  conversationHistory = []
 }: ScenarioSectionProps) => {
   const navigate = useNavigate();
 
   const handleEditScenario = () => {
-    // Navigate to Research Context page instead of showing modal
+    // Navigate to Research Context page with conversation history
     navigate('/research-context', { 
       state: { 
         editingScenario: true,
-        currentScenario: scenario
+        currentScenario: scenario,
+        savedConversationHistory: conversationHistory
       } 
     });
   };
@@ -104,4 +107,3 @@ export const ScenarioSection = ({
     </div>
   );
 };
-

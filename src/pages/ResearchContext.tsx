@@ -1,3 +1,4 @@
+
 import { useLocation } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -17,16 +18,18 @@ const ResearchContext = () => {
   const location = useLocation();
   const [isResearchAreaVisible, setIsResearchAreaVisible] = useState(false);
   
-  // Get the query from location state (passed from homepage)
+  // Get the query and conversation history from location state (passed from technology-tree page)
   const locationState = location.state as { 
     query?: string, 
     editingScenario?: boolean,
-    currentScenario?: string 
+    currentScenario?: string,
+    savedConversationHistory?: any[]
   } || {};
   
   const initialQuery = locationState.query || "";
   const editingFromState = locationState.editingScenario || false;
   const currentScenario = locationState.currentScenario || "";
+  const savedConversationHistory = locationState.savedConversationHistory || [];
   
   // Get steps and research context logic
   const steps = useResearchSteps();
@@ -51,12 +54,20 @@ const ResearchContext = () => {
     handleGenerateResult,
     researchAreasRef,
     shouldShowInputSection,
-    isEditingScenario
-  } = useResearchContext(initialQuery, steps, editingFromState, currentScenario);
+    isEditingScenario,
+    initializeSavedHistory
+  } = useResearchContext(initialQuery, steps, editingFromState, currentScenario, savedConversationHistory);
 
   // Determine when to show the generate button
   // Show it when we're not in initial state (either in conversation or showing scenarios)
   const showGenerateButton = !showInitialOptions || showScenarios || isEditingScenario;
+  
+  // Initialize conversation history if editing from technology tree
+  useEffect(() => {
+    if (isEditingScenario && savedConversationHistory && savedConversationHistory.length > 0) {
+      initializeSavedHistory(savedConversationHistory);
+    }
+  }, [isEditingScenario, savedConversationHistory, initializeSavedHistory]);
   
   return (
     <SidebarProvider>
@@ -99,13 +110,12 @@ const ResearchContext = () => {
                         />
                       ) : (
                         <>
-                          {!isEditingScenario && (
-                            <ConversationDisplay 
-                              conversationHistory={conversationHistory} 
-                              onEditReply={handleEditUserReply}
-                              onResearchAreaVisible={setIsResearchAreaVisible}
-                            />
-                          )}
+                          {/* Show conversation history even when editing scenario */}
+                          <ConversationDisplay 
+                            conversationHistory={conversationHistory} 
+                            onEditReply={handleEditUserReply}
+                            onResearchAreaVisible={setIsResearchAreaVisible}
+                          />
                         </>
                       )}
                     </div>

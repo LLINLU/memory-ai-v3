@@ -1,10 +1,17 @@
+
 import { Step } from "@/components/research-context/ResearchSteps";
 import { useConversationState } from "./research-context/useConversationState";
 import { useNavigationHandlers } from "./research-context/useNavigationHandlers";
 import { useScenarioHandlers } from "./research-context/useScenarioHandlers";
 import { useNavigate } from "react-router-dom";
 
-export const useResearchContext = (initialQuery: string, steps: Step[], isEditingScenario: boolean = false, currentScenario: string = "") => {
+export const useResearchContext = (
+  initialQuery: string, 
+  steps: Step[], 
+  isEditingScenario: boolean = false, 
+  currentScenario: string = "",
+  savedConversationHistory: any[] = []
+) => {
   const navigate = useNavigate();
 
   // Use the conversation state hook
@@ -20,7 +27,8 @@ export const useResearchContext = (initialQuery: string, steps: Step[], isEditin
     addInitialMessage,
     updateUserResponse,
     setInputValue,
-    resetConversation
+    resetConversation,
+    setConversationHistory
   } = useConversationState(steps);
 
   // Use the navigation handlers hook
@@ -59,8 +67,16 @@ export const useResearchContext = (initialQuery: string, steps: Step[], isEditin
     selectScenario,
     resetNavigation,
     resetConversation,
-    answers // Pass the answers to the scenario handlers
+    answers, // Pass the answers to the scenario handlers
+    conversationHistory // Pass current conversation history
   });
+
+  // Initialize saved conversation history
+  const initializeSavedHistory = (savedHistory: any[]) => {
+    if (savedHistory && savedHistory.length > 0) {
+      setConversationHistory(savedHistory);
+    }
+  };
 
   // Core handler for initial option selection
   const handleInitialOptionWrapper = (option: 'continue' | 'skip') => {
@@ -152,6 +168,7 @@ export const useResearchContext = (initialQuery: string, steps: Step[], isEditin
     handleGenerateResult,
     researchAreasRef,
     shouldShowInputSection,
-    isEditingScenario
+    isEditingScenario,
+    initializeSavedHistory
   };
 };

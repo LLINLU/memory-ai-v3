@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
 import { TechTreeLayout } from "@/components/technology-tree/TechTreeLayout";
@@ -17,7 +18,22 @@ import { useNodeSelectionEffect } from "@/hooks/tree/useNodeSelectionEffect";
 
 const TechnologyTree = () => {
   const location = useLocation();
-  const locationState = location.state as { query?: string; scenario?: string } | null;
+  const locationState = location.state as { 
+    query?: string; 
+    scenario?: string; 
+    researchAnswers?: any;
+    conversationHistory?: any[] 
+  } | null;
+  
+  // Store the conversation history from the research context
+  const [savedConversationHistory, setSavedConversationHistory] = useState<any[]>([]);
+  
+  // Extract conversation history from location state if available
+  useEffect(() => {
+    if (locationState?.conversationHistory) {
+      setSavedConversationHistory(locationState.conversationHistory);
+    }
+  }, [locationState]);
   
   const { scenario, handleEditScenario } = useScenarioState({ 
     initialScenario: locationState?.scenario 
@@ -151,6 +167,7 @@ const TechnologyTree = () => {
               hasUserMadeSelection={hasUserMadeSelection}
               scenario={scenario}
               onEditScenario={handleEditScenario}
+              conversationHistory={savedConversationHistory}
             />
           </TechTreeLayout>
           
