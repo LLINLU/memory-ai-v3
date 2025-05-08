@@ -88,8 +88,9 @@ const ResearchContext = () => {
                 )}
                 
                 <div className="flex-1 overflow-hidden flex flex-col">
-                  <ScrollArea className="flex-1 overflow-y-auto">
-                    <div className="px-1 py-2 min-h-full">
+                  {/* Use the fixed-height scroll area with proper overflow behavior */}
+                  <ScrollArea className="flex-1 overflow-y-auto" style={{ display: 'block' }}>
+                    <div className="px-3 py-4" style={{ minHeight: '100%' }}>
                       {showInitialOptions && !isEditingScenario ? (
                         <InitialOptions 
                           initialQuery={initialQuery}

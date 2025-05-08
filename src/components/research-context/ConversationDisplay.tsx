@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Copy, Edit } from "lucide-react";
 import { toast } from "sonner";
@@ -23,15 +23,25 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editValue, setEditValue] = useState("");
   const conversationEndRef = useRef<HTMLDivElement>(null);
+  const conversationContainerRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    conversationEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  // Improved scroll to bottom function with proper handling
+  const scrollToBottom = useCallback(() => {
+    if (conversationEndRef.current) {
+      conversationEndRef.current.scrollIntoView({ 
+        behavior: "smooth", 
+        block: "end" 
+      });
+    }
+  }, []);
 
   // Scroll to bottom when conversation history changes
   useEffect(() => {
-    scrollToBottom();
-  }, [conversationHistory]);
+    // Only auto-scroll on new messages
+    if (conversationHistory.length > 0) {
+      scrollToBottom();
+    }
+  }, [conversationHistory.length, scrollToBottom]);
 
   const handleCopy = (content: string) => {
     if (typeof content === "string") {
@@ -79,11 +89,15 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
   });
 
   return (
-    <div className="space-y-4 w-full min-h-full pb-6 pt-6">
+    <div 
+      className="w-full space-y-4 pb-8 pt-8" 
+      ref={conversationContainerRef}
+      style={{ minHeight: "100%" }}
+    >
       {filteredHistory.map((message, index) => (
-        <div key={index} className={`mb-6 ${message.type === "user" ? "flex flex-col items-end" : "flex flex-col items-start"}`}>
+        <div key={index} className={`mb-8 ${message.type === "user" ? "flex flex-col items-end" : "flex flex-col items-start"}`}>
           {message.type === "system" ? (
-            <div className="w-full">{message.content}</div>
+            <div className="w-full max-w-full">{message.content}</div>
           ) : editingIndex === index ? (
             <div className="w-full max-w-3xl">
               <div className="border border-gray-200 rounded-lg p-3 bg-white shadow-sm">
