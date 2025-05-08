@@ -87,30 +87,30 @@ const ResearchContext = () => {
                   </div>
                 )}
                 
-                <div className="flex-1 overflow-hidden">
-                  <ScrollArea className="h-full">
-                    {showInitialOptions && !isEditingScenario ? (
-                      <InitialOptions 
-                        initialQuery={initialQuery}
-                        onContinue={() => handleInitialOption('continue')}
-                        onSkip={() => handleInitialOption('skip')}
-                      />
-                    ) : (
-                      <>
-                        {!isEditingScenario && (
-                          <ConversationDisplay 
-                            conversationHistory={conversationHistory} 
-                            onEditReply={handleEditUserReply}
-                          />
-                        )}
-                        
-                        {/* Removed the "研究シナリオの準備完了" section */}
-                      </>
-                    )}
+                <div className="flex-1 overflow-hidden flex flex-col">
+                  <ScrollArea className="flex-1 h-full">
+                    <div className="pb-4">
+                      {showInitialOptions && !isEditingScenario ? (
+                        <InitialOptions 
+                          initialQuery={initialQuery}
+                          onContinue={() => handleInitialOption('continue')}
+                          onSkip={() => handleInitialOption('skip')}
+                        />
+                      ) : (
+                        <>
+                          {!isEditingScenario && (
+                            <ConversationDisplay 
+                              conversationHistory={conversationHistory} 
+                              onEditReply={handleEditUserReply}
+                            />
+                          )}
+                        </>
+                      )}
+                    </div>
                   </ScrollArea>
                 </div>
                 
-                <div className="flex-none">
+                <div className="flex-none mt-4">
                   {shouldShowInputSection && (
                     <InputSection
                       inputValue={inputValue}
