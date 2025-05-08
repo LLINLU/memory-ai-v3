@@ -18,12 +18,12 @@ export const PreviewHeader: React.FC<PreviewHeaderProps> = ({
   return (
     <div className="bg-white p-4 border-b flex justify-between items-center">
       <h2 className="text-[1rem] font-bold">プレビュー</h2>
-      {showGenerateButton && !isResearchAreaVisible && (
+      {showGenerateButton && (
         <Button 
           variant="default" 
           size="sm" 
           onClick={onGenerateResult}
-          className="bg-blue-500 hover:bg-blue-600"
+          className={`bg-blue-500 hover:bg-blue-600 transition-opacity duration-300 ${isResearchAreaVisible ? 'opacity-0' : 'opacity-100'}`}
           disabled={!selectedScenario} // Disable button if no scenario is selected
         >
           検索結果へ
