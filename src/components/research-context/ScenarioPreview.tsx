@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Check, ChevronRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -215,7 +214,7 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
             </div>
             
             {selectedScenario && (
-              <div>
+              <>
                 <Separator className="my-4" />
                 <div className="bg-white border rounded-md p-4" ref={researchAreasRef}>
                   <h3 className="font-medium mb-3">潜在的な研究分野</h3>
@@ -264,18 +263,18 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
                       <span>その他の分野（12論文）</span>
                     </div>
                   </div>
-                  
-                  {/* Updated 検索結果へ button with modern styling that matches the image */}
-                  <div className="mt-6 flex justify-center">
-                    <Button
-                      onClick={onGenerateResult}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-10 py-6 rounded-md text-base font-medium h-auto w-full max-w-xs flex items-center justify-center"
-                    >
-                      検索結果へ
-                    </Button>
-                  </div>
                 </div>
-              </div>
+                
+                {/* 検索結果へ button - moved outside of the section and with shorter height */}
+                <div className="mt-4 flex justify-center">
+                  <Button
+                    onClick={onGenerateResult}
+                    className="bg-blue-500 hover:bg-blue-600 text-white w-full max-w-xs"
+                  >
+                    検索結果へ
+                  </Button>
+                </div>
+              </>
             )}
           </>
         )}
@@ -289,4 +288,3 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
     </div>
   );
 };
-
