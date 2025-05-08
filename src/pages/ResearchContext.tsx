@@ -97,36 +97,38 @@ const ResearchContext = () => {
                   </div>
                 )}
                 
-                <div className="flex-1 overflow-hidden">
-                  <ScrollArea className="h-full">
-                    {showInitialOptions && !isEditingScenario ? (
-                      <InitialOptions 
-                        initialQuery={initialQuery}
-                        onContinue={() => handleInitialOption('continue')}
-                        onSkip={() => handleInitialOption('skip')}
-                      />
-                    ) : (
-                      <>
-                        {!isEditingScenario && (
-                          <ConversationDisplay 
-                            conversationHistory={conversationHistory} 
-                            onEditReply={handleEditUserReply}
-                          />
-                        )}
-                        
-                        {showScenarios && (
-                          <div className="mt-6" ref={scenarioMessageRef}>
-                            <div className="bg-blue-50 p-4 rounded-md">
-                              <h2 className="text-xl font-semibold mb-2">研究シナリオの準備完了</h2>
-                              <p className="text-blue-700">
-                                ご回答に基づき、研究シナリオを生成しました。
-                                右側のプレビューパネルからシナリオを選択してください。
-                              </p>
+                <div className="flex-1 overflow-hidden flex flex-col">
+                  <ScrollArea className="flex-1">
+                    <div className="pr-4">
+                      {showInitialOptions && !isEditingScenario ? (
+                        <InitialOptions 
+                          initialQuery={initialQuery}
+                          onContinue={() => handleInitialOption('continue')}
+                          onSkip={() => handleInitialOption('skip')}
+                        />
+                      ) : (
+                        <>
+                          {!isEditingScenario && (
+                            <ConversationDisplay 
+                              conversationHistory={conversationHistory} 
+                              onEditReply={handleEditUserReply}
+                            />
+                          )}
+                          
+                          {showScenarios && (
+                            <div className="mt-6" ref={scenarioMessageRef}>
+                              <div className="bg-blue-50 p-4 rounded-md">
+                                <h2 className="text-xl font-semibold mb-2">研究シナリオの準備完了</h2>
+                                <p className="text-blue-700">
+                                  ご回答に基づき、研究シナリオを生成しました。
+                                  右側のプレビューパネルからシナリオを選択してください。
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        )}
-                      </>
-                    )}
+                          )}
+                        </>
+                      )}
+                    </div>
                   </ScrollArea>
                 </div>
                 
