@@ -1,3 +1,4 @@
+
 import { useLocation } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -96,58 +97,57 @@ const ResearchContext = () => {
                   </div>
                 )}
                 
-                {/* Main content area - use flex-1 to make it fill available space */}
-                <div className="flex-1 flex flex-col overflow-hidden">
-                  {/* Scrollable area - use flex-grow to take available space */}
-                  <div className="flex-grow overflow-hidden">
-                    <ScrollArea>
-                      <div className="pr-4 pb-4">
-                        {showInitialOptions && !isEditingScenario ? (
-                          <InitialOptions 
-                            initialQuery={initialQuery}
-                            onContinue={() => handleInitialOption('continue')}
-                            onSkip={() => handleInitialOption('skip')}
-                          />
-                        ) : (
-                          <>
-                            {!isEditingScenario && (
-                              <ConversationDisplay 
-                                conversationHistory={conversationHistory} 
-                                onEditReply={handleEditUserReply}
-                              />
-                            )}
-                          </>
+                {/* Main content area with flex grow to fill available space */}
+                <div className="flex-grow flex flex-col h-full overflow-hidden">
+                  {/* Conditional render based on initial options or conversation */}
+                  {showInitialOptions && !isEditingScenario ? (
+                    <InitialOptions 
+                      initialQuery={initialQuery}
+                      onContinue={() => handleInitialOption('continue')}
+                      onSkip={() => handleInitialOption('skip')}
+                    />
+                  ) : (
+                    <div className="flex flex-col h-full">
+                      {/* Scrollable conversation area - takes available space */}
+                      <div className="flex-grow overflow-hidden">
+                        {!isEditingScenario && (
+                          <ScrollArea className="h-full pr-4">
+                            <ConversationDisplay 
+                              conversationHistory={conversationHistory} 
+                              onEditReply={handleEditUserReply}
+                            />
+                          </ScrollArea>
                         )}
                       </div>
-                    </ScrollArea>
-                  </div>
-                  
-                  {/* Scenario message - keep this outside the ScrollArea to position it above input */}
-                  {showScenarios && !isEditingScenario && (
-                    <div className="flex-none mt-4 mb-4" ref={scenarioMessageRef}>
-                      <div className="bg-blue-50 p-4 rounded-md">
-                        <h2 className="text-xl font-semibold mb-2">研究シナリオの準備完了</h2>
-                        <p className="text-blue-700">
-                          ご回答に基づき、研究シナリオを生成しました。
-                          右側のプレビューパネルからシナリオを選択してください。
-                        </p>
+                      
+                      {/* Scenario message - positioned at bottom above input */}
+                      {showScenarios && !isEditingScenario && (
+                        <div className="mt-4 mb-4" ref={scenarioMessageRef}>
+                          <div className="bg-blue-50 p-4 rounded-md">
+                            <h2 className="text-xl font-semibold mb-2">研究シナリオの準備完了</h2>
+                            <p className="text-blue-700">
+                              ご回答に基づき、研究シナリオを生成しました。
+                              右側のプレビューパネルからシナリオを選択してください。
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Input section always at bottom */}
+                      <div className="mt-2">
+                        {(!showInitialOptions || shouldShowInputSection) && !isEditingScenario && (
+                          <InputSection
+                            inputValue={inputValue}
+                            placeholder={steps[Math.min(currentStep, steps.length - 1)]?.placeholder}
+                            onInputChange={handleInputChange}
+                            onSubmit={handleSubmit}
+                            onSkip={handleSkip}
+                            showSkip={currentStep < steps.length}
+                          />
+                        )}
                       </div>
                     </div>
                   )}
-                  
-                  {/* Input section - always at the bottom */}
-                  <div className="flex-none mt-2">
-                    {(!showInitialOptions || shouldShowInputSection) && !isEditingScenario && (
-                      <InputSection
-                        inputValue={inputValue}
-                        placeholder={steps[Math.min(currentStep, steps.length - 1)]?.placeholder}
-                        onInputChange={handleInputChange}
-                        onSubmit={handleSubmit}
-                        onSkip={handleSkip}
-                        showSkip={currentStep < steps.length}
-                      />
-                    )}
-                  </div>
                 </div>
               </div>
             </ResizablePanel>
