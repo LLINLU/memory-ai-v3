@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Copy, Edit } from "lucide-react";
 import { toast } from "sonner";
@@ -22,6 +22,16 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
 }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editValue, setEditValue] = useState("");
+  const conversationEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    conversationEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Scroll to bottom when conversation history changes
+  useEffect(() => {
+    scrollToBottom();
+  }, [conversationHistory]);
 
   const handleCopy = (content: string) => {
     if (typeof content === "string") {
@@ -134,6 +144,7 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
           )}
         </div>
       ))}
+      <div ref={conversationEndRef} />
     </div>
   );
 }

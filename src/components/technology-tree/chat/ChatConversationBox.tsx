@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ChatMessage } from './ChatMessage';
 import { NodeSuggestion } from "@/types/chat";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,18 @@ export const ChatConversationBox = ({
   onRefine,
   onCheckResults
 }: ChatConversationBoxProps) => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Function to scroll to bottom
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Scroll to bottom whenever messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   // Function to check if a message contains the 潜在的な研究分野 section
   const isPotentialResearchFieldMessage = (message: any) => {
     return message.content && typeof message.content === 'string' && 
@@ -71,6 +83,8 @@ export const ChatConversationBox = ({
               </div>
             );
           })}
+          {/* Invisible div to scroll to */}
+          <div ref={messagesEndRef} />
         </div>
       )}
     </div>
