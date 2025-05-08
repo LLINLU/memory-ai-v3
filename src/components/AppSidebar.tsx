@@ -14,7 +14,7 @@ import { SidebarFooter as CustomSidebarFooter } from "./sidebar/SidebarFooter";
 
 export function AppSidebar() {
   return (
-    <Sidebar defaultCollapsed={true}>
+    <Sidebar defaultCollapsed={false}>
       <SidebarHeader>
         <CustomSidebarHeader />
       </SidebarHeader>
