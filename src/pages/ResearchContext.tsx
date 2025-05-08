@@ -59,7 +59,7 @@ const ResearchContext = () => {
   const showGenerateButton = !showInitialOptions || showScenarios || isEditingScenario;
   
   return (
-    <SidebarProvider defaultOpen={false}>
+    <SidebarProvider>
       <div className="h-screen flex w-full overflow-hidden">
         <AppSidebar />
         <div className="flex-1 bg-gray-50 flex flex-col overflow-hidden">

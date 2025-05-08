@@ -1,7 +1,7 @@
 
 import * as React from "react"
 import { Button } from "@/components/ui/button"
-import { PanelLeft, PanelRight } from "lucide-react"
+import { PanelLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useSidebar } from "@/hooks/use-sidebar"
 
@@ -12,10 +12,9 @@ export * from "./sidebar-structure"
 
 export const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
-  React.ComponentProps<typeof Button> & { side?: "left" | "right" }
->(({ className, onClick, side = "left", ...props }, ref) => {
-  const { toggleSidebar, state } = useSidebar()
-  const isCollapsed = state === "collapsed"
+  React.ComponentProps<typeof Button>
+>(({ className, onClick, ...props }, ref) => {
+  const { toggleSidebar } = useSidebar()
 
   return (
     <Button
@@ -30,10 +29,7 @@ export const SidebarTrigger = React.forwardRef<
       }}
       {...props}
     >
-      {side === "left" ? 
-        (isCollapsed ? <PanelRight /> : <PanelLeft />) : 
-        (isCollapsed ? <PanelLeft /> : <PanelRight />)
-      }
+      <PanelLeft />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )

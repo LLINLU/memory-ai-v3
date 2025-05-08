@@ -25,14 +25,14 @@ export function SidebarHeader() {
               variant="ghost"
               size="icon"
               onClick={toggleSidebar}
-              className={`h-8 w-8 ${!isExpanded ? 'flex items-center justify-center ml-1' : ''}`}
+              className={`h-8 w-8 ${!isExpanded ? 'flex items-center justify-center -ml-1' : ''}`}
               aria-label={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
             >
               {isExpanded ? <PanelLeftClose /> : <PanelLeftOpen />}
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>{isExpanded ? "Collapse sidebar" : "Expand sidebar"}</p>
+            <p>Open sidebar</p>
           </TooltipContent>
         </Tooltip>
       </div>

@@ -15,7 +15,7 @@ export const SidebarProvider = React.forwardRef<
 >(
   (
     {
-      defaultOpen = true, // Set to true to have sidebar expanded by default
+      defaultOpen = true,
       open: openProp,
       onOpenChange: setOpenProp,
       className,
@@ -37,13 +37,13 @@ export const SidebarProvider = React.forwardRef<
           .find(row => row.startsWith(`${SIDEBAR_COOKIE_NAME}=`))
           ?.split('=')[1];
           
-        if (cookieValue === undefined) {
-          _setOpen(true); // Default to true (expanded) if no cookie found
+        if (cookieValue === undefined || cookieValue === 'true') {
+          _setOpen(true);
         } else {
           _setOpen(cookieValue === 'true');
         }
       } catch (e) {
-        _setOpen(true); // Default to true (expanded) if error
+        _setOpen(true);
       }
     }, []);
     
@@ -103,7 +103,7 @@ export const SidebarProvider = React.forwardRef<
             style={
               {
                 "--sidebar-width": "16rem",
-                "--sidebar-width-icon": "4rem",
+                "--sidebar-width-icon": "3rem",
                 ...style,
               } as React.CSSProperties
             }
