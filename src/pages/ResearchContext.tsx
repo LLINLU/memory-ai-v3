@@ -104,17 +104,7 @@ const ResearchContext = () => {
                           />
                         )}
                         
-                        {showScenarios && (
-                          <div className="mt-6">
-                            <div className="bg-blue-50 p-4 rounded-md">
-                              <h2 className="text-xl font-semibold mb-2">研究シナリオの準備完了</h2>
-                              <p className="text-blue-700">
-                                ご回答に基づき、研究シナリオを生成しました。
-                                右側のプレビューパネルからシナリオを選択してください。
-                              </p>
-                            </div>
-                          </div>
-                        )}
+                        {/* Removed the "研究シナリオの準備完了" section */}
                       </>
                     )}
                   </ScrollArea>
