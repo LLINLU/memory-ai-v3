@@ -15,7 +15,7 @@ export const SidebarProvider = React.forwardRef<
 >(
   (
     {
-      defaultOpen = true,
+      defaultOpen = false, // Changed from true to false to match the collapsed sidebar default
       open: openProp,
       onOpenChange: setOpenProp,
       className,
@@ -37,13 +37,13 @@ export const SidebarProvider = React.forwardRef<
           .find(row => row.startsWith(`${SIDEBAR_COOKIE_NAME}=`))
           ?.split('=')[1];
           
-        if (cookieValue === undefined || cookieValue === 'true') {
-          _setOpen(true);
+        if (cookieValue === undefined) {
+          _setOpen(false); // Changed from true to false
         } else {
           _setOpen(cookieValue === 'true');
         }
       } catch (e) {
-        _setOpen(true);
+        _setOpen(false); // Changed from true to false
       }
     }, []);
     
