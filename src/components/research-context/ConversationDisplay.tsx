@@ -1,9 +1,10 @@
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { Copy, Edit } from "lucide-react";
+import React, { useState, useRef } from "react";
 import { toast } from "sonner";
-import { Textarea } from "@/components/ui/textarea";
+import { ConversationMessage } from "./conversation-display/ConversationMessage";
+import { useConversationScroll } from "./conversation-display/useConversationScroll";
+import { useResearchAreaObserver } from "./conversation-display/useResearchAreaObserver";
+import { useMessageFilter } from "./conversation-display/useMessageFilter";
 
 interface Message {
   type: "system" | "user";
@@ -27,23 +28,10 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
   const conversationEndRef = useRef<HTMLDivElement>(null);
   const conversationContainerRef = useRef<HTMLDivElement>(null);
 
-  // Improved scroll to bottom function with proper handling
-  const scrollToBottom = useCallback(() => {
-    if (conversationEndRef.current) {
-      conversationEndRef.current.scrollIntoView({ 
-        behavior: "smooth", 
-        block: "end" 
-      });
-    }
-  }, []);
-
-  // Scroll to bottom when conversation history changes
-  useEffect(() => {
-    // Only auto-scroll on new messages
-    if (conversationHistory.length > 0) {
-      scrollToBottom();
-    }
-  }, [conversationHistory.length, scrollToBottom]);
+  // Use the custom hooks
+  const { scrollToBottom } = useConversationScroll(conversationEndRef, conversationHistory.length);
+  useResearchAreaObserver(conversationHistory, onResearchAreaVisible);
+  const filteredHistory = useMessageFilter(conversationHistory);
 
   const handleCopy = (content: string) => {
     if (typeof content === "string") {
@@ -70,54 +58,6 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
     }
   };
 
-  // Filter out duplicate messages with the same questionType
-  const filteredHistory = conversationHistory.filter((message, index, array) => {
-    // Always keep user messages
-    if (message.type === "user") return true;
-    
-    // If it's a system message with a questionType
-    if (message.type === "system" && message.questionType) {
-      // Check if this is the first occurrence of this questionType
-      const firstIndex = array.findIndex(
-        m => m.type === "system" && m.questionType === message.questionType
-      );
-      
-      // If this is the first occurrence, keep it
-      return firstIndex === index;
-    }
-    
-    // Keep all other messages (system messages without questionType)
-    return true;
-  });
-
-  // Track research area visibility
-  useEffect(() => {
-    if (!onResearchAreaVisible) return;
-    
-    // Find all elements that contain the research area section
-    setTimeout(() => {
-      const elements = Array.from(document.querySelectorAll('.conversation-message'))
-        .filter(el => el.textContent?.includes('潜在的な研究分野')) as HTMLDivElement[];
-      
-      if (elements.length === 0) return;
-      
-      const observer = new IntersectionObserver((entries) => {
-        const isVisible = entries.some(entry => entry.isIntersecting);
-        onResearchAreaVisible(isVisible);
-      }, { threshold: 0.3 }); // Consider visible when 30% is visible
-      
-      elements.forEach(element => {
-        observer.observe(element);
-      });
-      
-      return () => {
-        elements.forEach(element => {
-          observer.unobserve(element);
-        });
-      };
-    }, 100);
-  }, [conversationHistory, onResearchAreaVisible]);
-
   return (
     <div 
       className="w-full space-y-4 pb-8 pt-8" 
@@ -126,71 +66,17 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
     >
       {filteredHistory.map((message, index) => (
         <div key={index} className={`mb-8 ${message.type === "user" ? "flex flex-col items-end" : "flex flex-col items-start"}`}>
-          {message.type === "system" ? (
-            <div 
-              className={`w-full max-w-full ${message.content && typeof message.content === 'string' && 
-                message.content.includes('潜在的な研究分野') ? 'conversation-message' : ''}`}
-            >
-              {message.content}
-            </div>
-          ) : editingIndex === index ? (
-            <div className="w-full max-w-3xl">
-              <div className="border border-gray-200 rounded-lg p-3 bg-white shadow-sm">
-                <Textarea 
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  className="w-full resize-none border-0 p-0 focus-visible:ring-0"
-                  rows={3}
-                />
-                <div className="text-xs text-gray-500 mt-1">
-                  <span>このメッセージを編集するとシナリオが更新されます</span>
-                </div>
-              </div>
-              <div className="flex justify-end gap-2 mt-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={handleCancelEdit}
-                >
-                  キャンセル
-                </Button>
-                <Button 
-                  size="sm"
-                  onClick={handleUpdateEdit}
-                >
-                  更新する
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-end">
-              <div className="bg-blue-100 text-blue-900 p-2 rounded-lg">
-                <p>{message.content === "Skipped" ? <span className="whitespace-nowrap">スキップ</span> : message.content}</p>
-              </div>
-              {typeof message.content === 'string' && (
-                <div className="flex gap-1 mt-1">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-5 w-5 p-0.5 hover:bg-blue-200"
-                    onClick={() => handleCopy(message.content as string)}
-                  >
-                    <Copy className="h-3 w-3" />
-                    <span className="sr-only">Copy</span>
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-5 w-5 p-0.5 hover:bg-blue-200"
-                    onClick={() => handleEdit(message.content as string, index)}
-                  >
-                    <Edit className="h-3 w-3" />
-                    <span className="sr-only">Edit</span>
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
+          <ConversationMessage
+            message={message}
+            index={index}
+            editingIndex={editingIndex}
+            editValue={editValue}
+            onCopy={handleCopy}
+            onEdit={handleEdit}
+            onCancelEdit={handleCancelEdit}
+            onUpdateEdit={handleUpdateEdit}
+            setEditValue={setEditValue}
+          />
         </div>
       ))}
       <div ref={conversationEndRef} />

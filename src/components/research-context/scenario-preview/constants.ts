@@ -1,4 +1,3 @@
-
 export const researchAreasData = [
   {
     name: "Retinal Imaging",
