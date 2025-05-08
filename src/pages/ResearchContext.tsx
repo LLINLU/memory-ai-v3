@@ -26,7 +26,7 @@ const ResearchContext = () => {
   } || {};
   
   const initialQuery = locationState.query || "";
-  const isEditingScenario = locationState.editingScenario || false;
+  const editingFromState = locationState.editingScenario || false;
   const currentScenario = locationState.currentScenario || "";
   
   // Get steps and research context logic
@@ -53,7 +53,7 @@ const ResearchContext = () => {
     researchAreasRef,
     shouldShowInputSection,
     isEditingScenario
-  } = useResearchContext(initialQuery, steps, isEditingScenario, currentScenario);
+  } = useResearchContext(initialQuery, steps, editingFromState, currentScenario);
 
   // Determine when to show the generate button
   // Show it when we're not in initial state (either in conversation or showing scenarios)
