@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
@@ -88,11 +89,9 @@ const TechnologyTree = () => {
     setSidebarTab
   });
 
-  // Set sidebar to collapsed by default for Technology Tree page
+  // Ensure sidebar is open and showing results panel by default
   useEffect(() => {
-    // Force sidebar to be collapsed for this page
-    document.cookie = "sidebar:state=false; path=/; max-age=604800";
-    setShowSidebar(false);
+    setShowSidebar(true);
     setSidebarTab("result");
     updateTabsHorizontalState("result");
   }, [setShowSidebar, setSidebarTab]);
@@ -131,7 +130,7 @@ const TechnologyTree = () => {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen flex w-full">
-        <AppSidebar defaultCollapsed={true} />
+        <AppSidebar />
         <div className="flex-1">
           <TechTreeLayout
             showSidebar={showSidebar}
