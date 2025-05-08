@@ -79,7 +79,7 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
   });
 
   return (
-    <div className="space-y-4 min-h-full">
+    <div className="space-y-4 min-h-full pb-4 pt-2">
       {filteredHistory.map((message, index) => (
         <div key={index} className={`mb-4 ${message.type === "user" ? "flex flex-col items-end" : "flex flex-col items-start"}`}>
           {message.type === "system" ? (
