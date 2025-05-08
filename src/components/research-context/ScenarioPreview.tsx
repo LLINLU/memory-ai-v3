@@ -264,6 +264,16 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
                       <span>その他の分野（12論文）</span>
                     </div>
                   </div>
+                  
+                  {/* Add the 検索結果へ button at the bottom of the section */}
+                  <div className="mt-4 flex justify-center">
+                    <Button
+                      onClick={onGenerateResult}
+                      className="bg-blue-500 hover:bg-blue-600 text-white"
+                    >
+                      検索結果へ
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}
@@ -279,4 +289,3 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
     </div>
   );
 };
-

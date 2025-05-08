@@ -126,7 +126,7 @@ export const useConversationState = (steps: Step[]) => {
         ...prev,
         { 
           type: "system", 
-          content: "ご回答いただきありがとうございます。"
+          content: "ご回答いただきありがとうございます。ご回答に基づき、研究シナリオを生成しました。右側のプレビューパネルからシナリオを選択してください。"
         }
       ]);
     }, 300);
