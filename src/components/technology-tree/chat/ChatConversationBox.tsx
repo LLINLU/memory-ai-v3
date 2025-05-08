@@ -2,6 +2,7 @@
 import React from 'react';
 import { ChatMessage } from './ChatMessage';
 import { NodeSuggestion } from "@/types/chat";
+import { Button } from "@/components/ui/button";
 
 interface ChatConversationBoxProps {
   messages: any[];
@@ -9,6 +10,7 @@ interface ChatConversationBoxProps {
   onUseNode?: (suggestion: NodeSuggestion) => void;
   onEditNode?: (suggestion: NodeSuggestion) => void;
   onRefine?: (suggestion: NodeSuggestion) => void;
+  onCheckResults?: () => void;
 }
 
 export const ChatConversationBox = ({
@@ -16,8 +18,15 @@ export const ChatConversationBox = ({
   onButtonClick,
   onUseNode,
   onEditNode,
-  onRefine
+  onRefine,
+  onCheckResults
 }: ChatConversationBoxProps) => {
+  // Function to check if a message contains the 潜在的な研究分野 section
+  const isPotentialResearchFieldMessage = (message: any) => {
+    return message.content && typeof message.content === 'string' && 
+      message.content.includes('潜在的な研究分野');
+  };
+
   return (
     <div className="flex-1 overflow-y-auto p-4 bg-gray-50 relative">
       {messages.length === 0 ? (
@@ -29,20 +38,36 @@ export const ChatConversationBox = ({
           {messages.map((message, index) => {
             const nextMessage = messages[index + 1];
             const isActionTaken = nextMessage && nextMessage.content === "ノードが作成されました 😊";
+            const isResearchFieldSection = isPotentialResearchFieldMessage(message);
             
             return (
               <div 
                 key={index} 
                 className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
               >
-                <ChatMessage 
-                  message={message}
-                  isActionTaken={isActionTaken}
-                  onButtonClick={onButtonClick}
-                  onUseNode={onUseNode}
-                  onEditNode={onEditNode}
-                  onRefine={onRefine}
-                />
+                <div className={`${message.isUser ? '' : 'w-full'}`}>
+                  <ChatMessage 
+                    message={message}
+                    isActionTaken={isActionTaken}
+                    onButtonClick={onButtonClick}
+                    onUseNode={onUseNode}
+                    onEditNode={onEditNode}
+                    onRefine={onRefine}
+                  />
+                  
+                  {/* Add the 検索結果へ button at the bottom of research field section */}
+                  {isResearchFieldSection && onCheckResults && (
+                    <div className="mt-3 flex justify-center">
+                      <Button
+                        onClick={onCheckResults}
+                        className="bg-blue-500 hover:bg-blue-600 text-white"
+                        size="sm"
+                      >
+                        検索結果へ
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}

@@ -16,6 +16,7 @@ interface ChatBoxProps {
   onUseNode?: (suggestion: NodeSuggestion) => void;
   onEditNode?: (suggestion: NodeSuggestion) => void;
   onRefine?: (suggestion: NodeSuggestion) => void;
+  onCheckResults?: () => void;
 }
 
 export const ChatBox = ({
@@ -26,7 +27,8 @@ export const ChatBox = ({
   onButtonClick,
   onUseNode,
   onEditNode,
-  onRefine
+  onRefine,
+  onCheckResults
 }: ChatBoxProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -95,6 +97,7 @@ export const ChatBox = ({
             onUseNode={onUseNode}
             onEditNode={onEditNode}
             onRefine={onRefine}
+            onCheckResults={onCheckResults}
           />
           
           <ChatInputBox 
