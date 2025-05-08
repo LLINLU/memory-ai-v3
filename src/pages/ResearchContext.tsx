@@ -8,7 +8,7 @@ import { InitialOptions } from "@/components/research-context/InitialOptions";
 import { ScenarioPreview } from "@/components/research-context/ScenarioPreview";
 import { useResearchSteps } from "@/components/research-context/ResearchSteps";
 import { useResearchContext } from "@/hooks/useResearchContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import { RefreshCcw } from "lucide-react";
 
 const ResearchContext = () => {
   const location = useLocation();
+  const [isResearchAreaVisible, setIsResearchAreaVisible] = useState(false);
   
   // Get the query from location state (passed from homepage)
   const locationState = location.state as { 
@@ -51,7 +52,7 @@ const ResearchContext = () => {
     handleGenerateResult,
     researchAreasRef,
     shouldShowInputSection,
-    isEditingScenario: isEditing
+    isEditingScenario
   } = useResearchContext(initialQuery, steps, isEditingScenario, currentScenario);
 
   // Determine when to show the generate button
@@ -103,6 +104,7 @@ const ResearchContext = () => {
                             <ConversationDisplay 
                               conversationHistory={conversationHistory} 
                               onEditReply={handleEditUserReply}
+                              onResearchAreaVisible={setIsResearchAreaVisible}
                             />
                           )}
                         </>
@@ -140,6 +142,7 @@ const ResearchContext = () => {
                   onScenarioSelect={handleScenarioSelection}
                   researchAreasRef={researchAreasRef}
                   onGenerateResult={handleGenerateResult}
+                  isResearchAreaVisible={isResearchAreaVisible}
                 />
               </div>
             </ResizablePanel>

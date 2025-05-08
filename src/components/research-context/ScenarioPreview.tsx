@@ -1,4 +1,5 @@
-import React from "react";
+
+import React, { useState, useEffect } from "react";
 import { Check, ChevronRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -17,6 +18,7 @@ interface ScenarioPreviewProps {
   onScenarioSelect?: (scenario: string) => void;
   researchAreasRef?: React.RefObject<HTMLDivElement>;
   onGenerateResult?: () => void;
+  isResearchAreaVisible?: boolean;
 }
 
 export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
@@ -28,7 +30,8 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
   showGenerateButton,
   onScenarioSelect,
   researchAreasRef,
-  onGenerateResult
+  onGenerateResult,
+  isResearchAreaVisible
 }) => {
   const hasAnswers = Object.values(answers).some(answer => answer.trim() !== '');
   
@@ -120,7 +123,7 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
     <div className="flex flex-col h-full">
       <div className="bg-white p-4 border-b flex justify-between items-center">
         <h2 className="text-[1rem] font-bold">プレビュー</h2>
-        {showGenerateButton && (
+        {showGenerateButton && !isResearchAreaVisible && (
           <Button 
             variant="default" 
             size="sm" 
