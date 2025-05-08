@@ -88,8 +88,8 @@ const ResearchContext = () => {
                 )}
                 
                 <div className="flex-1 overflow-hidden flex flex-col">
-                  <ScrollArea className="flex-1">
-                    <div className="px-1 py-0 min-h-full">
+                  <ScrollArea className="flex-1 overflow-y-auto">
+                    <div className="px-1 py-2 min-h-full">
                       {showInitialOptions && !isEditingScenario ? (
                         <InitialOptions 
                           initialQuery={initialQuery}
