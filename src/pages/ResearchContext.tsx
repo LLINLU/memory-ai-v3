@@ -8,7 +8,7 @@ import { InitialOptions } from "@/components/research-context/InitialOptions";
 import { ScenarioPreview } from "@/components/research-context/ScenarioPreview";
 import { useResearchSteps } from "@/components/research-context/ResearchSteps";
 import { useResearchContext } from "@/hooks/useResearchContext";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,6 @@ import { RefreshCcw } from "lucide-react";
 
 const ResearchContext = () => {
   const location = useLocation();
-  const scenarioMessageRef = useRef<HTMLDivElement>(null);
   
   // Get the query from location state (passed from homepage)
   const locationState = location.state as { 
@@ -58,15 +57,6 @@ const ResearchContext = () => {
   // Determine when to show the generate button
   // Show it when we're not in initial state (either in conversation or showing scenarios)
   const showGenerateButton = !showInitialOptions || showScenarios || isEditingScenario;
-
-  // Scroll to the scenario message when it becomes visible
-  useEffect(() => {
-    if (showScenarios && scenarioMessageRef.current) {
-      setTimeout(() => {
-        scenarioMessageRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 300);
-    }
-  }, [showScenarios]);
   
   return (
     <SidebarProvider>
@@ -97,56 +87,49 @@ const ResearchContext = () => {
                   </div>
                 )}
                 
-                {/* Main content area with flex grow to fill available space */}
-                <div className="flex-grow flex flex-col h-full overflow-hidden">
-                  {/* Conditional render based on initial options or conversation */}
-                  {showInitialOptions && !isEditingScenario ? (
-                    <InitialOptions 
-                      initialQuery={initialQuery}
-                      onContinue={() => handleInitialOption('continue')}
-                      onSkip={() => handleInitialOption('skip')}
-                    />
-                  ) : (
-                    <div className="flex flex-col h-full">
-                      {/* Conversation container - taking most of the space but allows space at bottom for input */}
-                      <div className="flex-grow overflow-hidden flex flex-col justify-end relative">
+                <div className="flex-1 overflow-hidden">
+                  <ScrollArea className="h-full">
+                    {showInitialOptions && !isEditingScenario ? (
+                      <InitialOptions 
+                        initialQuery={initialQuery}
+                        onContinue={() => handleInitialOption('continue')}
+                        onSkip={() => handleInitialOption('skip')}
+                      />
+                    ) : (
+                      <>
                         {!isEditingScenario && (
-                          <ScrollArea className="max-h-[calc(100%-80px)]">
-                            <ConversationDisplay 
-                              conversationHistory={conversationHistory} 
-                              onEditReply={handleEditUserReply}
-                            />
-                            
-                            {/* Scenario message inside the scroll area, just above the input */}
-                            {showScenarios && !isEditingScenario && (
-                              <div className="mt-4 mb-2" ref={scenarioMessageRef}>
-                                <div className="bg-blue-50 p-4 rounded-md">
-                                  <h2 className="text-xl font-semibold mb-2">研究シナリオの準備完了</h2>
-                                  <p className="text-blue-700">
-                                    ご回答に基づき、研究シナリオを生成しました。
-                                    右側のプレビューパネルからシナリオを選択してください。
-                                  </p>
-                                </div>
-                              </div>
-                            )}
-                          </ScrollArea>
-                        )}
-                      </div>
-                      
-                      {/* Input section fixed at bottom */}
-                      {(!showInitialOptions || shouldShowInputSection) && !isEditingScenario && (
-                        <div className="mt-4 flex-none">
-                          <InputSection
-                            inputValue={inputValue}
-                            placeholder={steps[Math.min(currentStep, steps.length - 1)]?.placeholder}
-                            onInputChange={handleInputChange}
-                            onSubmit={handleSubmit}
-                            onSkip={handleSkip}
-                            showSkip={currentStep < steps.length}
+                          <ConversationDisplay 
+                            conversationHistory={conversationHistory} 
+                            onEditReply={handleEditUserReply}
                           />
-                        </div>
-                      )}
-                    </div>
+                        )}
+                        
+                        {showScenarios && (
+                          <div className="mt-6">
+                            <div className="bg-blue-50 p-4 rounded-md">
+                              <h2 className="text-xl font-semibold mb-2">研究シナリオの準備完了</h2>
+                              <p className="text-blue-700">
+                                ご回答に基づき、研究シナリオを生成しました。
+                                右側のプレビューパネルからシナリオを選択してください。
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </ScrollArea>
+                </div>
+                
+                <div className="flex-none">
+                  {shouldShowInputSection && (
+                    <InputSection
+                      inputValue={inputValue}
+                      placeholder={steps[currentStep]?.placeholder}
+                      onInputChange={handleInputChange}
+                      onSubmit={handleSubmit}
+                      onSkip={handleSkip}
+                      showSkip={true}
+                    />
                   )}
                 </div>
               </div>

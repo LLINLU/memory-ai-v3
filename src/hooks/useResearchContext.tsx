@@ -1,4 +1,3 @@
-
 import { Step } from "@/components/research-context/ResearchSteps";
 import { useConversationState } from "./research-context/useConversationState";
 import { useNavigationHandlers } from "./research-context/useNavigationHandlers";
@@ -67,13 +66,7 @@ export const useResearchContext = (initialQuery: string, steps: Step[], isEditin
   const handleInitialOptionWrapper = (option: 'continue' | 'skip') => {
     const shouldContinue = handleInitialOption(option);
     if (shouldContinue) {
-      // Add the initial message and first question
       addInitialMessage();
-    } else if (option === 'skip') {
-      // Even if skipping the questions flow, we should show scenarios
-      setTimeout(() => {
-        proceedToTechnologyTree();
-      }, 1000);
     }
     return shouldContinue;
   };
@@ -104,9 +97,6 @@ export const useResearchContext = (initialQuery: string, steps: Step[], isEditin
         proceedToTechnologyTree();
       }, 1000);
     }
-    
-    // Reset the input value after submission
-    setInputValue("");
   };
   
   // Core handler for skip action
@@ -139,7 +129,7 @@ export const useResearchContext = (initialQuery: string, steps: Step[], isEditin
   };
 
   // Check if we should show the input section
-  const shouldShowInputSection = !showInitialOptions && currentStep <= steps.length;
+  const shouldShowInputSection = !showInitialOptions && !showScenarios && currentStep < steps.length;
 
   return {
     showInitialOptions,
