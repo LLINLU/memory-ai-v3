@@ -89,9 +89,9 @@ const TechnologyTree = () => {
     setSidebarTab
   });
 
-  // Ensure sidebar is open and showing results panel by default
+  // Set sidebar to collapsed by default for Technology Tree page
   useEffect(() => {
-    setShowSidebar(true);
+    setShowSidebar(false);
     setSidebarTab("result");
     updateTabsHorizontalState("result");
   }, [setShowSidebar, setSidebarTab]);
