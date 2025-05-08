@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
@@ -88,11 +89,12 @@ const TechnologyTree = () => {
     setSidebarTab
   });
 
-  // Set default tabs
+  // Ensure sidebar is open and showing results panel by default
   useEffect(() => {
-    updateTabsHorizontalState("result"); // Default to result tab
-    setSidebarTab("result"); // Set default tab to result
-  }, [setSidebarTab]);
+    setShowSidebar(true);
+    setSidebarTab("result");
+    updateTabsHorizontalState("result");
+  }, [setShowSidebar, setSidebarTab]);
 
   // Initialize chat when sidebar tab changes
   useEffect(() => {
@@ -126,7 +128,7 @@ const TechnologyTree = () => {
   );
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1">

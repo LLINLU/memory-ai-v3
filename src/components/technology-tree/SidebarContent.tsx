@@ -51,6 +51,7 @@ export const SidebarContent = ({
     );
   }
 
+  // Default to showing search results
   return (
     <div className="h-full flex flex-col">
       <SearchResults 
