@@ -3,8 +3,8 @@ import { useState } from "react";
 
 export const useSidebar = (initialTab = "result") => {
   const [sidebarTab, setSidebarTab] = useState(initialTab);
-  const [showSidebar, setShowSidebar] = useState(true); // Changed from false to true
-  const [collapsedSidebar, setCollapsedSidebar] = useState(false); // Changed from true to false
+  const [showSidebar, setShowSidebar] = useState(true);
+  const [collapsedSidebar, setCollapsedSidebar] = useState(false);
 
   const toggleSidebar = () => {
     if (collapsedSidebar) {
