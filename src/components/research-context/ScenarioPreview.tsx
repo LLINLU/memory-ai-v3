@@ -265,11 +265,11 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
                     </div>
                   </div>
                   
-                  {/* Add the 検索結果へ button at the bottom of the section */}
-                  <div className="mt-4 flex justify-center">
+                  {/* Updated 検索結果へ button with modern styling that matches the image */}
+                  <div className="mt-6 flex justify-center">
                     <Button
                       onClick={onGenerateResult}
-                      className="bg-blue-500 hover:bg-blue-600 text-white"
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-10 py-6 rounded-md text-base font-medium h-auto w-full max-w-xs flex items-center justify-center"
                     >
                       検索結果へ
                     </Button>
@@ -289,3 +289,4 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
     </div>
   );
 };
+
