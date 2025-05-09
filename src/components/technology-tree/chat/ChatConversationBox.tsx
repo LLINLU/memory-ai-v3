@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ChatMessage } from './ChatMessage';
 import { NodeSuggestion } from "@/types/chat";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface ChatConversationBoxProps {
   messages: any[];
@@ -25,6 +26,7 @@ export const ChatConversationBox = ({
 }: ChatConversationBoxProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [researchAreaElements, setResearchAreaElements] = useState<HTMLDivElement[]>([]);
+  const navigate = useNavigate();
   
   // Function to scroll to bottom
   const scrollToBottom = () => {
@@ -69,6 +71,16 @@ export const ChatConversationBox = ({
       message.content.includes('潜在的な研究分野');
   };
 
+  // Handle button click to navigate to technology tree
+  const handleCheckResults = () => {
+    if (onCheckResults) {
+      onCheckResults();
+    } else {
+      // If no handler provided, navigate directly
+      navigate('/technology-tree');
+    }
+  };
+
   return (
     <div className="flex-1 overflow-y-auto p-4 bg-gray-50 relative">
       {messages.length === 0 ? (
@@ -98,10 +110,10 @@ export const ChatConversationBox = ({
                   />
                   
                   {/* Add the 検索結果へ button at the bottom of research field section */}
-                  {isResearchFieldSection && onCheckResults && (
+                  {isResearchFieldSection && (
                     <div className="mt-3 flex justify-center">
                       <Button
-                        onClick={onCheckResults}
+                        onClick={handleCheckResults}
                         className="bg-blue-500 hover:bg-blue-600 text-white"
                         size="sm"
                       >

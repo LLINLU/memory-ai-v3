@@ -82,6 +82,8 @@ export const useScenarioHandlers = ({
 
   // Function to generate search results and navigate to technology tree
   const handleGenerateResult = () => {
+    console.log("Navigating to technology tree with scenario:", selectedScenario);
+    
     // Navigate to the technology tree page with the selected scenario and research answers
     navigate('/technology-tree', {
       state: {

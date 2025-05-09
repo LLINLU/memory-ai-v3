@@ -2,6 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { TreemapVisualization } from "./TreemapVisualization";
+import { useNavigate } from "react-router-dom";
 
 interface ResearchArea {
   name: string;
@@ -23,6 +24,13 @@ export const ResearchAreas: React.FC<ResearchAreasProps> = ({
   onGenerateResult,
   researchAreasRef
 }) => {
+  const navigate = useNavigate();
+
+  const handleButtonClick = () => {
+    // Call the provided handler and ensure navigation happens
+    onGenerateResult();
+  };
+
   return (
     <div className="bg-white border rounded-md p-4" ref={researchAreasRef}>
       <h3 className="font-medium mb-3">潜在的な研究分野</h3>
@@ -53,10 +61,10 @@ export const ResearchAreas: React.FC<ResearchAreasProps> = ({
         </div>
       </div>
       
-      {/* 検索結果へ button - moved outside of the section and with shorter height */}
+      {/* 検索結果へ button - ensure it triggers navigation */}
       <div className="mt-4 flex justify-center">
         <Button
-          onClick={onGenerateResult}
+          onClick={handleButtonClick}
           className="bg-blue-500 hover:bg-blue-600 text-white w-full max-w-xs"
         >
           検索結果へ
