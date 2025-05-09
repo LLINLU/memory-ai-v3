@@ -25,6 +25,7 @@ interface MainContentProps {
   hasUserMadeSelection: boolean;
   scenario?: string;
   onEditScenario?: (newScenario: string) => void;
+  conversationHistory?: any[]; // Added this prop
 }
 
 export const MainContent = ({
@@ -43,11 +44,12 @@ export const MainContent = ({
   query,
   scenario,
   onEditScenario,
-  hasUserMadeSelection
+  hasUserMadeSelection,
+  conversationHistory // Added this parameter
 }: MainContentProps) => {
   return (
     <div className="container mx-auto px-4 py-6">
-      <ScenarioSection scenario={scenario} onEditScenario={onEditScenario} />
+      <ScenarioSection scenario={scenario} onEditScenario={onEditScenario} conversationHistory={conversationHistory} />
       <PathDisplay 
         selectedPath={selectedPath}
         level1Items={level1Items}

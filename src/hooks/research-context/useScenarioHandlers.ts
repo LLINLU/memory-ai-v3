@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { NavigateFunction } from "react-router-dom";
 import { ContextAnswers } from "./useConversationState";
+import { ConversationMessage } from "./useConversationState";
 
 interface ScenarioHandlersProps {
   initialQuery: string;
@@ -15,6 +16,7 @@ interface ScenarioHandlersProps {
   resetNavigation: () => void;
   resetConversation: () => void;
   answers: ContextAnswers;
+  conversationHistory: ConversationMessage[]; // Added this property
 }
 
 export const useScenarioHandlers = ({
@@ -28,7 +30,8 @@ export const useScenarioHandlers = ({
   selectScenario,
   resetNavigation,
   resetConversation,
-  answers
+  answers,
+  conversationHistory // Added this parameter
 }: ScenarioHandlersProps) => {
   // Track selected scenario
   const [selectedScenario, setSelectedScenario] = useState<string>(currentScenario || "");
@@ -84,7 +87,8 @@ export const useScenarioHandlers = ({
       state: {
         query: initialQuery,
         scenario: selectedScenario || `Research on ${initialQuery}`,
-        researchAnswers: answers
+        researchAnswers: answers,
+        conversationHistory: conversationHistory // Pass the conversation history to the technology tree page
       }
     });
   };
