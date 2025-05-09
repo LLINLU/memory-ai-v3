@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface PreviewHeaderProps {
   showGenerateButton: boolean;
@@ -15,6 +16,21 @@ export const PreviewHeader: React.FC<PreviewHeaderProps> = ({
   onGenerateResult,
   selectedScenario
 }) => {
+  const navigate = useNavigate();
+
+  const handleGenerateResult = () => {
+    if (onGenerateResult) {
+      onGenerateResult();
+    } else if (selectedScenario) {
+      // Direct navigation if no handler is provided
+      navigate('/technology-tree', {
+        state: {
+          scenario: selectedScenario
+        }
+      });
+    }
+  };
+
   return (
     <div className="bg-white p-4 border-b flex justify-between items-center">
       <h2 className="text-[1rem] font-bold">プレビュー</h2>
@@ -22,7 +38,7 @@ export const PreviewHeader: React.FC<PreviewHeaderProps> = ({
         <Button 
           variant="default" 
           size="sm" 
-          onClick={onGenerateResult}
+          onClick={handleGenerateResult}
           className={`bg-blue-500 hover:bg-blue-600 transition-opacity duration-300 ${isResearchAreaVisible ? 'opacity-0' : 'opacity-100'}`}
           disabled={!selectedScenario} // Disable button if no scenario is selected
         >

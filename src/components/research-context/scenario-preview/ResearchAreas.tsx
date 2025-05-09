@@ -27,8 +27,18 @@ export const ResearchAreas: React.FC<ResearchAreasProps> = ({
   const navigate = useNavigate();
 
   const handleButtonClick = () => {
-    // Call the provided handler and ensure navigation happens
-    onGenerateResult();
+    try {
+      // Call the provided handler to ensure proper state handling
+      onGenerateResult();
+    } catch (error) {
+      console.error("Navigation error:", error);
+      // Fallback navigation if the handler fails
+      navigate('/technology-tree', {
+        state: {
+          scenario: selectedScenario
+        }
+      });
+    }
   };
 
   return (

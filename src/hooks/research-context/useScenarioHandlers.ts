@@ -84,13 +84,20 @@ export const useScenarioHandlers = ({
   const handleGenerateResult = () => {
     console.log("Navigating to technology tree with scenario:", selectedScenario);
     
+    // Create a serializable version of the conversation history
+    const serializableHistory = conversationHistory.map(msg => ({
+      role: msg.role,
+      content: typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content),
+      timestamp: msg.timestamp
+    }));
+    
     // Navigate to the technology tree page with the selected scenario and research answers
     navigate('/technology-tree', {
       state: {
         query: initialQuery,
         scenario: selectedScenario || `Research on ${initialQuery}`,
         researchAnswers: answers,
-        conversationHistory: conversationHistory // Pass the conversation history to the technology tree page
+        conversationHistory: serializableHistory // Pass serializable conversation history
       }
     });
   };
