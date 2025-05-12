@@ -86,9 +86,9 @@ export const useScenarioHandlers = ({
     
     // Create a serializable version of the conversation history
     const serializableHistory = conversationHistory.map(msg => ({
-      role: msg.role,
+      type: msg.type,
       content: typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content),
-      timestamp: msg.timestamp
+      questionType: msg.questionType
     }));
     
     // Navigate to the technology tree page with the selected scenario and research answers
