@@ -66,9 +66,9 @@ export const SearchSection = () => {
           <Input 
             type="text" 
             placeholder={searchMode === "deep" ? 
-              "肝細胞がん患者のAI支援画像診断を用いた早期診断精度向上を目指し、診断から3ヶ月以内の症例を対象とした研究を行いたい..." : 
+              "例：肝細胞がん患者のAI支援画像診断を用いた早期診断精度向上を目指し、診断から3ヶ月以内の症例を対象とした研究を行いたい" : 
               "例：補償光学の眼科分野への利用"}
-            className="w-full px-4 py-3 text-lg border-none bg-gray-50 focus-visible:ring-0 placeholder:text-gray-400"
+            className="w-full px-4 py-3 text-lg border-none bg-gray-50 focus-visible:ring-0 placeholder:text-gray-400 truncate"
             value={searchValue}
             onChange={handleSearchChange}
           />

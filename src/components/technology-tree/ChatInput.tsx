@@ -60,9 +60,9 @@ export const ChatInput = ({ value, onChange, onSend }: ChatInputProps) => {
         
         <Textarea 
           placeholder={searchMode === "deep" ? 
-            "肝細胞がん患者のAI支援画像診断を用いた早期診断精度向上を目指し、診断から3ヶ月以内の症例を対象とした研究を行いたい..." : 
+            "例：肝細胞がん患者のAI支援画像診断を用いた早期診断精度向上を目指し、診断から3ヶ月以内の症例を対象とした研究を行いたい" : 
             "メッセージを入力してください..."}
-          className="w-full resize-none border bg-gray-50 focus-visible:ring-0 text-sm px-4 py-3 rounded-xl"
+          className="w-full resize-none border bg-gray-50 focus-visible:ring-0 text-sm px-4 py-3 rounded-xl truncate"
           value={value}
           onChange={onChange}
           onKeyDown={handleKeyDown}

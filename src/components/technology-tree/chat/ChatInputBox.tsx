@@ -57,9 +57,9 @@ export const ChatInputBox = ({
       
       <Textarea 
         placeholder={searchMode === "deep" ? 
-          "肝細胞がん患者のAI支援画像診断を用いた早期診断精度向上を目指し、診断から3ヶ月以内の症例を対象とした研究を行いたい..." : 
+          "例：肝細胞がん患者のAI支援画像診断を用いた早期診断精度向上を目指し、診断から3ヶ月以内の症例を対象とした研究を行いたい" : 
           "Ask a question about your research..."}
-        className="w-full resize-none border focus-visible:ring-1 focus-visible:ring-blue-500 text-sm px-3 py-2"
+        className="w-full resize-none border focus-visible:ring-1 focus-visible:ring-blue-500 text-sm px-3 py-2 truncate"
         value={inputValue}
         onChange={onInputChange}
         onKeyDown={handleKeyDown}

@@ -22,9 +22,9 @@ export const SearchBar = () => {
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             placeholder={searchMode === "deep" ? 
-              "肝細胞がん患者のAI支援画像診断を用いた早期診断精度向上を目指し、診断から3ヶ月以内の症例を対象とした研究を行いたい..." : 
+              "例：肝細胞がん患者のAI支援画像診断を用いた早期診断精度向上を目指し、診断から3ヶ月以内の症例を対象とした研究を行いたい" : 
               ""}
-            className="w-full px-4 py-3 text-base border-none bg-gray-50 focus-visible:ring-0"
+            className="w-full px-4 py-3 text-base border-none bg-gray-50 focus-visible:ring-0 truncate"
           />
           
           <div className="flex mt-2 items-center">

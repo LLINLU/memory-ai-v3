@@ -67,11 +67,11 @@ export const InputSection: React.FC<InputSectionProps> = ({
       <div className="relative">
         <Textarea
           placeholder={searchMode === "deep" ? 
-            "肝細胞がん患者のAI支援画像診断を用いた早期診断精度向上を目指し、診断から3ヶ月以内の症例を対象とした研究を行いたい..." : 
+            "例：肝細胞がん患者のAI支援画像診断を用いた早期診断精度向上を目指し、診断から3ヶ月以内の症例を対象とした研究を行いたい" : 
             placeholder}
           value={inputValue}
           onChange={onInputChange}
-          className="w-full resize-none p-3 pr-16 border rounded-xl text-base"
+          className="w-full resize-none p-3 pr-16 border rounded-xl text-base truncate"
           rows={2}
         />
         <Button 
