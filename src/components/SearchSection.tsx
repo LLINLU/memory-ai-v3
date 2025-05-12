@@ -16,7 +16,7 @@ interface SuggestionProps {
 const SearchSuggestion = ({ label, onClick }: SuggestionProps) => {
   return (
     <button 
-      className="bg-white hover:bg-gray-50 rounded-full px-4 py-1 text-gray-700 transition-colors text-sm border border-gray-200"
+      className="bg-white hover:bg-gray-50 rounded-xl px-4 py-1 text-gray-700 transition-colors text-sm border border-[#d1e0ff]"
       onClick={() => onClick(label)}
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="14" viewBox="0 0 12 14" fill="none" className="inline-block mr-1.5">
@@ -148,9 +148,9 @@ export const SearchSection = () => {
         </div>
       </div>
       
-      <div className="flex items-center gap-3 justify-center">
-        <span className="text-gray-600 text-sm">試してみる：</span>
-        <div className="flex gap-2 flex-wrap">
+      <div className="flex items-center">
+        <span className="text-gray-600 text-sm whitespace-nowrap">試してみる：</span>
+        <div className="flex gap-2 flex-wrap ml-2">
           {currentSuggestions.map((suggestion, index) => (
             <SearchSuggestion 
               key={index} 
