@@ -22,9 +22,9 @@ export const SearchCard = ({
   timeAgo,
 }: SearchCardProps) => {
   return (
-    <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
+    <div className="bg-white px-5 py-4 rounded-lg border border-gray-200 shadow-sm">
       <h3 className="text-[18px] font-semibold mb-2">{title}</h3>
-      <div className="text-[14px] text-gray-600 mb-4">
+      <div className="text-[14px] text-gray-600 mb-2">
         {paperCount}件の論文 • {implementationCount}件の事例
       </div>
       
