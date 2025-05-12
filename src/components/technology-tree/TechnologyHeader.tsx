@@ -17,11 +17,11 @@ export const TechnologyHeader = ({ query: propQuery }: TechnologyHeaderProps) =>
     <div className="bg-blue-50 rounded-lg p-6 mb-6">
       <div className="flex items-center gap-2 mb-2">
         {searchMode === 'quick' ? (
-          <span className="inline-flex items-center text-sm bg-white px-3 py-1 rounded-full text-blue-600 border border-blue-100">
+          <span className="inline-flex items-center rounded-full py-1 px-5 h-[22px] text-blue-600 bg-white border border-blue-100">
             <Compass className="h-4 w-4 mr-1" /> Quick Exploration
           </span>
         ) : (
-          <span className="inline-flex items-center text-sm bg-white px-3 py-1 rounded-full text-blue-600 border border-blue-100">
+          <span className="inline-flex items-center rounded-full py-1 px-5 h-[22px] text-blue-600 bg-white border border-blue-100">
             <Search className="h-4 w-4 mr-1" /> Deep Search
           </span>
         )}

@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowRight, Compass, Search } from "lucide-react";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface InputSectionProps {
   inputValue: string;
@@ -24,8 +23,8 @@ export const InputSection: React.FC<InputSectionProps> = ({
 }) => {
   const [searchMode, setSearchMode] = useState("quick"); // Default to "quick"
   
-  const handleSearchModeChange = (value: string) => {
-    if (value) setSearchMode(value);
+  const handleSearchModeChange = (mode: string) => {
+    setSearchMode(mode);
   };
   
   return (
@@ -42,27 +41,26 @@ export const InputSection: React.FC<InputSectionProps> = ({
         </div>
       )}
       <div className="mb-2">
-        <ToggleGroup 
-          type="single" 
-          value={searchMode}
-          onValueChange={handleSearchModeChange}
-          className="bg-blue-50 p-1 rounded-full border border-gray-100"
-        >
-          <ToggleGroupItem 
-            value="quick" 
-            aria-label="Quick Exploration"
-            className="data-[state=on]:bg-white data-[state=on]:text-blue-600 data-[state=on]:shadow-sm rounded-full px-3 py-1 text-sm"
+        <div className="flex space-x-2">
+          <button 
+            type="button"
+            onClick={() => handleSearchModeChange("quick")}
+            className={`inline-flex items-center rounded-full py-1 px-5 h-[22px] text-blue-600 transition-colors ${
+              searchMode === "quick" ? "bg-blue-50" : "bg-transparent hover:bg-gray-100"
+            }`}
           >
             <Compass className="h-4 w-4 mr-1" /> Quick Exploration
-          </ToggleGroupItem>
-          <ToggleGroupItem 
-            value="deep" 
-            aria-label="Deep Search"
-            className="data-[state=on]:bg-white data-[state=on]:text-blue-600 data-[state=on]:shadow-sm rounded-full px-3 py-1 text-sm"
+          </button>
+          <button 
+            type="button"
+            onClick={() => handleSearchModeChange("deep")}
+            className={`inline-flex items-center rounded-full py-1 px-5 h-[22px] text-blue-600 transition-colors ${
+              searchMode === "deep" ? "bg-blue-50" : "bg-transparent hover:bg-gray-100"
+            }`}
           >
             <Search className="h-4 w-4 mr-1" /> Deep Search
-          </ToggleGroupItem>
-        </ToggleGroup>
+          </button>
+        </div>
       </div>
       <div className="relative">
         <Textarea

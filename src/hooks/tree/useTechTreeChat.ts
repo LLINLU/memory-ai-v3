@@ -25,7 +25,8 @@ export const useTechTreeChat = () => {
       
       setChatMessages(prev => [...prev, userMessage]);
       
-      const aiResponse = processUserMessage(inputValue, searchMode);
+      // Fix: processUserMessage only takes one argument
+      const aiResponse = processUserMessage(inputValue);
       
       setInputValue("");
       
