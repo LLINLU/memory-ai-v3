@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { FormEvent, useState } from "react";
+import { Toggle } from "@/components/ui/toggle";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Compass, Search } from "lucide-react";
 
 interface SuggestionProps {
   label: string;
@@ -24,20 +27,35 @@ const SearchSuggestion = ({ label, onClick }: SuggestionProps) => {
 export const SearchSection = () => {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
+  const [searchMode, setSearchMode] = useState("quick"); // Default to "quick"
   
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (searchValue.trim()) {
-      navigate('/research-context', { state: { query: searchValue } });
+      navigate('/research-context', { 
+        state: { 
+          query: searchValue,
+          searchMode: searchMode
+        } 
+      });
     }
   };
 
   const handleSuggestionClick = (query: string) => {
-    navigate('/research-context', { state: { query } });
+    navigate('/research-context', { 
+      state: { 
+        query,
+        searchMode: searchMode
+      } 
+    });
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
+  };
+
+  const handleSearchModeChange = (value: string) => {
+    if (value) setSearchMode(value);
   };
 
   return (
@@ -46,17 +64,42 @@ export const SearchSection = () => {
       
       <form onSubmit={handleSubmit} className="w-full mx-auto mb-8">
         <div className="relative">
+          <div className="absolute left-3 top-2 z-10">
+            <ToggleGroup 
+              type="single" 
+              value={searchMode}
+              onValueChange={handleSearchModeChange}
+              className="bg-blue-50 p-1 rounded-full border border-gray-100"
+            >
+              <ToggleGroupItem 
+                value="quick" 
+                aria-label="Quick Exploration"
+                className="data-[state=on]:bg-white data-[state=on]:text-blue-600 data-[state=on]:shadow-sm rounded-full px-3 py-1 text-sm"
+              >
+                <Compass className="h-4 w-4 mr-1" /> Quick Exploration
+              </ToggleGroupItem>
+              <ToggleGroupItem 
+                value="deep" 
+                aria-label="Deep Search"
+                className="data-[state=on]:bg-white data-[state=on]:text-blue-600 data-[state=on]:shadow-sm rounded-full px-3 py-1 text-sm"
+              >
+                <Search className="h-4 w-4 mr-1" /> Deep Search
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </div>
+          
           <Input 
             type="text" 
             placeholder="例：補償光学の眼科分野への利用"
-            className="w-full h-16 pl-6 pr-14 text-lg rounded-2xl border border-gray-200 focus-visible:ring-1 focus-visible:ring-gray-200 placeholder:text-gray-400"
+            className="w-full h-16 pl-6 pr-14 pt-14 text-lg rounded-2xl border border-gray-200 focus-visible:ring-1 focus-visible:ring-gray-200 placeholder:text-gray-400"
             value={searchValue}
             onChange={handleSearchChange}
           />
+          
           <Button
             type="submit"
             size="icon"
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-12 w-12 rounded-xl bg-blue-100 hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="absolute right-2 bottom-2 h-12 w-12 rounded-xl bg-blue-100 hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!searchValue.trim()}
           >
             <ArrowUp className="h-6 w-6 text-blue-600" />

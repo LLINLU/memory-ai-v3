@@ -5,9 +5,14 @@ export const useInputQuery = (sidebarTab: string) => {
   const [inputValue, setInputValue] = useState("");
   const [query, setQuery] = useState("");
   const [chatMessages, setChatMessages] = useState<any[]>([]);
+  const [searchMode, setSearchMode] = useState("quick"); // Default to "quick"
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
+  };
+  
+  const handleSearchModeChange = (value: string) => {
+    if (value) setSearchMode(value);
   };
 
   useEffect(() => {
@@ -26,9 +31,12 @@ export const useInputQuery = (sidebarTab: string) => {
     inputValue,
     query,
     chatMessages,
+    searchMode,
     handleInputChange,
+    handleSearchModeChange,
     setQuery,
     setChatMessages,
-    setInputValue
+    setInputValue,
+    setSearchMode
   };
 };

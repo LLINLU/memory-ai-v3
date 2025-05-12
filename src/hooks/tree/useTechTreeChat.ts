@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { processUserMessage } from '@/utils/chatUtils';
 import { ChatMessage } from "@/types/chat";
@@ -5,9 +6,14 @@ import { ChatMessage } from "@/types/chat";
 export const useTechTreeChat = () => {
   const [inputValue, setInputValue] = useState("");
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [searchMode, setSearchMode] = useState("quick"); // Default to "quick"
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
+  };
+  
+  const handleSearchModeChange = (value: string) => {
+    if (value) setSearchMode(value);
   };
   
   const handleSendMessage = () => {
@@ -19,7 +25,7 @@ export const useTechTreeChat = () => {
       
       setChatMessages(prev => [...prev, userMessage]);
       
-      const aiResponse = processUserMessage(inputValue);
+      const aiResponse = processUserMessage(inputValue, searchMode);
       
       setInputValue("");
       
@@ -44,6 +50,7 @@ export const useTechTreeChat = () => {
   const handleButtonClick = (action: string) => {
     if (action === 'quick') {
       // Handle quick results action
+      setSearchMode("quick");
       setChatMessages(prev => [
         ...prev,
         {
@@ -57,6 +64,7 @@ export const useTechTreeChat = () => {
       
     } else if (action === 'personalized') {
       // Handle personalized search action
+      setSearchMode("deep");
       setChatMessages(prev => [
         ...prev,
         {
@@ -79,7 +87,9 @@ export const useTechTreeChat = () => {
   return {
     inputValue,
     chatMessages,
+    searchMode,
     handleInputChange,
+    handleSearchModeChange,
     handleSendMessage,
     initializeChat,
     handleSwitchToChat,
