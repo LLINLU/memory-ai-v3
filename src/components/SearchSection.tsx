@@ -61,39 +61,52 @@ export const SearchSection = () => {
     <div className="bg-white p-8 rounded-3xl shadow-sm max-w-5xl mx-auto">
       <h1 className="text-4xl font-bold text-center mb-12">研究情報を俯瞰する</h1>
       
-      <form onSubmit={handleSubmit} className="w-full mx-auto mb-8">
-        <div className="relative">
-          <div className="absolute left-3 top-2 z-10">
-            <button 
-              type="button"
-              onClick={() => handleSearchModeChange("quick")}
-              className={`inline-flex items-center rounded-full py-1 px-5 h-[32px] text-blue-600 transition-colors ${
-                searchMode === "quick" ? "bg-blue-50" : "bg-transparent hover:bg-gray-100"
-              }`}
-            >
-              <ExplorationIcon className="mr-1" />
-              Quick Exploration
-            </button>
-          </div>
-          
+      <div className="w-full mx-auto mb-8">
+        <div className="bg-gray-50 rounded-2xl p-4">
           <Input 
             type="text" 
             placeholder="例：補償光学の眼科分野への利用"
-            className="w-full h-16 pl-6 pr-14 pt-14 text-lg rounded-2xl border border-gray-200 focus-visible:ring-1 focus-visible:ring-gray-200 placeholder:text-gray-400"
+            className="w-full px-4 py-3 text-lg border-none bg-gray-50 focus-visible:ring-0 placeholder:text-gray-400"
             value={searchValue}
             onChange={handleSearchChange}
           />
           
-          <Button
-            type="submit"
-            size="icon"
-            className="absolute right-2 bottom-2 h-12 w-12 rounded-xl bg-blue-100 hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={!searchValue.trim()}
-          >
-            <ArrowUp className="h-6 w-6 text-blue-600" />
-          </Button>
+          <div className="flex mt-2 items-center">
+            <div className="flex space-x-2">
+              <button 
+                type="button"
+                onClick={() => handleSearchModeChange("quick")}
+                className={`inline-flex items-center rounded-full py-1 px-5 h-[32px] text-blue-600 transition-colors ${
+                  searchMode === "quick" ? "bg-blue-100" : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                }`}
+              >
+                <ExplorationIcon className="mr-1" />
+                Quick Exploration
+              </button>
+              <button 
+                type="button"
+                onClick={() => handleSearchModeChange("deep")}
+                className={`inline-flex items-center rounded-full py-1 px-5 h-[32px] transition-colors ${
+                  searchMode === "deep" ? "bg-blue-100 text-blue-600" : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                }`}
+              >
+                <Search className="h-4 w-4 mr-1" /> Deep Search
+              </button>
+            </div>
+            
+            <div className="ml-auto">
+              <Button
+                onClick={handleSubmit}
+                size="icon"
+                className="h-8 w-8 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!searchValue.trim()}
+              >
+                <ArrowUp className="h-4 w-4 text-gray-600" />
+              </Button>
+            </div>
+          </div>
         </div>
-      </form>
+      </div>
       
       <div className="flex items-center gap-3 justify-center">
         <span className="text-gray-600 text-sm">試してみる：</span>
