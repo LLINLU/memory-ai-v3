@@ -1,4 +1,3 @@
-
 import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +15,7 @@ interface SuggestionProps {
 const SearchSuggestion = ({ label, onClick }: SuggestionProps) => {
   return (
     <button 
-      className="bg-white hover:bg-gray-50 rounded-full px-6 py-2.5 text-gray-700 transition-colors text-sm border border-gray-200"
+      className="bg-white hover:bg-gray-50 rounded-full px-4 py-1 text-gray-700 transition-colors text-sm border border-gray-200"
       onClick={() => onClick(label)}
     >
       {label}
