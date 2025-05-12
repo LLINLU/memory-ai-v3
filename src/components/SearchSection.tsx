@@ -58,6 +58,22 @@ export const SearchSection = () => {
     setSearchMode(mode);
   };
 
+  const quickExplorationSuggestions = [
+    "心筋梗塞の新たな予防法は？",
+    "量子コンピューティングの医療応用",
+    "持続可能な農業技術のトレンド"
+  ];
+
+  const deepRefinerSuggestions = [
+    "認知症患者のためのAIアシスト型リハビリテーションの効果を地域の高齢者施設で検証したい",
+    "北海道の小規模農家向けに気候変動に適応した持続可能な作物栽培方法を研究しています",
+    "製薬企業の研究者として、副作用の少ない抗がん剤の開発に必要な分子標的の特定を目指しています"
+  ];
+
+  const currentSuggestions = searchMode === "quick" 
+    ? quickExplorationSuggestions 
+    : deepRefinerSuggestions;
+
   return (
     <div className="bg-white p-8 rounded-3xl max-w-5xl mx-auto">
       <h1 className="text-4xl font-bold text-center mb-12">研究情報を俯瞰する</h1>
@@ -131,10 +147,14 @@ export const SearchSection = () => {
       
       <div className="flex items-center gap-3 justify-center">
         <span className="text-gray-600 text-sm">試してみる：</span>
-        <div className="flex gap-2">
-          <SearchSuggestion label="固体電池" onClick={handleSuggestionClick} />
-          <SearchSuggestion label="量子コンピューティング" onClick={handleSuggestionClick} />
-          <SearchSuggestion label="持続可能な材料" onClick={handleSuggestionClick} />
+        <div className="flex gap-2 flex-wrap">
+          {currentSuggestions.map((suggestion, index) => (
+            <SearchSuggestion 
+              key={index} 
+              label={suggestion} 
+              onClick={handleSuggestionClick} 
+            />
+          ))}
         </div>
       </div>
     </div>
