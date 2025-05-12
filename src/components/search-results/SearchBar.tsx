@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, ArrowUp } from "lucide-react";
 import { ExplorationIcon } from "../icons/ExplorationIcon";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export const SearchBar = () => {
   const [searchMode, setSearchMode] = useState("quick"); // Default to "quick"
@@ -29,25 +30,43 @@ export const SearchBar = () => {
           
           <div className="flex mt-2 items-center">
             <div className="flex space-x-2">
-              <button 
-                type="button"
-                onClick={() => handleSearchModeChange("quick")}
-                className={`inline-flex items-center rounded-full py-1 px-4 h-[28px] text-sm transition-colors ${
-                  searchMode === "quick" ? "bg-blue-100 text-blue-600" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
-                }`}
-              >
-                <ExplorationIcon className={`mr-1 ${searchMode === "quick" ? "stroke-[2.5px]" : ""}`} />
-                Quick Exploration
-              </button>
-              <button 
-                type="button"
-                onClick={() => handleSearchModeChange("deep")}
-                className={`inline-flex items-center rounded-full py-1 px-4 h-[28px] text-sm transition-colors ${
-                  searchMode === "deep" ? "bg-blue-100 text-blue-600" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
-                }`}
-              >
-                <Search className={`h-3 w-3 mr-1 ${searchMode === "deep" ? "stroke-[2.5px]" : ""}`} /> Deep Refiner
-              </button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button 
+                      type="button"
+                      onClick={() => handleSearchModeChange("quick")}
+                      className={`inline-flex items-center rounded-full py-1 px-4 h-[28px] text-sm transition-colors ${
+                        searchMode === "quick" ? "bg-blue-100 text-blue-600" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
+                      }`}
+                    >
+                      <ExplorationIcon className={`mr-1 ${searchMode === "quick" ? "stroke-[2.5px]" : ""}`} />
+                      Quick Exploration
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs">早期探索フェーズ向け：特定の研究文脈がなくても、キーワードから関連技術や新興トレンドを発見できます。女性ホルモンのような一般的なキーワードから始めて、幅広い可能性を探索できます。</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button 
+                      type="button"
+                      onClick={() => handleSearchModeChange("deep")}
+                      className={`inline-flex items-center rounded-full py-1 px-4 h-[28px] text-sm transition-colors ${
+                        searchMode === "deep" ? "bg-blue-100 text-blue-600" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
+                      }`}
+                    >
+                      <Search className={`h-3 w-3 mr-1 ${searchMode === "deep" ? "stroke-[2.5px]" : ""}`} /> Deep Refiner
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs">具体的な研究文脈や仮説がある場合に最適：研究者、対象、環境、手法、目的などの詳細を入力することで、的確な研究内容に絞り込めます。その後、システムの質問に答えることでさらに研究コンテキストを洗練させ、無関係な情報を排除した効率的な探索ができます。</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             
             <div className="ml-auto">
