@@ -35,22 +35,43 @@ export const SearchSection = () => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (searchValue.trim()) {
-      navigate('/research-context', { 
-        state: { 
-          query: searchValue,
-          searchMode: searchMode
-        } 
-      });
+      // If searchMode is "quick", navigate directly to technology-tree
+      if (searchMode === "quick") {
+        navigate('/technology-tree', { 
+          state: { 
+            query: searchValue,
+            searchMode: searchMode
+          } 
+        });
+      } else {
+        // For "deep" mode, continue to go to research-context
+        navigate('/research-context', { 
+          state: { 
+            query: searchValue,
+            searchMode: searchMode
+          } 
+        });
+      }
     }
   };
 
   const handleSuggestionClick = (query: string) => {
-    navigate('/research-context', { 
-      state: { 
-        query,
-        searchMode: searchMode
-      } 
-    });
+    // Same for suggestion clicks - go directly to technology-tree for quick mode
+    if (searchMode === "quick") {
+      navigate('/technology-tree', { 
+        state: { 
+          query,
+          searchMode: searchMode
+        } 
+      });
+    } else {
+      navigate('/research-context', { 
+        state: { 
+          query,
+          searchMode: searchMode
+        } 
+      });
+    }
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
