@@ -59,7 +59,7 @@ export const SearchSection = () => {
   };
 
   return (
-    <div className="bg-white p-8 rounded-3xl shadow-sm max-w-5xl mx-auto">
+    <div className="bg-white p-8 rounded-3xl max-w-5xl mx-auto">
       <h1 className="text-4xl font-bold text-center mb-12">研究情報を俯瞰する</h1>
       
       <div className="w-full mx-auto mb-8">
