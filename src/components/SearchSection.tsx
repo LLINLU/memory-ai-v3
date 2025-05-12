@@ -1,4 +1,3 @@
-
 import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +15,7 @@ interface SuggestionProps {
 const SearchSuggestion = ({ label, onClick }: SuggestionProps) => {
   return (
     <button 
-      className="bg-white hover:bg-gray-50 rounded-xl px-4 py-1 text-gray-700 transition-colors text-sm border border-[#d1e0ff]"
+      className="bg-white hover:bg-gray-50 rounded-xl px-4 py-1 text-gray-700 transition-colors text-sm border border-[#c4d4f4]"
       onClick={() => onClick(label)}
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="14" viewBox="0 0 12 14" fill="none" className="inline-block mr-1.5">
@@ -148,9 +147,9 @@ export const SearchSection = () => {
         </div>
       </div>
       
-      <div className="flex items-center">
-        <span className="text-gray-600 text-sm whitespace-nowrap">試してみる：</span>
-        <div className="flex gap-2 flex-wrap ml-2">
+      <div className="flex flex-col">
+        <span className="text-gray-600 text-sm mb-2">試してみる：</span>
+        <div className="flex gap-2 flex-wrap">
           {currentSuggestions.map((suggestion, index) => (
             <SearchSuggestion 
               key={index} 
