@@ -19,12 +19,12 @@ export const TechnologyHeader = ({ query: propQuery }: TechnologyHeaderProps) =>
       <div className="flex items-center gap-2 mb-2">
         {searchMode === 'quick' ? (
           <span className="inline-flex items-center rounded-full py-1 px-4 h-[28px] text-sm text-blue-600 bg-white border border-blue-100">
-            <ExplorationIcon className="mr-1" />
+            <ExplorationIcon className="mr-1 stroke-[2.5px]" />
             Quick Exploration
           </span>
         ) : (
           <span className="inline-flex items-center rounded-full py-1 px-4 h-[28px] text-sm text-blue-600 bg-white border border-blue-100">
-            <Search className="h-3 w-3 mr-1" /> Deep Search
+            <Search className="h-3 w-3 mr-1 stroke-[2.5px]" /> Deep Refiner
           </span>
         )}
       </div>

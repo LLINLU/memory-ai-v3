@@ -65,7 +65,9 @@ export const SearchSection = () => {
         <div className="bg-gray-50 rounded-2xl p-4">
           <Input 
             type="text" 
-            placeholder="例：補償光学の眼科分野への利用"
+            placeholder={searchMode === "deep" ? 
+              "肝細胞がん患者のAI支援画像診断を用いた早期診断精度向上を目指し、診断から3ヶ月以内の症例を対象とした研究を行いたい..." : 
+              "例：補償光学の眼科分野への利用"}
             className="w-full px-4 py-3 text-lg border-none bg-gray-50 focus-visible:ring-0 placeholder:text-gray-400"
             value={searchValue}
             onChange={handleSearchChange}
@@ -80,7 +82,7 @@ export const SearchSection = () => {
                   searchMode === "quick" ? "bg-blue-100 text-blue-600" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
                 }`}
               >
-                <ExplorationIcon className="mr-1" />
+                <ExplorationIcon className={`mr-1 ${searchMode === "quick" ? "stroke-[2.5px]" : ""}`} />
                 Quick Exploration
               </button>
               <button 
@@ -90,7 +92,7 @@ export const SearchSection = () => {
                   searchMode === "deep" ? "bg-blue-100 text-blue-600" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
                 }`}
               >
-                <Search className="h-3 w-3 mr-1" /> Deep Search
+                <Search className={`h-3 w-3 mr-1 ${searchMode === "deep" ? "stroke-[2.5px]" : ""}`} /> Deep Refiner
               </button>
             </div>
             

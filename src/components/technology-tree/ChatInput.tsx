@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,7 +43,7 @@ export const ChatInput = ({ value, onChange, onSend }: ChatInputProps) => {
                 searchMode === "quick" ? "bg-blue-50 text-blue-600" : "bg-transparent hover:bg-gray-100 text-[#9f9f9f]"
               }`}
             >
-              <ExplorationIcon className="mr-1" />
+              <ExplorationIcon className={`mr-1 ${searchMode === "quick" ? "stroke-[2.5px]" : ""}`} />
               Quick Exploration
             </button>
             <button 
@@ -52,13 +53,15 @@ export const ChatInput = ({ value, onChange, onSend }: ChatInputProps) => {
                 searchMode === "deep" ? "bg-blue-50 text-blue-600" : "bg-transparent hover:bg-gray-100 text-[#9f9f9f]"
               }`}
             >
-              <Search className="h-3 w-3 mr-1" /> Deep Search
+              <Search className={`h-3 w-3 mr-1 ${searchMode === "deep" ? "stroke-[2.5px]" : ""}`} /> Deep Refiner
             </button>
           </div>
         </div>
         
         <Textarea 
-          placeholder="メッセージを入力してください..."
+          placeholder={searchMode === "deep" ? 
+            "肝細胞がん患者のAI支援画像診断を用いた早期診断精度向上を目指し、診断から3ヶ月以内の症例を対象とした研究を行いたい..." : 
+            "メッセージを入力してください..."}
           className="w-full resize-none border bg-gray-50 focus-visible:ring-0 text-sm px-4 py-3 rounded-xl"
           value={value}
           onChange={onChange}
