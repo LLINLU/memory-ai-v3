@@ -1,3 +1,4 @@
+
 import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +16,7 @@ interface SuggestionProps {
 const SearchSuggestion = ({ label, onClick }: SuggestionProps) => {
   return (
     <button 
-      className="bg-white hover:bg-gray-50 rounded-xl px-4 py-1 text-gray-700 transition-colors text-sm border border-[#c4d4f4]"
+      className="bg-[#f6fbff] hover:bg-gray-50 rounded-md px-4 py-1 text-gray-700 transition-colors text-sm border border-[#c4d4f4]"
       onClick={() => onClick(label)}
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="14" viewBox="0 0 12 14" fill="none" className="inline-block mr-1.5">
