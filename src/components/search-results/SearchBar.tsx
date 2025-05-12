@@ -29,8 +29,8 @@ export const SearchBar = () => {
               <button 
                 type="button"
                 onClick={() => handleSearchModeChange("quick")}
-                className={`inline-flex items-center rounded-full py-1 px-5 h-[32px] text-blue-600 transition-colors ${
-                  searchMode === "quick" ? "bg-blue-100" : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                className={`inline-flex items-center rounded-full py-1 px-4 h-[28px] text-sm transition-colors ${
+                  searchMode === "quick" ? "bg-blue-100 text-blue-600" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
                 }`}
               >
                 <ExplorationIcon className="mr-1" />
@@ -39,11 +39,11 @@ export const SearchBar = () => {
               <button 
                 type="button"
                 onClick={() => handleSearchModeChange("deep")}
-                className={`inline-flex items-center rounded-full py-1 px-5 h-[32px] transition-colors ${
-                  searchMode === "deep" ? "bg-blue-100 text-blue-600" : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                className={`inline-flex items-center rounded-full py-1 px-4 h-[28px] text-sm transition-colors ${
+                  searchMode === "deep" ? "bg-blue-100 text-blue-600" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
                 }`}
               >
-                <Search className="h-4 w-4 mr-1" /> Deep Search
+                <Search className="h-3 w-3 mr-1" /> Deep Search
               </button>
             </div>
             
