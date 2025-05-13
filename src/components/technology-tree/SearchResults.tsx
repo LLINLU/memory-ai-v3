@@ -17,12 +17,6 @@ export const SearchResults = ({ selectedNodeTitle, selectedNodeDescription }: Se
     const handleRefresh = (event: Event) => {
       console.log("SearchResults component detected refresh event:", event);
       
-      // Find the results container
-      const resultsContainer = document.querySelector('[data-results-container="true"]');
-      if (resultsContainer) {
-        resultsContainer.scrollTop = 0;
-      }
-      
       // Ensure we're on the papers tab
       setActiveTab("papers");
     };
@@ -35,7 +29,7 @@ export const SearchResults = ({ selectedNodeTitle, selectedNodeDescription }: Se
   }, [toast]);
 
   return (
-    <div className="bg-white" data-search-results="content">
+    <div className="bg-white pb-8" data-search-results="content">
       <SelectedNodeInfo 
         title={selectedNodeTitle} 
         description={selectedNodeDescription}

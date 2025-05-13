@@ -21,7 +21,7 @@ interface TechTreeMainContentProps {
   hasUserMadeSelection: boolean;
   scenario?: string;
   onEditScenario?: (newScenario: string) => void;
-  conversationHistory?: any[]; // Added this prop
+  conversationHistory?: any[];
 }
 
 export const TechTreeMainContent = ({
@@ -36,7 +36,7 @@ export const TechTreeMainContent = ({
   hasUserMadeSelection,
   scenario,
   onEditScenario,
-  conversationHistory // Added this parameter
+  conversationHistory
 }: TechTreeMainContentProps) => {
   return (
     <MainContent

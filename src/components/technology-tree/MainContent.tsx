@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
 import { ScenarioSection } from "./ScenarioSection";
 import { ScrollArea } from "../ui/scroll-area";
+import { SearchResults } from "./SearchResults";
 
 interface MainContentProps {
   selectedPath: {
@@ -48,6 +49,36 @@ export const MainContent = ({
   hasUserMadeSelection,
   conversationHistory
 }: MainContentProps) => {
+  // Calculate selected node info to pass to SearchResults
+  const getSelectedNodeInfo = () => {
+    let title = '';
+    let description = '';
+    
+    if (selectedPath.level3 && level3Items[selectedPath.level2]) {
+      const node = level3Items[selectedPath.level2].find(item => item.id === selectedPath.level3);
+      if (node) {
+        title = node.name;
+        description = node.info || '';
+      }
+    } else if (selectedPath.level2 && level2Items[selectedPath.level1]) {
+      const node = level2Items[selectedPath.level1].find(item => item.id === selectedPath.level2);
+      if (node) {
+        title = node.name;
+        description = node.info || '';
+      }
+    } else if (selectedPath.level1) {
+      const node = level1Items.find(item => item.id === selectedPath.level1);
+      if (node) {
+        title = node.name;
+        description = node.info || '';
+      }
+    }
+    
+    return { title, description };
+  };
+  
+  const selectedNodeInfo = getSelectedNodeInfo();
+  
   return (
     <div className="container mx-auto px-4 py-6 flex flex-col h-full">
       {/* Fixed header section that doesn't scroll */}
@@ -72,11 +103,12 @@ export const MainContent = ({
       </div>
       
       {/* Scrollable content area that contains the search results */}
-      <div className="flex-1 overflow-hidden">
-        <ScrollArea className="h-full pr-4">
-          <div id="search-results-container" data-results-container="true" className="pb-8">
-            {/* This empty div will be populated with search results from SearchResults.tsx */}
-          </div>
+      <div className="flex-1 overflow-hidden mt-6">
+        <ScrollArea className="h-full">
+          <SearchResults 
+            selectedNodeTitle={selectedNodeInfo.title}
+            selectedNodeDescription={selectedNodeInfo.description}
+          />
         </ScrollArea>
       </div>
     </div>
