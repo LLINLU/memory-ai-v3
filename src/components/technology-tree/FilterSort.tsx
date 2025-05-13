@@ -7,7 +7,7 @@ interface FilterSortProps {
   className?: string;
 }
 
-export const FilterSort = ({ className }: FilterSortProps) => {
+export const FilterSort: React.FC<FilterSortProps> = ({ className }: FilterSortProps) => {
   return (
     <div className={`flex items-center gap-2 ${className || ''}`}>
       <Button variant="outline" size="sm" className="flex items-center gap-1">
