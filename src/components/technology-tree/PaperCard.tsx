@@ -7,6 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { TagBadge } from "@/components/TagBadge";
 
 interface PaperCardProps {
   title: {
@@ -19,6 +20,34 @@ interface PaperCardProps {
   abstract: string;
   date: string;
 }
+
+// Map tag names to appropriate variants
+const getTagVariant = (tag: string) => {
+  const tagLower = tag.toLowerCase();
+  
+  if (tagLower.includes('material') || tagLower.includes('nano') || tagLower.includes('polymer'))
+    return 'materials';
+  if (tagLower.includes('engineer') || tagLower.includes('design') || tagLower.includes('system'))
+    return 'engineering';
+  if (tagLower.includes('ai') || tagLower.includes('machine') || tagLower.includes('learning') || tagLower.includes('data'))
+    return 'aiml';
+  if (tagLower.includes('health') || tagLower.includes('medical') || tagLower.includes('bio'))
+    return 'healthcare';
+  if (tagLower.includes('energy') || tagLower.includes('power') || tagLower.includes('battery'))
+    return 'energy';
+  if (tagLower.includes('sustain') || tagLower.includes('environment') || tagLower.includes('eco'))
+    return 'sustainability';
+  if (tagLower.includes('algorithm') || tagLower.includes('compute') || tagLower.includes('process'))
+    return 'algorithms';
+  if (tagLower.includes('real-time') || tagLower.includes('realtime') || tagLower.includes('control'))
+    return 'realtime';
+  if (tagLower.includes('predict') || tagLower.includes('forecast') || tagLower.includes('model'))
+    return 'predictive';
+  if (tagLower.includes('robot') || tagLower.includes('automation') || tagLower.includes('mechatronic'))
+    return 'robotics';
+    
+  return 'default';
+};
 
 export const PaperCard = ({
   title,
@@ -62,11 +91,13 @@ export const PaperCard = ({
           </TooltipProvider>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {tags.map((tag, index) => (
-            <span key={index} className="text-xs bg-[#E8F1FF] text-blue-600 px-3 py-1 rounded-full">
-              {tag}
-            </span>
+            <TagBadge 
+              key={index} 
+              label={tag} 
+              variant={getTagVariant(tag)}
+            />
           ))}
         </div>
 
