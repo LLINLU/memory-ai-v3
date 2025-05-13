@@ -35,7 +35,7 @@ export const SearchResults = ({ selectedNodeTitle, selectedNodeDescription }: Se
   }, [toast]);
 
   return (
-    <div className="h-full p-4 overflow-auto bg-white" data-sidebar="content">
+    <div className="h-full p-4 overflow-auto bg-white" data-sidebar="content" style={{ paddingTop: '0' }}>
       <SelectedNodeInfo 
         title={selectedNodeTitle} 
         description={selectedNodeDescription}
