@@ -3,7 +3,7 @@ import { TagBadge } from "./TagBadge";
 
 interface Tag {
   label: string;
-  variant: "materials" | "engineering" | "aiml" | "healthcare" | "energy" | "sustainability" | "default";
+  variant: "materials" | "engineering" | "aiml" | "healthcare" | "energy" | "sustainability" | "default" | "algorithms" | "realtime" | "predictive" | "robotics" | "blue" | "yellow";
 }
 
 interface SearchCardProps {

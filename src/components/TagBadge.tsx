@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface TagBadgeProps {
   label: string;
-  variant?: "materials" | "engineering" | "aiml" | "healthcare" | "energy" | "sustainability" | "default" | "algorithms" | "realtime" | "predictive" | "robotics";
+  variant?: "materials" | "engineering" | "aiml" | "healthcare" | "energy" | "sustainability" | "default" | "algorithms" | "realtime" | "predictive" | "robotics" | "blue" | "yellow";
   className?: string;
 }
 
@@ -22,15 +22,17 @@ const variantStyles = {
   predictive: "bg-[#FFF5E8] text-orange-600", // Orange theme
   robotics: "bg-[#FFE8F5] text-pink-600",     // Pink theme for additional variety
   
-  // Default
-  default: "bg-gray-100 text-gray-700",
+  // Updated default to blue and added yellow option
+  default: "bg-[#D3E4FD] text-[#0EA5E9]", // Soft blue background with ocean blue text
+  blue: "bg-[#E8F1FF] text-blue-600",     // Light blue background with blue text
+  yellow: "bg-[#FEF7CD] text-amber-600",  // Soft yellow background with amber text
 };
 
 export const TagBadge = ({ label, variant = "default", className }: TagBadgeProps) => {
   return (
     <span
       className={cn(
-        "px-3 py-1 rounded-full text-sm font-medium",
+        "px-3 py-1 rounded-full text-[0.75rem] font-normal", // Updated font size and weight
         variantStyles[variant],
         className
       )}

@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 import {
@@ -45,8 +44,9 @@ const getTagVariant = (tag: string) => {
     return 'predictive';
   if (tagLower.includes('robot') || tagLower.includes('automation') || tagLower.includes('mechatronic'))
     return 'robotics';
-    
-  return 'default';
+  
+  // Alternate between blue and yellow for default tags
+  return Math.random() > 0.5 ? 'blue' : 'yellow';
 };
 
 export const PaperCard = ({
