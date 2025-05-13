@@ -18,11 +18,11 @@ export const getNodeStyle = (item: TreeNode, isSelected: boolean, level?: number
       : 'bg-[#f1f5f9] text-[#2E2E2E] hover:border border-blue-400';
   } else if (level === 2) {
     return isSelected
-      ? 'bg-[#2e5e90] text-white'
+      ? 'bg-[#3774c2] text-white'
       : 'bg-[#f0f8ff] text-[#2E2E2E] hover:border border-blue-400';
   } else if (level === 3) {
     return isSelected
-      ? 'bg-[#4877b3] text-white'
+      ? 'bg-[#467efd] text-white'
       : 'bg-[#f0f6ff] text-[#2E2E2E] hover:border border-blue-400';
   }
   
