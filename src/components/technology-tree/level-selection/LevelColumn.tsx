@@ -101,7 +101,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
 
   return (
     <div className="w-1/3 bg-white p-4 rounded-lg relative">
-      <h2 className="text-[14px] font-normal text-blue-700 mb-4">{combinedTitle}</h2>
+      <h2 className="text-base font-semibold text-blue-700 mb-4">{combinedTitle}</h2>
       
       <div className="space-y-4">
         {items.map((item) => (
