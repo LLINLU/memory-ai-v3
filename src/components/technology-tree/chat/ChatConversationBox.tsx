@@ -121,8 +121,24 @@ export const ChatConversationBox = ({
   return (
     <div className="flex-1 overflow-y-auto p-4 bg-gray-50 relative">
       {messages.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-full p-4">
-          <p className="text-gray-500 text-sm">Ask a question about your research topic...</p>
+        <div className="p-4">
+          <p className="text-base mb-3">「{inputValue || 'query'}」を検索しました。何かお手伝いできることはありますか？</p>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button
+              onClick={() => handleCustomButtonClick('generate-scenario')}
+              className="bg-blue-100 hover:bg-blue-200 text-blue-800"
+              size="sm"
+            >
+              詳細な研究シナリオを生成
+            </Button>
+            <Button
+              onClick={() => handleCustomButtonClick('summarize-trends')}
+              className="bg-blue-100 hover:bg-blue-200 text-blue-800"
+              size="sm"
+            >
+              最新の研究動向を要約してください
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="space-y-6">
