@@ -7,6 +7,7 @@ import { ResultsHeader } from "@/components/search-results/ResultsHeader";
 import { ResultsTabs } from "@/components/search-results/ResultsTabs";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { FilterSort } from "@/components/technology-tree/FilterSort";
 
 const SearchResults = () => {
   return (
@@ -21,6 +22,7 @@ const SearchResults = () => {
               <SearchBar />
               <SearchCriteria />
               <ResultsHeader />
+              <FilterSort className="ml-4 mb-4" />
             </div>
             <ResultsTabs />
           </div>
