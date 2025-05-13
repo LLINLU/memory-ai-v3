@@ -90,7 +90,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
             placeholder}
           value={inputValue}
           onChange={onInputChange}
-          className="w-full resize-none p-3 pr-16 border rounded-xl text-base truncate"
+          className="w-full resize-none p-3 pr-16 border border-[#ebf0f7] rounded-xl text-base truncate"
           rows={2}
         />
         <Button 

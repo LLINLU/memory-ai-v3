@@ -103,7 +103,7 @@ export const SearchSection = () => {
       <h1 className="text-4xl font-bold text-center mb-12">研究情報を俯瞰する</h1>
       
       <div className="w-full mx-auto mb-8">
-        <div className="bg-gray-50 rounded-2xl p-4">
+        <div className="bg-gray-50 rounded-2xl p-4 border border-[#ebf0f7] border-[1px]">
           <Input 
             type="text" 
             placeholder={searchMode === "deep" ? 
