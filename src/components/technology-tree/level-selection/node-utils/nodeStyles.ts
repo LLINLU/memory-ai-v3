@@ -14,11 +14,11 @@ export const getNodeStyle = (item: TreeNode, isSelected: boolean, level?: number
   // Apply level-specific styling
   if (level === 1) {
     return isSelected
-      ? 'bg-[#3d5e80] text-white'
+      ? 'bg-[#1e5b9b] text-white'  // Changed from #3d5e80 to #1e5b9b
       : 'bg-[#f1f5f9] text-[#2E2E2E] hover:border border-blue-400';
   } else if (level === 2) {
     return isSelected
-      ? 'bg-[#3774c2] text-white'
+      ? 'bg-[#1867cc] text-white'  // Changed from #3774c2 to #1867cc
       : 'bg-[#f0f8ff] text-[#2E2E2E] hover:border border-blue-400';
   } else if (level === 3) {
     return isSelected
