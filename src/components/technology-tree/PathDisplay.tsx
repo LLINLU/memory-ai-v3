@@ -1,5 +1,7 @@
 
 import React from 'react';
+import { Button } from '@/components/ui/button';
+import { FileText } from 'lucide-react';
 
 interface PathDisplayProps {
   selectedPath: {
@@ -36,9 +38,19 @@ export const PathDisplay = ({
 
   return (
     <div className="mb-6" style={{ paddingTop: '0rem' }}>
-      <h3 className="text-gray-800 font-medium mb-1" style={{ fontSize: "16px", fontWeight: 600 }}>
-        研究分野の階層表示
-      </h3>
+      <div className="flex justify-between items-center mb-1">
+        <h3 className="text-gray-800" style={{ fontSize: "16px", fontWeight: 600 }}>
+          研究分野の階層表示
+        </h3>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="flex items-center gap-1 text-blue-600 border-blue-200 hover:bg-blue-50"
+        >
+          <FileText className="h-4 w-4" />
+          ガイダンス
+        </Button>
+      </div>
       <p className="text-gray-600" style={{ fontSize: '14px' }}>
         {level1Name && level1Name}
         {level2Name && ` → ${level2Name}`}
