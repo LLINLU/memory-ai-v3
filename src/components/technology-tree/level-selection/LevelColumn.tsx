@@ -98,10 +98,27 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
 
   // Create the combined title (e.g., "レベル1：目的")
   const combinedTitle = title && subtitle ? `${title}：${subtitle}` : title;
+  
+  // Define title color based on level
+  const getTitleColor = () => {
+    if (title === "レベル1") return "#3d5e80";
+    if (title === "レベル2") return "#3774c2";
+    if (title === "レベル3") return "#467efd";
+    return "text-blue-700"; // default color
+  };
 
   return (
     <div className="w-1/3 bg-white p-4 rounded-lg relative">
-      <h2 className="text-base font-semibold text-blue-700 mb-4">{combinedTitle}</h2>
+      <h2 
+        className="text-base mb-4"
+        style={{ 
+          color: getTitleColor(), 
+          fontSize: '14px', 
+          fontWeight: 400 
+        }}
+      >
+        {combinedTitle}
+      </h2>
       
       <div className="space-y-4">
         {items.map((item) => (
