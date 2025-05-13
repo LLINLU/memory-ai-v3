@@ -11,6 +11,7 @@ interface TreeNodeProps {
   onClick: () => void;
   onEditClick: (e: React.MouseEvent) => void;
   onDeleteClick: (e: React.MouseEvent) => void;
+  level?: number;
 }
 
 export const TreeNode: React.FC<TreeNodeProps> = ({
@@ -18,7 +19,8 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   isSelected,
   onClick,
   onEditClick,
-  onDeleteClick
+  onDeleteClick,
+  level
 }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
   const [nodeWidth, setNodeWidth] = useState(0);
@@ -38,7 +40,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
     return () => window.removeEventListener('resize', updateWidth);
   }, []);
 
-  const nodeStyleClass = getNodeStyle(item, isSelected);
+  const nodeStyleClass = getNodeStyle(item, isSelected, level);
 
   return (
     <div
@@ -53,7 +55,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="flex flex-col">
-        <NodeContent item={item} isSelected={isSelected} isHovered={isHovered} />
+        <NodeContent item={item} isSelected={isSelected} isHovered={isHovered} level={level} />
         
         {/* Show actions when hovered */}
         {isHovered && (

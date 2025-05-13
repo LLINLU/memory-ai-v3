@@ -5,4 +5,5 @@ export interface TreeNode {
   info?: string;
   description?: string;
   isCustom?: boolean;
+  level?: number;
 }

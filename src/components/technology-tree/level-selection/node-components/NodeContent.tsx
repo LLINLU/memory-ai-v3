@@ -7,14 +7,16 @@ interface NodeContentProps {
   item: TreeNode;
   isSelected: boolean;
   isHovered: boolean;
+  level?: number;
 }
 
 export const NodeContent: React.FC<NodeContentProps> = ({ 
   item, 
   isSelected,
-  isHovered 
+  isHovered,
+  level
 }) => {
-  const textColorClass = getTextColor(item, isSelected);
+  const textColorClass = getTextColor(item, isSelected, level);
   
   return (
     <div className="flex flex-col w-full">

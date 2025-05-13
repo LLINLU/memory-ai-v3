@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { TreeNode } from './TreeNode';
 import { EditNodeDialog } from './EditNodeDialog';
@@ -36,6 +35,12 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   const [editingNode, setEditingNode] = useState<LevelItem | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
+  
+  // Determine level number based on title
+  const levelNumber = title === "レベル1" ? 1 : 
+                      title === "レベル2" ? 2 : 
+                      title === "レベル3" ? 3 : 
+                      undefined;
   
   const handleCustomNodeClick = () => {
     // Scroll to the top of the page
@@ -104,6 +109,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
             onClick={() => onNodeClick(item.id)}
             onEditClick={(e) => handleEditClick(e, item)}
             onDeleteClick={(e) => handleDeleteClick(e, item.id)}
+            level={levelNumber}
           />
         ))}
 
