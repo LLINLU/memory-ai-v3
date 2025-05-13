@@ -20,7 +20,7 @@ export const NodeContent: React.FC<NodeContentProps> = ({
   
   return (
     <div className="flex flex-col w-full">
-      <h4 className="text-base leading-6 font-medium">{item.name}</h4>
+      <h4 className="text-[14px] leading-6 font-normal">{item.name}</h4>
       
       {item.info && (
         <p className={`text-xs mt-1 ${textColorClass}`}>{item.info}</p>
@@ -28,7 +28,7 @@ export const NodeContent: React.FC<NodeContentProps> = ({
       
       {/* Only display description when hovered */}
       {isHovered && item.description && (
-        <p className={`mt-3 text-sm ${textColorClass}`}>{item.description}</p>
+        <p className={`mt-3 text-[14px] font-normal ${textColorClass}`}>{item.description}</p>
       )}
     </div>
   );

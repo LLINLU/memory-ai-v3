@@ -47,8 +47,12 @@ export const getTextColor = (item: TreeNode, isSelected: boolean, level?: number
   // Apply level-specific text coloring
   if ((level === 1 || level === 2 || level === 3) && isSelected) {
     return 'text-white';
-  } else if (level === 1 || level === 2 || level === 3) {
-    return 'text-gray-600';
+  } else if (level === 1) {
+    return 'text-[#3d5e80]';
+  } else if (level === 2) {
+    return 'text-[#3774c2]';
+  } else if (level === 3) {
+    return 'text-[#467efd]';
   }
   
   // Default styling for any other cases (fall back to original logic)

@@ -48,7 +48,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       className={`
         py-4 px-4 rounded-lg cursor-pointer transition-all relative
         ${nodeStyleClass}
-        group
+        group text-[14px] font-normal
       `}
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
