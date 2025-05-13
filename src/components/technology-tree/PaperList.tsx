@@ -16,8 +16,8 @@ export const PaperList = () => {
   } = usePaperList();
 
   return (
-    <div className="space-y-4">
-      <ul className="w-full space-y-4 mb-4">
+    <>
+      <ul className="w-full space-y-4">
         {papers.map((paper, index) => (
           <PaperCard
             key={`${refreshKey}-${index}`}
@@ -41,6 +41,6 @@ export const PaperList = () => {
           setCurrentPage(1);
         }}
       />
-    </div>
+    </>
   );
 };
