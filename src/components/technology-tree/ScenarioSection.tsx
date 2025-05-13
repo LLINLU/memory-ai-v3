@@ -2,6 +2,7 @@
 import React, { useContext } from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 interface ScenarioSectionProps {
   scenario?: string;
@@ -15,6 +16,15 @@ export const ScenarioSection = ({
   conversationHistory = []
 }: ScenarioSectionProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get searchMode from location state
+  const searchMode = location.state?.searchMode || "quick";
+  
+  // If searchMode is "quick", don't render the component
+  if (searchMode === "quick") {
+    return null;
+  }
 
   const handleEditScenario = () => {
     // Navigate to Research Context page with conversation history
