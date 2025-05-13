@@ -1,261 +1,41 @@
 
-import { useState } from "react";
-import { NodeSuggestion } from "@/types/chat";
-import { toast } from "@/hooks/use-toast";
 import { level1Items as initialLevel1Items, level2Items as initialLevel2Items, level3Items as initialLevel3Items } from "@/data/technologyTreeData";
-
-export const generateChildNode = (parentTitle: string, level: number): NodeSuggestion => {
-  const prefixes = {
-    2: [
-      "Advanced", 
-      "Novel",
-      "Improved",
-      "Enhanced",
-      "Modern"
-    ],
-    3: [
-      "Algorithm for",
-      "Technique for",
-      "Method for",
-      "Approach to",
-      "System for"
-    ]
-  };
-
-  const randomPrefix = (level === 2 ? prefixes[2] : prefixes[3])[Math.floor(Math.random() * 5)];
-  
-  if (parentTitle === "網膜疾患検出のための深層学習") {
-    return {
-      title: "網膜疾患検出のための深層学習アルゴリズム",
-      description: "網膜疾患検出のための深層学習の生成された子ノード"
-    };
-  }
-  
-  return {
-    title: `${randomPrefix} ${parentTitle}`,
-    description: `Generated child node for ${parentTitle}`
-  };
-};
+import { NodeSuggestion } from "@/types/chat";
+import { useNodeOperations } from "./useNodeOperations";
+import { usePathSelectionState } from "./usePathSelectionState";
 
 export const usePathSelection = (initialPath = {
   level1: "astronomy",
   level2: "turbulence-compensation",
   level3: "laser-guide-star"
 }) => {
-  const [selectedPath, setSelectedPath] = useState(initialPath);
-  const [hasUserMadeSelection, setHasUserMadeSelection] = useState(false);
-  const [level1Items, setLevel1Items] = useState(initialLevel1Items);
-  const [level2Items, setLevel2Items] = useState(initialLevel2Items);
-  const [level3Items, setLevel3Items] = useState(initialLevel3Items);
+  const {
+    selectedPath,
+    setSelectedPath,
+    hasUserMadeSelection,
+    handleNodeClick: handlePathNodeClick
+  } = usePathSelectionState(initialPath);
 
+  const {
+    level1Items,
+    level2Items,
+    level3Items,
+    addCustomNode: addNode,
+    editNode,
+    deleteNode: removeNode
+  } = useNodeOperations(initialLevel1Items, initialLevel2Items, initialLevel3Items);
+
+  // Wrapper functions to maintain the same API
   const handleNodeClick = (level: string, nodeId: string) => {
-    setHasUserMadeSelection(true);
-    
-    setSelectedPath(prev => {
-      if (prev[level] === nodeId) {
-        if (level === 'level1') {
-          return { ...prev, level1: "", level2: "", level3: "" };
-        } else if (level === 'level2') {
-          return { ...prev, level2: "", level3: "" };
-        } else if (level === 'level3') {
-          return { ...prev, level3: "" };
-        }
-      }
-      
-      if (level === 'level1') {
-        return { ...prev, level1: nodeId, level2: "", level3: "" };
-      } else if (level === 'level2') {
-        return { ...prev, level2: nodeId, level3: "" };
-      } else if (level === 'level3') {
-        return { ...prev, level3: nodeId };
-      }
-      return prev;
-    });
+    handlePathNodeClick(level, nodeId);
   };
 
   const addCustomNode = (level: string, node: NodeSuggestion) => {
-    console.log('Adding custom node:', { level, node });
-    
-    // Replace specific title and description if it matches our target
-    if (node.title === "Deep Learning for Retinal Disease Detection") {
-      node.title = "網膜疾患検出のための深層学習";
-      node.description = "畳み込みニューラルネットワークを使用して、OCTスキャンから網膜疾患を高精度で自動的に検出および分類します。";
-    }
-    
-    const nodeId = node.title.toLowerCase().replace(/\s+/g, '-');
-    const newNode = {
-      id: nodeId,
-      name: node.title,
-      info: "18論文 • 4事例",
-      isCustom: true,
-      description: node.description || `Custom node for ${node.title}`
-    };
-    
-    if (level === 'level1') {
-      setLevel1Items(prev => [...prev, newNode]);
-      
-      const childNode = generateChildNode(node.title, 2);
-      const childId = childNode.title.toLowerCase().replace(/\s+/g, '-');
-      setLevel2Items(prev => ({
-        ...prev,
-        [nodeId]: [{
-          id: childId,
-          name: childNode.title,
-          info: "18論文 • 4事例",
-          isCustom: true,
-          description: childNode.description
-        }]
-      }));
-      
-      setSelectedPath(prev => ({ ...prev, level1: nodeId, level2: "", level3: "" }));
-    } 
-    else if (level === 'level2') {
-      const currentLevel1 = selectedPath.level1;
-      const currentItems = level2Items[currentLevel1] || [];
-      
-      setLevel2Items(prev => ({
-        ...prev,
-        [currentLevel1]: [...currentItems, newNode]
-      }));
-      
-      const childNode = generateChildNode(node.title, 3);
-      const childId = childNode.title.toLowerCase().replace(/\s+/g, '-');
-      setLevel3Items(prev => ({
-        ...prev,
-        [nodeId]: [{
-          id: childId,
-          name: childNode.title,
-          info: "18論文 • 4事例",
-          isCustom: true,
-          description: childNode.description
-        }]
-      }));
-      
-      setSelectedPath(prev => ({ ...prev, level2: nodeId, level3: "" }));
-    } 
-    else if (level === 'level3') {
-      const currentLevel2 = selectedPath.level2;
-      const currentItems = level3Items[currentLevel2] || [];
-      
-      setLevel3Items(prev => ({
-        ...prev,
-        [currentLevel2]: [...currentItems, newNode]
-      }));
-      
-      setSelectedPath(prev => ({ ...prev, level3: nodeId }));
-    }
-    
-    toast({
-      title: "ノードが追加されました",
-      description: `「${node.title}」をレベル ${level.charAt(5)}に追加しました`,
-      duration: 2000,
-    });
-  };
-
-  const editNode = (level: string, nodeId: string, updatedNode: { title: string; description: string }) => {
-    if (level === 'level1') {
-      setLevel1Items(prev => prev.map(item => 
-        item.id === nodeId 
-          ? { 
-              ...item, 
-              name: updatedNode.title, 
-              description: updatedNode.description 
-            } 
-          : item
-      ));
-    } 
-    else if (level === 'level2') {
-      setLevel2Items(prev => {
-        const updatedItems = { ...prev };
-        Object.keys(updatedItems).forEach(key => {
-          updatedItems[key] = updatedItems[key].map(item => 
-            item.id === nodeId 
-              ? { 
-                  ...item, 
-                  name: updatedNode.title, 
-                  description: updatedNode.description 
-                } 
-              : item
-          );
-        });
-        return updatedItems;
-      });
-    } 
-    else if (level === 'level3') {
-      setLevel3Items(prev => {
-        const updatedItems = { ...prev };
-        Object.keys(updatedItems).forEach(key => {
-          updatedItems[key] = updatedItems[key].map(item => 
-            item.id === nodeId 
-              ? { 
-                  ...item, 
-                  name: updatedNode.title, 
-                  description: updatedNode.description 
-                } 
-              : item
-          );
-        });
-        return updatedItems;
-      });
-    }
-
-    // Add a toast to confirm the edit was saved
-    toast({
-      title: "Node updated",
-      description: `Updated description for "${updatedNode.title}"`,
-      duration: 2000,
-    });
+    addNode(level, node, selectedPath, setSelectedPath);
   };
 
   const deleteNode = (level: string, nodeId: string) => {
-    // Clear the selection if the deleted node is currently selected
-    setSelectedPath(prev => {
-      if (level === 'level1' && prev.level1 === nodeId) {
-        return { ...prev, level1: "", level2: "", level3: "" };
-      } else if (level === 'level2' && prev.level2 === nodeId) {
-        return { ...prev, level2: "", level3: "" };
-      } else if (level === 'level3' && prev.level3 === nodeId) {
-        return { ...prev, level3: "" };
-      }
-      return prev;
-    });
-
-    // Remove the node from state
-    if (level === 'level1') {
-      setLevel1Items(prev => prev.filter(item => item.id !== nodeId));
-      
-      // Also remove its children from level2Items
-      setLevel2Items(prev => {
-        const newLevel2Items = { ...prev };
-        delete newLevel2Items[nodeId];
-        return newLevel2Items;
-      });
-    } 
-    else if (level === 'level2') {
-      setLevel2Items(prev => {
-        const updatedItems = { ...prev };
-        Object.keys(updatedItems).forEach(key => {
-          updatedItems[key] = updatedItems[key].filter(item => item.id !== nodeId);
-        });
-        return updatedItems;
-      });
-      
-      // Also remove its children from level3Items
-      setLevel3Items(prev => {
-        const newLevel3Items = { ...prev };
-        delete newLevel3Items[nodeId];
-        return newLevel3Items;
-      });
-    } 
-    else if (level === 'level3') {
-      setLevel3Items(prev => {
-        const updatedItems = { ...prev };
-        Object.keys(updatedItems).forEach(key => {
-          updatedItems[key] = updatedItems[key].filter(item => item.id !== nodeId);
-        });
-        return updatedItems;
-      });
-    }
+    removeNode(level, nodeId, selectedPath, setSelectedPath);
   };
 
   return {
