@@ -36,6 +36,9 @@ export const PathDisplay = ({
 
   return (
     <div className="mb-6">
+      <h3 className="text-gray-800 font-medium mb-1" style={{ fontSize: "14px" }}>
+        研究分野の階層表示
+      </h3>
       <p className="text-gray-600" style={{ fontSize: '14px' }}>
         {level1Name && level1Name}
         {level2Name && ` → ${level2Name}`}
