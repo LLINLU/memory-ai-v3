@@ -52,29 +52,20 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col">
         <NodeContent item={item} isSelected={isSelected} isHovered={isHovered} />
         
-        {/* Show actions when hovered and width is sufficient */}
-        {isHovered && nodeWidth > 250 && (
-          <NodeActions 
-            itemName={item.name} 
-            onEditClick={onEditClick} 
-            onDeleteClick={onDeleteClick} 
-          />
+        {/* Show actions when hovered */}
+        {isHovered && (
+          <div className="mt-2 flex justify-end">
+            <NodeActions 
+              itemName={item.name} 
+              onEditClick={onEditClick} 
+              onDeleteClick={onDeleteClick} 
+            />
+          </div>
         )}
       </div>
-      
-      {/* Show actions below when width is smaller and node is hovered */}
-      {isHovered && nodeWidth <= 250 && (
-        <div className="mt-2 flex justify-end">
-          <NodeActions 
-            itemName={item.name} 
-            onEditClick={onEditClick} 
-            onDeleteClick={onDeleteClick} 
-          />
-        </div>
-      )}
     </div>
   );
 };

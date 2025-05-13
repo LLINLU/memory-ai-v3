@@ -17,7 +17,7 @@ export const NodeContent: React.FC<NodeContentProps> = ({
   const textColorClass = getTextColor(item, isSelected);
   
   return (
-    <>
+    <div className="flex flex-col w-full">
       <h4 className="text-base leading-6 font-medium">{item.name}</h4>
       
       {item.info && (
@@ -28,6 +28,6 @@ export const NodeContent: React.FC<NodeContentProps> = ({
       {isHovered && item.description && (
         <p className={`mt-3 text-sm ${textColorClass}`}>{item.description}</p>
       )}
-    </>
+    </div>
   );
 };
