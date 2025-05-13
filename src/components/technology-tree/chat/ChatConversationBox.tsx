@@ -96,8 +96,8 @@ export const ChatConversationBox = ({
     return (
       <div className="mb-4">
         <div className="bg-blue-50 text-blue-900 p-4 rounded-xl">
-          <p className="text-base mb-3">「{userInput}」を検索しました。何かお手伝いできることはありますか？</p>
-          <div className="flex flex-col sm:flex-row gap-2">
+          <p className="text-sm mb-3">「{userInput}」を検索しました。何かお手伝いできることはありますか？</p>
+          <div className="flex flex-col gap-2">
             <Button
               onClick={() => handleCustomButtonClick('generate-scenario')}
               className="bg-blue-100 hover:bg-blue-200 text-blue-800"
@@ -122,8 +122,8 @@ export const ChatConversationBox = ({
     <div className="flex-1 overflow-y-auto p-4 bg-gray-50 relative">
       {messages.length === 0 ? (
         <div className="p-4">
-          <p className="text-base mb-3">「{inputValue || 'query'}」を検索しました。何かお手伝いできることはありますか？</p>
-          <div className="flex flex-col sm:flex-row gap-2">
+          <p className="text-sm mb-3">「{inputValue || 'query'}」を検索しました。何かお手伝いできることはありますか？</p>
+          <div className="flex flex-col gap-2">
             <Button
               onClick={() => handleCustomButtonClick('generate-scenario')}
               className="bg-blue-100 hover:bg-blue-200 text-blue-800"
