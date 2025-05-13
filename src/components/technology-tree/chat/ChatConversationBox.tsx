@@ -89,13 +89,13 @@ export const ChatConversationBox = ({
     }
   };
 
-  // Default welcome message that shows user's input
+  // Welcome message that shows user's input
   const renderWelcomeMessage = () => {
     const userInput = inputValue || 'query';
     
     return (
       <div className="mb-4 bg-blue-50 rounded-xl p-4">
-        <p className="text-sm mb-3">「{userInput}」を検索しました。何かお手伝いできることはありますか？</p>
+        <p className="text-[0.875rem] mb-3">「{userInput}」を検索しました。何かお手伝いできることはありますか？</p>
         <div className="flex flex-col gap-2">
           <Button
             onClick={() => handleCustomButtonClick('generate-scenario')}
@@ -116,64 +116,62 @@ export const ChatConversationBox = ({
     );
   };
 
-  // Check if there are any "real" messages
+  // Check if there are any substantive messages (excluding welcome messages)
   const hasSubstantiveMessages = messages.some(m => 
     m.content && !m.content.includes('何かお手伝いできることはありますか')
   );
 
   return (
     <div className="flex-1 overflow-y-auto p-4 bg-gray-50 relative">
-      {/* Show welcome message only if there are no messages or if it's the first message */}
-      {(!messages.length || !hasSubstantiveMessages) && renderWelcomeMessage()}
+      {/* Only show welcome message if there are no substantive messages */}
+      {!hasSubstantiveMessages && renderWelcomeMessage()}
       
-      {/* Always show existing messages */}
-      {messages.length > 0 && (
-        <div className="space-y-6">
-          {messages.map((message, index) => {
-            const nextMessage = messages[index + 1];
-            const isActionTaken = nextMessage && nextMessage.content === "ノードが作成されました 😊";
-            const isResearchFieldSection = isPotentialResearchFieldMessage(message);
-            
-            // Skip rendering the default welcome message if it's in the message list
-            if (message.content?.includes('何かお手伝いできることはありますか') && index === 0 && !hasSubstantiveMessages) {
-              return null;
-            }
-            
-            return (
-              <div 
-                key={index} 
-                className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} ${isResearchFieldSection ? 'conversation-message' : ''}`}
-              >
-                <div className={`${message.isUser ? '' : 'w-full'}`}>
-                  <ChatMessage 
-                    message={message}
-                    isActionTaken={isActionTaken}
-                    onButtonClick={onButtonClick}
-                    onUseNode={onUseNode}
-                    onEditNode={onEditNode}
-                    onRefine={onRefine}
-                  />
-                  
-                  {/* Add the 検索結果へ button at the bottom of research field section */}
-                  {isResearchFieldSection && (
-                    <div className="mt-3 flex justify-center">
-                      <Button
-                        onClick={handleCheckResults}
-                        className="bg-blue-500 hover:bg-blue-600 text-white"
-                        size="sm"
-                      >
-                        検索結果へ
-                      </Button>
-                    </div>
-                  )}
-                </div>
+      {/* Always display all messages, never hide them */}
+      <div className="space-y-6">
+        {messages.map((message, index) => {
+          const nextMessage = messages[index + 1];
+          const isActionTaken = nextMessage && nextMessage.content === "ノードが作成されました 😊";
+          const isResearchFieldSection = isPotentialResearchFieldMessage(message);
+          
+          // Skip rendering duplicate welcome messages if they're in the message list
+          if (message.content?.includes('何かお手伝いできることはありますか') && !hasSubstantiveMessages && index === 0) {
+            return null;
+          }
+          
+          return (
+            <div 
+              key={index} 
+              className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} ${isResearchFieldSection ? 'conversation-message' : ''}`}
+            >
+              <div className={`${message.isUser ? '' : 'w-full'}`}>
+                <ChatMessage 
+                  message={message}
+                  isActionTaken={isActionTaken}
+                  onButtonClick={onButtonClick}
+                  onUseNode={onUseNode}
+                  onEditNode={onEditNode}
+                  onRefine={onRefine}
+                />
+                
+                {/* Add the 検索結果へ button at the bottom of research field section */}
+                {isResearchFieldSection && (
+                  <div className="mt-3 flex justify-center">
+                    <Button
+                      onClick={handleCheckResults}
+                      className="bg-blue-500 hover:bg-blue-600 text-white"
+                      size="sm"
+                    >
+                      検索結果へ
+                    </Button>
+                  </div>
+                )}
               </div>
-            );
-          })}
-          {/* Invisible div to scroll to */}
-          <div ref={messagesEndRef} />
-        </div>
-      )}
+            </div>
+          );
+        })}
+        {/* Invisible div to scroll to */}
+        <div ref={messagesEndRef} />
+      </div>
     </div>
   );
 };
