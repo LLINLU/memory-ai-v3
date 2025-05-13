@@ -3,6 +3,7 @@ import React from 'react';
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
 import { ScenarioSection } from "./ScenarioSection";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface MainContentProps {
   selectedPath: {
@@ -25,7 +26,7 @@ interface MainContentProps {
   hasUserMadeSelection: boolean;
   scenario?: string;
   onEditScenario?: (newScenario: string) => void;
-  conversationHistory?: any[]; // Added this prop
+  conversationHistory?: any[]; 
 }
 
 export const MainContent = ({
@@ -45,27 +46,39 @@ export const MainContent = ({
   scenario,
   onEditScenario,
   hasUserMadeSelection,
-  conversationHistory // Added this parameter
+  conversationHistory
 }: MainContentProps) => {
   return (
-    <div className="container mx-auto px-4 py-6">
-      <ScenarioSection scenario={scenario} onEditScenario={onEditScenario} conversationHistory={conversationHistory} />
-      <PathDisplay 
-        selectedPath={selectedPath}
-        level1Items={level1Items}
-        level2Items={level2Items}
-        level3Items={level3Items}
-      />
-      <LevelSelection
-        selectedPath={selectedPath}
-        level1Items={level1Items}
-        level2Items={level2Items}
-        level3Items={level3Items}
-        onNodeClick={onNodeClick}
-        onEditNode={onEditNode}
-        onDeleteNode={onDeleteNode}
-        levelNames={levelNames}
-      />
+    <div className="container mx-auto px-4 py-6 flex flex-col h-full">
+      {/* Fixed header section that doesn't scroll */}
+      <div className="flex-none">
+        <ScenarioSection scenario={scenario} onEditScenario={onEditScenario} conversationHistory={conversationHistory} />
+        <PathDisplay 
+          selectedPath={selectedPath}
+          level1Items={level1Items}
+          level2Items={level2Items}
+          level3Items={level3Items}
+        />
+        <LevelSelection
+          selectedPath={selectedPath}
+          level1Items={level1Items}
+          level2Items={level2Items}
+          level3Items={level3Items}
+          onNodeClick={onNodeClick}
+          onEditNode={onEditNode}
+          onDeleteNode={onDeleteNode}
+          levelNames={levelNames}
+        />
+      </div>
+      
+      {/* Scrollable content area that contains the search results */}
+      <div className="flex-1 overflow-hidden">
+        <ScrollArea className="h-full pr-4">
+          <div id="search-results-container" data-results-container="true" className="pb-8">
+            {/* This empty div will be populated with search results from SearchResults.tsx */}
+          </div>
+        </ScrollArea>
+      </div>
     </div>
   );
 };
