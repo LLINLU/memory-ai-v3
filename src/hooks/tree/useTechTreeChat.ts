@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { processUserMessage } from '@/utils/chatUtils';
 import { ChatMessage } from "@/types/chat";
+import { toast } from "@/hooks/use-toast";
 
 export const useTechTreeChat = () => {
   const [inputValue, setInputValue] = useState("");
@@ -74,6 +75,64 @@ export const useTechTreeChat = () => {
           isUser: false
         }
       ]);
+    } else if (action === 'generate-scenario') {
+      // Handle generate scenario action
+      setChatMessages(prev => [
+        ...prev,
+        {
+          type: "text",
+          content: "詳細な研究シナリオを生成しています...",
+          isUser: false
+        }
+      ]);
+      
+      toast({
+        title: "研究シナリオ生成",
+        description: "詳細な研究シナリオを生成中です。少々お待ちください。",
+      });
+      
+      // Simulate response after a delay
+      setTimeout(() => {
+        setChatMessages(prev => {
+          // Replace the loading message with the actual response
+          const updatedMessages = [...prev];
+          updatedMessages[updatedMessages.length - 1] = {
+            type: "text",
+            content: "研究シナリオの生成が完了しました。このテーマについての詳細な研究計画を以下にまとめました...",
+            isUser: false
+          };
+          return updatedMessages;
+        });
+      }, 2000);
+    } else if (action === 'summarize-trends') {
+      // Handle summarize trends action
+      setChatMessages(prev => [
+        ...prev,
+        {
+          type: "text",
+          content: "最新の研究動向を要約しています...",
+          isUser: false
+        }
+      ]);
+      
+      toast({
+        title: "研究動向の要約",
+        description: "最新の研究トレンドを分析中です。少々お待ちください。",
+      });
+      
+      // Simulate response after a delay
+      setTimeout(() => {
+        setChatMessages(prev => {
+          // Replace the loading message with the actual response
+          const updatedMessages = [...prev];
+          updatedMessages[updatedMessages.length - 1] = {
+            type: "text",
+            content: "このテーマに関する最新の研究動向は以下のとおりです...",
+            isUser: false
+          };
+          return updatedMessages;
+        });
+      }, 2000);
     }
   };
 

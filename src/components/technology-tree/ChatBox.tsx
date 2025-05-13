@@ -98,6 +98,7 @@ export const ChatBox = ({
             onEditNode={onEditNode}
             onRefine={onRefine}
             onCheckResults={onCheckResults}
+            inputValue={inputValue}
           />
           
           <ChatInputBox 

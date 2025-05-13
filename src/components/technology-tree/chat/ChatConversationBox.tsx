@@ -13,6 +13,7 @@ interface ChatConversationBoxProps {
   onRefine?: (suggestion: NodeSuggestion) => void;
   onCheckResults?: () => void;
   onResearchAreaVisible?: (isVisible: boolean) => void;
+  inputValue?: string; // Added this prop to get user's input
 }
 
 export const ChatConversationBox = ({
@@ -22,7 +23,8 @@ export const ChatConversationBox = ({
   onEditNode,
   onRefine,
   onCheckResults,
-  onResearchAreaVisible
+  onResearchAreaVisible,
+  inputValue = ''
 }: ChatConversationBoxProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [researchAreaElements, setResearchAreaElements] = useState<HTMLDivElement[]>([]);
@@ -81,6 +83,41 @@ export const ChatConversationBox = ({
     }
   };
 
+  const handleCustomButtonClick = (action: string) => {
+    if (onButtonClick) {
+      onButtonClick(action);
+    }
+  };
+
+  // Default welcome message that shows user's input
+  const renderDefaultMessage = () => {
+    const userInput = inputValue || 'query';
+    
+    return (
+      <div className="mb-4">
+        <div className="bg-blue-50 text-blue-900 p-4 rounded-xl">
+          <p className="text-base mb-3">「{userInput}」を検索しました。何かお手伝いできることはありますか？</p>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button
+              onClick={() => handleCustomButtonClick('generate-scenario')}
+              className="bg-blue-100 hover:bg-blue-200 text-blue-800"
+              size="sm"
+            >
+              詳細な研究シナリオを生成
+            </Button>
+            <Button
+              onClick={() => handleCustomButtonClick('summarize-trends')}
+              className="bg-blue-100 hover:bg-blue-200 text-blue-800"
+              size="sm"
+            >
+              最新の研究動向を要約してください
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="flex-1 overflow-y-auto p-4 bg-gray-50 relative">
       {messages.length === 0 ? (
@@ -89,6 +126,9 @@ export const ChatConversationBox = ({
         </div>
       ) : (
         <div className="space-y-6">
+          {/* Add default message at the beginning if there are messages */}
+          {messages.length > 0 && messages[0]?.isUser && renderDefaultMessage()}
+          
           {messages.map((message, index) => {
             const nextMessage = messages[index + 1];
             const isActionTaken = nextMessage && nextMessage.content === "ノードが作成されました 😊";
