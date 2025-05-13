@@ -17,8 +17,7 @@ const ScrollArea = React.forwardRef<
       className="h-full w-full rounded-[inherit] overflow-auto"
       style={{
         minHeight: "100%", // Prevent shrinking
-        display: "block",   // Ensure proper display mode
-        scrollBehavior: "smooth" // Add smooth scrolling
+        display: "block"   // Ensure proper display mode
       }}
     >
       {children}

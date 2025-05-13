@@ -17,6 +17,12 @@ export const SearchResults = ({ selectedNodeTitle, selectedNodeDescription }: Se
     const handleRefresh = (event: Event) => {
       console.log("SearchResults component detected refresh event:", event);
       
+      // Reset scroll position
+      const sidebarContent = document.querySelector('[data-sidebar="content"]');
+      if (sidebarContent) {
+        sidebarContent.scrollTop = 0;
+      }
+      
       // Ensure we're on the papers tab
       setActiveTab("papers");
     };
@@ -29,7 +35,7 @@ export const SearchResults = ({ selectedNodeTitle, selectedNodeDescription }: Se
   }, [toast]);
 
   return (
-    <div className="bg-white pb-8" data-search-results="content">
+    <div className="h-full p-4 overflow-auto bg-white" data-sidebar="content">
       <SelectedNodeInfo 
         title={selectedNodeTitle} 
         description={selectedNodeDescription}
