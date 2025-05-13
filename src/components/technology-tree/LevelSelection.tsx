@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from "react";
 import { LevelColumn } from "./level-selection/LevelColumn";
 import { ConnectionLines } from "./level-selection/ConnectionLines";
@@ -50,7 +49,6 @@ export const LevelSelection = ({
   useConnectionLines(containerRef, selectedPath, setLevel1to2Line, setLevel2to3Line);
 
   const handleNodeSelection = (level: string, nodeId: string) => {
-    // Only show toast if actually selecting a new node
     if (selectedPath[level] !== nodeId) {
       // Create custom event to refresh paper list with node information
       const refreshEvent = new CustomEvent('refresh-papers', {

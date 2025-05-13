@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { TreeNode } from './TreeNode';
 import { EditNodeDialog } from './EditNodeDialog';
@@ -95,10 +96,12 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
     setIsEditDialogOpen(false);
   };
 
+  // Create the combined title (e.g., "レベル1：目的")
+  const combinedTitle = title && subtitle ? `${title}：${subtitle}` : title;
+
   return (
     <div className="w-1/3 bg-white p-4 rounded-lg relative">
-      <h2 className="text-base font-semibold text-blue-700 mb-3">{title}</h2>
-      <h3 className="text-sm text-gray-500 mb-4">{subtitle}</h3>
+      <h2 className="text-base font-semibold text-blue-700 mb-4">{combinedTitle}</h2>
       
       <div className="space-y-4">
         {items.map((item) => (
