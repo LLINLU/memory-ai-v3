@@ -13,7 +13,7 @@ interface ChatConversationBoxProps {
   onRefine?: (suggestion: NodeSuggestion) => void;
   onCheckResults?: () => void;
   onResearchAreaVisible?: (isVisible: boolean) => void;
-  inputValue?: string; // Added this prop to get user's input
+  inputValue?: string;
 }
 
 export const ChatConversationBox = ({
@@ -90,67 +90,54 @@ export const ChatConversationBox = ({
   };
 
   // Default welcome message that shows user's input
-  const renderDefaultMessage = () => {
+  const renderWelcomeMessage = () => {
     const userInput = inputValue || 'query';
     
     return (
-      <div className="mb-4">
-        <div className="bg-blue-50 text-blue-900 p-4 rounded-xl">
-          <p className="text-sm mb-3">「{userInput}」を検索しました。何かお手伝いできることはありますか？</p>
-          <div className="flex flex-col gap-2">
-            <Button
-              onClick={() => handleCustomButtonClick('generate-scenario')}
-              className="bg-blue-100 hover:bg-blue-200 text-blue-800"
-              size="sm"
-            >
-              詳細な研究シナリオを生成
-            </Button>
-            <Button
-              onClick={() => handleCustomButtonClick('summarize-trends')}
-              className="bg-blue-100 hover:bg-blue-200 text-blue-800"
-              size="sm"
-            >
-              最新の研究動向を要約してください
-            </Button>
-          </div>
+      <div className="mb-4 bg-blue-50 rounded-xl p-4">
+        <p className="text-sm mb-3">「{userInput}」を検索しました。何かお手伝いできることはありますか？</p>
+        <div className="flex flex-col gap-2">
+          <Button
+            onClick={() => handleCustomButtonClick('generate-scenario')}
+            className="bg-blue-100 hover:bg-blue-200 text-blue-800"
+            size="sm"
+          >
+            詳細な研究シナリオを生成
+          </Button>
+          <Button
+            onClick={() => handleCustomButtonClick('summarize-trends')}
+            className="bg-blue-100 hover:bg-blue-200 text-blue-800"
+            size="sm"
+          >
+            最新の研究動向を要約してください
+          </Button>
         </div>
       </div>
     );
   };
 
+  // Check if there are any "real" messages
+  const hasSubstantiveMessages = messages.some(m => 
+    m.content && !m.content.includes('何かお手伝いできることはありますか')
+  );
+
   return (
     <div className="flex-1 overflow-y-auto p-4 bg-gray-50 relative">
-      {messages.length === 0 ? (
-        <div className="p-4">
-          <p className="text-sm mb-3">「{inputValue || 'query'}」を検索しました。何かお手伝いできることはありますか？</p>
-          <div className="flex flex-col gap-2">
-            <Button
-              onClick={() => handleCustomButtonClick('generate-scenario')}
-              className="bg-blue-100 hover:bg-blue-200 text-blue-800"
-              size="sm"
-            >
-              詳細な研究シナリオを生成
-            </Button>
-            <Button
-              onClick={() => handleCustomButtonClick('summarize-trends')}
-              className="bg-blue-100 hover:bg-blue-200 text-blue-800"
-              size="sm"
-            >
-              最新の研究動向を要約してください
-            </Button>
-          </div>
-        </div>
-      ) : (
+      {/* Show welcome message only if there are no messages or if it's the first message */}
+      {(!messages.length || !hasSubstantiveMessages) && renderWelcomeMessage()}
+      
+      {/* Always show existing messages */}
+      {messages.length > 0 && (
         <div className="space-y-6">
-          {/* Only show the default message if there are messages and they don't already include our default message */}
-          {messages.length > 0 && messages[0]?.isUser && !messages.some(m => 
-            m.content?.includes('何かお手伝いできることはありますか')
-          ) && renderDefaultMessage()}
-          
           {messages.map((message, index) => {
             const nextMessage = messages[index + 1];
             const isActionTaken = nextMessage && nextMessage.content === "ノードが作成されました 😊";
             const isResearchFieldSection = isPotentialResearchFieldMessage(message);
+            
+            // Skip rendering the default welcome message if it's in the message list
+            if (message.content?.includes('何かお手伝いできることはありますか') && index === 0 && !hasSubstantiveMessages) {
+              return null;
+            }
             
             return (
               <div 
