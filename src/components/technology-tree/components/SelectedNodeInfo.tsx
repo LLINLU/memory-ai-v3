@@ -16,7 +16,7 @@ export const SelectedNodeInfo = ({
   
   return (
     <div className="mb-6">
-      {description && <p className="text-gray-700">{description}</p>}
+      {description && <p className="text-gray-700" style={{ fontSize: '14px', maxWidth: '80%' }}>{description}</p>}
     </div>
   );
 };

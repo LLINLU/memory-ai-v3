@@ -36,7 +36,7 @@ export const PathDisplay = ({
 
   return (
     <div className="mb-6">
-      <p className="text-gray-600">
+      <p className="text-gray-600" style={{ fontSize: '14px' }}>
         {level1Name && level1Name}
         {level2Name && ` → ${level2Name}`}
         {level3Name && ` → ${level3Name}`}
