@@ -13,13 +13,15 @@ const SearchResults = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
-        <div className="flex-1 bg-gray-50 pb-12">
-          <Navigation />
+        <div className="flex-1 bg-gray-50">
+          <Navigation className="sticky top-0 z-20" />
           <div className="relative">
             <SidebarTrigger className="absolute left-4 top-4 md:hidden" />
-            <SearchBar />
-            <SearchCriteria />
-            <ResultsHeader />
+            <div className="sticky top-16 z-10 bg-gray-50">
+              <SearchBar />
+              <SearchCriteria />
+              <ResultsHeader />
+            </div>
             <ResultsTabs />
           </div>
         </div>

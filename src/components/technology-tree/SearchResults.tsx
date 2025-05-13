@@ -37,7 +37,7 @@ export const SearchResults = ({ selectedNodeTitle, selectedNodeDescription }: Se
 
   return (
     <div className="h-full flex flex-col bg-white" data-sidebar="content">
-      <div className="p-4">
+      <div className="p-4 sticky top-0 bg-white z-10">
         <SelectedNodeInfo 
           title={selectedNodeTitle} 
           description={selectedNodeDescription}
