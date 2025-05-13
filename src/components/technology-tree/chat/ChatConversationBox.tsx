@@ -126,8 +126,10 @@ export const ChatConversationBox = ({
         </div>
       ) : (
         <div className="space-y-6">
-          {/* Add default message at the beginning if there are messages */}
-          {messages.length > 0 && messages[0]?.isUser && renderDefaultMessage()}
+          {/* Only show the default message if there are messages and they don't already include our default message */}
+          {messages.length > 0 && messages[0]?.isUser && !messages.some(m => 
+            m.content?.includes('何かお手伝いできることはありますか')
+          ) && renderDefaultMessage()}
           
           {messages.map((message, index) => {
             const nextMessage = messages[index + 1];

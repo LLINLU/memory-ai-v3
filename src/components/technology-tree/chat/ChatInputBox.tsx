@@ -25,12 +25,12 @@ export const ChatInputBox = ({
   return (
     <div className="border-t border-gray-200 p-3">
       <Textarea 
-        placeholder="Ask a question about your research..."
+        placeholder="Ask a question about your research topic..."
         className="w-full resize-none border border-[#ebf0f7] focus-visible:ring-1 focus-visible:ring-blue-500 text-sm px-3 py-2 truncate"
         value={inputValue}
         onChange={onInputChange}
         onKeyDown={handleKeyDown}
-        rows={2}
+        rows={1}
       />
       
       <div className="flex justify-end pt-2">
