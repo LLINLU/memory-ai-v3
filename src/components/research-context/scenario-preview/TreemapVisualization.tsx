@@ -77,10 +77,10 @@ export const TreemapVisualization: React.FC<TreemapVisualizationProps> = ({
       <ChartContainer 
         className="w-full h-[270px]"
         config={{
-          "retinal": { color: "#4D82F3" },
-          "wavefront": { color: "#4ADE80" },
-          "clinical": { color: "#A855F7" },
-          "other": { color: "#F59E0B" }
+          "retinal": { color: "#4C7CFC" },
+          "wavefront": { color: "#8D84C6" },
+          "clinical": { color: "#A94CF7" },
+          "other": { color: "#4A3D78" }
         }}
       >
         <Treemap

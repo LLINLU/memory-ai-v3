@@ -60,19 +60,19 @@ export const ResearchAreas: React.FC<ResearchAreasProps> = ({
         
         <div className="space-y-2 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-blue-500 rounded-sm"></div>
+            <div className="w-3 h-3 bg-[#4C7CFC] rounded-sm"></div>
             <span>網膜イメージング（42論文）</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-green-500 rounded-sm"></div>
+            <div className="w-3 h-3 bg-[#8D84C6] rounded-sm"></div>
             <span>波面センシング（28論文）</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-purple-500 rounded-sm"></div>
+            <div className="w-3 h-3 bg-[#A94CF7] rounded-sm"></div>
             <span>臨床応用（18論文）</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-amber-500 rounded-sm"></div>
+            <div className="w-3 h-3 bg-[#4A3D78] rounded-sm"></div>
             <span>その他の分野（12論文）</span>
           </div>
         </div>
