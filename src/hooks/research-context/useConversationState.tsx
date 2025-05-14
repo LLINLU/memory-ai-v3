@@ -1,5 +1,7 @@
+
 import React, { useState } from "react";
 import { Step } from "@/components/research-context/ResearchSteps";
+import { Button } from "@/components/ui/button";
 
 export interface ContextAnswers {
   what: string;
@@ -129,6 +131,19 @@ export const useConversationState = (steps: Step[]) => {
     }, 300);
   };
 
+  const handleHelpMeClick = () => {
+    // Future functionality can be added here
+    console.log("Help me to think button clicked");
+    // For now, just log the action
+    setConversationHistory(prev => [
+      ...prev,
+      { 
+        type: "system", 
+        content: "思考のアシスタンスが必要なときは、こちらのボタンをクリックしてください。より詳細なガイダンスを提供いたします。"
+      }
+    ]);
+  };
+
   const addInitialMessage = () => {
     const initialMessage = (
       <div>
@@ -137,11 +152,16 @@ export const useConversationState = (steps: Step[]) => {
           {steps[0].icon}
           <div>
             <h3 className="text-[16px] font-semibold">{steps[0].question}</h3>
-            <ul className="mt-2 space-y-1">
-              {steps[0].subtitle.map((item, i) => (
-                <li key={i} className="text-gray-700 text-[14px]">{item}</li>
-              ))}
-            </ul>
+            {steps[0].helpButtonText && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleHelpMeClick}
+                className="mt-2"
+              >
+                {steps[0].helpButtonText}
+              </Button>
+            )}
           </div>
         </div>
       </div>
