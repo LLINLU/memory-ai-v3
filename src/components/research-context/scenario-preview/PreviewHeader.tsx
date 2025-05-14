@@ -39,7 +39,7 @@ export const PreviewHeader: React.FC<PreviewHeaderProps> = ({
           variant="default" 
           size="sm" 
           onClick={handleGenerateResult}
-          className={`bg-blue-500 hover:bg-blue-600 transition-opacity duration-300 ${isResearchAreaVisible ? 'opacity-0' : 'opacity-100'}`}
+          className={`bg-black hover:bg-gray-800 transition-opacity duration-300 ${isResearchAreaVisible ? 'opacity-0' : 'opacity-100'}`}
           disabled={!selectedScenario} // Disable button if no scenario is selected
         >
           検索結果へ

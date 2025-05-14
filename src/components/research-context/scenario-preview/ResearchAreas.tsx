@@ -52,7 +52,7 @@ export const ResearchAreas: React.FC<ResearchAreasProps> = ({
       <div className="bg-white border rounded-md p-4">
         <div className="bg-gray-50 rounded-md p-3 mb-4">
           <p className="text-sm text-gray-600 mb-2">選択内容に基づく：</p>
-          <p className="text-blue-700">{selectedScenario}</p>
+          <p className="text-black">{selectedScenario}</p>
         </div>
         
         {/* Research areas visualization */}
