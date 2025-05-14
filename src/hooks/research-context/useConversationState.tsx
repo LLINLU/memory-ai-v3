@@ -58,9 +58,8 @@ export const useConversationState = (steps: Step[]) => {
     
     // Add next question immediately after selecting an option
     if (currentStep + 1 < steps.length) {
-      // Add the third question immediately (no timeout)
-      const nextStep = currentStep + 1;
-      addNextQuestion(nextStep, 0); // Use 0ms timeout to add question immediately
+      // Pass 0ms delay to ensure the next question appears immediately
+      addNextQuestion(currentStep + 1, 0);
     } else {
       addCompletionMessage();
     }
@@ -205,6 +204,7 @@ export const useConversationState = (steps: Step[]) => {
         );
       }
       
+      // Use setTimeout with the provided delay (which could be 0 for immediate display)
       setTimeout(() => {
         setConversationHistory(prev => [
           ...prev,
