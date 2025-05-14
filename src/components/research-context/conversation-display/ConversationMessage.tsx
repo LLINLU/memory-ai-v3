@@ -75,6 +75,7 @@ export const ConversationMessage: React.FC<ConversationMessageProps> = ({
           <Button 
             size="sm"
             onClick={onUpdateEdit}
+            style={{ background: "#3871eb" }}
           >
             更新する
           </Button>
