@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { ChatMessage } from './ChatMessage';
 import { NodeSuggestion } from "@/types/chat";
@@ -120,6 +119,21 @@ export const ChatConversationBox = ({
   const hasSubstantiveMessages = messages.some(m => 
     m.content && !m.content.includes('何かお手伝いできることはありますか')
   );
+  
+  // Group consecutive system messages from the same user
+  const groupedMessages = messages.reduce((acc: any[], message: any, index: number) => {
+    // If it's the first message or user changes, create a new group
+    if (index === 0 || messages[index - 1].isUser !== message.isUser) {
+      acc.push({...message, isGroup: true});
+    } else {
+      // Otherwise add to the content of the last message
+      const lastMessage = acc[acc.length - 1];
+      lastMessage.content = Array.isArray(lastMessage.content) 
+        ? [...lastMessage.content, message.content]
+        : [lastMessage.content, message.content];
+    }
+    return acc;
+  }, []);
 
   return (
     <div className="flex-1 overflow-y-auto p-4 bg-gray-50 relative">
@@ -128,7 +142,7 @@ export const ChatConversationBox = ({
       
       {/* Always display all messages, never hide them */}
       <div className="space-y-6">
-        {messages.map((message, index) => {
+        {groupedMessages.map((message, index) => {
           const nextMessage = messages[index + 1];
           const isActionTaken = nextMessage && nextMessage.content === "ノードが作成されました 😊";
           const isResearchFieldSection = isPotentialResearchFieldMessage(message);
@@ -143,7 +157,7 @@ export const ChatConversationBox = ({
               key={index} 
               className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} ${isResearchFieldSection ? 'conversation-message' : ''}`}
             >
-              <div className={`${message.isUser ? '' : 'w-full'}`}>
+              <div className={`${message.isUser ? '' : 'max-w-[85%]'}`}>
                 <ChatMessage 
                   message={message}
                   isActionTaken={isActionTaken}

@@ -81,29 +81,26 @@ export const useTechTreeChat = () => {
         ...prev,
         {
           type: "text",
-          content: "詳細な研究シナリオを生成しています...",
+          content: "研究シナリオを作成するために、まず取り組みたい課題や現象について教えてください。",
           isUser: false
         }
       ]);
+      
+      // Add a slight delay and then display the follow-up question
+      setTimeout(() => {
+        setChatMessages(prev => [...prev, 
+          {
+            type: "text",
+            content: "具体的には何について研究されていますか？",
+            isUser: false
+          }
+        ]);
+      }, 1000);
       
       toast({
         title: "研究シナリオ生成",
         description: "詳細な研究シナリオを生成中です。少々お待ちください。",
       });
-      
-      // Simulate response after a delay
-      setTimeout(() => {
-        setChatMessages(prev => {
-          // Replace the loading message with the actual response
-          const updatedMessages = [...prev];
-          updatedMessages[updatedMessages.length - 1] = {
-            type: "text",
-            content: "研究シナリオの生成が完了しました。このテーマについての詳細な研究計画を以下にまとめました...",
-            isUser: false
-          };
-          return updatedMessages;
-        });
-      }, 2000);
     } else if (action === 'summarize-trends') {
       // Handle summarize trends action
       setChatMessages(prev => [

@@ -6,7 +6,7 @@ import { SuggestionActions } from './SuggestionActions';
 
 interface ChatMessageProps {
   message: {
-    content: string;
+    content: string | string[];
     isUser: boolean;
     type?: string;
     suggestion?: NodeSuggestion;
@@ -15,6 +15,7 @@ interface ChatMessageProps {
       action: string;
       primary?: boolean;
     }[];
+    isGroup?: boolean;
   };
   isActionTaken: boolean;
   onButtonClick?: (action: string) => void;
@@ -33,6 +34,18 @@ export const ChatMessage = ({
 }: ChatMessageProps) => {
   const isSkipped = message.isUser && message.content === "Skipped";
   
+  // Render multiple messages if content is an array
+  const renderContent = () => {
+    if (Array.isArray(message.content)) {
+      return message.content.map((content, i) => (
+        <p key={i} className="text-base mb-2 whitespace-pre-line">{content}</p>
+      ));
+    }
+    return <p className={`${message.type === 'welcome' ? 'text-lg text-blue-800 mb-4' : 'text-base'} whitespace-pre-line`}>
+      {message.content}
+    </p>;
+  };
+  
   return (
     <div 
       className={`inline-block ${
@@ -46,7 +59,7 @@ export const ChatMessage = ({
           {isSkipped ? (
             <span className="text-blue-700 font-medium whitespace-nowrap">スキップ</span>
           ) : (
-            <p className="text-base">{message.content}</p>
+            renderContent()
           )}
         </div>
       ) : (
@@ -55,9 +68,7 @@ export const ChatMessage = ({
             ? 'bg-blue-50 p-4 rounded-xl w-full'
             : 'bg-blue-50 text-blue-900 p-4 rounded-xl'
         }`}>
-          <p className={`${message.type === 'welcome' ? 'text-lg text-blue-800 mb-4' : 'text-base'} whitespace-pre-line`}>
-            {message.content}
-          </p>
+          {renderContent()}
           
           {message.suggestion && !isActionTaken && (
             <SuggestionActions 
