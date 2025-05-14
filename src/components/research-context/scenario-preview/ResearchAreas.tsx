@@ -76,16 +76,16 @@ export const ResearchAreas: React.FC<ResearchAreasProps> = ({
             <span>その他の分野（12論文）</span>
           </div>
         </div>
-        
-        {/* 検索結果へ button - ensure it triggers navigation */}
-        <div className="mt-4 flex justify-center">
-          <Button
-            onClick={handleButtonClick}
-            className="bg-blue-500 hover:bg-blue-600 text-white w-full max-w-xs"
-          >
-            検索結果へ
-          </Button>
-        </div>
+      </div>
+      
+      {/* 検索結果へ button - moved outside the box */}
+      <div className="mt-4 flex justify-center">
+        <Button
+          onClick={handleButtonClick}
+          className="bg-[#2563eb] hover:bg-blue-700 text-white w-full"
+        >
+          検索結果へ
+        </Button>
       </div>
     </div>
   );
