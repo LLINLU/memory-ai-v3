@@ -1,7 +1,5 @@
 
 import React from "react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 
@@ -27,40 +25,29 @@ export const OptionSelection = ({
 }: OptionSelectionProps) => {
   return (
     <div className="space-y-3">
-      <RadioGroup
-        value={selectedValue}
-        onValueChange={(value) => {
-          // Find the selected option to get its label
-          const selectedOption = options.find(option => option.value === value);
-          if (selectedOption) {
-            onSelect(value, selectedOption.label);
-          }
-        }}
-        className="flex flex-col gap-3"
-      >
+      <div className="flex flex-col gap-3">
         {options.map((option) => (
-          <div
+          <Button
             key={option.value}
-            className="flex items-center space-x-2 rounded-md bg-blue-50 px-4 py-3 cursor-pointer"
+            variant="outline"
+            className={`justify-start px-4 py-3 h-auto text-left ${
+              selectedValue === option.value
+                ? "bg-blue-50 border-blue-300 text-blue-700"
+                : "bg-blue-50 hover:bg-blue-100 text-blue-600"
+            }`}
             onClick={() => onSelect(option.value, option.label)}
           >
-            <RadioGroupItem value={option.value} id={option.value} />
-            <Label
-              htmlFor={option.value}
-              className="cursor-pointer flex items-center w-full text-blue-700 font-medium"
-            >
-              <div className="text-blue-600 mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                  <path d="M18 21a8 8 0 0 0-16 0"></path>
-                  <circle cx="10" cy="8" r="5"></circle>
-                  <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"></path>
-                </svg>
-              </div>
-              {option.label}
-            </Label>
-          </div>
+            <div className="text-blue-600 mr-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                <path d="M18 21a8 8 0 0 0-16 0"></path>
+                <circle cx="10" cy="8" r="5"></circle>
+                <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"></path>
+              </svg>
+            </div>
+            {option.label}
+          </Button>
         ))}
-      </RadioGroup>
+      </div>
       
       {onCustomOption && (
         <Button

@@ -1,6 +1,6 @@
 
 import React from "react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Button } from "@/components/ui/button";
 
 interface ScenarioListProps {
   generatedScenarios: string[];
@@ -21,36 +21,26 @@ export const ScenarioList: React.FC<ScenarioListProps> = ({
         ご関心に最も近いものをお選びください。
       </p>
       
-      <RadioGroup value={selectedScenario} className="space-y-3">
+      <div className="space-y-3">
         {generatedScenarios.map((scenario, index) => (
-          <div 
+          <Button 
             key={index} 
-            className={`border rounded-md p-4 cursor-pointer transition-colors ${
+            variant="outline"
+            className={`w-full justify-start p-4 h-auto text-left ${
               selectedScenario === scenario 
-                ? 'bg-blue-50 border-blue-300' 
-                : 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                ? 'bg-blue-50 border-blue-300 text-blue-700' 
+                : 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50 text-gray-800'
             }`}
             onClick={() => onScenarioSelect && onScenarioSelect(scenario)}
           >
             <div className="flex items-start gap-3">
-              <RadioGroupItem 
-                value={scenario} 
-                id={`scenario-${index}`} 
-                onClick={(e) => e.stopPropagation()}
-                className="mt-1"
-              />
               <div className="flex-1">
-                <label 
-                  htmlFor={`scenario-${index}`}
-                  className={`text-sm sm:text-base cursor-pointer block ${selectedScenario === scenario ? 'text-blue-700' : 'text-gray-800'}`}
-                >
-                  {scenario}
-                </label>
+                {scenario}
               </div>
             </div>
-          </div>
+          </Button>
         ))}
-      </RadioGroup>
+      </div>
     </div>
   );
 };
