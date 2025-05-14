@@ -34,6 +34,7 @@ export const ChatInputBox = ({
           onChange={onInputChange}
           onKeyDown={handleKeyDown}
           rows={1}
+          autoResize
         />
         
         <div className="flex justify-between items-center">

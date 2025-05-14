@@ -84,6 +84,9 @@ const ResearchContext = () => {
   // Check if the current step has options
   const currentStepHasOptions = currentStep < steps.length && steps[currentStep]?.options && steps[currentStep].options.length > 0;
   
+  // Always show input section, even with options
+  const alwaysShowInputSection = currentStep < steps.length && !showScenarios;
+  
   return (
     <SidebarProvider>
       <div className="h-screen flex w-full overflow-hidden">
@@ -127,14 +130,14 @@ const ResearchContext = () => {
                 </div>
                 
                 <div className="flex-none mt-4">
-                  {shouldShowInputSection && !currentStepHasOptions && (
+                  {alwaysShowInputSection && (
                     <InputSection
                       inputValue={inputValue}
                       placeholder={steps[currentStep]?.placeholder}
                       onInputChange={handleInputChange}
                       onSubmit={handleSubmit}
                       onSkip={handleSkip}
-                      showSkip={true}
+                      showSkip={!currentStepHasOptions}
                     />
                   )}
                 </div>

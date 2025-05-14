@@ -45,6 +45,7 @@ export const ChatInput = ({ value, onChange, onSend }: ChatInputProps) => {
           onChange={onChange}
           onKeyDown={handleKeyDown}
           rows={1}
+          autoResize
         />
         
         <div className="flex items-center justify-between pt-2">
