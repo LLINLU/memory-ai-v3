@@ -26,7 +26,7 @@ export const NodeContent: React.FC<NodeContentProps> = ({
         <p className={`text-xs mt-1 ${textColorClass}`}>{item.info}</p>
       )}
       
-      {/* Only display description when hovered */}
+      {/* Only display description when hovered and not already shown by parent */}
       {isHovered && item.description && (
         <p className={`mt-3 text-sm ${textColorClass}`}>{item.description}</p>
       )}

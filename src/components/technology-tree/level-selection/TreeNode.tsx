@@ -57,7 +57,12 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="flex flex-col">
-        <NodeContent item={item} isSelected={isSelected} isHovered={isHovered} level={level} />
+        <NodeContent 
+          item={item} 
+          isSelected={isSelected} 
+          isHovered={isHovered && !showDescription} 
+          level={level} 
+        />
         
         {/* Show description when showDescription is true */}
         {showDescription && item.description && (
