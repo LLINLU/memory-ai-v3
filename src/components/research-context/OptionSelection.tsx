@@ -42,14 +42,7 @@ export const OptionSelection = ({
           <div
             key={option.value}
             className="flex items-center space-x-2 rounded-md bg-blue-50 px-4 py-3 cursor-pointer"
-            onClick={(e) => {
-              // Prevent click event if already selected to avoid duplicate responses
-              if (selectedValue === option.value) {
-                e.preventDefault();
-                return;
-              }
-              onSelect(option.value, option.label);
-            }}
+            onClick={() => onSelect(option.value, option.label)}
           >
             <RadioGroupItem value={option.value} id={option.value} />
             <Label

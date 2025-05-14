@@ -84,10 +84,10 @@ export const ConversationMessage: React.FC<ConversationMessageProps> = ({
     );
   }
   
-  // Regular user message - simplified structure with only one container div
+  // Regular user message
   return (
-    <div className="w-full">
-      <div className="bg-blue-100 text-blue-900 p-2 rounded-lg inline-block">
+    <div className="flex flex-col items-end">
+      <div className="bg-blue-100 text-blue-900 p-2 rounded-lg">
         <p>{message.content === "Skipped" ? <span className="whitespace-nowrap">スキップ</span> : message.content}</p>
       </div>
       {typeof message.content === 'string' && (
