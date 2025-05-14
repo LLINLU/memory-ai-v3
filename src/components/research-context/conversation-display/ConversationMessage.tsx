@@ -97,6 +97,7 @@ export const ConversationMessage: React.FC<ConversationMessageProps> = ({
             size="sm" 
             className="h-5 w-5 p-0.5 hover:bg-blue-200"
             onClick={() => onCopy(message.content as string)}
+            style={{ color: "#8b97c4" }}
           >
             <Copy className="h-3 w-3" />
             <span className="sr-only">Copy</span>
@@ -106,6 +107,7 @@ export const ConversationMessage: React.FC<ConversationMessageProps> = ({
             size="sm" 
             className="h-5 w-5 p-0.5 hover:bg-blue-200"
             onClick={() => onEdit(message.content as string, index)}
+            style={{ color: "#8b97c4" }}
           >
             <Edit className="h-3 w-3" />
             <span className="sr-only">Edit</span>
