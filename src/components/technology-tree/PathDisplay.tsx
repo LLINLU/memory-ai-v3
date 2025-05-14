@@ -2,6 +2,12 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider
+} from '@/components/ui/tooltip';
 
 interface PathDisplayProps {
   selectedPath: {
@@ -65,15 +71,24 @@ export const PathDisplay = ({
           {level3Name && ` → ${level3Name}`}
         </p>
         {showLevel4Button && (
-          <Button 
-            variant="ghost"
-            size="sm"
-            className="ml-2 text-blue-600 hover:bg-blue-50 px-2 py-1 h-6 text-xs"
-            onClick={onAddLevel4}
-          >
-            <Plus className="h-3 w-3" />
-            レベル４
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="ghost"
+                  size="sm"
+                  className="ml-2 text-blue-600 hover:bg-blue-50 px-2 py-1 h-6 text-xs"
+                  onClick={onAddLevel4}
+                >
+                  <Plus className="h-3 w-3" />
+                  レベル４
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                ボタンをクリックすると、レベル4が生成され、技術のより詳細な分野を学ぶことができます。
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
       </div>
     </div>
