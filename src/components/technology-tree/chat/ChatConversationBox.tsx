@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { ChatMessage } from './ChatMessage';
 import { NodeSuggestion } from "@/types/chat";
@@ -98,14 +99,14 @@ export const ChatConversationBox = ({
         <div className="flex flex-col gap-2">
           <Button
             onClick={() => handleCustomButtonClick('generate-scenario')}
-            className="bg-blue-100 hover:bg-blue-200 text-blue-800"
+            className="bg-blue-100 hover:bg-blue-200 text-blue-800 hover:[&_svg]:text-[#1867cc]"
             size="sm"
           >
             詳細な研究シナリオを生成
           </Button>
           <Button
             onClick={() => handleCustomButtonClick('summarize-trends')}
-            className="bg-blue-100 hover:bg-blue-200 text-blue-800"
+            className="bg-blue-100 hover:bg-blue-200 text-blue-800 hover:[&_svg]:text-[#1867cc]"
             size="sm"
           >
             最新の研究動向を要約してください
@@ -172,7 +173,7 @@ export const ChatConversationBox = ({
                   <div className="mt-3 flex justify-center">
                     <Button
                       onClick={handleCheckResults}
-                      className="bg-blue-500 hover:bg-blue-600 text-white"
+                      className="bg-blue-500 hover:bg-blue-600 text-white hover:[&_svg]:text-white"
                       size="sm"
                     >
                       検索結果へ
