@@ -14,7 +14,7 @@ export const InitialOptions: React.FC<InitialOptionsProps> = ({
   onSkip,
 }) => {
   return (
-    <div>
+    <>
       <div className="mb-8">
         <p className="text-base leading-6">
           喜んでお手伝いします✨。{initialQuery || "[ユーザーのクエリ]"}に関する研究を見つけるために、あなたの具体的な研究背景を理解することで、より関連性の高い論文をご紹介できます。4Wフレームワークに基づく質問にお答えいただくか、一般的な検索結果へ直接進むことも可能です。
@@ -34,6 +34,6 @@ export const InitialOptions: React.FC<InitialOptionsProps> = ({
           スキップ
         </Button>
       </div>
-    </div>
+    </>
   );
 };
