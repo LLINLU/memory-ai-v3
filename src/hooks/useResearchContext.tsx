@@ -28,7 +28,8 @@ export const useResearchContext = (
     updateUserResponse,
     setInputValue,
     resetConversation,
-    setConversationHistory
+    setConversationHistory,
+    showingSkipHint
   } = useConversationState(steps);
 
   // Use the navigation handlers hook
@@ -91,7 +92,7 @@ export const useResearchContext = (
   const handleSubmit = () => {
     if (currentStep >= steps.length) return;
     
-    // Process the user's response - this now includes adding the next question
+    // Process the user's response
     if (inputValue.trim()) {
       addUserResponse(inputValue);
     } else {
@@ -99,13 +100,22 @@ export const useResearchContext = (
       addUserResponse(null);
     }
     
-    const nextStep = currentStep + 1;
-    
-    // If all steps completed, show scenarios after a short delay
-    if (nextStep >= steps.length) {
-      setTimeout(() => {
-        proceedToTechnologyTree();
-      }, 1000);
+    // Only add next question if we're not showing a skip hint
+    if (!showingSkipHint) {
+      const nextStep = currentStep + 1;
+      
+      // If not at the end, add the next question
+      if (nextStep < steps.length) {
+        addNextQuestion(nextStep);
+      } else {
+        // All steps completed, show completion message
+        addCompletionMessage();
+        
+        // Show scenarios after a short delay
+        setTimeout(() => {
+          proceedToTechnologyTree();
+        }, 1000);
+      }
     }
   };
   
@@ -113,16 +123,25 @@ export const useResearchContext = (
   const handleSkip = () => {
     if (currentStep >= steps.length) return;
     
-    // Process the skip - this now includes adding the next question
+    // Process the skip
     addUserResponse(null);
     
-    const nextStep = currentStep + 1;
-    
-    // If all steps completed, show scenarios after a short delay
-    if (nextStep >= steps.length) {
-      setTimeout(() => {
-        proceedToTechnologyTree();
-      }, 1000);
+    // Only add next question if we're not showing a skip hint
+    if (!showingSkipHint) {
+      const nextStep = currentStep + 1;
+      
+      // If not at the end, add the next question
+      if (nextStep < steps.length) {
+        addNextQuestion(nextStep);
+      } else {
+        // All steps completed, show completion message
+        addCompletionMessage();
+        
+        // Show scenarios after a short delay
+        setTimeout(() => {
+          proceedToTechnologyTree();
+        }, 1000);
+      }
     }
   };
 

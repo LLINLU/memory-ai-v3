@@ -27,6 +27,7 @@ export const useConversationState = (steps: Step[]) => {
     when: ""
   });
   const [helpButtonClicked, setHelpButtonClicked] = useState(false);
+  const [showingSkipHint, setShowingSkipHint] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
@@ -45,10 +46,21 @@ export const useConversationState = (steps: Step[]) => {
       const newAnswers = { ...answers };
       newAnswers[currentKey] = userInput;
       setAnswers(newAnswers);
+      
+      // Clear input field
+      setInputValue("");
+      
+      // Move to next step
+      setCurrentStep(prev => prev + 1);
+      
+      // If we were showing a skip hint, we're no longer showing it
+      if (showingSkipHint) {
+        setShowingSkipHint(false);
+      }
     } else {
       // Special case for skipping the first question
-      if (currentStep === 0) {
-        // Add custom skip message for first question
+      if (currentStep === 0 && !showingSkipHint) {
+        // Add custom skip message for first question and show the hint
         setConversationHistory(prev => [
           ...prev,
           { type: "user", content: "スキップ" },
@@ -57,28 +69,32 @@ export const useConversationState = (steps: Step[]) => {
             content: "より良い検索結果を得るために、この質問にご回答いただけると嬉しいです。\n下の例も参考にしながら、気軽に書いてみてください。\nもちろん、スキップしていただいても大丈夫です。\n\n考えるヒント：\n\nどんなアプローチ・技術・方法に注目していますか？\n　例：非薬理学的治療、画像技術\n\nその研究の目的や目標は何ですか？\n　例：症状の管理、診断の改善"
           }
         ]);
-      } else {
+        
+        // Set the flag to indicate we're showing the hint
+        setShowingSkipHint(true);
+        
+        // Don't move to the next step yet
+        return;
+      } 
+      // If they skip again after seeing the hint, or skip any other question
+      else {
         // Add regular skip message for other questions
         setConversationHistory(prev => [
           ...prev,
           { type: "user", content: "Skipped" }
         ]);
+        
+        // If we were showing a skip hint, we're no longer showing it
+        if (showingSkipHint) {
+          setShowingSkipHint(false);
+        }
+        
+        // Clear input field
+        setInputValue("");
+        
+        // Move to next step
+        setCurrentStep(prev => prev + 1);
       }
-    }
-
-    // Clear input field
-    setInputValue("");
-    
-    // Move to next step
-    const nextStep = currentStep + 1;
-    setCurrentStep(nextStep);
-    
-    // Add the next question immediately after the user responds
-    if (nextStep < steps.length) {
-      addNextQuestion(nextStep);
-    } else {
-      // All steps completed, show completion message
-      addCompletionMessage();
     }
   };
 
@@ -272,6 +288,7 @@ export const useConversationState = (steps: Step[]) => {
       when: ""
     });
     setHelpButtonClicked(false);
+    setShowingSkipHint(false);
   };
 
   return {
@@ -287,6 +304,7 @@ export const useConversationState = (steps: Step[]) => {
     setConversationHistory,
     updateUserResponse,
     setInputValue,
-    resetConversation
+    resetConversation,
+    showingSkipHint
   };
 };
