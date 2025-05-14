@@ -251,7 +251,7 @@ export const useConversationState = (steps: Step[]) => {
         type: "system", 
         content: (
           <div>
-            <p className="mb-2 text-gray-700 italic">以下は考えるヒントです。すべてに答える必要はありません 👍</p>
+            <p className="mb-2 text-gray-700">以下は考えるヒントです。すべてに答える必要はありません 👍</p>
             <ul className="mt-2 space-y-1">
               <li className="text-gray-700 text-[14px] flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13" fill="none" className="mr-1.5 flex-shrink-0">
