@@ -111,6 +111,7 @@ const ResearchContext = () => {
                 <div className="flex-1 overflow-hidden flex flex-col">
                   <ScrollArea className="flex-1 overflow-y-auto" style={{ display: 'block' }}>
                     <div className="px-3 py-4" style={{ minHeight: '100%' }}>
+                      {/* Removed initial options conditional rendering */}
                       <ConversationDisplay 
                         conversationHistory={conversationHistory} 
                         onEditReply={handleEditUserReply}

@@ -1,6 +1,6 @@
 
 import { Step } from "@/components/research-context/ResearchSteps";
-import { useConversationState, ContextAnswers, ConversationMessage } from "./research-context/useConversationState";
+import { useConversationState } from "./research-context/useConversationState";
 import { useNavigationHandlers } from "./research-context/useNavigationHandlers";
 import { useScenarioHandlers } from "./research-context/useScenarioHandlers";
 import { useNavigate } from "react-router-dom";
@@ -28,8 +28,7 @@ export const useResearchContext = (
     updateUserResponse,
     setInputValue,
     resetConversation,
-    setConversationHistory,
-    showingSkipHint
+    setConversationHistory
   } = useConversationState(steps);
 
   // Use the navigation handlers hook
@@ -68,8 +67,8 @@ export const useResearchContext = (
     selectScenario,
     resetNavigation,
     resetConversation,
-    answers,
-    conversationHistory
+    answers, // Pass the answers to the scenario handlers
+    conversationHistory // Pass current conversation history
   });
 
   // Initialize saved conversation history
@@ -100,22 +99,19 @@ export const useResearchContext = (
       addUserResponse(null);
     }
     
-    // Only add next question if we're not showing a skip hint
-    if (!showingSkipHint) {
-      const nextStep = currentStep + 1;
+    const nextStep = currentStep + 1;
+    
+    // If there are more steps, add the next question
+    if (nextStep < steps.length) {
+      addNextQuestion(nextStep);
+    } else {
+      // All steps completed, show completion message and generate scenarios
+      addCompletionMessage();
       
-      // If not at the end, add the next question
-      if (nextStep < steps.length) {
-        addNextQuestion(nextStep);
-      } else {
-        // All steps completed, show completion message
-        addCompletionMessage();
-        
-        // Show scenarios after a short delay
-        setTimeout(() => {
-          proceedToTechnologyTree();
-        }, 1000);
-      }
+      // Wait a moment before showing scenarios
+      setTimeout(() => {
+        proceedToTechnologyTree();
+      }, 1000);
     }
   };
   
@@ -126,22 +122,19 @@ export const useResearchContext = (
     // Process the skip
     addUserResponse(null);
     
-    // Only add next question if we're not showing a skip hint
-    if (!showingSkipHint) {
-      const nextStep = currentStep + 1;
+    const nextStep = currentStep + 1;
+    
+    // If there are more steps, add the next question
+    if (nextStep < steps.length) {
+      addNextQuestion(nextStep);
+    } else {
+      // All steps completed, show completion message and generate scenarios
+      addCompletionMessage();
       
-      // If not at the end, add the next question
-      if (nextStep < steps.length) {
-        addNextQuestion(nextStep);
-      } else {
-        // All steps completed, show completion message
-        addCompletionMessage();
-        
-        // Show scenarios after a short delay
-        setTimeout(() => {
-          proceedToTechnologyTree();
-        }, 1000);
-      }
+      // Wait a moment before showing scenarios
+      setTimeout(() => {
+        proceedToTechnologyTree();
+      }, 1000);
     }
   };
 

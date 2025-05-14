@@ -1,6 +1,7 @@
 
 import { useState, useRef } from "react";
-import { ContextAnswers, ConversationMessage } from "./types";
+import { ContextAnswers } from "./useConversationState";
+import { ConversationMessage } from "./useConversationState";
 
 interface NavigationHandlersProps {
   initialQuery: string;

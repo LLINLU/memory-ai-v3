@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from "react";
 import { NavigateFunction } from "react-router-dom";
-import { ContextAnswers, ConversationMessage } from "./types";
+import { ContextAnswers } from "./useConversationState";
+import { ConversationMessage } from "./useConversationState";
 
 interface ScenarioHandlersProps {
   initialQuery: string;
@@ -15,7 +16,7 @@ interface ScenarioHandlersProps {
   resetNavigation: () => void;
   resetConversation: () => void;
   answers: ContextAnswers;
-  conversationHistory: ConversationMessage[];
+  conversationHistory: ConversationMessage[]; // Added this property
 }
 
 export const useScenarioHandlers = ({
@@ -30,7 +31,7 @@ export const useScenarioHandlers = ({
   resetNavigation,
   resetConversation,
   answers,
-  conversationHistory
+  conversationHistory // Added this parameter
 }: ScenarioHandlersProps) => {
   // Track selected scenario
   const [selectedScenario, setSelectedScenario] = useState<string>(currentScenario || "");
@@ -96,7 +97,7 @@ export const useScenarioHandlers = ({
         query: initialQuery,
         scenario: selectedScenario || `Research on ${initialQuery}`,
         researchAnswers: answers,
-        conversationHistory: serializableHistory
+        conversationHistory: serializableHistory // Pass serializable conversation history
       }
     });
   };
