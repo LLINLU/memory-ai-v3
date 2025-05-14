@@ -1,4 +1,3 @@
-
 import { useLocation } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -84,8 +83,8 @@ const ResearchContext = () => {
   // Check if the current step has options
   const currentStepHasOptions = currentStep < steps.length && steps[currentStep]?.options && steps[currentStep].options.length > 0;
   
-  // Always show input section, even with options
-  const alwaysShowInputSection = currentStep < steps.length && !showScenarios;
+  // Always show input section regardless of step or scenario state
+  const alwaysShowInputSection = true;
   
   return (
     <SidebarProvider>
@@ -132,11 +131,11 @@ const ResearchContext = () => {
                   {alwaysShowInputSection && (
                     <InputSection
                       inputValue={inputValue}
-                      placeholder={steps[currentStep]?.placeholder}
+                      placeholder={currentStep < steps.length ? steps[currentStep]?.placeholder : "メッセージを入力してください..."}
                       onInputChange={handleInputChange}
                       onSubmit={handleSubmit}
                       onSkip={handleSkip}
-                      showSkip={!currentStepHasOptions}
+                      showSkip={!currentStepHasOptions && currentStep < steps.length}
                     />
                   )}
                 </div>

@@ -40,7 +40,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
           value={inputValue}
           onChange={onInputChange}
           className="w-full resize-none p-3 pr-16 border border-[#ebf0f7] rounded-xl text-base"
-          rows={2}
+          rows={3}
           autoResize
         />
         <Button 
