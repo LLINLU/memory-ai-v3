@@ -69,8 +69,8 @@ export const useResearchContext = (
     selectScenario,
     resetNavigation,
     resetConversation,
-    answers,
-    conversationHistory
+    answers, // Pass the answers to the scenario handlers
+    conversationHistory // Pass current conversation history
   });
 
   // Initialize saved conversation history
@@ -176,5 +176,3 @@ export const useResearchContext = (
     initializeSavedHistory
   };
 };
-
-export default useResearchContext;
