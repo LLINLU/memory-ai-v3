@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Step } from "@/components/research-context/ResearchSteps";
 import { Button } from "@/components/ui/button";
@@ -228,7 +227,7 @@ export const useConversationState = (steps: Step[]) => {
                 size="sm" 
                 onClick={handleHelpMeClick}
                 className="mt-2"
-                style={{ background: "aliceblue" }}
+                style={{ background: "aliceblue", borderColor: "#b5d2f7" }}
               >
                 {steps[0].helpButtonText}
               </Button>
