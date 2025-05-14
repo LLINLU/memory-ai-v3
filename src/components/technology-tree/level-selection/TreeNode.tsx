@@ -43,6 +43,8 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   }, []);
 
   const nodeStyleClass = getNodeStyle(item, isSelected, level);
+  // Determine text color for description based on selection state
+  const descriptionTextColor = isSelected ? "text-[#f3f3f3]" : "text-gray-600";
 
   return (
     <div
@@ -66,7 +68,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
         
         {/* Show description when showDescription is true */}
         {showDescription && item.description && (
-          <div className="mt-3 text-sm text-gray-600 border-t pt-2 border-gray-100">
+          <div className={`mt-3 text-sm ${descriptionTextColor} border-t pt-2 border-gray-100`}>
             {item.description}
           </div>
         )}

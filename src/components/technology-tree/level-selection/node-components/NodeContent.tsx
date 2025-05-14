@@ -17,6 +17,8 @@ export const NodeContent: React.FC<NodeContentProps> = ({
   level
 }) => {
   const textColorClass = getTextColor(item, isSelected, level);
+  // Determine text color for description based on selection state
+  const descriptionTextColor = isSelected ? "text-[#f3f3f3]" : textColorClass;
   
   return (
     <div className="flex flex-col w-full">
@@ -28,7 +30,7 @@ export const NodeContent: React.FC<NodeContentProps> = ({
       
       {/* Only display description when hovered and not already shown by parent */}
       {isHovered && item.description && (
-        <p className={`mt-3 text-sm ${textColorClass}`}>{item.description}</p>
+        <p className={`mt-3 text-sm ${descriptionTextColor}`}>{item.description}</p>
       )}
     </div>
   );
