@@ -32,19 +32,8 @@ export const PreviewHeader: React.FC<PreviewHeaderProps> = ({
   };
 
   return (
-    <div className="bg-white p-4 border-b flex justify-between items-center">
+    <div className="bg-white py-2 px-4 border-b flex items-center">
       <h2 className="text-[1rem] font-bold">プレビュー</h2>
-      {showGenerateButton && (
-        <Button 
-          variant="default" 
-          size="sm" 
-          onClick={handleGenerateResult}
-          className={`bg-[#2563eb] hover:bg-[#1d4ed8] transition-opacity duration-300 ${isResearchAreaVisible ? 'opacity-0' : 'opacity-100'}`}
-          disabled={!selectedScenario} // Disable button if no scenario is selected
-        >
-          検索結果へ
-        </Button>
-      )}
     </div>
   );
 };
