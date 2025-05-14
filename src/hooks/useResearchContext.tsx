@@ -1,6 +1,6 @@
 
 import { Step } from "@/components/research-context/ResearchSteps";
-import { useConversationState } from "./research-context/useConversationState";
+import { useConversationState, ContextAnswers, ConversationMessage } from "./research-context/useConversationState";
 import { useNavigationHandlers } from "./research-context/useNavigationHandlers";
 import { useScenarioHandlers } from "./research-context/useScenarioHandlers";
 import { useNavigate } from "react-router-dom";
