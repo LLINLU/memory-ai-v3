@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Step } from "@/components/research-context/ResearchSteps";
 import { Button } from "@/components/ui/button";
@@ -99,8 +100,16 @@ export const useConversationState = (steps: Step[]) => {
 
     // Clear input field
     setInputValue("");
+    
     // Move to next step
     setCurrentStep(prev => prev + 1);
+    
+    // Add the next question immediately after adding the user response
+    if (currentStep + 1 < steps.length) {
+      addNextQuestion(currentStep + 1);
+    } else {
+      addCompletionMessage();
+    }
   };
 
   // Function to update a user response when edited
