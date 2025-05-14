@@ -1,4 +1,5 @@
 
+
 import React from "react";
 import { ChartContainer } from "@/components/ui/chart";
 import { Treemap, Tooltip } from "recharts";
@@ -73,7 +74,7 @@ export const TreemapVisualization: React.FC<TreemapVisualizationProps> = ({
   researchAreasData 
 }) => {
   return (
-    <div className="aspect-video mb-4">
+    <div className="mb-4">
       <ChartContainer 
         className="w-full h-[270px]"
         config={{
@@ -96,3 +97,4 @@ export const TreemapVisualization: React.FC<TreemapVisualizationProps> = ({
     </div>
   );
 };
+
