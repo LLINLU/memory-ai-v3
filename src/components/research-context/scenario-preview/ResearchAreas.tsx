@@ -43,7 +43,12 @@ export const ResearchAreas: React.FC<ResearchAreasProps> = ({
 
   return (
     <div ref={researchAreasRef}>
-      <h3 className="font-medium mb-3">潜在的な研究分野</h3>
+      <div className="flex items-center gap-2 mb-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#000000" viewBox="0 0 256 256">
+          <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm25.56-92.74L120,168h32a8,8,0,0,1,0,16H104a8,8,0,0,1-6.4-12.8l43.17-57.56a16,16,0,1,0-27.86-15,8,8,0,0,1-15.09-5.34,32,32,0,1,1,55.74,29.93Z"></path>
+        </svg>
+        <h3 className="font-bold">潜在的な研究分野を表示</h3>
+      </div>
       <div className="bg-white border rounded-md p-4">
         <div className="bg-gray-50 rounded-md p-3 mb-4">
           <p className="text-sm text-gray-600 mb-2">選択内容に基づく：</p>
