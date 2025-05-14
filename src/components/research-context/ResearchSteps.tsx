@@ -94,9 +94,16 @@ export const useResearchSteps = () => {
         </svg>
       ),
       subtitle: [],
-      placeholder: "例：現在の応用、将来の開発、5年以内など..."
+      placeholder: "例：現在の応用、将来の開発、5年以内など...",
+      options: [
+        { value: "current", label: "現在の臨床実践で使用されている" },
+        { value: "development", label: "研究開発段階にある" },
+        { value: "future", label: "将来的な実用化を目指している" }
+      ],
+      iconType: "clock"
     }
   ];
 
   return steps;
 };
+
