@@ -56,80 +56,9 @@ export const useConversationState = (steps: Step[]) => {
     // Move to next step
     setCurrentStep(prev => prev + 1);
     
-    // Add next question immediately after selecting an option
+    // Add next question after a short delay
     if (currentStep + 1 < steps.length) {
-      // Add the next question immediately in the same execution cycle
-      const nextStep = currentStep + 1;
-      
-      // Generate the question content directly
-      let questionContent;
-      
-      // For the third question (nextStep === 2), we want a specific message
-      if (nextStep === 2) {
-        questionContent = (
-          <div>
-            <div className="flex items-start gap-4">
-              {steps[nextStep].icon}
-              <div>
-                <h3 className="text-[16px] font-semibold">とても参考になります。この研究をどんな場面で応用しますか？以下を考慮してください：</h3>
-                <ul className="mt-2 space-y-1">
-                  {steps[nextStep].subtitle.map((item, i) => (
-                    <li key={i} className="text-gray-700 text-[14px]">{item}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        );
-      } 
-      // Check if this step has options to display
-      else if (steps[nextStep].options && steps[nextStep].options.length > 0) {
-        questionContent = (
-          <div>
-            <div className="flex items-start gap-4">
-              {steps[nextStep].icon}
-              <div>
-                <h3 className="text-[16px] font-semibold">{steps[nextStep].question}</h3>
-              </div>
-            </div>
-            <div className="mt-4 ml-12">
-              <OptionSelection 
-                options={steps[nextStep].options || []}
-                onSelect={handleOptionSelect}
-                selectedValue={selectedOption}
-                onCustomOption={() => {}}
-                customOptionLabel="他の提案"
-              />
-            </div>
-          </div>
-        );
-      } else {
-        questionContent = (
-          <div>
-            <div className="flex items-start gap-4">
-              {steps[nextStep].icon}
-              <div>
-                <h3 className="text-[16px] font-semibold">{steps[nextStep].question}</h3>
-                <ul className="mt-2 space-y-1">
-                  {steps[nextStep].subtitle.map((item, i) => (
-                    <li key={i} className="text-gray-700 text-[14px]">{item}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        );
-      }
-      
-      // Add the question immediately without setTimeout
-      setConversationHistory(prev => [
-        ...prev,
-        { 
-          type: "system", 
-          content: questionContent,
-          questionType: Object.keys(answers)[nextStep]
-        }
-      ]);
+      addNextQuestion(currentStep + 1);
     } else {
       addCompletionMessage();
     }
@@ -177,12 +106,12 @@ export const useConversationState = (steps: Step[]) => {
     
     // Add the next question immediately after adding the user response
     if (currentStep + 1 < steps.length) {
-      addNextQuestion(currentStep + 1, 0); // Use 0ms timeout to add question immediately
+      addNextQuestion(currentStep + 1);
     } else {
       addCompletionMessage();
     }
   };
-  
+
   // Function to update a user response when edited
   const updateUserResponse = (content: string, index: number) => {
     // Find which question this response was for
@@ -213,30 +142,12 @@ export const useConversationState = (steps: Step[]) => {
     setCurrentStep(nextQuestionIndex);
   };
 
-  const addNextQuestion = (nextStep: number, delay: number = 300) => {
+  const addNextQuestion = (nextStep: number) => {
     if (nextStep < steps.length) {
       let questionContent;
       
-      // For the third question (nextStep === 2), we want a specific message
-      if (nextStep === 2) {
-        questionContent = (
-          <div>
-            <div className="flex items-start gap-4">
-              {steps[nextStep].icon}
-              <div>
-                <h3 className="text-[16px] font-semibold">とても参考になります。この研究をどんな場面で応用しますか？以下を考慮してください：</h3>
-                <ul className="mt-2 space-y-1">
-                  {steps[nextStep].subtitle.map((item, i) => (
-                    <li key={i} className="text-gray-700 text-[14px]">{item}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        );
-      } 
       // Check if this step has options to display
-      else if (steps[nextStep].options && steps[nextStep].options.length > 0) {
+      if (steps[nextStep].options && steps[nextStep].options.length > 0) {
         questionContent = (
           <div>
             <div className="flex items-start gap-4">
@@ -274,7 +185,6 @@ export const useConversationState = (steps: Step[]) => {
         );
       }
       
-      // Only use setTimeout for normal flow, not for option selection
       setTimeout(() => {
         setConversationHistory(prev => [
           ...prev,
@@ -284,7 +194,7 @@ export const useConversationState = (steps: Step[]) => {
             questionType: Object.keys(answers)[nextStep]
           }
         ]);
-      }, delay);
+      }, 300);
     }
   };
 
