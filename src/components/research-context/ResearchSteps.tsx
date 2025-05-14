@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Users, Clock, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,7 @@ export interface Step {
   placeholder: string;
   helpButtonText?: string;
   options?: Array<{ value: string; label: string }>;
-  iconType?: "user" | "map-pin";
+  iconType?: "user" | "map-pin" | "clock";
 }
 
 export const useResearchSteps = () => {
@@ -106,4 +105,3 @@ export const useResearchSteps = () => {
 
   return steps;
 };
-
