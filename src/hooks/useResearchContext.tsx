@@ -176,3 +176,5 @@ export const useResearchContext = (
     initializeSavedHistory
   };
 };
+
+export default useResearchContext;
