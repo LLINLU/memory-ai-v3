@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Minimize2, Maximize2, X } from "lucide-react";
+import { X, ArrowUpRight } from "lucide-react";
 
 interface ChatHeaderProps {
   isExpanded: boolean;
@@ -15,26 +15,22 @@ export const ChatHeader = ({
   toggleOpen
 }: ChatHeaderProps) => {
   return (
-    <div className="flex items-center justify-between border-b border-gray-200 px-4 py-2">
-      <h3 className="font-medium text-gray-800">AI Research Assistant</h3>
-      <div className="flex items-center gap-1">
+    <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+      <h3 className="font-medium text-gray-900">AI Research Assistant</h3>
+      <div className="flex items-center gap-2">
         <Button 
           variant="ghost" 
           size="icon"
           onClick={toggleExpand}
-          className="h-8 w-8"
+          className="h-8 w-8 hover:bg-gray-100 rounded-full"
         >
-          {isExpanded ? (
-            <Minimize2 className="h-4 w-4" />
-          ) : (
-            <Maximize2 className="h-4 w-4" />
-          )}
+          <ArrowUpRight className="h-4 w-4" />
         </Button>
         <Button 
           variant="ghost" 
           size="icon"
           onClick={toggleOpen}
-          className="h-8 w-8"
+          className="h-8 w-8 hover:bg-gray-100 rounded-full"
         >
           <X className="h-4 w-4" />
         </Button>

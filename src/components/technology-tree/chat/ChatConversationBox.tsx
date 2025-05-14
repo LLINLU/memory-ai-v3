@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { ChatMessage } from './ChatMessage';
 import { NodeSuggestion } from "@/types/chat";
@@ -98,17 +99,17 @@ export const ChatConversationBox = ({
         <div className="flex flex-col gap-2">
           <Button
             onClick={() => handleCustomButtonClick('generate-scenario')}
-            className="bg-blue-100 hover:bg-blue-200 text-blue-800"
+            className="bg-blue-100 hover:bg-blue-200 text-blue-800 group"
             size="sm"
           >
-            詳細な研究シナリオを生成
+            <span className="group-hover:text-[#1867cc]">詳細な研究シナリオを生成</span>
           </Button>
           <Button
             onClick={() => handleCustomButtonClick('summarize-trends')}
-            className="bg-blue-100 hover:bg-blue-200 text-blue-800"
+            className="bg-blue-100 hover:bg-blue-200 text-blue-800 group"
             size="sm"
           >
-            最新の研究動向を要約してください
+            <span className="group-hover:text-[#1867cc]">最新の研究動向を要約してください</span>
           </Button>
         </div>
       </div>
@@ -136,12 +137,12 @@ export const ChatConversationBox = ({
   }, []);
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 bg-gray-50 relative">
+    <div className="flex-1 overflow-y-auto p-4 bg-white relative">
       {/* Only show welcome message if there are no substantive messages */}
       {!hasSubstantiveMessages && renderWelcomeMessage()}
       
       {/* Always display all messages, never hide them */}
-      <div className="space-y-6">
+      <div className="space-y-1">
         {groupedMessages.map((message, index) => {
           const nextMessage = messages[index + 1];
           const isActionTaken = nextMessage && nextMessage.content === "ノードが作成されました 😊";
@@ -157,7 +158,7 @@ export const ChatConversationBox = ({
               key={index} 
               className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} ${isResearchFieldSection ? 'conversation-message' : ''}`}
             >
-              <div className={`${message.isUser ? '' : 'max-w-[85%]'}`}>
+              <div className={`${message.isUser ? '' : 'max-w-[85%] w-full'}`}>
                 <ChatMessage 
                   message={message}
                   isActionTaken={isActionTaken}

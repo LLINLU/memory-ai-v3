@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { NodeSuggestion } from "@/types/chat";
 import { SuggestionActions } from './SuggestionActions';
+import { cn } from "@/lib/utils";
 
 interface ChatMessageProps {
   message: {
@@ -41,21 +42,26 @@ export const ChatMessage = ({
         <p key={i} className="text-base mb-2 whitespace-pre-line">{content}</p>
       ));
     }
-    return <p className={`${message.type === 'welcome' ? 'text-lg text-blue-800 mb-4' : 'text-base'} whitespace-pre-line`}>
+    return <p className={cn(
+      "whitespace-pre-line",
+      message.type === 'welcome' ? 'text-lg text-blue-800 mb-4' : 'text-base'
+    )}>
       {message.content}
     </p>;
   };
   
   return (
     <div 
-      className={`inline-block ${
-        message.type === 'welcome' 
-          ? 'w-full' 
-          : ''
-      }`}
+      className={cn(
+        "inline-block w-full max-w-full",
+        message.type === 'welcome' && "w-full" 
+      )}
     >
       {message.isUser ? (
-        <div className={`${isSkipped ? 'ml-auto bg-blue-50 px-4 py-2 rounded-lg' : 'bg-white border border-gray-200 px-4 py-3 rounded-lg'}`}>
+        <div className={cn(
+          "rounded-xl p-4 mb-4",
+          isSkipped ? "ml-auto bg-blue-50 px-4 py-2" : "border border-gray-200 bg-white"
+        )}>
           {isSkipped ? (
             <span className="text-blue-700 font-medium whitespace-nowrap">スキップ</span>
           ) : (
@@ -63,11 +69,12 @@ export const ChatMessage = ({
           )}
         </div>
       ) : (
-        <div className={`${
-          message.type === 'welcome'
-            ? 'bg-blue-50 p-4 rounded-xl w-full'
-            : 'bg-blue-50 text-blue-900 p-4 rounded-xl'
-        }`}>
+        <div className={cn(
+          "rounded-xl p-4 mb-4",
+          message.type === 'welcome' 
+            ? "bg-blue-50 w-full" 
+            : "bg-blue-50 text-blue-900"
+        )}>
           {renderContent()}
           
           {message.suggestion && !isActionTaken && (
@@ -80,16 +87,17 @@ export const ChatMessage = ({
           )}
           
           {message.buttons && (
-            <div className="flex flex-col sm:flex-row gap-3 justify-center mt-2">
+            <div className="flex flex-col sm:flex-row gap-3 justify-start mt-3">
               {message.buttons.map((button, buttonIndex) => (
                 <Button
                   key={buttonIndex}
                   onClick={() => onButtonClick && onButtonClick(button.action)}
-                  className={`${
+                  className={cn(
                     button.primary
                       ? 'bg-blue-600 hover:bg-blue-700 text-white'
                       : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                  } px-4 py-2`}
+                  )}
+                  size="sm"
                 >
                   {button.label}
                 </Button>

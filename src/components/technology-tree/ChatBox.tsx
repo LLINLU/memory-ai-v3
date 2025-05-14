@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, X, ArrowUpRight } from "lucide-react";
 import { NodeSuggestion } from "@/types/chat";
 import { ChatHeader } from './chat/ChatHeader';
 import { ChatConversationBox } from './chat/ChatConversationBox';
@@ -82,8 +82,8 @@ export const ChatBox = ({
       ) : (
         <div 
           className={`fixed bottom-6 right-6 bg-white border border-gray-200 rounded-lg shadow-xl flex flex-col ${
-            isExpanded ? 'w-[500px] h-[600px]' : 'w-[350px] h-[450px]'
-          } transition-all duration-200`}
+            isExpanded ? 'w-[500px] h-[600px]' : 'w-[350px] h-[500px]'
+          } transition-all duration-200 overflow-hidden`}
         >
           <ChatHeader 
             isExpanded={isExpanded}
