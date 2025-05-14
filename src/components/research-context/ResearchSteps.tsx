@@ -9,7 +9,6 @@ export interface Step {
   subtitle: string[];
   placeholder: string;
   helpButtonText?: string;
-  options?: string[];
 }
 
 export const useResearchSteps = () => {
@@ -47,12 +46,7 @@ export const useResearchSteps = () => {
         </svg>
       ),
       subtitle: [],
-      placeholder: "例：天文学者、眼科医、防衛エンジニアなど...",
-      options: [
-        "医療専門家",
-        "ドライアイを持つ患者",
-        "眼科研究者"
-      ]
+      placeholder: "例：天文学者、眼科医、防衛エンジニアなど..."
     },
     {
       question: "とても参考になります。この研究をどんな場面で応用しますか？以下を考慮してください：",
