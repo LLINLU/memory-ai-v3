@@ -60,7 +60,7 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
 
   return (
     <div 
-      className="w-full space-y-4 pb-8 pt-8" 
+      className="w-full space-y-4 pb-8 pt-2" 
       ref={conversationContainerRef}
       style={{ minHeight: "100%" }}
     >
