@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Step } from "@/components/research-context/ResearchSteps";
 import { Button } from "@/components/ui/button";
@@ -48,13 +47,13 @@ export const useConversationState = (steps: Step[]) => {
     } else {
       // Special case for skipping the first question
       if (currentStep === 0) {
-        // Add custom skip message for first question
+        // Add custom skip message for first question with updated text
         setConversationHistory(prev => [
           ...prev,
           { type: "user", content: "スキップ" },
           { 
             type: "system", 
-            content: "より良い検索結果を得るために、この質問にご回答いただけると嬉しいです。\n下の例も参考にしながら、気軽に書いてみてください。\nもちろん、スキップしていただいても大丈夫です。\n\n考えるヒント：\n\nどんなアプローチ・技術・方法に注目していますか？\n　例：非薬理学的治療、画像技術\n\nその研究の目的や目標は何ですか？\n　例：症状の管理、診断の改善"
+            content: "より良い検索結果を得るために、この質問にご回答いただけると嬉しいです😊。"
           }
         ]);
       } else {
@@ -204,7 +203,7 @@ export const useConversationState = (steps: Step[]) => {
   const addInitialMessage = () => {
     const initialMessage = (
       <div>
-        <p className="mb-6">研究コンテキストを手早く定義しましょう。これらの質問に答えることで結果をより絞り込めますが、スキップしてもかまいません。</p>
+        <p className="mb-6">研究コンテキストを手早く定義しましょう。これらの質問に答え���ことで結果をより絞り込めますが、スキップしてもかまいません。</p>
         <div className="flex items-start gap-4">
           {steps[0].icon}
           <div>
