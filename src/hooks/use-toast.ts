@@ -1,15 +1,21 @@
 import { toast as sonnerToast, type ToastT } from "sonner";
 
-type ToastProps = Omit<ToastT, "description"> & {
+type ToastProps = Partial<Omit<ToastT, "description">> & {
   description?: React.ReactNode;
+  title?: string;
 };
 
 // Keep track of all active toasts
 let toasts: ToastT[] = [];
+let toastCounter = 0;
 
 export const toast = ({ description, ...props }: ToastProps) => {
-  const id = sonnerToast(props.title, {
+  // Generate a unique ID if not provided
+  const toastId = props.id || `toast-${Date.now()}-${toastCounter++}`;
+  
+  const id = sonnerToast(props.title || "", {
     ...props,
+    id: toastId,
     description,
     onDismiss: (toast) => {
       // Remove the toast from our array when dismissed
