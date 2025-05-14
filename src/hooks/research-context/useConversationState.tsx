@@ -1,10 +1,9 @@
-
 import React, { useState } from "react";
 import { Step } from "@/components/research-context/ResearchSteps";
 
 export interface ContextAnswers {
-  who: string;
   what: string;
+  who: string;
   where: string;
   when: string;
 }
@@ -20,8 +19,8 @@ export const useConversationState = (steps: Step[]) => {
   const [inputValue, setInputValue] = useState("");
   const [conversationHistory, setConversationHistory] = useState<ConversationMessage[]>([]);
   const [answers, setAnswers] = useState<ContextAnswers>({
-    who: "",
     what: "",
+    who: "",
     where: "",
     when: ""
   });
@@ -152,7 +151,7 @@ export const useConversationState = (steps: Step[]) => {
       </div>
     );
     
-    setConversationHistory([{ type: "system", content: initialMessage, questionType: "who" }]);
+    setConversationHistory([{ type: "system", content: initialMessage, questionType: "what" }]);
   };
 
   // Reset conversation to initial state
@@ -161,8 +160,8 @@ export const useConversationState = (steps: Step[]) => {
     setInputValue("");
     setConversationHistory([]);
     setAnswers({
-      who: "",
       what: "",
+      who: "",
       where: "",
       when: ""
     });
