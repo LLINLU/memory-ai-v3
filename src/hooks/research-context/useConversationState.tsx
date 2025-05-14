@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Step } from "@/components/research-context/ResearchSteps";
 import { Button } from "@/components/ui/button";
@@ -135,9 +136,35 @@ export const useConversationState = (steps: Step[]) => {
     // Mark the help button as clicked so it won't be shown again
     setHelpButtonClicked(true);
     
-    // Updated content for Help Me button
-    setConversationHistory(prev => [
-      ...prev,
+    // Remove the current message with the help button
+    const updatedHistory = [...conversationHistory];
+    const firstMessageIndex = conversationHistory.findIndex(msg => 
+      msg.type === "system" && msg.questionType === "what"
+    );
+    
+    if (firstMessageIndex !== -1) {
+      // Replace the first message with one without the button
+      const firstMessageContent = (
+        <div>
+          <p className="mb-6">研究コンテキストを手早く定義しましょう。これらの質問に答えることで結果をより絞り込めますが、スキップしてもかまいません。</p>
+          <div className="flex items-start gap-4">
+            {steps[0].icon}
+            <div>
+              <h3 className="text-[16px] font-semibold">{steps[0].question}</h3>
+            </div>
+          </div>
+        </div>
+      );
+      
+      updatedHistory[firstMessageIndex] = {
+        ...updatedHistory[firstMessageIndex],
+        content: firstMessageContent
+      };
+    }
+    
+    // Add the help content as a new message
+    setConversationHistory([
+      ...updatedHistory,
       { 
         type: "system", 
         content: (
