@@ -1,81 +1,58 @@
-
 import React from "react";
+import { Users, MapPin, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sparkles, MapPin, User } from "lucide-react";
-
-interface Option {
-  value: string;
-  label: string;
-}
 
 interface OptionSelectionProps {
-  options: Option[];
+  options: Array<{ value: string; label: string }>;
   onSelect: (value: string, label: string) => void;
-  selectedValue?: string;
-  onCustomOption?: () => void;
-  customOptionLabel?: string;
-  iconType?: "user" | "map-pin";
+  selectedValue: string;
+  onCustomOption: () => void;
+  customOptionLabel: string;
+  iconType?: "user" | "map-pin" | "clock";
 }
 
-export const OptionSelection = ({
+export const OptionSelection: React.FC<OptionSelectionProps> = ({
   options,
   onSelect,
   selectedValue,
   onCustomOption,
-  customOptionLabel = "他の提案",
-  iconType = "user"
-}: OptionSelectionProps) => {
-  const renderIcon = () => {
-    if (iconType === "map-pin") {
-      return (
-        <MapPin className="w-5 h-5 text-blue-600" />
-      );
+  customOptionLabel,
+  iconType
+}) => {
+  // Get the appropriate icon component based on iconType
+  const getIcon = () => {
+    switch (iconType) {
+      case "user":
+        return <Users size={16} className="mr-1.5" />;
+      case "map-pin":
+        return <MapPin size={16} className="mr-1.5" />;
+      case "clock":
+        return <Clock size={16} className="mr-1.5" />;
+      default:
+        return null;
     }
-    
-    return (
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-        <path d="M18 21a8 8 0 0 0-16 0"></path>
-        <circle cx="10" cy="8" r="5"></circle>
-        <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"></path>
-      </svg>
-    );
   };
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-col gap-3">
-        {options.map((option) => (
-          <Button
-            key={option.value}
-            variant="outline"
-            className={`justify-start px-4 py-3 h-auto text-left ${
-              selectedValue === option.value
-                ? "bg-blue-50 border-blue-300 text-blue-700"
-                : "bg-blue-50 hover:bg-blue-100 text-blue-600"
-            }`}
-            onClick={() => onSelect(option.value, option.label)}
-          >
-            <div className="text-blue-600 mr-2">
-              {renderIcon()}
-            </div>
-            {option.label}
-          </Button>
-        ))}
-      </div>
-      
-      {onCustomOption && (
-        <>
-          <Button
-            variant="outline"
-            onClick={onCustomOption}
-            className="flex items-center w-full justify-start px-4 py-3 h-auto text-left space-x-2 bg-purple-50 border-purple-100 text-purple-800 hover:bg-purple-100 hover:text-purple-900 mt-3"
-          >
-            <Sparkles className="h-4 w-4" />
-            <span>{customOptionLabel}</span>
-          </Button>
-          <p className="text-sm text-gray-600 mt-2">自分の答えで書いていただいても、もちろんOKです👍！</p>
-        </>
-      )}
+    <div>
+      {options.map(option => (
+        <Button
+          key={option.value}
+          variant={selectedValue === option.value ? "default" : "outline"}
+          onClick={() => onSelect(option.value, option.label)}
+          className="w-full justify-start rounded-md text-sm font-medium data-[state=active]:bg-accent data-[state=active]:text-accent-foreground"
+        >
+          {getIcon()}
+          {option.label}
+        </Button>
+      ))}
+      <Button
+        variant="secondary"
+        onClick={onCustomOption}
+        className="w-full justify-start rounded-md text-sm font-medium"
+      >
+        {customOptionLabel}
+      </Button>
     </div>
   );
 };
