@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Step } from "@/components/research-context/ResearchSteps";
 import { Button } from "@/components/ui/button";
@@ -112,7 +111,6 @@ export const useConversationState = (steps: Step[]) => {
     }
   };
 
-  // Function to update a user response when edited
   const updateUserResponse = (content: string, index: number) => {
     // Find which question this response was for
     const questionBeforeIndex = index - 1;
@@ -163,6 +161,7 @@ export const useConversationState = (steps: Step[]) => {
                 selectedValue={selectedOption}
                 onCustomOption={() => {}}
                 customOptionLabel="他の提案"
+                iconType={steps[nextStep].iconType}
               />
             </div>
           </div>
@@ -208,6 +207,33 @@ export const useConversationState = (steps: Step[]) => {
         }
       ]);
     }, 300);
+  };
+
+  const addInitialMessage = () => {
+    const initialMessage = (
+      <div>
+        <p className="mb-6">研究コンテキストを手早く定義しましょう。これらの質問に答えることで結果をより絞り込めますが、スキップしてもかまいません。</p>
+        <div className="flex items-start gap-4">
+          {steps[0].icon}
+          <div>
+            <h3 className="text-[16px] font-semibold">{steps[0].question}</h3>
+            {steps[0].helpButtonText && !helpButtonClicked && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => handleHelpMeClick()}
+                className="mt-2"
+                style={{ background: "aliceblue", borderColor: "#b5d2f7" }}
+              >
+                {steps[0].helpButtonText}
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+    
+    setConversationHistory([{ type: "system", content: initialMessage, questionType: "what" }]);
   };
 
   const handleHelpMeClick = () => {
@@ -266,6 +292,18 @@ export const useConversationState = (steps: Step[]) => {
     ]);
   };
 
+  const addCompletionMessage = () => {
+    setTimeout(() => {
+      setConversationHistory(prev => [
+        ...prev,
+        { 
+          type: "system", 
+          content: "ご回答いただきありがとうございます。ご回答に基づき、研究シナリオを生成しました。右側のプレビューパネルからシナリオを選択してください。"
+        }
+      ]);
+    }, 300);
+  };
+
   const addInitialMessage = () => {
     const initialMessage = (
       <div>
@@ -293,7 +331,6 @@ export const useConversationState = (steps: Step[]) => {
     setConversationHistory([{ type: "system", content: initialMessage, questionType: "what" }]);
   };
 
-  // Reset conversation to initial state
   const resetConversation = () => {
     setCurrentStep(0);
     setInputValue("");
