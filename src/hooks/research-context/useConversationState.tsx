@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Step } from "@/components/research-context/ResearchSteps";
 import { Button } from "@/components/ui/button";
@@ -375,4 +376,43 @@ export const useConversationState = (steps: Step[]) => {
               </Button>
             )}
           </div>
-       
+        </div>
+      </div>
+    );
+    
+    setConversationHistory([{ type: "system", content: initialMessage, questionType: "what" }]);
+  };
+
+  // Reset conversation to initial state
+  const resetConversation = () => {
+    setCurrentStep(0);
+    setInputValue("");
+    setConversationHistory([]);
+    setAnswers({
+      what: "",
+      who: "",
+      where: "",
+      when: ""
+    });
+    setHelpButtonClicked(false);
+    setSelectedOption("");
+  };
+
+  return {
+    currentStep,
+    inputValue,
+    conversationHistory,
+    answers,
+    selectedOption,
+    handleInputChange,
+    handleOptionSelect,
+    addUserResponse,
+    addNextQuestion,
+    addCompletionMessage,
+    addInitialMessage,
+    setConversationHistory,
+    updateUserResponse,
+    setInputValue,
+    resetConversation
+  };
+};
