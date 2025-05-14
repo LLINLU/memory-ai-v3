@@ -1,4 +1,3 @@
-
 import { Step } from "@/components/research-context/ResearchSteps";
 import { useConversationState } from "./research-context/useConversationState";
 import { useNavigationHandlers } from "./research-context/useNavigationHandlers";
@@ -100,21 +99,6 @@ export const useResearchContext = (
       // Handle empty submission as skip
       addUserResponse(null);
     }
-    
-    const nextStep = currentStep + 1;
-    
-    // If there are more steps, add the next question
-    if (nextStep < steps.length) {
-      addNextQuestion(nextStep);
-    } else {
-      // All steps completed, show completion message and generate scenarios
-      addCompletionMessage();
-      
-      // Wait a moment before showing scenarios
-      setTimeout(() => {
-        proceedToTechnologyTree();
-      }, 1000);
-    }
   };
   
   // Core handler for skip action
@@ -123,21 +107,6 @@ export const useResearchContext = (
     
     // Process the skip
     addUserResponse(null);
-    
-    const nextStep = currentStep + 1;
-    
-    // If there are more steps, add the next question
-    if (nextStep < steps.length) {
-      addNextQuestion(nextStep);
-    } else {
-      // All steps completed, show completion message and generate scenarios
-      addCompletionMessage();
-      
-      // Wait a moment before showing scenarios
-      setTimeout(() => {
-        proceedToTechnologyTree();
-      }, 1000);
-    }
   };
 
   // Handle editing a user reply
