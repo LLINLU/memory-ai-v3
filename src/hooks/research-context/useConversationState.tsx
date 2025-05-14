@@ -161,7 +161,7 @@ export const useConversationState = (steps: Step[]) => {
                 selectedValue={selectedOption}
                 onCustomOption={() => {}}
                 customOptionLabel="他の提案"
-                iconType={steps[nextStep].iconType as "user" | "map-pin" | "clock"}
+                iconType={steps[nextStep].iconType}
               />
             </div>
           </div>
