@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Step } from "@/components/research-context/ResearchSteps";
 import { Button } from "@/components/ui/button";
+import { OptionSelection } from "@/components/research-context/OptionSelection";
 
 export interface ContextAnswers {
   what: string;
@@ -27,9 +28,44 @@ export const useConversationState = (steps: Step[]) => {
     when: ""
   });
   const [helpButtonClicked, setHelpButtonClicked] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<string>("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
+  };
+
+  const handleOptionSelect = (value: string) => {
+    setSelectedOption(value);
+    
+    // Get the label for the selected option
+    const currentStepOptions = steps[currentStep]?.options || [];
+    const selectedOptionLabel = currentStepOptions.find(option => option.value === value)?.label || value;
+    
+    // Add user response to conversation history
+    setConversationHistory(prev => [
+      ...prev,
+      { type: "user", content: selectedOptionLabel }
+    ]);
+
+    // Update answers state
+    const currentKey = Object.keys(answers)[currentStep] as keyof typeof answers;
+    const newAnswers = { ...answers };
+    newAnswers[currentKey] = selectedOptionLabel;
+    setAnswers(newAnswers);
+    
+    // Clear input field and selected option
+    setInputValue("");
+    setSelectedOption("");
+    
+    // Move to next step
+    setCurrentStep(prev => prev + 1);
+    
+    // Add next question after a short delay
+    if (currentStep + 1 < steps.length) {
+      addNextQuestion(currentStep + 1);
+    } else {
+      addCompletionMessage();
+    }
   };
 
   const addUserResponse = (userInput: string | null) => {
@@ -54,7 +90,7 @@ export const useConversationState = (steps: Step[]) => {
           { type: "user", content: "スキップ" },
           { 
             type: "system", 
-            content: "より良い検索結果を得るために、この質問にご回答いただけると嬉しいです。\n下の例も参考にしながら、気軽に書いてみてください。\nもちろん、スキップしていただいても大丈夫です。\n\n考えるヒント：\n\nどんなアプローチ・技術・方法に注目していますか？\n　例：非薬理学的治療、画像技術\n\nその研究の目的や目標は何ですか？\n　例：症状の管理、診断の改善"
+            content: "より良い検索結果を得るために、この質問にご回答いただけると嬉しいです😊。"
           }
         ]);
       } else {
@@ -104,28 +140,53 @@ export const useConversationState = (steps: Step[]) => {
 
   const addNextQuestion = (nextStep: number) => {
     if (nextStep < steps.length) {
-      const nextQuestion = (
-        <div>
-          <div className="flex items-start gap-4">
-            {steps[nextStep].icon}
-            <div>
-              <h3 className="text-[16px] font-semibold">{steps[nextStep].question}</h3>
-              <ul className="mt-2 space-y-1">
-                {steps[nextStep].subtitle.map((item, i) => (
-                  <li key={i} className="text-gray-700 text-[14px]">{item}</li>
-                ))}
-              </ul>
+      let questionContent;
+      
+      // Check if this step has options to display
+      if (steps[nextStep].options && steps[nextStep].options.length > 0) {
+        questionContent = (
+          <div>
+            <div className="flex items-start gap-4">
+              {steps[nextStep].icon}
+              <div>
+                <h3 className="text-[16px] font-semibold">{steps[nextStep].question}</h3>
+              </div>
+            </div>
+            <div className="mt-4 ml-12">
+              <OptionSelection 
+                options={steps[nextStep].options || []}
+                onSelect={handleOptionSelect}
+                selectedValue={selectedOption}
+                onCustomOption={() => {}}
+                customOptionLabel="他の提案"
+              />
             </div>
           </div>
-        </div>
-      );
+        );
+      } else {
+        questionContent = (
+          <div>
+            <div className="flex items-start gap-4">
+              {steps[nextStep].icon}
+              <div>
+                <h3 className="text-[16px] font-semibold">{steps[nextStep].question}</h3>
+                <ul className="mt-2 space-y-1">
+                  {steps[nextStep].subtitle.map((item, i) => (
+                    <li key={i} className="text-gray-700 text-[14px]">{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        );
+      }
       
       setTimeout(() => {
         setConversationHistory(prev => [
           ...prev,
           { 
             type: "system", 
-            content: nextQuestion,
+            content: questionContent,
             questionType: Object.keys(answers)[nextStep]
           }
         ]);
@@ -240,6 +301,7 @@ export const useConversationState = (steps: Step[]) => {
       when: ""
     });
     setHelpButtonClicked(false);
+    setSelectedOption("");
   };
 
   return {
@@ -247,7 +309,9 @@ export const useConversationState = (steps: Step[]) => {
     inputValue,
     conversationHistory,
     answers,
+    selectedOption,
     handleInputChange,
+    handleOptionSelect,
     addUserResponse,
     addNextQuestion,
     addCompletionMessage,

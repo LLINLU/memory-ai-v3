@@ -41,11 +41,13 @@ const ResearchContext = () => {
     inputValue,
     conversationHistory,
     answers,
+    selectedOption,
     selectedScenario,
     handleInitialOption,
     handleInputChange,
     handleSubmit,
     handleSkip,
+    handleOptionSelect,
     handleScenarioSelection,
     proceedToScenarios,
     setShowScenarios,
@@ -78,6 +80,9 @@ const ResearchContext = () => {
       });
     }
   }, [showInitialOptions, isEditingScenario]);
+  
+  // Check if the current step has options
+  const currentStepHasOptions = currentStep < steps.length && steps[currentStep]?.options && steps[currentStep].options.length > 0;
   
   return (
     <SidebarProvider>
@@ -122,7 +127,7 @@ const ResearchContext = () => {
                 </div>
                 
                 <div className="flex-none mt-4">
-                  {shouldShowInputSection && (
+                  {shouldShowInputSection && !currentStepHasOptions && (
                     <InputSection
                       inputValue={inputValue}
                       placeholder={steps[currentStep]?.placeholder}

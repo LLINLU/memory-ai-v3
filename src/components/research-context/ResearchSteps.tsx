@@ -9,6 +9,7 @@ export interface Step {
   subtitle: string[];
   placeholder: string;
   helpButtonText?: string;
+  options?: Array<{ value: string; label: string }>;
 }
 
 export const useResearchSteps = () => {
@@ -46,7 +47,12 @@ export const useResearchSteps = () => {
         </svg>
       ),
       subtitle: [],
-      placeholder: "例：天文学者、眼科医、防衛エンジニアなど..."
+      placeholder: "例：天文学者、眼科医、防衛エンジニアなど...",
+      options: [
+        { value: "ophthalmologist", label: "ドライアイ治療を専門とする眼科医" },
+        { value: "patient", label: "ドライアイの治療を行っている患者" },
+        { value: "prevention", label: "ドライアイの発症を予防しようとする人" }
+      ]
     },
     {
       question: "とても参考になります。この研究をどんな場面で応用しますか？以下を考慮してください：",
