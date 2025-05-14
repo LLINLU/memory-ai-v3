@@ -55,7 +55,7 @@ export const useResearchSteps = () => {
       ]
     },
     {
-      question: "とても参考になります。この研究をどんな場面で応用しますか？以下を考慮してください：",
+      question: "この研究をどんな場面で応用しますか？",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
           <rect width="32" height="32" rx="16" fill="url(#paint0_linear_226_24)"/>
@@ -68,11 +68,7 @@ export const useResearchSteps = () => {
           </defs>
         </svg>
       ),
-      subtitle: [
-        "- どのような環境や設定で実施されていますか？（例：臨床現場、自宅、観測所）",
-        "- 地理的な焦点はありますか？（例：特定の地域、国、機関）",
-        "- 文脈的に重要な要素はありますか？（例：資源が限られた環境、専門施設）"
-      ],
+      subtitle: [],
       placeholder: "例：観測所、病院、フィールド作業など..."
     },
     {
