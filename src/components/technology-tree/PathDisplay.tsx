@@ -71,8 +71,8 @@ export const PathDisplay = ({
             className="ml-2 text-blue-600 hover:bg-blue-50 px-2 py-1 h-6 text-xs"
             onClick={onAddLevel4}
           >
-            <Plus className="h-3 w-3 mr-1" />
-            +レベル４
+            <Plus className="h-3 w-3" />
+            レベル４
           </Button>
         )}
       </div>
