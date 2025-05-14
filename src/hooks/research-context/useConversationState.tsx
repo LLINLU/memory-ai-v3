@@ -149,9 +149,35 @@ export const useConversationState = (steps: Step[]) => {
     // Mark the help button as clicked so it won't be shown again
     setHelpButtonClicked(true);
     
+    // Remove the current message with the help button
+    const updatedHistory = [...conversationHistory];
+    const firstMessageIndex = conversationHistory.findIndex(msg => 
+      msg.type === "system" && msg.questionType === "what"
+    );
+    
+    if (firstMessageIndex !== -1) {
+      // Replace the first message with one without the button
+      const firstMessageContent = (
+        <div>
+          <p className="mb-6">研究コンテキストを手早く定義しましょう。これらの質問に答えることで結果をより絞り込めますが、スキップしてもかまいません。</p>
+          <div className="flex items-start gap-4">
+            {steps[0].icon}
+            <div>
+              <h3 className="text-[16px] font-semibold">{steps[0].question}</h3>
+            </div>
+          </div>
+        </div>
+      );
+      
+      updatedHistory[firstMessageIndex] = {
+        ...updatedHistory[firstMessageIndex],
+        content: firstMessageContent
+      };
+    }
+    
     // Add the help content as a new message
-    setConversationHistory(prev => [
-      ...prev,
+    setConversationHistory([
+      ...updatedHistory,
       { 
         type: "system", 
         content: (
@@ -213,7 +239,7 @@ export const useConversationState = (steps: Step[]) => {
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => handleHelpMeClick()}
+                onClick={handleHelpMeClick}
                 className="mt-2"
                 style={{ background: "aliceblue", borderColor: "#b5d2f7" }}
               >
