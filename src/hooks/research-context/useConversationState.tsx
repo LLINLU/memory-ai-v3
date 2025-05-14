@@ -68,8 +68,18 @@ export const useConversationState = (steps: Step[]) => {
 
     // Clear input field
     setInputValue("");
+    
     // Move to next step
-    setCurrentStep(prev => prev + 1);
+    const nextStep = currentStep + 1;
+    setCurrentStep(nextStep);
+    
+    // Add the next question immediately after the user responds
+    if (nextStep < steps.length) {
+      addNextQuestion(nextStep);
+    } else {
+      // All steps completed, show completion message
+      addCompletionMessage();
+    }
   };
 
   // Function to update a user response when edited
@@ -120,30 +130,25 @@ export const useConversationState = (steps: Step[]) => {
         </div>
       );
       
-      // Important: Delay adding the next question so it doesn't appear simultaneously with the skip hint
-      setTimeout(() => {
-        setConversationHistory(prev => [
-          ...prev,
-          { 
-            type: "system", 
-            content: nextQuestion,
-            questionType: Object.keys(answers)[nextStep]
-          }
-        ]);
-      }, 1000); // Adding a longer delay to ensure separation from skip hint
-    }
-  };
-
-  const addCompletionMessage = () => {
-    setTimeout(() => {
       setConversationHistory(prev => [
         ...prev,
         { 
           type: "system", 
-          content: "ご回答いただきありがとうございます。ご回答に基づき、研究シナリオを生成しました。右側のプレビューパネルからシナリオを選択してください。"
+          content: nextQuestion,
+          questionType: Object.keys(answers)[nextStep]
         }
       ]);
-    }, 300);
+    }
+  };
+
+  const addCompletionMessage = () => {
+    setConversationHistory(prev => [
+      ...prev,
+      { 
+        type: "system", 
+        content: "ご回答いただきありがとうございます。ご回答に基づき、研究シナリオを生成しました。右側のプレビューパネルからシナリオを選択してください。"
+      }
+    ]);
   };
 
   const handleHelpMeClick = () => {

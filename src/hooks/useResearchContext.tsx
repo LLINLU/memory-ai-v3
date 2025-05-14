@@ -67,8 +67,8 @@ export const useResearchContext = (
     selectScenario,
     resetNavigation,
     resetConversation,
-    answers, // Pass the answers to the scenario handlers
-    conversationHistory // Pass current conversation history
+    answers,
+    conversationHistory
   });
 
   // Initialize saved conversation history
@@ -91,7 +91,7 @@ export const useResearchContext = (
   const handleSubmit = () => {
     if (currentStep >= steps.length) return;
     
-    // Process the user's response
+    // Process the user's response - this now includes adding the next question
     if (inputValue.trim()) {
       addUserResponse(inputValue);
     } else {
@@ -101,14 +101,8 @@ export const useResearchContext = (
     
     const nextStep = currentStep + 1;
     
-    // If there are more steps, add the next question
-    if (nextStep < steps.length) {
-      addNextQuestion(nextStep);
-    } else {
-      // All steps completed, show completion message and generate scenarios
-      addCompletionMessage();
-      
-      // Wait a moment before showing scenarios
+    // If all steps completed, show scenarios after a short delay
+    if (nextStep >= steps.length) {
       setTimeout(() => {
         proceedToTechnologyTree();
       }, 1000);
@@ -119,19 +113,13 @@ export const useResearchContext = (
   const handleSkip = () => {
     if (currentStep >= steps.length) return;
     
-    // Process the skip
+    // Process the skip - this now includes adding the next question
     addUserResponse(null);
     
     const nextStep = currentStep + 1;
     
-    // If there are more steps, add the next question
-    if (nextStep < steps.length) {
-      addNextQuestion(nextStep);
-    } else {
-      // All steps completed, show completion message and generate scenarios
-      addCompletionMessage();
-      
-      // Wait a moment before showing scenarios
+    // If all steps completed, show scenarios after a short delay
+    if (nextStep >= steps.length) {
       setTimeout(() => {
         proceedToTechnologyTree();
       }, 1000);
