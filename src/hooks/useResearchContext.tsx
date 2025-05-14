@@ -69,8 +69,8 @@ export const useResearchContext = (
     selectScenario,
     resetNavigation,
     resetConversation,
-    answers, // Pass the answers to the scenario handlers
-    conversationHistory // Pass current conversation history
+    answers,
+    conversationHistory
   });
 
   // Initialize saved conversation history

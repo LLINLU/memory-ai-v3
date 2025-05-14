@@ -35,6 +35,7 @@ export const useConversationState = (steps: Step[]) => {
   };
 
   const handleOptionSelect = (value: string, label: string) => {
+    // Set the selected option
     setSelectedOption(value);
     
     // Add user response to conversation history using the exact label from the button
@@ -51,14 +52,14 @@ export const useConversationState = (steps: Step[]) => {
     
     // Clear input field and selected option
     setInputValue("");
-    setSelectedOption("");
     
     // Move to next step
-    setCurrentStep(prev => prev + 1);
+    const nextStep = currentStep + 1;
+    setCurrentStep(nextStep);
     
-    // Add next question after a short delay
-    if (currentStep + 1 < steps.length) {
-      addNextQuestion(currentStep + 1);
+    // Add next question immediately after selecting an option
+    if (nextStep < steps.length) {
+      addNextQuestion(nextStep);
     } else {
       addCompletionMessage();
     }
@@ -185,29 +186,27 @@ export const useConversationState = (steps: Step[]) => {
         );
       }
       
-      setTimeout(() => {
-        setConversationHistory(prev => [
-          ...prev,
-          { 
-            type: "system", 
-            content: questionContent,
-            questionType: Object.keys(answers)[nextStep]
-          }
-        ]);
-      }, 300);
-    }
-  };
-
-  const addCompletionMessage = () => {
-    setTimeout(() => {
+      // Add the question to the conversation history immediately
       setConversationHistory(prev => [
         ...prev,
         { 
           type: "system", 
-          content: "ご回答いただきありがとうございます。ご回答に基づき、研究シナリオを生成しました。右側のプレビューパネルからシナリオを選択してください。"
+          content: questionContent,
+          questionType: Object.keys(answers)[nextStep]
         }
       ]);
-    }, 300);
+    }
+  };
+
+  const addCompletionMessage = () => {
+    // Add completion message to conversation history
+    setConversationHistory(prev => [
+      ...prev,
+      { 
+        type: "system", 
+        content: "ご回答いただきありがとうございます。ご回答に基づき、研究シナリオを生成しました。右側のプレビューパネルからシナリオを選択してください。"
+      }
+    ]);
   };
 
   const addInitialMessage = () => {

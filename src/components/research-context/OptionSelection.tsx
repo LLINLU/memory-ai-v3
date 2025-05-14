@@ -41,6 +41,11 @@ export const OptionSelection = ({
     );
   };
 
+  const handleOptionClick = (option: Option) => {
+    // Explicitly call onSelect with the option value and label
+    onSelect(option.value, option.label);
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex flex-col gap-3">
@@ -53,7 +58,8 @@ export const OptionSelection = ({
                 ? "bg-blue-50 border-blue-300 text-blue-700"
                 : "bg-blue-50 hover:bg-blue-100 text-blue-600"
             }`}
-            onClick={() => onSelect(option.value, option.label)}
+            onClick={() => handleOptionClick(option)}
+            type="button"
           >
             <div className="text-blue-600 mr-2">
               {renderIcon()}
@@ -69,6 +75,7 @@ export const OptionSelection = ({
             variant="outline"
             onClick={onCustomOption}
             className="flex items-center w-full justify-start px-4 py-3 h-auto text-left space-x-2 bg-purple-50 border-purple-100 text-purple-800 hover:bg-purple-100 hover:text-purple-900 mt-3"
+            type="button"
           >
             <Sparkles className="h-4 w-4" />
             <span>{customOptionLabel}</span>
