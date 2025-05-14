@@ -38,11 +38,18 @@ export const ConversationMessage: React.FC<ConversationMessageProps> = ({
   const isResearchAreaMessage = isSystemMessage && 
     typeof message.content === 'string' && 
     message.content.includes('潜在的な研究分野');
+    
+  // Check if this is a duplicate completion message
+  const isDuplicateCompletionMessage = isSystemMessage && 
+    typeof message.content === 'string' && 
+    message.content.includes('ご回答いただきありがとうございます') && 
+    index > 0;
   
   if (isSystemMessage) {
     return (
       <div 
         className={`w-full max-w-full ${isResearchAreaMessage ? 'conversation-message' : ''}`}
+        style={{ opacity: isDuplicateCompletionMessage ? 0 : 1 }}
       >
         {message.content}
       </div>
