@@ -10,7 +10,7 @@ export interface Step {
   placeholder: string;
   helpButtonText?: string;
   options?: Array<{ value: string; label: string }>;
-  iconType?: "user" | "map-pin";
+  iconType?: "user" | "map-pin" | "clock";
 }
 
 export const useResearchSteps = () => {
