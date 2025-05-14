@@ -1,19 +1,38 @@
+import { toast as sonnerToast, type ToastT } from "sonner";
 
-import { toast as sonnerToast, type Toast } from "sonner";
-
-type ToastProps = Omit<Toast, "description"> & {
+type ToastProps = Omit<ToastT, "description"> & {
   description?: React.ReactNode;
 };
 
+// Keep track of all active toasts
+let toasts: ToastT[] = [];
+
 export const toast = ({ description, ...props }: ToastProps) => {
-  return sonnerToast(props.title, {
+  const id = sonnerToast(props.title, {
     ...props,
     description,
+    onDismiss: (toast) => {
+      // Remove the toast from our array when dismissed
+      toasts = toasts.filter(t => t.id !== toast.id);
+      if (props.onDismiss) props.onDismiss(toast);
+    },
+    onAutoClose: (toast) => {
+      // Remove the toast from our array when auto-closed
+      toasts = toasts.filter(t => t.id !== toast.id);
+      if (props.onAutoClose) props.onAutoClose(toast);
+    }
   });
+  
+  // Add the new toast to our array
+  const newToast = { id, ...props, description };
+  toasts.push(newToast as ToastT);
+  
+  return id;
 };
 
 export const useToast = () => {
   return {
     toast,
+    toasts: [...toasts], // Return a copy of the toasts array
   };
 };
