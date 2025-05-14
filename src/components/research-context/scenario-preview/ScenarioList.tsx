@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { ExplorationIcon } from "@/components/icons/ExplorationIcon";
 
 interface ScenarioListProps {
   generatedScenarios: string[];
@@ -15,7 +16,10 @@ export const ScenarioList: React.FC<ScenarioListProps> = ({
 }) => {
   return (
     <div>
-      <h3 className="text-xl font-semibold mb-3">研究シナリオを選択してください</h3>
+      <h3 className="text-base font-semibold mb-3 flex items-center gap-2">
+        <ExplorationIcon className="text-gray-700" />
+        研究シナリオを選択してください
+      </h3>
       <p className="text-gray-700 mb-4">
         ご回答に基づき、以下の研究シナリオを生成しました。
         ご関心に最も近いものをお選びください。
