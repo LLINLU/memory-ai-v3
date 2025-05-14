@@ -85,7 +85,7 @@ export const useConversationState = (steps: Step[]) => {
           { type: "user", content: "スキップ" },
           { 
             type: "system", 
-            content: "より良い検索結果を得るために、この質問にご回答いただけると嬉しいです😊。"
+            content: "より良い検索結果を得るために、この質問にご回答いただけると嬉しいです😊。上の鉛筆アイコンをクリックすると、ご回答できます。"
           }
         ]);
       } else {
