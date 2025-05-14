@@ -1,7 +1,8 @@
 
 import React from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ContextAnswers } from "@/hooks/research-context/useConversationState";
+import { cn } from "@/lib/utils";
 
 interface BuildingScenarioProps {
   answers: ContextAnswers;
@@ -9,8 +10,15 @@ interface BuildingScenarioProps {
 
 export const BuildingScenario: React.FC<BuildingScenarioProps> = ({ answers }) => {
   return (
-    <Card className="bg-blue-50 border-blue-100">
-      <div className="p-4">
+    <Card className="overflow-hidden border-0 shadow-sm">
+      <div 
+        className="p-4 bg-[#eff6ff]"
+        style={{
+          borderRadius: "8px",
+          borderWidth: "1px",
+          borderColor: "#acc1ff"
+        }}
+      >
         <h3 className="text-blue-700 font-semibold mb-3">シナリオの構築</h3>
         
         <div className="space-y-2">
