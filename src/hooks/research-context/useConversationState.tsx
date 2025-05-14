@@ -28,12 +28,17 @@ export const useConversationState = (steps: Step[]) => {
   });
   const [helpButtonClicked, setHelpButtonClicked] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string>("");
+  const [processing, setProcessing] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
   };
 
   const handleOptionSelect = (value: string, label: string) => {
+    // Prevent duplicate selections and processing
+    if (processing || selectedOption === value) return;
+    
+    setProcessing(true);
     setSelectedOption(value);
     
     // Add user response to conversation history using the exact label from the button
@@ -48,9 +53,8 @@ export const useConversationState = (steps: Step[]) => {
     newAnswers[currentKey] = label;
     setAnswers(newAnswers);
     
-    // Clear input field and selected option
+    // Clear input field
     setInputValue("");
-    setSelectedOption("");
     
     // Move to next step
     setCurrentStep(prev => prev + 1);
@@ -61,6 +65,12 @@ export const useConversationState = (steps: Step[]) => {
     } else {
       addCompletionMessage();
     }
+    
+    // Reset processing state after adding the next question
+    setTimeout(() => {
+      setProcessing(false);
+      setSelectedOption("");
+    }, 500);
   };
 
   const addUserResponse = (userInput: string | null) => {
