@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { TreeNode } from './TreeNode';
 import { EditNodeDialog } from './EditNodeDialog';
@@ -113,6 +112,13 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
     return "text-blue-700"; // default color
   };
 
+  // Dynamic tooltip text based on showDescriptions state
+  const getTooltipText = () => {
+    return showDescriptions 
+      ? "クリックすると、ツリーマップの簡潔なビューが表示されます。" 
+      : "クリックすると、ツリーマップの詳細ビューが表示されます。";
+  };
+
   return (
     <div className="w-1/3 bg-white p-4 rounded-lg relative">
       <div className="flex items-center justify-between mb-4">
@@ -146,7 +152,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
               </button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>クリックすると、ツリーマップの詳細ビューが表示されます。</p>
+              <p>{getTooltipText()}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
