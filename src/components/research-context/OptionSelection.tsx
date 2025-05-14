@@ -53,7 +53,7 @@ export const OptionSelection = ({
         <Button
           variant="outline"
           onClick={onCustomOption}
-          className="flex items-center space-x-2 bg-purple-50 border-purple-100 text-purple-800 hover:bg-purple-100 hover:text-purple-900 mt-3 w-60"
+          className="flex items-center w-full justify-start px-4 py-3 h-auto text-left space-x-2 bg-purple-50 border-purple-100 text-purple-800 hover:bg-purple-100 hover:text-purple-900 mt-3"
         >
           <Sparkles className="h-4 w-4" />
           <span>{customOptionLabel}</span>
