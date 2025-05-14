@@ -130,6 +130,8 @@ const ResearchContext = () => {
                       onSubmit={handleSubmit}
                       onSkip={handleSkip}
                       showSkip={true}
+                      options={steps[currentStep]?.options}
+                      currentStepIndex={currentStep}
                     />
                   )}
                 </div>
