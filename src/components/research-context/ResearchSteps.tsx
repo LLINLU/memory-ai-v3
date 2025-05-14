@@ -69,7 +69,12 @@ export const useResearchSteps = () => {
         </svg>
       ),
       subtitle: [],
-      placeholder: "例：観測所、病院、フィールド作業など..."
+      placeholder: "例：観測所、病院、フィールド作業など...",
+      options: [
+        { value: "clinic", label: "ドライアイ治療を専門とする眼科医" },
+        { value: "home", label: "ドライアイの治療を行っている患者" },
+        { value: "prevention", label: "ドライアイの発症を予防しようとする人" }
+      ]
     },
     {
       question: "素晴らしいです。応用する状況や開発段階について何が分かっていますか？以下を考慮してください：",
