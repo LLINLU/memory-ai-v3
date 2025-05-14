@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { TreeNode } from "@/types/tree";
+import { TreeNode, PathLevel } from "@/types/tree";
 import { NodeSuggestion } from "@/types/chat";
 import { toast } from "@/hooks/use-toast";
 import { createNodeFromSuggestion, generateChildNode } from "./utils/nodeGenerationUtils";
@@ -9,6 +8,7 @@ export interface PathState {
   level1: string;
   level2: string;
   level3: string;
+  level4?: string;
 }
 
 export const useNodeOperations = (
@@ -19,8 +19,9 @@ export const useNodeOperations = (
   const [level1Items, setLevel1Items] = useState(initialLevel1Items);
   const [level2Items, setLevel2Items] = useState(initialLevel2Items);
   const [level3Items, setLevel3Items] = useState(initialLevel3Items);
+  const [level4Items, setLevel4Items] = useState<Record<string, TreeNode[]>>({});
   
-  const addCustomNode = (level: string, node: NodeSuggestion, selectedPath: PathState, setSelectedPath: (updater: (prev: PathState) => PathState) => void) => {
+  const addCustomNode = (level: PathLevel, node: NodeSuggestion, selectedPath: PathState, setSelectedPath: (updater: (prev: PathState) => PathState) => void) => {
     console.log('Adding custom node:', { level, node });
     
     const newNode = createNodeFromSuggestion(node);
@@ -46,7 +47,7 @@ export const useNodeOperations = (
         [nodeId]: [childTreeNode]
       }));
       
-      setSelectedPath(prev => ({ ...prev, level1: nodeId, level2: "", level3: "" }));
+      setSelectedPath(prev => ({ ...prev, level1: nodeId, level2: "", level3: "", level4: "" }));
     } 
     else if (level === 'level2') {
       newNode.level = 2;
@@ -74,7 +75,7 @@ export const useNodeOperations = (
         [nodeId]: [childTreeNode]
       }));
       
-      setSelectedPath(prev => ({ ...prev, level2: nodeId, level3: "" }));
+      setSelectedPath(prev => ({ ...prev, level2: nodeId, level3: "", level4: "" }));
     } 
     else if (level === 'level3') {
       newNode.level = 3;
@@ -86,7 +87,19 @@ export const useNodeOperations = (
         [currentLevel2]: [...currentItems, newNode]
       }));
       
-      setSelectedPath(prev => ({ ...prev, level3: nodeId }));
+      setSelectedPath(prev => ({ ...prev, level3: nodeId, level4: "" }));
+    }
+    else if (level === 'level4') {
+      newNode.level = 4;
+      const currentLevel3 = selectedPath.level3;
+      const currentItems = level4Items[currentLevel3] || [];
+      
+      setLevel4Items(prev => ({
+        ...prev,
+        [currentLevel3]: [...currentItems, newNode]
+      }));
+      
+      setSelectedPath(prev => ({ ...prev, level4: nodeId }));
     }
     
     toast({
@@ -142,6 +155,23 @@ export const useNodeOperations = (
         return updatedItems;
       });
     }
+    else if (level === 'level4') {
+      setLevel4Items(prev => {
+        const updatedItems = { ...prev };
+        Object.keys(updatedItems).forEach(key => {
+          updatedItems[key] = updatedItems[key].map(item => 
+            item.id === nodeId 
+              ? { 
+                  ...item, 
+                  name: updatedNode.title, 
+                  description: updatedNode.description 
+                } 
+              : item
+          );
+        });
+        return updatedItems;
+      });
+    }
 
     toast({
       title: "Node updated",
@@ -150,15 +180,17 @@ export const useNodeOperations = (
     });
   };
 
-  const deleteNode = (level: string, nodeId: string, selectedPath: PathState, setSelectedPath: (updater: (prev: PathState) => PathState) => void) => {
+  const deleteNode = (level: PathLevel, nodeId: string, selectedPath: PathState, setSelectedPath: (updater: (prev: PathState) => PathState) => void) => {
     // Clear the selection if the deleted node is currently selected
     setSelectedPath(prev => {
       if (level === 'level1' && prev.level1 === nodeId) {
-        return { ...prev, level1: "", level2: "", level3: "" };
+        return { ...prev, level1: "", level2: "", level3: "", level4: "" };
       } else if (level === 'level2' && prev.level2 === nodeId) {
-        return { ...prev, level2: "", level3: "" };
+        return { ...prev, level2: "", level3: "", level4: "" };
       } else if (level === 'level3' && prev.level3 === nodeId) {
-        return { ...prev, level3: "" };
+        return { ...prev, level3: "", level4: "" };
+      } else if (level === 'level4' && prev.level4 === nodeId) {
+        return { ...prev, level4: "" };
       }
       return prev;
     });
@@ -198,6 +230,22 @@ export const useNodeOperations = (
         });
         return updatedItems;
       });
+      
+      // Also remove its children from level4Items
+      setLevel4Items(prev => {
+        const newLevel4Items = { ...prev };
+        delete newLevel4Items[nodeId];
+        return newLevel4Items;
+      });
+    }
+    else if (level === 'level4') {
+      setLevel4Items(prev => {
+        const updatedItems = { ...prev };
+        Object.keys(updatedItems).forEach(key => {
+          updatedItems[key] = updatedItems[key].filter(item => item.id !== nodeId);
+        });
+        return updatedItems;
+      });
     }
   };
 
@@ -205,6 +253,7 @@ export const useNodeOperations = (
     level1Items,
     level2Items,
     level3Items,
+    level4Items,
     addCustomNode,
     editNode,
     deleteNode

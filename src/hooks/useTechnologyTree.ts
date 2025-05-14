@@ -9,6 +9,7 @@ export interface TechnologyTreeState {
     level1: string;
     level2: string;
     level3: string;
+    level4?: string;
   };
   selectedView: string;
   sidebarTab: string;
@@ -17,6 +18,7 @@ export interface TechnologyTreeState {
   inputValue: string;
   query?: string;
   hasUserMadeSelection: boolean;
+  showLevel4?: boolean;
 }
 
 export const useTechnologyTree = () => {
@@ -30,7 +32,10 @@ export const useTechnologyTree = () => {
     deleteNode,
     level1Items,
     level2Items,
-    level3Items
+    level3Items,
+    level4Items,
+    showLevel4,
+    handleAddLevel4
   } = usePathSelection();
   
   const { 
@@ -62,6 +67,7 @@ export const useTechnologyTree = () => {
     query,
     chatMessages,
     hasUserMadeSelection,
+    showLevel4,
     setSelectedView,
     setSidebarTab,
     setShowSidebar,
@@ -76,6 +82,8 @@ export const useTechnologyTree = () => {
     deleteNode,
     level1Items,
     level2Items,
-    level3Items
+    level3Items,
+    level4Items,
+    handleAddLevel4
   };
 };

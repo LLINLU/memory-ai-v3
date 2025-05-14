@@ -9,6 +9,7 @@ interface MainContentProps {
     level1: string;
     level2: string;
     level3: string;
+    level4?: string;
   };
   level1Items: any[];
   level2Items: Record<string, any[]>;
@@ -20,12 +21,14 @@ interface MainContentProps {
     level1: string;
     level2: string;
     level3: string;
+    level4?: string;
   };
   query?: string;
   hasUserMadeSelection: boolean;
   scenario?: string;
   onEditScenario?: (newScenario: string) => void;
-  conversationHistory?: any[]; // Added this prop
+  conversationHistory?: any[];
+  onAddLevel4?: () => void;
 }
 
 export const MainContent = ({
@@ -39,13 +42,15 @@ export const MainContent = ({
   levelNames = {
     level1: "目的",
     level2: "機能",
-    level3: "測定/技術"
+    level3: "測定/技術",
+    level4: "実装"
   },
   query,
   scenario,
   onEditScenario,
   hasUserMadeSelection,
-  conversationHistory // Added this parameter
+  conversationHistory,
+  onAddLevel4
 }: MainContentProps) => {
   return (
     <div className="container mx-auto px-4 py-6">
@@ -55,6 +60,7 @@ export const MainContent = ({
         level1Items={level1Items}
         level2Items={level2Items}
         level3Items={level3Items}
+        onAddLevel4={onAddLevel4}
       />
       <LevelSelection
         selectedPath={selectedPath}

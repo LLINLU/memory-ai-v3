@@ -1,23 +1,27 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 
 interface PathDisplayProps {
   selectedPath: {
     level1: string;
     level2: string;
     level3: string;
+    level4?: string;
   };
   level1Items: any[];
   level2Items: Record<string, any[]>;
   level3Items: Record<string, any[]>;
+  onAddLevel4?: () => void;
 }
 
 export const PathDisplay = ({
   selectedPath,
   level1Items,
   level2Items,
-  level3Items
+  level3Items,
+  onAddLevel4
 }: PathDisplayProps) => {
   // Find the selected items by ID to display their names
   const findItemName = (itemId: string, items: any[]) => {
@@ -34,6 +38,8 @@ export const PathDisplay = ({
   const level3Name = selectedPath.level3 && selectedPath.level2
     ? findItemName(selectedPath.level3, level3Items[selectedPath.level2] || [])
     : '';
+
+  const showLevel4Button = selectedPath.level3 && level3Name;
 
   return (
     <div className="mb-6" style={{ paddingTop: '0rem' }}>
@@ -52,11 +58,24 @@ export const PathDisplay = ({
           ガイダンス
         </Button>
       </div>
-      <p className="text-gray-600" style={{ fontSize: '14px' }}>
-        {level1Name && level1Name}
-        {level2Name && ` → ${level2Name}`}
-        {level3Name && ` → ${level3Name}`}
-      </p>
+      <div className="flex items-center">
+        <p className="text-gray-600" style={{ fontSize: '14px' }}>
+          {level1Name && level1Name}
+          {level2Name && ` → ${level2Name}`}
+          {level3Name && ` → ${level3Name}`}
+        </p>
+        {showLevel4Button && (
+          <Button 
+            variant="ghost"
+            size="sm"
+            className="ml-2 text-blue-600 hover:bg-blue-50 px-2 py-1 h-6 text-xs"
+            onClick={onAddLevel4}
+          >
+            <Plus className="h-3 w-3 mr-1" />
+            +レベル４
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

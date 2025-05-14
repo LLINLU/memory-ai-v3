@@ -7,3 +7,6 @@ export interface TreeNode {
   isCustom?: boolean;
   level?: number;
 }
+
+// Define path levels for better type safety
+export type PathLevel = 'level1' | 'level2' | 'level3' | 'level4';

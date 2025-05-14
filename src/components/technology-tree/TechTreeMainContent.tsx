@@ -6,6 +6,7 @@ interface TechTreeMainContentProps {
     level1: string;
     level2: string;
     level3: string;
+    level4?: string;
   };
   level1Items: any[];
   level2Items: Record<string, any[]>;
@@ -17,11 +18,13 @@ interface TechTreeMainContentProps {
     level1: string;
     level2: string;
     level3: string;
+    level4?: string;
   };
   hasUserMadeSelection: boolean;
   scenario?: string;
   onEditScenario?: (newScenario: string) => void;
-  conversationHistory?: any[]; // Added this prop
+  conversationHistory?: any[];
+  handleAddLevel4?: () => void;
 }
 
 export const TechTreeMainContent = ({
@@ -36,7 +39,8 @@ export const TechTreeMainContent = ({
   hasUserMadeSelection,
   scenario,
   onEditScenario,
-  conversationHistory // Added this parameter
+  conversationHistory,
+  handleAddLevel4
 }: TechTreeMainContentProps) => {
   return (
     <MainContent
@@ -52,6 +56,7 @@ export const TechTreeMainContent = ({
       scenario={scenario}
       onEditScenario={onEditScenario}
       conversationHistory={conversationHistory}
+      onAddLevel4={handleAddLevel4}
     />
   );
 };

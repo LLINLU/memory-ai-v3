@@ -7,19 +7,24 @@ import { usePathSelectionState } from "./usePathSelectionState";
 export const usePathSelection = (initialPath = {
   level1: "astronomy",
   level2: "turbulence-compensation",
-  level3: "laser-guide-star"
+  level3: "laser-guide-star",
+  level4: ""
 }) => {
   const {
     selectedPath,
     setSelectedPath,
     hasUserMadeSelection,
-    handleNodeClick: handlePathNodeClick
+    handleNodeClick: handlePathNodeClick,
+    showLevel4,
+    setShowLevel4,
+    handleAddLevel4
   } = usePathSelectionState(initialPath);
 
   const {
     level1Items,
     level2Items,
     level3Items,
+    level4Items = {},  // Default empty object for level4
     addCustomNode: addNode,
     editNode,
     deleteNode: removeNode
@@ -47,6 +52,9 @@ export const usePathSelection = (initialPath = {
     deleteNode,
     level1Items,
     level2Items,
-    level3Items
+    level3Items,
+    level4Items,
+    showLevel4,
+    handleAddLevel4
   };
 };

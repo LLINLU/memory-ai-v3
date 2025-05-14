@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
@@ -54,7 +53,10 @@ const TechnologyTree = () => {
     deleteNode,
     level1Items,
     level2Items,
-    level3Items
+    level3Items,
+    level4Items,
+    showLevel4,
+    handleAddLevel4
   } = useTechnologyTree();
 
   const {
@@ -81,7 +83,8 @@ const TechnologyTree = () => {
   const levelNames = {
     level1: "目的",
     level2: "機能",
-    level3: "手段／技術"
+    level3: "手段／技術",
+    level4: "実装"
   };
 
   const handlePanelResize = () => {
@@ -168,6 +171,7 @@ const TechnologyTree = () => {
               scenario={scenario}
               onEditScenario={handleEditScenario}
               conversationHistory={savedConversationHistory}
+              handleAddLevel4={handleAddLevel4}
             />
           </TechTreeLayout>
           
