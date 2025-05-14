@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Step } from "@/components/research-context/ResearchSteps";
 import { Button } from "@/components/ui/button";
@@ -34,23 +33,19 @@ export const useConversationState = (steps: Step[]) => {
     setInputValue(e.target.value);
   };
 
-  const handleOptionSelect = (value: string) => {
+  const handleOptionSelect = (value: string, label: string) => {
     setSelectedOption(value);
     
-    // Get the label for the selected option
-    const currentStepOptions = steps[currentStep]?.options || [];
-    const selectedOptionLabel = currentStepOptions.find(option => option.value === value)?.label || value;
-    
-    // Add user response to conversation history
+    // Add user response to conversation history using the exact label from the button
     setConversationHistory(prev => [
       ...prev,
-      { type: "user", content: selectedOptionLabel }
+      { type: "user", content: label }
     ]);
 
     // Update answers state
     const currentKey = Object.keys(answers)[currentStep] as keyof typeof answers;
     const newAnswers = { ...answers };
-    newAnswers[currentKey] = selectedOptionLabel;
+    newAnswers[currentKey] = label;
     setAnswers(newAnswers);
     
     // Clear input field and selected option

@@ -12,7 +12,7 @@ interface Option {
 
 interface OptionSelectionProps {
   options: Option[];
-  onSelect: (value: string) => void;
+  onSelect: (value: string, label: string) => void;
   selectedValue?: string;
   onCustomOption?: () => void;
   customOptionLabel?: string;
@@ -29,14 +29,20 @@ export const OptionSelection = ({
     <div className="space-y-3">
       <RadioGroup
         value={selectedValue}
-        onValueChange={onSelect}
+        onValueChange={(value) => {
+          // Find the selected option to get its label
+          const selectedOption = options.find(option => option.value === value);
+          if (selectedOption) {
+            onSelect(value, selectedOption.label);
+          }
+        }}
         className="flex flex-col gap-3"
       >
         {options.map((option) => (
           <div
             key={option.value}
             className="flex items-center space-x-2 rounded-md bg-blue-50 px-4 py-3 cursor-pointer"
-            onClick={() => onSelect(option.value)}
+            onClick={() => onSelect(option.value, option.label)}
           >
             <RadioGroupItem value={option.value} id={option.value} />
             <Label
