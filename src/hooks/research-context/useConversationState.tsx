@@ -132,14 +132,18 @@ export const useConversationState = (steps: Step[]) => {
   };
 
   const handleHelpMeClick = () => {
-    // Future functionality can be added here
-    console.log("Help me to think button clicked");
-    // For now, just log the action
+    // Updated content for Help Me button
     setConversationHistory(prev => [
       ...prev,
       { 
         type: "system", 
-        content: "思考のアシスタンスが必要なときは、こちらのボタンをクリックしてください。より詳細なガイダンスを提供いたします。"
+        content: (
+          <ul className="mt-2 space-y-1">
+            <li className="text-gray-700 text-[14px]">- 着目するアプローチ、技術、または方法論は何ですか？（例：非薬理学的治療、画像技術）</li>
+            <li className="text-gray-700 text-[14px]">- 研究の目的や目標は何ですか？（例：症状の管理、診断の改善）</li>
+            <li className="text-gray-700 text-[14px]">- このアプローチは他と何が違いますかか？（例：薬の副作用を避けられる、高解像度など）</li>
+          </ul>
+        )
       }
     ]);
   };
