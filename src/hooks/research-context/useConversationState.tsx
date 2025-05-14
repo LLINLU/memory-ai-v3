@@ -56,7 +56,7 @@ export const useConversationState = (steps: Step[]) => {
     // Move to next step
     setCurrentStep(prev => prev + 1);
     
-    // Add next question after a short delay
+    // Add next question immediately
     if (currentStep + 1 < steps.length) {
       addNextQuestion(currentStep + 1);
     } else {
@@ -143,7 +143,7 @@ export const useConversationState = (steps: Step[]) => {
 
   const addNextQuestion = (nextStep: number) => {
     if (nextStep < steps.length) {
-      let questionContent;
+      let questionContent: React.ReactNode;
       
       // Check if this step has options to display
       if (steps[nextStep].options && steps[nextStep].options.length > 0) {
@@ -185,29 +185,27 @@ export const useConversationState = (steps: Step[]) => {
         );
       }
       
-      setTimeout(() => {
-        setConversationHistory(prev => [
-          ...prev,
-          { 
-            type: "system", 
-            content: questionContent,
-            questionType: Object.keys(answers)[nextStep]
-          }
-        ]);
-      }, 300);
-    }
-  };
-
-  const addCompletionMessage = () => {
-    setTimeout(() => {
+      // Add the question to conversation history
       setConversationHistory(prev => [
         ...prev,
         { 
           type: "system", 
-          content: "ご回答いただきありがとうございます。ご回答に基づき、研究シナリオを生成しました。右側のプレビューパネルからシナリオを選択してください。"
+          content: questionContent,
+          questionType: Object.keys(answers)[nextStep]
         }
       ]);
-    }, 300);
+    }
+  };
+
+  const addCompletionMessage = () => {
+    // Add completion message to conversation history
+    setConversationHistory(prev => [
+      ...prev,
+      { 
+        type: "system", 
+        content: "ご回答いただきありがとうございます。ご回答に基づき、研究シナリオを生成しました。右側のプレビューパネルからシナリオを選択してください。"
+      }
+    ]);
   };
 
   const addInitialMessage = () => {

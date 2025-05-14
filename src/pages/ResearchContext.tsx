@@ -79,7 +79,7 @@ const ResearchContext = () => {
         description: "研究背景の構築を開始します",
       });
     }
-  }, [showInitialOptions, isEditingScenario]);
+  }, [showInitialOptions, isEditingScenario, handleInitialOption]);
   
   // Check if the current step has options
   const currentStepHasOptions = currentStep < steps.length && steps[currentStep]?.options && steps[currentStep].options.length > 0;
@@ -119,7 +119,6 @@ const ResearchContext = () => {
                 <div className="flex-1 overflow-hidden flex flex-col">
                   <ScrollArea className="flex-1 overflow-y-auto" style={{ display: 'block' }}>
                     <div className="px-3 py-4" style={{ minHeight: '100%' }}>
-                      {/* Removed initial options conditional rendering */}
                       <ConversationDisplay 
                         conversationHistory={conversationHistory} 
                         onEditReply={handleEditUserReply}
