@@ -32,7 +32,7 @@ export const useResearchSteps = () => {
       helpButtonText: "Help me to think"
     },
     {
-      question: "この研究テーマには誰が関わっていますか？以下を考慮してください：",
+      question: "この研究テーマには誰が関わっていますか？",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
           <rect width="32" height="32" rx="16" fill="url(#paint0_linear_225_21)"/>
@@ -45,11 +45,7 @@ export const useResearchSteps = () => {
           </defs>
         </svg>
       ),
-      subtitle: [
-        "- 解決策を実施する実務者や専門家は誰ですか？（例：医療専門家、エンジニア、研究者）",
-        "- エンドユーザーや恩恵を受ける人は誰ですか？（例：特定の疾患を持つ患者、学生）",
-        "- その他重要な関係者はいますか？（例：機器メーカー、規制機関）"
-      ],
+      subtitle: [],
       placeholder: "例：天文学者、眼科医、防衛エンジニアなど..."
     },
     {
