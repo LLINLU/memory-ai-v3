@@ -50,14 +50,17 @@ export const OptionSelection = ({
       </div>
       
       {onCustomOption && (
-        <Button
-          variant="outline"
-          onClick={onCustomOption}
-          className="flex items-center w-full justify-start px-4 py-3 h-auto text-left space-x-2 bg-purple-50 border-purple-100 text-purple-800 hover:bg-purple-100 hover:text-purple-900 mt-3"
-        >
-          <Sparkles className="h-4 w-4" />
-          <span>{customOptionLabel}</span>
-        </Button>
+        <>
+          <Button
+            variant="outline"
+            onClick={onCustomOption}
+            className="flex items-center w-full justify-start px-4 py-3 h-auto text-left space-x-2 bg-purple-50 border-purple-100 text-purple-800 hover:bg-purple-100 hover:text-purple-900 mt-3"
+          >
+            <Sparkles className="h-4 w-4" />
+            <span>{customOptionLabel}</span>
+          </Button>
+          <p className="text-sm text-gray-600 mt-2 italic">自分の答えで書いていただいても、もちろんOKです👍！</p>
+        </>
       )}
     </div>
   );
