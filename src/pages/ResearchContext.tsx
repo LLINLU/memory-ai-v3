@@ -4,7 +4,6 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { ConversationDisplay } from "@/components/research-context/ConversationDisplay";
 import { InputSection } from "@/components/research-context/InputSection";
-import { InitialOptions } from "@/components/research-context/InitialOptions";
 import { ScenarioPreview } from "@/components/research-context/ScenarioPreview";
 import { useResearchSteps } from "@/components/research-context/ResearchSteps";
 import { useResearchContext } from "@/hooks/useResearchContext";
@@ -13,6 +12,7 @@ import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/componen
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 
 const ResearchContext = () => {
   const location = useLocation();
@@ -69,6 +69,16 @@ const ResearchContext = () => {
     }
   }, [isEditingScenario, savedConversationHistory, initializeSavedHistory]);
   
+  // Skip the initial options and directly start the conversation
+  useEffect(() => {
+    if (showInitialOptions && !isEditingScenario) {
+      handleInitialOption('continue');
+      toast({
+        description: "研究背景の構築を開始します",
+      });
+    }
+  }, [showInitialOptions, isEditingScenario]);
+  
   return (
     <SidebarProvider>
       <div className="h-screen flex w-full overflow-hidden">
@@ -99,25 +109,14 @@ const ResearchContext = () => {
                 )}
                 
                 <div className="flex-1 overflow-hidden flex flex-col">
-                  {/* Use the fixed-height scroll area with proper overflow behavior */}
                   <ScrollArea className="flex-1 overflow-y-auto" style={{ display: 'block' }}>
                     <div className="px-3 py-4" style={{ minHeight: '100%' }}>
-                      {showInitialOptions && !isEditingScenario ? (
-                        <InitialOptions 
-                          initialQuery={initialQuery}
-                          onContinue={() => handleInitialOption('continue')}
-                          onSkip={() => handleInitialOption('skip')}
-                        />
-                      ) : (
-                        <>
-                          {/* Show conversation history even when editing scenario */}
-                          <ConversationDisplay 
-                            conversationHistory={conversationHistory} 
-                            onEditReply={handleEditUserReply}
-                            onResearchAreaVisible={setIsResearchAreaVisible}
-                          />
-                        </>
-                      )}
+                      {/* Removed initial options conditional rendering */}
+                      <ConversationDisplay 
+                        conversationHistory={conversationHistory} 
+                        onEditReply={handleEditUserReply}
+                        onResearchAreaVisible={setIsResearchAreaVisible}
+                      />
                     </div>
                   </ScrollArea>
                 </div>
