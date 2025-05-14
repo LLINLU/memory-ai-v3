@@ -198,7 +198,7 @@ export const useConversationState = (steps: Step[]) => {
   };
 
   const addCompletionMessage = () => {
-    // Add completion message to conversation history
+    // Add completion message to conversation history (only one time)
     setConversationHistory(prev => [
       ...prev,
       { 
