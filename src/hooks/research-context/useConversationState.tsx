@@ -120,6 +120,7 @@ export const useConversationState = (steps: Step[]) => {
         </div>
       );
       
+      // Important: Delay adding the next question so it doesn't appear simultaneously with the skip hint
       setTimeout(() => {
         setConversationHistory(prev => [
           ...prev,
@@ -129,7 +130,7 @@ export const useConversationState = (steps: Step[]) => {
             questionType: Object.keys(answers)[nextStep]
           }
         ]);
-      }, 300);
+      }, 1000); // Adding a longer delay to ensure separation from skip hint
     }
   };
 
