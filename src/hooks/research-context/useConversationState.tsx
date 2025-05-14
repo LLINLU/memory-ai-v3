@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Step } from "@/components/research-context/ResearchSteps";
 import { Button } from "@/components/ui/button";
@@ -153,6 +152,11 @@ export const useConversationState = (steps: Step[]) => {
               {steps[nextStep].icon}
               <div>
                 <h3 className="text-[16px] font-semibold">{steps[nextStep].question}</h3>
+                <ul className="mt-2 space-y-1">
+                  {steps[nextStep].subtitle.map((item, i) => (
+                    <li key={i} className="text-gray-700 text-[14px]">{item}</li>
+                  ))}
+                </ul>
               </div>
             </div>
             <div className="mt-4 ml-12">
@@ -203,7 +207,7 @@ export const useConversationState = (steps: Step[]) => {
       ...prev,
       { 
         type: "system", 
-        content: "ご回答いただきありがとうございます。ご回答に基づき、研究シナリオを生成しました。右側のプレビューパネルからシナリオを選択してください。"
+        content: "ご回答をもとに、いくつかの研究シナリオを作成しました。右側のプレビューパネルから選んでみてください!"
       }
     ]);
   };
