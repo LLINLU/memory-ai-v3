@@ -12,6 +12,7 @@ interface TreeNodeProps {
   onEditClick: (e: React.MouseEvent) => void;
   onDeleteClick: (e: React.MouseEvent) => void;
   level?: number;
+  showDescription?: boolean;
 }
 
 export const TreeNode: React.FC<TreeNodeProps> = ({
@@ -20,7 +21,8 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   onClick,
   onEditClick,
   onDeleteClick,
-  level
+  level,
+  showDescription = false
 }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
   const [nodeWidth, setNodeWidth] = useState(0);
@@ -56,6 +58,13 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
     >
       <div className="flex flex-col">
         <NodeContent item={item} isSelected={isSelected} isHovered={isHovered} level={level} />
+        
+        {/* Show description when showDescription is true */}
+        {showDescription && item.description && (
+          <div className="mt-3 text-sm text-gray-600 border-t pt-2 border-gray-100">
+            {item.description}
+          </div>
+        )}
         
         {/* Show actions when hovered */}
         {isHovered && (
