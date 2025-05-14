@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Step } from "@/components/research-context/ResearchSteps";
 import { Button } from "@/components/ui/button";
@@ -56,9 +55,11 @@ export const useConversationState = (steps: Step[]) => {
     // Move to next step
     setCurrentStep(prev => prev + 1);
     
-    // Add next question after a short delay
+    // Add next question immediately after selecting an option
     if (currentStep + 1 < steps.length) {
-      addNextQuestion(currentStep + 1);
+      // Add the third question immediately (no timeout)
+      const nextStep = currentStep + 1;
+      addNextQuestion(nextStep, 0); // Use 0ms timeout to add question immediately
     } else {
       addCompletionMessage();
     }
@@ -106,48 +107,36 @@ export const useConversationState = (steps: Step[]) => {
     
     // Add the next question immediately after adding the user response
     if (currentStep + 1 < steps.length) {
-      addNextQuestion(currentStep + 1);
+      addNextQuestion(currentStep + 1, 0); // Use 0ms timeout to add question immediately
     } else {
       addCompletionMessage();
     }
   };
 
-  // Function to update a user response when edited
-  const updateUserResponse = (content: string, index: number) => {
-    // Find which question this response was for
-    const questionBeforeIndex = index - 1;
-    let questionType = "";
-    
-    if (questionBeforeIndex >= 0 && conversationHistory[questionBeforeIndex].questionType) {
-      questionType = conversationHistory[questionBeforeIndex].questionType || "";
-    }
-
-    // Update the conversation history
-    setConversationHistory(prev => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], content };
-      return updated;
-    });
-
-    // Also update the answers state if we can determine which one to update
-    if (questionType && Object.keys(answers).includes(questionType)) {
-      setAnswers(prev => ({
-        ...prev,
-        [questionType]: content
-      }));
-    }
-
-    // Reset current step to the next question after this edited response
-    const nextQuestionIndex = Math.floor((index + 2) / 2);
-    setCurrentStep(nextQuestionIndex);
-  };
-
-  const addNextQuestion = (nextStep: number) => {
+  const addNextQuestion = (nextStep: number, delay: number = 300) => {
     if (nextStep < steps.length) {
       let questionContent;
       
+      // For the third question (nextStep === 2), we want a specific message
+      if (nextStep === 2) {
+        questionContent = (
+          <div>
+            <div className="flex items-start gap-4">
+              {steps[nextStep].icon}
+              <div>
+                <h3 className="text-[16px] font-semibold">とても参考になります。この研究をどんな場面で応用しますか？以下を考慮してください：</h3>
+                <ul className="mt-2 space-y-1">
+                  {steps[nextStep].subtitle.map((item, i) => (
+                    <li key={i} className="text-gray-700 text-[14px]">{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        );
+      } 
       // Check if this step has options to display
-      if (steps[nextStep].options && steps[nextStep].options.length > 0) {
+      else if (steps[nextStep].options && steps[nextStep].options.length > 0) {
         questionContent = (
           <div>
             <div className="flex items-start gap-4">
@@ -194,7 +183,7 @@ export const useConversationState = (steps: Step[]) => {
             questionType: Object.keys(answers)[nextStep]
           }
         ]);
-      }, 300);
+      }, delay);
     }
   };
 
