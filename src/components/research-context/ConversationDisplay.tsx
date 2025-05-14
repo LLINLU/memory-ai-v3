@@ -65,7 +65,7 @@ export const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
       style={{ minHeight: "100%" }}
     >
       {filteredHistory.map((message, index) => (
-        <div key={index} className={`mb-8 ${message.type === "user" ? "flex flex-col items-end" : "flex flex-col items-start"}`}>
+        <div key={index} className={`mb-8 ${message.type === "user" ? "text-right" : ""}`}>
           <ConversationMessage
             message={message}
             index={index}
