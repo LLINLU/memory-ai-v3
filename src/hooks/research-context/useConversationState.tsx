@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Step } from "@/components/research-context/ResearchSteps";
 import { Button } from "@/components/ui/button";
@@ -58,8 +57,78 @@ export const useConversationState = (steps: Step[]) => {
     
     // Add next question immediately after selecting an option
     if (currentStep + 1 < steps.length) {
-      // Pass 0ms delay to ensure the next question appears immediately
-      addNextQuestion(currentStep + 1, 0);
+      // Add the next question immediately in the same execution cycle
+      const nextStep = currentStep + 1;
+      
+      // Generate the question content directly
+      let questionContent;
+      
+      // For the third question (nextStep === 2), we want a specific message
+      if (nextStep === 2) {
+        questionContent = (
+          <div>
+            <div className="flex items-start gap-4">
+              {steps[nextStep].icon}
+              <div>
+                <h3 className="text-[16px] font-semibold">とても参考になります。この研究をどんな場面で応用しますか？以下を考慮してください：</h3>
+                <ul className="mt-2 space-y-1">
+                  {steps[nextStep].subtitle.map((item, i) => (
+                    <li key={i} className="text-gray-700 text-[14px]">{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        );
+      } 
+      // Check if this step has options to display
+      else if (steps[nextStep].options && steps[nextStep].options.length > 0) {
+        questionContent = (
+          <div>
+            <div className="flex items-start gap-4">
+              {steps[nextStep].icon}
+              <div>
+                <h3 className="text-[16px] font-semibold">{steps[nextStep].question}</h3>
+              </div>
+            </div>
+            <div className="mt-4 ml-12">
+              <OptionSelection 
+                options={steps[nextStep].options || []}
+                onSelect={handleOptionSelect}
+                selectedValue={selectedOption}
+                onCustomOption={() => {}}
+                customOptionLabel="他の提案"
+              />
+            </div>
+          </div>
+        );
+      } else {
+        questionContent = (
+          <div>
+            <div className="flex items-start gap-4">
+              {steps[nextStep].icon}
+              <div>
+                <h3 className="text-[16px] font-semibold">{steps[nextStep].question}</h3>
+                <ul className="mt-2 space-y-1">
+                  {steps[nextStep].subtitle.map((item, i) => (
+                    <li key={i} className="text-gray-700 text-[14px]">{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        );
+      }
+      
+      // Add the question immediately without setTimeout
+      setConversationHistory(prev => [
+        ...prev,
+        { 
+          type: "system", 
+          content: questionContent,
+          questionType: Object.keys(answers)[nextStep]
+        }
+      ]);
     } else {
       addCompletionMessage();
     }
@@ -204,7 +273,7 @@ export const useConversationState = (steps: Step[]) => {
         );
       }
       
-      // Use setTimeout with the provided delay (which could be 0 for immediate display)
+      // Only use setTimeout for normal flow, not for option selection
       setTimeout(() => {
         setConversationHistory(prev => [
           ...prev,
@@ -306,43 +375,4 @@ export const useConversationState = (steps: Step[]) => {
               </Button>
             )}
           </div>
-        </div>
-      </div>
-    );
-    
-    setConversationHistory([{ type: "system", content: initialMessage, questionType: "what" }]);
-  };
-
-  // Reset conversation to initial state
-  const resetConversation = () => {
-    setCurrentStep(0);
-    setInputValue("");
-    setConversationHistory([]);
-    setAnswers({
-      what: "",
-      who: "",
-      where: "",
-      when: ""
-    });
-    setHelpButtonClicked(false);
-    setSelectedOption("");
-  };
-
-  return {
-    currentStep,
-    inputValue,
-    conversationHistory,
-    answers,
-    selectedOption,
-    handleInputChange,
-    handleOptionSelect,
-    addUserResponse,
-    addNextQuestion,
-    addCompletionMessage,
-    addInitialMessage,
-    setConversationHistory,
-    updateUserResponse,
-    setInputValue,
-    resetConversation
-  };
-};
+       
