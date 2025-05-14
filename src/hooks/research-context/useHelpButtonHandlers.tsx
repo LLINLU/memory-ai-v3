@@ -2,6 +2,7 @@
 import React from "react";
 import { ConversationMessage } from "./types";
 import { Step } from "@/components/research-context/ResearchSteps";
+import { Button } from "@/components/ui/button";
 
 export const useHelpButtonHandlers = (
   setConversationHistory: React.Dispatch<React.SetStateAction<ConversationMessage[]>>,
