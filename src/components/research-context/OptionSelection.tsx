@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Sparkles, MapPin, User } from "lucide-react";
+import { Sparkles, MapPin, User, Clock } from "lucide-react";
 
 interface Option {
   value: string;
@@ -14,7 +14,7 @@ interface OptionSelectionProps {
   selectedValue?: string;
   onCustomOption?: () => void;
   customOptionLabel?: string;
-  iconType?: "user" | "map-pin";
+  iconType?: "user" | "map-pin" | "clock";
 }
 
 export const OptionSelection = ({
@@ -32,12 +32,14 @@ export const OptionSelection = ({
       );
     }
     
+    if (iconType === "clock") {
+      return (
+        <Clock className="w-5 h-5 text-blue-600" />
+      );
+    }
+    
     return (
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-        <path d="M18 21a8 8 0 0 0-16 0"></path>
-        <circle cx="10" cy="8" r="5"></circle>
-        <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"></path>
-      </svg>
+      <User className="w-5 h-5 text-blue-600" />
     );
   };
 
