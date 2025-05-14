@@ -19,21 +19,19 @@ export const InputSection: React.FC<InputSectionProps> = ({
   onInputChange,
   onSubmit,
   onSkip,
-  showSkip = false,
+  showSkip = false, // We'll keep this prop for backward compatibility
 }) => {
   return (
     <div className="mt-2">
-      {showSkip && (
-        <div className="mb-2">
-          <Button 
-            variant="outline"
-            size="sm"
-            onClick={onSkip}
-          >
-            スキップ
-          </Button>
-        </div>
-      )}
+      <div className="mb-2">
+        <Button 
+          variant="outline"
+          size="sm"
+          onClick={onSkip}
+        >
+          スキップ
+        </Button>
+      </div>
       <div className="relative">
         <Textarea
           placeholder={placeholder}
