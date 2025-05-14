@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Step } from "@/components/research-context/ResearchSteps";
 import { Button } from "@/components/ui/button";
@@ -184,15 +185,16 @@ export const useConversationState = (steps: Step[]) => {
         );
       }
       
-      // Remove delay for immediate display
-      setConversationHistory(prev => [
-        ...prev,
-        { 
-          type: "system", 
-          content: questionContent,
-          questionType: Object.keys(answers)[nextStep]
-        }
-      ]);
+      setTimeout(() => {
+        setConversationHistory(prev => [
+          ...prev,
+          { 
+            type: "system", 
+            content: questionContent,
+            questionType: Object.keys(answers)[nextStep]
+          }
+        ]);
+      }, 300);
     }
   };
 
