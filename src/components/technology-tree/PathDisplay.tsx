@@ -102,8 +102,12 @@ export const PathDisplay = ({
                   レベル４
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>
-                ボタンをクリックすると、レベル4が生成され、技術のより詳細な分野を学ぶことができます。
+              <TooltipContent className="max-w-[200px]">
+                <div className="whitespace-normal text-center">
+                  <p className="my-0.5">ボタンをクリックすると、</p>
+                  <p className="my-0.5">レベル4が生成され、</p>
+                  <p className="my-0.5">技術のより詳細な分野を学ぶことができます。</p>
+                </div>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
