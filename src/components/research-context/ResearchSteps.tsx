@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Users, Search, MapPin, Clock } from "lucide-react";
+import { Users, MapPin, Clock } from "lucide-react";
 
 export interface Step {
   question: string;
@@ -13,7 +13,11 @@ export const useResearchSteps = () => {
   const steps: Step[] = [
     {
       question: "この研究テーマの目的や着目するアプローチは何でしょうか？以下を考慮してください：",
-      icon: <Search className="h-5 w-5" />,
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16">
+          <image xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAnJJREFUOE9lU0tPU1EQntN3pa2ghYpSHj/BpAshBouJEReuTFpNXLjUpSYGdOG+PmKiGBeoRImSdmUiWjYGiEqjwfgPRCrWlt6mgbbp854xM6f3FvXm3nPOnXNmvm++mSPgn2ch+TtcA9tUrWkNNXXwAwLYrai5HHLdZWvFLpzqX9nrIvb+PHu7HS827BGy0QaSNwIIiwUAkV7wuVuJS2d6o4afGWD2TW6t0rCNsqEzqCUKkBIBJfLc5dBTl88FxsyjTxez8d2aNUKeFiEYSYByYn/JdMwgFMjraiauRI9ExXzyZ1iruJcNinQYEUGggGCfA9LZBlMiJwosdanWEqDXW50QTxZzyVLVNilbOh+gL9hn548diQQCfPpWASmJBQ0KxOtuLYkHie18s2Xx67rOByny+dPd8Opdkf/pOX7UA5uZBmz+ajADxYiqIzVx96WGLA5RQ4DBgAOCh+zw4WvZzJ3s4yEPrH4hm6LPTEir2FwOeU1lait98exBePG60GYgYDzUxagrqZJypNqwHgji3vNsvl4XfhWRckZGI9TVz2UY6rfDiWMemEsUVGV0JSY3mE1qYmY+kyyWxCShq1KpzcHDdhgecMKPdB2+p+twcswH7z/uMksGkgjdPlwSswsb4UzeuWwIaNZeJxhC7Iim0lQAtB4I6BPcaPdnt+LFHRExaq1mhUSUuZloamtF9gM9mJi+NhQ1W/n2o621nV0YZQZcTiMlNHOnQLS/3wupWzeGO61sXIw7M+m4VoCIUtig3s65fZn8PZi4OTXy/2Uygjx8vBEuV61TlRKGanXwExOnQ2j73HLd6YLY9asjf13nP2PNkelNFVa/AAAAAElFTkSuQmCC" x="0" y="0" width="16" height="16"/>
+        </svg>
+      ),
       subtitle: [
         "- 着目するアプローチ、技術、または方法論は何ですか？（例：非薬理学的治療、画像技術）",
         "- 研究の目的や目標は何ですか？（例：症状の管理、診断の改善）",
