@@ -1,6 +1,7 @@
 
 import { level1Items as initialLevel1Items, level2Items as initialLevel2Items, level3Items as initialLevel3Items } from "@/data/technologyTreeData";
 import { NodeSuggestion } from "@/types/chat";
+import { PathLevel } from "@/types/tree";
 import { useNodeOperations } from "./useNodeOperations";
 import { usePathSelectionState } from "./usePathSelectionState";
 
@@ -31,15 +32,15 @@ export const usePathSelection = (initialPath = {
   } = useNodeOperations(initialLevel1Items, initialLevel2Items, initialLevel3Items);
 
   // Wrapper functions to maintain the same API
-  const handleNodeClick = (level: string, nodeId: string) => {
+  const handleNodeClick = (level: PathLevel, nodeId: string) => {
     handlePathNodeClick(level, nodeId);
   };
 
-  const addCustomNode = (level: string, node: NodeSuggestion) => {
+  const addCustomNode = (level: PathLevel, node: NodeSuggestion) => {
     addNode(level, node, selectedPath, setSelectedPath);
   };
 
-  const deleteNode = (level: string, nodeId: string) => {
+  const deleteNode = (level: PathLevel, nodeId: string) => {
     removeNode(level, nodeId, selectedPath, setSelectedPath);
   };
 
