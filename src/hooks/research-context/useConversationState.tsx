@@ -91,9 +91,7 @@ export const useConversationState = (steps: Step[]) => {
       const nextQuestion = (
         <div>
           <div className="flex items-start gap-4">
-            <div className="bg-blue-600 rounded-full p-2 text-white">
-              {steps[nextStep].icon}
-            </div>
+            {steps[nextStep].icon}
             <div>
               <h3 className="text-[16px] font-semibold">{steps[nextStep].question}</h3>
               <ul className="mt-2 space-y-1">
@@ -136,9 +134,7 @@ export const useConversationState = (steps: Step[]) => {
       <div>
         <p className="mb-6">研究コンテキストを手早く定義しましょう。これらの質問に答えることで結果をより絞り込めますが、スキップしてもかまいません。</p>
         <div className="flex items-start gap-4">
-          <div className="bg-blue-600 rounded-full p-2 text-white">
-            {steps[0].icon}
-          </div>
+          {steps[0].icon}
           <div>
             <h3 className="text-[16px] font-semibold">{steps[0].question}</h3>
             <ul className="mt-2 space-y-1">
