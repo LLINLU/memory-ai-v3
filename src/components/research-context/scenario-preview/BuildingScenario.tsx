@@ -23,23 +23,23 @@ export const BuildingScenario: React.FC<BuildingScenarioProps> = ({ answers }) =
         
         <div className="space-y-2">
           <div className="flex">
-            <span className="text-gray-500 w-16">Who:</span>
-            <span className="text-gray-800 text-[14px]">{answers.who || '...'}</span>
+            <span className="text-gray-500 w-16">What:</span>
+            <span className="text-gray-800 text-[14px]">ユーザーの入力の要約</span>
           </div>
           
           <div className="flex">
-            <span className="text-gray-500 w-16">What:</span>
-            <span className="text-gray-800 text-[14px]">{answers.what || '...'}</span>
+            <span className="text-gray-500 w-16">Who:</span>
+            <span className="text-gray-800 text-[14px]">ユーザーの入力の要約</span>
           </div>
           
           <div className="flex">
             <span className="text-gray-500 w-16">Where:</span>
-            <span className="text-gray-800 text-[14px]">{answers.where || '...'}</span>
+            <span className="text-gray-800 text-[14px]">ユーザーの入力の要約</span>
           </div>
           
           <div className="flex">
             <span className="text-gray-500 w-16">When:</span>
-            <span className="text-gray-800 text-[14px]">{answers.when || '...'}</span>
+            <span className="text-gray-800 text-[14px]">ユーザーの入力の要約</span>
           </div>
         </div>
       </div>
