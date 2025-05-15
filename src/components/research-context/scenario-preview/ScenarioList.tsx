@@ -1,19 +1,19 @@
 
-import React, { useState } from "react";
+import React from "react";
+import { Button } from "@/components/ui/button";
 import { TimeIcon } from "@/components/icons/TimeIcon";
 
 interface ScenarioListProps {
   generatedScenarios: string[];
   selectedScenario?: string;
+  onScenarioSelect?: (scenario: string) => void;
 }
 
 export const ScenarioList: React.FC<ScenarioListProps> = ({
   generatedScenarios,
-  selectedScenario: initialSelectedScenario
+  selectedScenario,
+  onScenarioSelect
 }) => {
-  const [hoveredScenario, setHoveredScenario] = useState<number | null>(null);
-  const [selectedScenario, setSelectedScenario] = useState<string | undefined>(initialSelectedScenario);
-
   return (
     <div>
       <h3 className="text-base font-semibold mb-3 flex items-center gap-2">
@@ -27,25 +27,22 @@ export const ScenarioList: React.FC<ScenarioListProps> = ({
       
       <div className="space-y-3">
         {generatedScenarios.map((scenario, index) => (
-          <div 
+          <Button 
             key={index} 
-            className={`w-full justify-start p-4 h-auto text-left rounded-md cursor-pointer transition-colors ${
+            variant="outline"
+            className={`w-full justify-start p-4 h-auto text-left ${
               selectedScenario === scenario 
-                ? 'bg-blue-50 border border-blue-300 text-blue-700' 
-                : hoveredScenario === index
-                ? 'bg-gray-50 border border-gray-300 text-gray-800'
-                : 'bg-white border border-gray-200 text-gray-800'
+                ? 'bg-blue-50 border-blue-300 text-blue-700' 
+                : 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50 text-gray-800'
             }`}
-            onMouseEnter={() => setHoveredScenario(index)}
-            onMouseLeave={() => setHoveredScenario(null)}
-            onClick={() => setSelectedScenario(scenario)}
+            onClick={() => onScenarioSelect && onScenarioSelect(scenario)}
           >
             <div className="flex items-start gap-3">
               <div className="flex-1">
                 {scenario}
               </div>
             </div>
-          </div>
+          </Button>
         ))}
       </div>
     </div>

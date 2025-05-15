@@ -1,18 +1,18 @@
 
-import React, { useState } from "react";
+import React from "react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface ScenarioSelectionProps {
   scenarios: string[];
+  onScenarioSelect: (scenario: string) => void;
   selectedScenario?: string;
 }
 
 export const ScenarioSelection: React.FC<ScenarioSelectionProps> = ({ 
   scenarios, 
-  selectedScenario: initialSelectedScenario
+  onScenarioSelect,
+  selectedScenario
 }) => {
-  const [hoveredScenario, setHoveredScenario] = useState<number | null>(null);
-  const [selectedScenario, setSelectedScenario] = useState<string | undefined>(initialSelectedScenario);
-
   return (
     <div className="mt-8">
       <h2 className="text-2xl font-bold mb-4">研究シナリオを選択</h2>
@@ -21,36 +21,37 @@ export const ScenarioSelection: React.FC<ScenarioSelectionProps> = ({
         ご関心に最も近いものをお選びください：
       </p>
       
-      <div className="space-y-4">
+      <RadioGroup 
+        value={selectedScenario} 
+        className="space-y-4"
+        onValueChange={onScenarioSelect}
+      >
         {scenarios.map((scenario, index) => (
           <div 
             key={index} 
-            className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-              selectedScenario === scenario 
-                ? 'bg-blue-50 border-blue-300' 
-                : hoveredScenario === index
-                ? 'bg-gray-50 border-gray-300'
-                : 'border-gray-200'
+            className={`border rounded-lg p-4 hover:border-blue-300 hover:bg-blue-50 transition-colors cursor-pointer ${
+              selectedScenario === scenario ? 'bg-blue-50 border-blue-300' : 'border-gray-200'
             }`}
-            onMouseEnter={() => setHoveredScenario(index)}
-            onMouseLeave={() => setHoveredScenario(null)}
-            onClick={() => setSelectedScenario(scenario)}
+            onClick={() => onScenarioSelect(scenario)}
           >
             <div className="flex items-start gap-3">
-              <div className="h-4 w-4 rounded-full border border-primary flex-shrink-0 mt-1">
-                {selectedScenario === scenario && (
-                  <div className="h-2.5 w-2.5 rounded-full bg-primary m-[3px]"></div>
-                )}
-              </div>
+              <RadioGroupItem 
+                value={scenario} 
+                id={`scenario-${index}`} 
+                onClick={(e) => e.stopPropagation()}
+              />
               <div>
-                <span className="text-gray-800">
+                <label 
+                  htmlFor={`scenario-${index}`} 
+                  className="text-gray-800 cursor-pointer"
+                >
                   {scenario}
-                </span>
+                </label>
               </div>
             </div>
           </div>
         ))}
-      </div>
+      </RadioGroup>
     </div>
   );
 };
