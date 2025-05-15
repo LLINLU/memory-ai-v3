@@ -59,7 +59,9 @@ export const ChatInputBox = ({
               <DropdownMenuItem className="py-2 cursor-pointer hover:bg-blue-50">
                 Treemapを調整する
               </DropdownMenuItem>
-              {/* You can add more menu items here as needed */}
+              <DropdownMenuItem className="py-2 cursor-pointer hover:bg-blue-50">
+                研究シナリオを修正
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           
