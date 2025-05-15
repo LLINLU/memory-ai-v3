@@ -56,6 +56,7 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
               <ScenarioList 
                 generatedScenarios={generatedScenarios} 
                 selectedScenario={selectedScenario} 
+                onScenarioSelect={onScenarioSelect}
               />
               
               {selectedScenario && (
