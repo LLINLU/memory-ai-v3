@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { NavigateFunction } from "react-router-dom";
 import { ContextAnswers } from "./useConversationState";
 import { ConversationMessage } from "./useConversationState";
+import { toast } from "@/components/ui/use-toast";
 
 interface ScenarioHandlersProps {
   initialQuery: string;
@@ -16,7 +17,7 @@ interface ScenarioHandlersProps {
   resetNavigation: () => void;
   resetConversation: () => void;
   answers: ContextAnswers;
-  conversationHistory: ConversationMessage[]; // Added this property
+  conversationHistory: ConversationMessage[]; 
 }
 
 export const useScenarioHandlers = ({
@@ -31,7 +32,7 @@ export const useScenarioHandlers = ({
   resetNavigation,
   resetConversation,
   answers,
-  conversationHistory // Added this parameter
+  conversationHistory
 }: ScenarioHandlersProps) => {
   // Track selected scenario
   const [selectedScenario, setSelectedScenario] = useState<string>(currentScenario || "");
@@ -39,7 +40,7 @@ export const useScenarioHandlers = ({
   // Handle scenario editing mode on component mount
   useEffect(() => {
     if (isEditingScenario) {
-      // Skip the conversation and show scenarios
+      // Skip the conversation and show scenarios immediately
       setShowScenarios(true);
       
       // Generate scenarios including the current one
@@ -49,15 +50,23 @@ export const useScenarioHandlers = ({
       if (currentScenario && !scenarios.includes(currentScenario)) {
         const updatedScenarios = [currentScenario, ...scenarios];
         setGeneratedScenarios(updatedScenarios);
+      } else {
+        setGeneratedScenarios(scenarios);
       }
       
-      // Select the current scenario
+      // Always select the current scenario when editing
       if (currentScenario) {
         setSelectedScenario(currentScenario);
         selectScenario(currentScenario);
       }
+      
+      // Show a toast notification to guide the user
+      toast({
+        description: "シナリオを編集できます。完了したら「シナリオで検索する」ボタンをクリックしてください。",
+        duration: 4000,
+      });
     }
-  }, [isEditingScenario, currentScenario]);
+  }, [isEditingScenario, currentScenario, setShowScenarios, generateScenarios, setGeneratedScenarios, selectScenario]);
 
   // Handle selecting a scenario
   const handleScenarioSelection = (selectedScenarioText: string) => {
@@ -96,8 +105,9 @@ export const useScenarioHandlers = ({
       state: {
         query: initialQuery,
         scenario: selectedScenario || `Research on ${initialQuery}`,
+        searchMode: "deep", // Explicitly set searchMode to "deep" when coming from research-context
         researchAnswers: answers,
-        conversationHistory: serializableHistory // Pass serializable conversation history
+        conversationHistory: serializableHistory
       }
     });
   };
