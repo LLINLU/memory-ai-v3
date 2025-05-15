@@ -1,6 +1,5 @@
 
-
-import React from "react";
+import React, { useState } from "react";
 import { ChartContainer } from "@/components/ui/chart";
 import { Treemap, Tooltip } from "recharts";
 
@@ -73,6 +72,35 @@ const CustomTooltip = ({ active, payload }: any) => {
 export const TreemapVisualization: React.FC<TreemapVisualizationProps> = ({ 
   researchAreasData 
 }) => {
+  // The default selected item is "Retinal Imaging"
+  const [selectedAreaName, setSelectedAreaName] = useState<string>("Retinal Imaging");
+
+  // Reorder data to ensure selected area appears first
+  const reorderedData = React.useMemo(() => {
+    // Clone the array to avoid mutating props
+    const sortedData = [...researchAreasData];
+    
+    // Find selected area index
+    const selectedIndex = sortedData.findIndex(
+      area => area.name === selectedAreaName
+    );
+
+    // If found, move it to the front
+    if (selectedIndex > 0) {
+      const selectedItem = sortedData.splice(selectedIndex, 1)[0];
+      sortedData.unshift(selectedItem);
+    }
+
+    return sortedData;
+  }, [researchAreasData, selectedAreaName]);
+
+  // Handle click on treemap area
+  const handleTreemapClick = (data: any) => {
+    if (data && data.name) {
+      setSelectedAreaName(data.name);
+    }
+  };
+
   return (
     <div className="mb-4">
       <ChartContainer 
@@ -85,11 +113,12 @@ export const TreemapVisualization: React.FC<TreemapVisualizationProps> = ({
         }}
       >
         <Treemap
-          data={researchAreasData}
+          data={reorderedData}
           dataKey="size"
           nameKey="name"
           fill="#8884d8"
           content={<CustomTreemapContent />}
+          onClick={handleTreemapClick}
         >
           <Tooltip content={<CustomTooltip />} />
         </Treemap>
@@ -97,4 +126,3 @@ export const TreemapVisualization: React.FC<TreemapVisualizationProps> = ({
     </div>
   );
 };
-
