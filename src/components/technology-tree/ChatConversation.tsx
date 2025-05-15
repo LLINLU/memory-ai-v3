@@ -59,6 +59,11 @@ export const ChatConversation = ({
       {chatMessages.map((message, index) => {
         const nextMessage = chatMessages[index + 1];
         const isActionTaken = nextMessage && nextMessage.content === "ノードが追加されました 😊";
+        
+        // Skip rendering node suggestion messages (filter by type)
+        if (message.type === 'suggestion' && !message.content.includes('👋 こんにちは！')) {
+          return null;
+        }
 
         return (
           <div 
@@ -66,10 +71,10 @@ export const ChatConversation = ({
             className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-4`}
           >
             <div 
-              className={`inline-block max-w-[85%] ${
+              className={`inline-block max-w-[85%] rounded-xl p-4 ${
                 message.isUser 
                   ? 'bg-blue-100 text-blue-900' 
-                  : 'bg-white text-gray-800 border border-gray-200'
+                  : 'bg-blue-50 text-blue-800'
               }`}
             >
               <p className="text-base leading-relaxed whitespace-pre-line">
