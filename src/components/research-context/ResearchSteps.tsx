@@ -37,7 +37,7 @@ export const useResearchSteps = () => {
       helpButtonText: "Help me to think"
     },
     {
-      question: "この研究テーマには誰が関わっていますか？",
+      question: "この研究テーマ（製品）のエンドユーザーはどのような人ですか？",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
           <rect width="32" height="32" rx="16" fill="url(#paint0_linear_225_21)"/>
