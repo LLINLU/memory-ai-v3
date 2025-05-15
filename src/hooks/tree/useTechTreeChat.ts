@@ -131,21 +131,15 @@ export const useTechTreeChat = () => {
         });
       }, 2000);
     } else if (action === 'generate-node') {
-      // Handle node generation action - only show welcome message without node suggestion
-      if (inputValue.trim()) {
-        // If user has already entered something, use that as input
-        handleSendMessage();
-      } else {
-        // Show only welcome message without node suggestion
-        setChatMessages(prev => [
-          ...prev,
-          {
-            type: "text",
-            content: "👋 こんにちは！レベル3の下に新しいノードを追加する準備はできていますか？始め方は次のとおりです：\n🔹 オプション1：タイトルと説明を自分ではっきりと入力してください。\n🔹 オプション2：自然な言葉であなたのアイデアを説明するだけでいいです — 私がそれを適切に構造化されたノードに変換するお手伝いをします！",
-            isUser: false
-          }
-        ]);
-      }
+      // Update to show the specified message when Treemap を調整する is clicked
+      setChatMessages(prev => [
+        ...prev,
+        {
+          type: "text",
+          content: "新しいノードを作成しましょう。どのような内容のノードを、どのレベルに追加したいですか？",
+          isUser: false
+        }
+      ]);
     }
   };
 
