@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowRight } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 
 interface InputSectionProps {
   inputValue: string;
@@ -43,11 +43,10 @@ export const InputSection: React.FC<InputSectionProps> = ({
         />
         <Button 
           onClick={onSubmit}
-          size="sm"
-          className="absolute right-2 bottom-2 bg-blue-600 hover:bg-blue-700 rounded-lg"
+          size="icon"
+          className="absolute right-2 bottom-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-0 w-10 h-10 flex items-center justify-center"
         >
-          <span>次へ</span>
-          <ArrowRight className="ml-1 h-3 w-3" />
+          <ArrowUp className="h-5 w-5" />
         </Button>
       </div>
     </div>
