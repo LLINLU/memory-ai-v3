@@ -83,7 +83,7 @@ export const useResearchContext = (
     const dummyConversation = [
       // First question about research purpose/approach (what)
       {
-        type: "system", 
+        type: "system" as const, 
         content: (
           <div>
             <div className="flex items-start gap-4">
@@ -103,13 +103,13 @@ export const useResearchContext = (
       },
       // User response to first question
       { 
-        type: "user", 
+        type: "user" as const, 
         content: "ドライアイの診断と治療を改善するための患者用モニタリングデバイス"
       },
       
       // Second question about who is involved (who)
       {
-        type: "system",
+        type: "system" as const,
         content: (
           <div>
             <div className="flex items-start gap-4">
@@ -129,13 +129,13 @@ export const useResearchContext = (
       },
       // User response to second question
       {
-        type: "user",
+        type: "user" as const,
         content: "眼科医と患者"
       },
       
       // Third question about where (where)
       {
-        type: "system",
+        type: "system" as const,
         content: (
           <div>
             <div className="flex items-start gap-4">
@@ -155,13 +155,13 @@ export const useResearchContext = (
       },
       // User response to third question
       {
-        type: "user",
+        type: "user" as const,
         content: "眼科クリニックと患者の自宅"
       },
       
       // Fourth question about when/context (when)
       {
-        type: "system",
+        type: "system" as const,
         content: (
           <div>
             <div className="flex items-start gap-4">
@@ -181,13 +181,13 @@ export const useResearchContext = (
       },
       // User response to fourth question
       {
-        type: "user",
+        type: "user" as const,
         content: "日常生活での症状モニタリングと定期的な診療時"
       },
       
       // Completion message
       {
-        type: "system",
+        type: "system" as const,
         content: "ご回答をもとに、いくつかの研究シナリオを作成しました。右側のプレビューパネルから選んでみてください!"
       }
     ];
