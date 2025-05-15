@@ -1,5 +1,4 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sparkles, MapPin, User, Clock } from "lucide-react";
 
@@ -25,6 +24,9 @@ export const OptionSelection = ({
   customOptionLabel = "他の提案",
   iconType = "user"
 }: OptionSelectionProps) => {
+  const [hoveredOption, setHoveredOption] = useState<string | null>(null);
+  const [activeOption, setActiveOption] = useState<string | null>(null);
+
   const renderIcon = () => {
     if (iconType === "map-pin") {
       return (
@@ -47,21 +49,33 @@ export const OptionSelection = ({
     <div className="space-y-3">
       <div className="flex flex-col gap-3">
         {options.map((option) => (
-          <Button
+          <button
             key={option.value}
-            variant="outline"
-            className={`justify-start px-4 py-3 h-auto text-left ${
-              selectedValue === option.value
-                ? "bg-blue-50 border-blue-300 text-blue-700"
-                : "bg-blue-50 hover:bg-blue-100 text-blue-600"
-            }`}
+            type="button"
+            className={`flex items-center justify-start px-4 py-3 h-auto text-left rounded-md transition-colors duration-200
+              ${selectedValue === option.value
+                ? "bg-blue-50 border border-blue-300 text-blue-700"
+                : hoveredOption === option.value
+                  ? "bg-blue-100 text-blue-600"
+                  : "bg-blue-50 text-blue-600"
+              }
+              ${activeOption === option.value ? "ring-2 ring-blue-300" : ""}
+            `}
+            onMouseEnter={() => setHoveredOption(option.value)}
+            onMouseLeave={() => setHoveredOption(null)}
+            onMouseDown={() => setActiveOption(option.value)}
+            onMouseUp={() => setActiveOption(null)}
+            onBlur={() => {
+              setHoveredOption(null);
+              setActiveOption(null);
+            }}
             onClick={() => onSelect(option.value, option.label)}
           >
             <div className="text-blue-600 mr-2">
               {renderIcon()}
             </div>
             {option.label}
-          </Button>
+          </button>
         ))}
       </div>
       
