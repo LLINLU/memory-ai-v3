@@ -11,7 +11,7 @@ interface Option {
 interface OptionSelectionProps {
   options: Option[];
   selectedValue?: string;
-  onSelect?: (value: string, label: string) => void; // Add this line to fix the error
+  onSelect?: (value: string, label: string) => void;
   onCustomOption?: () => void;
   customOptionLabel?: string;
   iconType?: "user" | "map-pin" | "clock";
@@ -45,14 +45,16 @@ export const OptionSelection = ({
     );
   };
 
-  // Handle option click for visual feedback only
-  const handleOptionClick = (value: string, label: string) => {
-    setActiveButton(value);
+  // Handle option click for visual feedback only without triggering any events
+  const handleOptionClick = (event: React.MouseEvent) => {
+    // Prevent default behavior
+    event.preventDefault();
     
-    // If onSelect is provided, call it with the value and label
-    if (onSelect) {
-      onSelect(value, label);
-    }
+    // Stop event propagation
+    event.stopPropagation();
+    
+    // Do nothing else - don't change active button state
+    // and don't call onSelect
   };
 
   return (
@@ -67,7 +69,7 @@ export const OptionSelection = ({
                 ? "bg-blue-50 border-blue-300 text-blue-700"
                 : "bg-blue-50 hover:bg-blue-100 text-blue-600"
             }`}
-            onClick={() => handleOptionClick(option.value, option.label)}
+            onClick={handleOptionClick}
           >
             <div className="text-blue-600 mr-2">
               {renderIcon()}
@@ -81,7 +83,11 @@ export const OptionSelection = ({
         <>
           <Button
             variant="outline"
-            onClick={onCustomOption}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              // Do nothing - prevent the onCustomOption from being called
+            }}
             className="flex items-center w-full justify-start px-4 py-3 h-auto text-left space-x-2 bg-purple-50 border-purple-100 text-purple-800 hover:bg-purple-100 hover:text-purple-900 mt-3"
           >
             <Sparkles className="h-4 w-4" />
