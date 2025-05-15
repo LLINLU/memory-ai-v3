@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import { ContextAnswers } from "./useConversationState";
 import { ConversationMessage } from "./useConversationState";
@@ -44,10 +45,10 @@ export const useNavigationHandlers = ({
 研究成果は、${answers.where || 'cc'}という場面において、家族や介護士による遠隔見守りを支援するツールとしての応用が期待されています。
 現時点での開発段階は${answers.when || 'dd'}であり、ユーザーからのフィードバックを取り入れたプロトタイプ改良フェーズにあります。`,
       
-      `本研究の目的は、${answers.what || 'aa'}における安全性向上であり、そのためにセンサーネットワークと予測モデルを組み合わせた${answers.what || 'aa'}の監視システム構築に着目しています。
-対象となるエンドユーザーは、${answers.who || 'bb'}および関連する管理者であり、特に予防的対応が重視される現場です。
-この研究成果は、${answers.where || 'cc'}の様々な環境下での活用が期待され、具体的には${answers.where || 'cc'}の異常検知において大きな効果を発揮します。
-現在は${answers.when || 'dd'}の検証を完了し、大規模実装に向けた準備段階にあります。`
+      `本研究の目的は、${answers.what || 'aa'}という目標を掲げ、スマートフォンを活用した自己モニタリング手法に着目しています。
+エンドユーザーは、${answers.who || 'bb'}であり、特に医師の指示のもとでセルフケアを行う必要がある慢性疾患患者が想定されています。
+この技術は、${answers.where || 'cc'}といった医療現場や家庭環境での活用を念頭に置いており、特に通院頻度を減らしながら患者の状態を可視化する場面で貢献します。
+研究は${answers.when || 'dd'}の段階にあり、パイロットスタディを通じて初期的な有効性と操作性に関するデータ収集中です。`
     ];
     
     setGeneratedScenarios(scenarioTemplates);
