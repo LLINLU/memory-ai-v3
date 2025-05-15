@@ -1,16 +1,18 @@
 
-import React from "react";
+import React, { useState } from "react";
 
 interface ScenarioSelectionProps {
   scenarios: string[];
-  onScenarioSelect: (scenario: string) => void;
   selectedScenario?: string;
 }
 
 export const ScenarioSelection: React.FC<ScenarioSelectionProps> = ({ 
   scenarios, 
-  selectedScenario
+  selectedScenario: initialSelectedScenario
 }) => {
+  const [hoveredScenario, setHoveredScenario] = useState<number | null>(null);
+  const [selectedScenario, setSelectedScenario] = useState<string | undefined>(initialSelectedScenario);
+
   return (
     <div className="mt-8">
       <h2 className="text-2xl font-bold mb-4">研究シナリオを選択</h2>
@@ -23,9 +25,16 @@ export const ScenarioSelection: React.FC<ScenarioSelectionProps> = ({
         {scenarios.map((scenario, index) => (
           <div 
             key={index} 
-            className={`border rounded-lg p-4 ${
-              selectedScenario === scenario ? 'bg-blue-50 border-blue-300' : 'border-gray-200'
+            className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+              selectedScenario === scenario 
+                ? 'bg-blue-50 border-blue-300' 
+                : hoveredScenario === index
+                ? 'bg-gray-50 border-gray-300'
+                : 'border-gray-200'
             }`}
+            onMouseEnter={() => setHoveredScenario(index)}
+            onMouseLeave={() => setHoveredScenario(null)}
+            onClick={() => setSelectedScenario(scenario)}
           >
             <div className="flex items-start gap-3">
               <div className="h-4 w-4 rounded-full border border-primary flex-shrink-0 mt-1">
