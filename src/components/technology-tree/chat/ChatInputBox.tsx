@@ -1,10 +1,16 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowUp } from "lucide-react";
 import { Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 
 interface ChatInputBoxProps {
   inputValue: string;
@@ -38,14 +44,24 @@ export const ChatInputBox = ({
         />
         
         <div className="flex justify-between items-center">
-          <Button
-            variant="outline"
-            className="flex items-center gap-2 text-blue-500 border-blue-100 bg-blue-50 hover:bg-blue-100"
-            size="sm"
-          >
-            <Sparkles className="h-4 w-4" />
-            Quick Feature
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="flex items-center gap-2 text-blue-500 border-blue-100 bg-blue-50 hover:bg-blue-100"
+                size="sm"
+              >
+                <Sparkles className="h-4 w-4" />
+                Quick Feature
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="bg-white border border-gray-200 shadow-lg rounded-md w-64">
+              <DropdownMenuItem className="py-2 cursor-pointer hover:bg-blue-50">
+                Treemapを調整する
+              </DropdownMenuItem>
+              {/* You can add more menu items here as needed */}
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           <Button 
             className={cn(
