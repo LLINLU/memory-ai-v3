@@ -75,7 +75,7 @@ export const OptionSelection = ({
             <Sparkles className="h-4 w-4" />
             <span>{customOptionLabel}</span>
           </Button>
-          <p className="text-sm text-gray-600 mt-2">自分の答えで書いていただいても、もちろんOKです👍！</p>
+          <p className="text-sm text-gray-600 mt-2">合っていると思う選択肢を選んでも、自分の言葉で書いていただいても大丈夫です👍！</p>
         </>
       )}
     </div>
