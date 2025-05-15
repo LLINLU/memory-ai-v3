@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { NavigateFunction } from "react-router-dom";
 import { ContextAnswers } from "./useConversationState";
 import { ConversationMessage } from "./useConversationState";
-import { toast } from "@/components/ui/use-toast";
 
 interface ScenarioHandlersProps {
   initialQuery: string;
@@ -60,11 +59,7 @@ export const useScenarioHandlers = ({
         selectScenario(currentScenario);
       }
       
-      // Show a toast notification to guide the user
-      toast({
-        description: "シナリオを編集できます。完了したら「シナリオで検索する」ボタンをクリックしてください。",
-        duration: 4000,
-      });
+      // The toast notification has been removed from here
     }
   }, [isEditingScenario, currentScenario, setShowScenarios, generateScenarios, setGeneratedScenarios, selectScenario]);
 
