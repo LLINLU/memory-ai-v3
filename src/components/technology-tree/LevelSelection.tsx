@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from "react";
 import { LevelColumn } from "./level-selection/LevelColumn";
 import { ConnectionLines } from "./level-selection/ConnectionLines";
@@ -39,8 +40,39 @@ export const LevelSelection = ({
   onDeleteNode,
   levelNames
 }: LevelSelectionProps) => {
-  const visibleLevel2Items = selectedPath.level1 ? level2Items[selectedPath.level1] || [] : [];
-  const visibleLevel3Items = selectedPath.level2 ? level3Items[selectedPath.level2] || [] : [];
+  // Reorder items to ensure selected items appear first
+  const reorderedLevel1Items = React.useMemo(() => {
+    const items = [...level1Items];
+    const selectedIndex = items.findIndex(item => item.id === selectedPath.level1);
+    if (selectedIndex > 0) {
+      const [selectedItem] = items.splice(selectedIndex, 1);
+      items.unshift(selectedItem);
+    }
+    return items;
+  }, [level1Items, selectedPath.level1]);
+
+  const visibleLevel2Items = React.useMemo(() => {
+    if (!selectedPath.level1) return [];
+    const items = [...(level2Items[selectedPath.level1] || [])];
+    const selectedIndex = items.findIndex(item => item.id === selectedPath.level2);
+    if (selectedIndex > 0) {
+      const [selectedItem] = items.splice(selectedIndex, 1);
+      items.unshift(selectedItem);
+    }
+    return items;
+  }, [level2Items, selectedPath]);
+
+  const visibleLevel3Items = React.useMemo(() => {
+    if (!selectedPath.level2) return [];
+    const items = [...(level3Items[selectedPath.level2] || [])];
+    const selectedIndex = items.findIndex(item => item.id === selectedPath.level3);
+    if (selectedIndex > 0) {
+      const [selectedItem] = items.splice(selectedIndex, 1);
+      items.unshift(selectedItem);
+    }
+    return items;
+  }, [level3Items, selectedPath]);
+
   const [level2to3Line, setLevel2to3Line] = useState<{x1: number, y1: number, x2: number, y2: number} | null>(null);
   const [level1to2Line, setLevel1to2Line] = useState<{x1: number, y1: number, x2: number, y2: number} | null>(null);
   
@@ -96,7 +128,7 @@ export const LevelSelection = ({
       <LevelColumn
         title="レベル1"
         subtitle={levelNames.level1}
-        items={level1Items}
+        items={reorderedLevel1Items}
         selectedId={selectedPath.level1}
         onNodeClick={(nodeId) => handleNodeSelection('level1', nodeId)}
         onEditNode={(nodeId, updatedNode) => handleEditNode('level1', nodeId, updatedNode)}
