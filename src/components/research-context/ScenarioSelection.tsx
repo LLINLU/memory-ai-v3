@@ -1,6 +1,5 @@
 
 import React from "react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface ScenarioSelectionProps {
   scenarios: string[];
@@ -10,7 +9,6 @@ interface ScenarioSelectionProps {
 
 export const ScenarioSelection: React.FC<ScenarioSelectionProps> = ({ 
   scenarios, 
-  onScenarioSelect,
   selectedScenario
 }) => {
   return (
@@ -21,37 +19,29 @@ export const ScenarioSelection: React.FC<ScenarioSelectionProps> = ({
         ご関心に最も近いものをお選びください：
       </p>
       
-      <RadioGroup 
-        value={selectedScenario} 
-        className="space-y-4"
-        onValueChange={onScenarioSelect}
-      >
+      <div className="space-y-4">
         {scenarios.map((scenario, index) => (
           <div 
             key={index} 
-            className={`border rounded-lg p-4 hover:border-blue-300 hover:bg-blue-50 transition-colors cursor-pointer ${
+            className={`border rounded-lg p-4 ${
               selectedScenario === scenario ? 'bg-blue-50 border-blue-300' : 'border-gray-200'
             }`}
-            onClick={() => onScenarioSelect(scenario)}
           >
             <div className="flex items-start gap-3">
-              <RadioGroupItem 
-                value={scenario} 
-                id={`scenario-${index}`} 
-                onClick={(e) => e.stopPropagation()}
-              />
+              <div className="h-4 w-4 rounded-full border border-primary flex-shrink-0 mt-1">
+                {selectedScenario === scenario && (
+                  <div className="h-2.5 w-2.5 rounded-full bg-primary m-[3px]"></div>
+                )}
+              </div>
               <div>
-                <label 
-                  htmlFor={`scenario-${index}`} 
-                  className="text-gray-800 cursor-pointer"
-                >
+                <span className="text-gray-800">
                   {scenario}
-                </label>
+                </span>
               </div>
             </div>
           </div>
         ))}
-      </RadioGroup>
+      </div>
     </div>
   );
 };

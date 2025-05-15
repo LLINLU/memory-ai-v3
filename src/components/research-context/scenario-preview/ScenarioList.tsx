@@ -1,6 +1,5 @@
 
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { TimeIcon } from "@/components/icons/TimeIcon";
 
 interface ScenarioListProps {
@@ -11,8 +10,7 @@ interface ScenarioListProps {
 
 export const ScenarioList: React.FC<ScenarioListProps> = ({
   generatedScenarios,
-  selectedScenario,
-  onScenarioSelect
+  selectedScenario
 }) => {
   return (
     <div>
@@ -27,22 +25,21 @@ export const ScenarioList: React.FC<ScenarioListProps> = ({
       
       <div className="space-y-3">
         {generatedScenarios.map((scenario, index) => (
-          <Button 
+          <div 
             key={index} 
-            variant="outline"
-            className={`w-full justify-start p-4 h-auto text-left ${
+            className={`w-full justify-start p-4 h-auto text-left rounded-md ${
               selectedScenario === scenario 
-                ? 'bg-blue-50 border-blue-300 text-blue-700' 
-                : 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50 text-gray-800'
+                ? 'bg-blue-50 border border-blue-300 text-blue-700' 
+                : 'bg-white border border-gray-200 text-gray-800'
             }`}
-            onClick={() => onScenarioSelect && onScenarioSelect(scenario)}
+            aria-selected={selectedScenario === scenario}
           >
             <div className="flex items-start gap-3">
               <div className="flex-1">
                 {scenario}
               </div>
             </div>
-          </Button>
+          </div>
         ))}
       </div>
     </div>

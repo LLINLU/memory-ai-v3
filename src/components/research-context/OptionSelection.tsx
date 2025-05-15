@@ -47,34 +47,31 @@ export const OptionSelection = ({
     <div className="space-y-3">
       <div className="flex flex-col gap-3">
         {options.map((option) => (
-          <Button
+          <div
             key={option.value}
-            variant="outline"
-            className={`justify-start px-4 py-3 h-auto text-left ${
+            className={`flex items-center justify-start px-4 py-3 h-auto text-left rounded-md ${
               selectedValue === option.value
                 ? "bg-blue-50 border-blue-300 text-blue-700"
-                : "bg-blue-50 hover:bg-blue-100 text-blue-600"
+                : "bg-blue-50 text-blue-600"
             }`}
-            onClick={() => onSelect(option.value, option.label)}
+            aria-selected={selectedValue === option.value}
           >
             <div className="text-blue-600 mr-2">
               {renderIcon()}
             </div>
             {option.label}
-          </Button>
+          </div>
         ))}
       </div>
       
       {onCustomOption && (
         <>
-          <Button
-            variant="outline"
-            onClick={onCustomOption}
-            className="flex items-center w-full justify-start px-4 py-3 h-auto text-left space-x-2 bg-purple-50 border-purple-100 text-purple-800 hover:bg-purple-100 hover:text-purple-900 mt-3"
+          <div
+            className="flex items-center w-full justify-start px-4 py-3 h-auto text-left space-x-2 bg-purple-50 border-purple-100 text-purple-800 rounded-md mt-3"
           >
             <Sparkles className="h-4 w-4" />
             <span>{customOptionLabel}</span>
-          </Button>
+          </div>
           <p className="text-sm text-gray-600 mt-2">合っていると思う選択肢を選んでも、自分の言葉で書いていただいても大丈夫です👍！</p>
         </>
       )}
