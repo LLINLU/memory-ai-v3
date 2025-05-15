@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { processUserMessage } from '@/utils/chatUtils';
 import { ChatMessage } from "@/types/chat";
@@ -140,7 +141,7 @@ export const useTechTreeChat = () => {
           ...prev,
           {
             type: "text",
-            content: "新しいノードを作成しましょう。どのような内容のノードを追加したいですか？",
+            content: "👋 こんにちは！レベル2の下に新しいノードを追加する準備はできていますか？始め方は次のとおりです：\n🔹 オプション1：タイトルと説明を自分ではっきりと入力してください。\n🔹 オプション2：自然な言葉であなたのアイデアを説明するだけでいいです — 私がそれを適切に構造化されたノードに変換するお手伝いをします！\n\n新しいノードを作成しましょう。どのような内容のノードを追加したいですか？",
             isUser: false
           }
         ]);
