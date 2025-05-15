@@ -62,30 +62,8 @@ export const SearchSection = () => {
   };
 
   const handleSuggestionClick = (query: string) => {
-    // Set the search value in the input field
+    // Just update the search input field without navigation or toast
     setSearchValue(query);
-    
-    // Same for suggestion clicks - go directly to technology-tree for quick mode
-    if (searchMode === "quick") {
-      navigate('/technology-tree', { 
-        state: { 
-          query,
-          searchMode: searchMode
-        } 
-      });
-    } else {
-      navigate('/research-context', { 
-        state: { 
-          query,
-          searchMode: searchMode
-        } 
-      });
-    }
-    
-    toast({
-      title: "検索を開始しました",
-      description: `「${query}」で${searchMode === "quick" ? "クイック探索" : "ディープリファイナー"}モードの検索を開始しました`,
-    });
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
