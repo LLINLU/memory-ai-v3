@@ -1,4 +1,3 @@
-
 import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +6,6 @@ import { FormEvent, useState } from "react";
 import { Search } from "lucide-react";
 import { ExplorationIcon } from "./icons/ExplorationIcon";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { toast } from "@/components/ui/use-toast";
 
 interface SuggestionProps {
   label: string;
@@ -53,11 +51,6 @@ export const SearchSection = () => {
           } 
         });
       }
-      
-      toast({
-        title: "検索を開始しました",
-        description: searchMode === "quick" ? "クイック探索モードで検索しています" : "ディープリファイナーモードで検索しています",
-      });
     }
   };
 
