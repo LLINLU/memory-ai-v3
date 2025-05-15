@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Users, Clock, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,7 @@ export interface Step {
 export const useResearchSteps = () => {
   const steps: Step[] = [
     {
-      question: "この研究テーマの目的や着目するアプローチは何でしょうか？",
+      question: "この研究テーマの目的・着目するアプローチは何でしょうか？",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 16 16" fill="none">
           <rect width="16" height="16" rx="8" fill="url(#paint0_linear_221_57)"/>
