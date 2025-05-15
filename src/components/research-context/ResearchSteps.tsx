@@ -29,7 +29,10 @@ export const useResearchSteps = () => {
           </defs>
         </svg>
       ),
-      subtitle: [],
+      subtitle: [
+        "研究の目的や目標は何ですか？（例：症状の管理、診断の改善）",
+        "目標達成のために着目するアプローチや方法論は何ですか？（例：非薬理学的治療、画像技術）"
+      ],
       placeholder: "例：波面補正、画像安定化、リアルタイム処理など...",
       helpButtonText: "Help me to think"
     },
