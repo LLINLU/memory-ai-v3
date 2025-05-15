@@ -16,17 +16,33 @@ interface ChatInputBoxProps {
   inputValue: string;
   onInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onSendMessage: () => void;
+  onButtonClick?: (action: string) => void;
 }
 
 export const ChatInputBox = ({
   inputValue,
   onInputChange,
-  onSendMessage
+  onSendMessage,
+  onButtonClick
 }: ChatInputBoxProps) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey && inputValue.trim()) {
       e.preventDefault();
       onSendMessage();
+    }
+  };
+
+  const handleDropdownAction = (action: string) => {
+    if (onButtonClick) {
+      onButtonClick(action);
+    }
+    
+    // If action is to adjust the treemap, also trigger the node creation flow via DOM
+    if (action === 'generate-node') {
+      const chatbox = document.querySelector('[data-chatbox]');
+      if (chatbox) {
+        chatbox.setAttribute('data-node-creation', 'true');
+      }
     }
   };
 
@@ -56,10 +72,16 @@ export const ChatInputBox = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="bg-white border border-gray-200 shadow-lg rounded-md w-64">
-              <DropdownMenuItem className="py-2 cursor-pointer hover:bg-blue-50">
+              <DropdownMenuItem 
+                className="py-2 cursor-pointer hover:bg-blue-50"
+                onClick={() => handleDropdownAction('generate-node')}
+              >
                 Treemapを調整する
               </DropdownMenuItem>
-              <DropdownMenuItem className="py-2 cursor-pointer hover:bg-blue-50">
+              <DropdownMenuItem 
+                className="py-2 cursor-pointer hover:bg-blue-50"
+                onClick={() => handleDropdownAction('modify-scenario')}
+              >
                 研究シナリオを修正
               </DropdownMenuItem>
             </DropdownMenuContent>

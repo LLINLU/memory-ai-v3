@@ -120,6 +120,7 @@ export const ChatBox = ({
             inputValue={inputValue}
             onInputChange={onInputChange}
             onSendMessage={onSendMessage}
+            onButtonClick={onButtonClick}
           />
         </div>
       )}
