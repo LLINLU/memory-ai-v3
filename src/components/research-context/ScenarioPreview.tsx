@@ -7,6 +7,7 @@ import { ScenarioList } from "./scenario-preview/ScenarioList";
 import { ResearchAreas } from "./scenario-preview/ResearchAreas";
 import { PreviewHeader } from "./scenario-preview/PreviewHeader";
 import { researchAreasData } from "./scenario-preview/constants";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ScenarioPreviewProps {
   initialQuery: string;
@@ -44,39 +45,41 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
         selectedScenario={selectedScenario}
       />
       
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {/* Building Your Scenario Section */}
-        <BuildingScenario answers={answers} />
+      <ScrollArea className="flex-1">
+        <div className="p-4 space-y-4">
+          {/* Building Your Scenario Section */}
+          <BuildingScenario answers={answers} />
 
-        {/* Suggested Scenarios Section */}
-        {showScenarios && (
-          <>
-            <ScenarioList 
-              generatedScenarios={generatedScenarios} 
-              selectedScenario={selectedScenario} 
-              onScenarioSelect={onScenarioSelect}
-            />
-            
-            {selectedScenario && (
-              <>
-                <Separator className="my-4" />
-                <ResearchAreas 
-                  selectedScenario={selectedScenario}
-                  researchAreasData={researchAreasData}
-                  onGenerateResult={onGenerateResult!}
-                  researchAreasRef={researchAreasRef}
-                />
-              </>
-            )}
-          </>
-        )}
-        
-        {!hasAnswers && !showScenarios && (
-          <div className="flex items-center justify-center h-40 text-gray-500">
-            質問に答えて研究コンテキストを構築しましょう
-          </div>
-        )}
-      </div>
+          {/* Suggested Scenarios Section */}
+          {showScenarios && (
+            <>
+              <ScenarioList 
+                generatedScenarios={generatedScenarios} 
+                selectedScenario={selectedScenario} 
+                onScenarioSelect={onScenarioSelect}
+              />
+              
+              {selectedScenario && (
+                <>
+                  <Separator className="my-4" />
+                  <ResearchAreas 
+                    selectedScenario={selectedScenario}
+                    researchAreasData={researchAreasData}
+                    onGenerateResult={onGenerateResult!}
+                    researchAreasRef={researchAreasRef}
+                  />
+                </>
+              )}
+            </>
+          )}
+          
+          {!hasAnswers && !showScenarios && (
+            <div className="flex items-center justify-center h-40 text-gray-500">
+              質問に答えて研究コンテキストを構築しましょう
+            </div>
+          )}
+        </div>
+      </ScrollArea>
     </div>
   );
 };
