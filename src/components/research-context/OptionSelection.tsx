@@ -11,6 +11,7 @@ interface Option {
 interface OptionSelectionProps {
   options: Option[];
   selectedValue?: string;
+  onSelect?: (value: string, label: string) => void; // Add this line to fix the error
   onCustomOption?: () => void;
   customOptionLabel?: string;
   iconType?: "user" | "map-pin" | "clock";
@@ -19,6 +20,7 @@ interface OptionSelectionProps {
 export const OptionSelection = ({
   options,
   selectedValue,
+  onSelect,
   onCustomOption,
   customOptionLabel = "他の提案",
   iconType = "user"
@@ -44,8 +46,13 @@ export const OptionSelection = ({
   };
 
   // Handle option click for visual feedback only
-  const handleOptionClick = (value: string) => {
+  const handleOptionClick = (value: string, label: string) => {
     setActiveButton(value);
+    
+    // If onSelect is provided, call it with the value and label
+    if (onSelect) {
+      onSelect(value, label);
+    }
   };
 
   return (
@@ -60,7 +67,7 @@ export const OptionSelection = ({
                 ? "bg-blue-50 border-blue-300 text-blue-700"
                 : "bg-blue-50 hover:bg-blue-100 text-blue-600"
             }`}
-            onClick={() => handleOptionClick(option.value)}
+            onClick={() => handleOptionClick(option.value, option.label)}
           >
             <div className="text-blue-600 mr-2">
               {renderIcon()}
