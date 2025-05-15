@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { ContextAnswers } from "./useConversationState";
 import { ConversationMessage } from "./useConversationState";
@@ -40,10 +39,10 @@ export const useNavigationHandlers = ({
 この研究成果は、${answers.where || 'cc'}といった場面での活用が期待され、具体的には医療専門職が常に立ち会えない${answers.where || 'cc'}の状況で大きな効果を発揮します。
 現在は${answers.when || 'dd'}という段階にあり、プロトタイプを用いた初期のフィールドテストが進行中です。`,
       
-      `本研究の目的は、${answers.what || 'aa'}の効率向上であり、そのためにAIと機械学習を活用した${answers.what || 'aa'}の最適化アプローチに着目しています。
-対象となるエンドユーザーは、${answers.who || 'bb'}を含む専門家集団であり、特に高度な意思決定支援が求められる分野です。
-この研究成果は、${answers.where || 'cc'}における業務プロセスでの活用が期待され、具体的には${answers.where || 'cc'}でのリアルタイム処理において大きな効果を発揮します。
-現在は${answers.when || 'dd'}の実証実験を終え、実用化に向けた改良を進めている段階です。`,
+      `本研究の目的は、${answers.what || 'aa'}を目的としており、その実現のために機械学習による行動パターン解析というアプローチを採用しています。
+このテーマにおけるエンドユーザーは、${answers.who || 'bb'}であり、特に加齢によって日常生活に支障が出始めた人々が主な対象です。
+研究成果は、${answers.where || 'cc'}という場面において、家族や介護士による遠隔見守りを支援するツールとしての応用が期待されています。
+現時点での開発段階は${answers.when || 'dd'}であり、ユーザーからのフィードバックを取り入れたプロトタイプ改良フェーズにあります。`,
       
       `本研究の目的は、${answers.what || 'aa'}における安全性向上であり、そのためにセンサーネットワークと予測モデルを組み合わせた${answers.what || 'aa'}の監視システム構築に着目しています。
 対象となるエンドユーザーは、${answers.who || 'bb'}および関連する管理者であり、特に予防的対応が重視される現場です。
