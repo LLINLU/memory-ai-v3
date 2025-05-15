@@ -32,6 +32,7 @@ export const ChatBox = ({
 }: ChatBoxProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isNodeCreation, setIsNodeCreation] = useState(false);
 
   const toggleOpen = () => setIsOpen(!isOpen);
   const toggleExpand = () => setIsExpanded(!isExpanded);
@@ -58,6 +59,19 @@ export const ChatBox = ({
             // Reset the attribute
             target.removeAttribute("data-chatbox-expanded");
           }
+          
+          // Handle node creation mode
+          if (mutation.attributeName === "data-node-creation" &&
+              target.getAttribute("data-node-creation") === "true") {
+            setIsNodeCreation(true);
+            // Reset the attribute
+            target.removeAttribute("data-node-creation");
+            
+            // Trigger the node creation flow
+            if (onButtonClick) {
+              onButtonClick('generate-node');
+            }
+          }
         }
       });
     });
@@ -68,7 +82,7 @@ export const ChatBox = ({
     }
 
     return () => observer.disconnect();
-  }, []);
+  }, [onButtonClick]);
 
   return (
     <div data-chatbox>
@@ -99,6 +113,7 @@ export const ChatBox = ({
             onRefine={onRefine}
             onCheckResults={onCheckResults}
             inputValue={inputValue}
+            isNodeCreation={isNodeCreation}
           />
           
           <ChatInputBox 

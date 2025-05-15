@@ -14,6 +14,7 @@ interface ChatConversationBoxProps {
   onCheckResults?: () => void;
   onResearchAreaVisible?: (isVisible: boolean) => void;
   inputValue?: string;
+  isNodeCreation?: boolean;
 }
 
 export const ChatConversationBox = ({
@@ -24,7 +25,8 @@ export const ChatConversationBox = ({
   onRefine,
   onCheckResults,
   onResearchAreaVisible,
-  inputValue = ''
+  inputValue = '',
+  isNodeCreation = false
 }: ChatConversationBoxProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [researchAreaElements, setResearchAreaElements] = useState<HTMLDivElement[]>([]);
@@ -111,6 +113,13 @@ export const ChatConversationBox = ({
           >
             <span className="group-hover:text-[#1867cc]">最新の研究動向を要約してください</span>
           </Button>
+          <Button
+            onClick={() => handleCustomButtonClick('generate-node')}
+            className="bg-blue-100 hover:bg-blue-200 text-blue-800 group"
+            size="sm"
+          >
+            <span className="group-hover:text-[#1867cc]">Treemap を調整する</span>
+          </Button>
         </div>
       </div>
     );
@@ -136,6 +145,14 @@ export const ChatConversationBox = ({
     return acc;
   }, []);
 
+  // Filter out node suggestion messages if not in node creation mode
+  const filteredMessages = isNodeCreation 
+    ? groupedMessages 
+    : groupedMessages.filter(message => 
+        !(message.content?.includes('了解しました — あなたの考えに合ったノードを一緒に作成しましょう') 
+          || message.suggestion)
+      );
+
   return (
     <div className="flex-1 overflow-y-auto p-4 bg-white relative">
       {/* Only show welcome message if there are no substantive messages */}
@@ -143,7 +160,7 @@ export const ChatConversationBox = ({
       
       {/* Always display all messages, never hide them */}
       <div className="space-y-1">
-        {groupedMessages.map((message, index) => {
+        {filteredMessages.map((message, index) => {
           const nextMessage = messages[index + 1];
           const isActionTaken = nextMessage && nextMessage.content === "ノードが作成されました 😊";
           const isResearchFieldSection = isPotentialResearchFieldMessage(message);

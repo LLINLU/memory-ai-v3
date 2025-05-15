@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { processUserMessage } from '@/utils/chatUtils';
 import { ChatMessage } from "@/types/chat";
@@ -130,6 +129,22 @@ export const useTechTreeChat = () => {
           return updatedMessages;
         });
       }, 2000);
+    } else if (action === 'generate-node') {
+      // Handle node generation action
+      if (inputValue.trim()) {
+        // If user has already entered something, use that as input
+        handleSendMessage();
+      } else {
+        // Otherwise, prompt the user to enter a description
+        setChatMessages(prev => [
+          ...prev,
+          {
+            type: "text",
+            content: "新しいノードを作成しましょう。どのような内容のノードを追加したいですか？",
+            isUser: false
+          }
+        ]);
+      }
     }
   };
 
