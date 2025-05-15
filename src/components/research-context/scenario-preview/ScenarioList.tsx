@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { TimeIcon } from "@/components/icons/TimeIcon";
@@ -14,6 +13,21 @@ export const ScenarioList: React.FC<ScenarioListProps> = ({
   selectedScenario,
   onScenarioSelect
 }) => {
+  // Function to format scenario text with line breaks
+  const formatScenario = (scenario: string) => {
+    // If the scenario already contains line breaks, render it as is
+    if (scenario.includes("\n") || scenario.includes("。\n")) {
+      return (
+        <div className="whitespace-pre-wrap">
+          {scenario}
+        </div>
+      );
+    }
+    
+    // Otherwise, use the default display
+    return scenario;
+  };
+
   return (
     <div>
       <h3 className="text-base font-semibold mb-3 flex items-center gap-2">
@@ -39,7 +53,7 @@ export const ScenarioList: React.FC<ScenarioListProps> = ({
           >
             <div className="flex items-start gap-3">
               <div className="flex-1">
-                {scenario}
+                {formatScenario(scenario)}
               </div>
             </div>
           </Button>
