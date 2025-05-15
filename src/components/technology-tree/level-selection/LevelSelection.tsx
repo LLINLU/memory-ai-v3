@@ -78,6 +78,16 @@ export const LevelSelection = ({
         description: "The paper list has been updated based on your selection",
         duration: 3000,
       });
+      
+      // Scroll the tree view into view
+      if (containerRef.current) {
+        const elementTop = containerRef.current.offsetTop;
+        const scrollOptions = {
+          top: elementTop - 100, // Some padding above the element
+          behavior: 'smooth' as ScrollBehavior
+        };
+        window.scrollTo(scrollOptions);
+      }
     }
   };
 

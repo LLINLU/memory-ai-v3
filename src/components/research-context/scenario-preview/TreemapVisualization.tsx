@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { ChartContainer } from "@/components/ui/chart";
 import { Treemap, Tooltip } from "recharts";
 
@@ -74,6 +74,7 @@ export const TreemapVisualization: React.FC<TreemapVisualizationProps> = ({
 }) => {
   // The default selected item is "Retinal Imaging"
   const [selectedAreaName, setSelectedAreaName] = useState<string>("Retinal Imaging");
+  const treemapRef = useRef<HTMLDivElement>(null);
 
   // Reorder data to ensure selected area appears first
   const reorderedData = React.useMemo(() => {
@@ -98,11 +99,21 @@ export const TreemapVisualization: React.FC<TreemapVisualizationProps> = ({
   const handleTreemapClick = (data: any) => {
     if (data && data.name) {
       setSelectedAreaName(data.name);
+      
+      // Scroll the treemap into view with smooth behavior
+      if (treemapRef.current) {
+        const elementTop = treemapRef.current.offsetTop;
+        const scrollOptions = {
+          top: elementTop - 100, // Add some padding above the element
+          behavior: 'smooth' as ScrollBehavior
+        };
+        window.scrollTo(scrollOptions);
+      }
     }
   };
 
   return (
-    <div className="mb-4">
+    <div className="mb-4" ref={treemapRef}>
       <ChartContainer 
         className="w-full h-[270px]"
         config={{
