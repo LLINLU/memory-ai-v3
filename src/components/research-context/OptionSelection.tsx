@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sparkles, MapPin, User, Clock } from "lucide-react";
 
@@ -10,7 +10,6 @@ interface Option {
 
 interface OptionSelectionProps {
   options: Option[];
-  onSelect: (value: string, label: string) => void;
   selectedValue?: string;
   onCustomOption?: () => void;
   customOptionLabel?: string;
@@ -19,12 +18,13 @@ interface OptionSelectionProps {
 
 export const OptionSelection = ({
   options,
-  onSelect,
   selectedValue,
   onCustomOption,
   customOptionLabel = "他の提案",
   iconType = "user"
 }: OptionSelectionProps) => {
+  const [activeButton, setActiveButton] = useState<string | undefined>(selectedValue);
+
   const renderIcon = () => {
     if (iconType === "map-pin") {
       return (
@@ -43,6 +43,11 @@ export const OptionSelection = ({
     );
   };
 
+  // Handle option click for visual feedback only
+  const handleOptionClick = (value: string) => {
+    setActiveButton(value);
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex flex-col gap-3">
@@ -51,11 +56,11 @@ export const OptionSelection = ({
             key={option.value}
             variant="outline"
             className={`justify-start px-4 py-3 h-auto text-left ${
-              selectedValue === option.value
+              activeButton === option.value
                 ? "bg-blue-50 border-blue-300 text-blue-700"
                 : "bg-blue-50 hover:bg-blue-100 text-blue-600"
             }`}
-            onClick={() => onSelect(option.value, option.label)}
+            onClick={() => handleOptionClick(option.value)}
           >
             <div className="text-blue-600 mr-2">
               {renderIcon()}
