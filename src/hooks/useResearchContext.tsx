@@ -4,6 +4,7 @@ import { useConversationState } from "./research-context/useConversationState";
 import { useNavigationHandlers } from "./research-context/useNavigationHandlers";
 import { useScenarioHandlers } from "./research-context/useScenarioHandlers";
 import { useNavigate } from "react-router-dom";
+import { useCallback } from "react";
 
 export const useResearchContext = (
   initialQuery: string, 
@@ -69,9 +70,144 @@ export const useResearchContext = (
     selectScenario,
     resetNavigation,
     resetConversation,
-    answers, // Pass the answers to the scenario handlers
-    conversationHistory // Pass current conversation history
+    answers, 
+    conversationHistory 
   });
+
+  // Create dummy conversation for scenario editing
+  const createDummyConversation = useCallback(() => {
+    // Clear any existing conversation
+    resetConversation();
+    
+    // Create dummy conversation history that mimics a completed conversation
+    const dummyConversation = [
+      // First question about research purpose/approach (what)
+      {
+        type: "system", 
+        content: (
+          <div>
+            <div className="flex items-start gap-4">
+              {steps[0].icon}
+              <div>
+                <h3 className="text-[16px] font-semibold">{steps[0].question}</h3>
+                <ul className="mt-2 space-y-1">
+                  {steps[0].subtitle.map((item, i) => (
+                    <li key={i} className="text-gray-700 text-[14px]">{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        ),
+        questionType: "what"
+      },
+      // User response to first question
+      { 
+        type: "user", 
+        content: "ドライアイの診断と治療を改善するための患者用モニタリングデバイス"
+      },
+      
+      // Second question about who is involved (who)
+      {
+        type: "system",
+        content: (
+          <div>
+            <div className="flex items-start gap-4">
+              {steps[1].icon}
+              <div>
+                <h3 className="text-[16px] font-semibold">{steps[1].question}</h3>
+                <ul className="mt-2 space-y-1">
+                  {steps[1].subtitle.map((item, i) => (
+                    <li key={i} className="text-gray-700 text-[14px]">{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        ),
+        questionType: "who"
+      },
+      // User response to second question
+      {
+        type: "user",
+        content: "眼科医と患者"
+      },
+      
+      // Third question about where (where)
+      {
+        type: "system",
+        content: (
+          <div>
+            <div className="flex items-start gap-4">
+              {steps[2].icon}
+              <div>
+                <h3 className="text-[16px] font-semibold">{steps[2].question}</h3>
+                <ul className="mt-2 space-y-1">
+                  {steps[2].subtitle.map((item, i) => (
+                    <li key={i} className="text-gray-700 text-[14px]">{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        ),
+        questionType: "where"
+      },
+      // User response to third question
+      {
+        type: "user",
+        content: "眼科クリニックと患者の自宅"
+      },
+      
+      // Fourth question about when/context (when)
+      {
+        type: "system",
+        content: (
+          <div>
+            <div className="flex items-start gap-4">
+              {steps[3].icon}
+              <div>
+                <h3 className="text-[16px] font-semibold">{steps[3].question}</h3>
+                <ul className="mt-2 space-y-1">
+                  {steps[3].subtitle.map((item, i) => (
+                    <li key={i} className="text-gray-700 text-[14px]">{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        ),
+        questionType: "when"
+      },
+      // User response to fourth question
+      {
+        type: "user",
+        content: "日常生活での症状モニタリングと定期的な診療時"
+      },
+      
+      // Completion message
+      {
+        type: "system",
+        content: "ご回答をもとに、いくつかの研究シナリオを作成しました。右側のプレビューパネルから選んでみてください!"
+      }
+    ];
+    
+    // Set the conversation history
+    setConversationHistory(dummyConversation);
+    
+    // Update answers state based on dummy conversation
+    const newAnswers = {
+      what: "ドライアイの診断と治療を改善するための患者用モニタリングデバイス",
+      who: "眼科医と患者",
+      where: "眼科クリニックと患者の自宅",
+      when: "日常生活での症状モニタリングと定期的な診療時"
+    };
+    
+    // Proceed to show scenarios
+    setShowScenarios(true);
+    
+    return newAnswers;
+  }, [steps, resetConversation, setConversationHistory, setShowScenarios]);
 
   // Initialize saved conversation history
   const initializeSavedHistory = (savedHistory: any[]) => {
@@ -173,6 +309,7 @@ export const useResearchContext = (
     researchAreasRef,
     shouldShowInputSection,
     isEditingScenario,
-    initializeSavedHistory
+    initializeSavedHistory,
+    createDummyConversation
   };
 };

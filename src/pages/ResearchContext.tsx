@@ -1,3 +1,4 @@
+
 import { useLocation } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -56,7 +57,8 @@ const ResearchContext = () => {
     researchAreasRef,
     shouldShowInputSection,
     isEditingScenario,
-    initializeSavedHistory
+    initializeSavedHistory,
+    createDummyConversation
   } = useResearchContext(initialQuery, steps, editingFromState, currentScenario, savedConversationHistory);
 
   // Determine when to show the generate button
@@ -65,18 +67,16 @@ const ResearchContext = () => {
   
   // Initialize conversation history if editing from technology tree
   useEffect(() => {
-    if (isEditingScenario && savedConversationHistory && savedConversationHistory.length > 0) {
-      initializeSavedHistory(savedConversationHistory);
+    if (isEditingScenario) {
+      // Instead of initializing saved history, create dummy conversation
+      createDummyConversation();
     }
-  }, [isEditingScenario, savedConversationHistory, initializeSavedHistory]);
+  }, [isEditingScenario, createDummyConversation]);
   
   // Skip the initial options and directly start the conversation
   useEffect(() => {
     if (showInitialOptions && !isEditingScenario) {
       handleInitialOption('continue');
-      toast({
-        description: "研究背景の構築を開始します",
-      });
     }
   }, [showInitialOptions, isEditingScenario, handleInitialOption]);
   
