@@ -29,6 +29,7 @@ interface MainContentProps {
   onEditScenario?: (newScenario: string) => void;
   conversationHistory?: any[];
   onAddLevel4?: () => void;
+  searchMode?: string;
 }
 
 export const MainContent = ({
@@ -50,11 +51,16 @@ export const MainContent = ({
   onEditScenario,
   hasUserMadeSelection,
   conversationHistory,
-  onAddLevel4
+  onAddLevel4,
+  searchMode
 }: MainContentProps) => {
   return (
     <div className="container mx-auto px-4 py-6">
-      <ScenarioSection scenario={scenario} onEditScenario={onEditScenario} conversationHistory={conversationHistory} />
+      <ScenarioSection 
+        scenario={scenario} 
+        onEditScenario={onEditScenario} 
+        conversationHistory={conversationHistory}
+      />
       <PathDisplay 
         selectedPath={selectedPath}
         level1Items={level1Items}

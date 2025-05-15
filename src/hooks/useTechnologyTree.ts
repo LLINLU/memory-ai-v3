@@ -3,6 +3,7 @@ import { useState } from "react";
 import { usePathSelection } from "./tree/usePathSelection";
 import { useSidebar } from "./tree/useSidebar";
 import { useInputQuery } from "./tree/useInputQuery";
+import { useLocation } from "react-router-dom";
 
 export interface TechnologyTreeState {
   selectedPath: {
@@ -19,10 +20,15 @@ export interface TechnologyTreeState {
   query?: string;
   hasUserMadeSelection: boolean;
   showLevel4?: boolean;
+  searchMode?: string;
 }
 
 export const useTechnologyTree = () => {
+  const location = useLocation();
+  // Get searchMode from location state - default to "quick" if not provided
+  const searchMode = location.state?.searchMode || "quick";
   const [selectedView, setSelectedView] = useState("tree");
+  
   const { 
     selectedPath, 
     hasUserMadeSelection, 
@@ -68,6 +74,7 @@ export const useTechnologyTree = () => {
     chatMessages,
     hasUserMadeSelection,
     showLevel4,
+    searchMode,
     setSelectedView,
     setSidebarTab,
     setShowSidebar,

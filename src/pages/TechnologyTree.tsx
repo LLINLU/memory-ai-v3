@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
@@ -14,12 +15,14 @@ import { TechTreeMainContent } from "@/components/technology-tree/TechTreeMainCo
 import { useScenarioState } from "@/hooks/tree/useScenarioState";
 import { useChatInitialization } from "@/hooks/tree/useChatInitialization";
 import { useNodeSelectionEffect } from "@/hooks/tree/useNodeSelectionEffect";
+import { toast } from "@/components/ui/use-toast";
 
 const TechnologyTree = () => {
   const location = useLocation();
   const locationState = location.state as { 
     query?: string; 
     scenario?: string; 
+    searchMode?: string;
     researchAnswers?: any;
     conversationHistory?: any[] 
   } | null;
@@ -34,8 +37,9 @@ const TechnologyTree = () => {
     }
   }, [locationState]);
   
-  const { scenario, handleEditScenario } = useScenarioState({ 
-    initialScenario: locationState?.scenario 
+  const { scenario, handleEditScenario, searchMode } = useScenarioState({ 
+    initialScenario: locationState?.scenario,
+    initialSearchMode: locationState?.searchMode
   });
 
   const {
@@ -172,6 +176,7 @@ const TechnologyTree = () => {
               onEditScenario={handleEditScenario}
               conversationHistory={savedConversationHistory}
               handleAddLevel4={handleAddLevel4}
+              searchMode={searchMode}
             />
           </TechTreeLayout>
           

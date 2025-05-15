@@ -25,6 +25,7 @@ interface TechTreeMainContentProps {
   onEditScenario?: (newScenario: string) => void;
   conversationHistory?: any[];
   handleAddLevel4?: () => void;
+  searchMode?: string;
 }
 
 export const TechTreeMainContent = ({
@@ -40,7 +41,8 @@ export const TechTreeMainContent = ({
   scenario,
   onEditScenario,
   conversationHistory,
-  handleAddLevel4
+  handleAddLevel4,
+  searchMode
 }: TechTreeMainContentProps) => {
   return (
     <MainContent
@@ -57,6 +59,7 @@ export const TechTreeMainContent = ({
       onEditScenario={onEditScenario}
       conversationHistory={conversationHistory}
       onAddLevel4={handleAddLevel4}
+      searchMode={searchMode}
     />
   );
 };
