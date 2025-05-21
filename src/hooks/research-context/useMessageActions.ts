@@ -129,18 +129,17 @@ export function useMessageActions(
             { className: "text-[16px] font-semibold" },
             steps[0].question
           ),
-          steps[0].helpButtonText && !helpButtonClicked && 
-            React.createElement(
-              Button,
-              {
-                variant: "outline",
-                size: "sm",
-                onClick: () => handleHelpMeClick(),
-                className: "mt-2",
-                style: { background: "aliceblue", borderColor: "#b5d2f7" }
-              },
-              steps[0].helpButtonText
-            )
+          steps[0].helpButtonText && React.createElement(
+            Button,
+            {
+              variant: "outline",
+              size: "sm",
+              onClick: () => handleHelpMeClick(),
+              className: "mt-2",
+              style: { background: "aliceblue", borderColor: "#b5d2f7" }
+            },
+            steps[0].helpButtonText
+          )
         )
       )
     );

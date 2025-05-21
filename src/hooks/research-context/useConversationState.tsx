@@ -6,7 +6,7 @@ import { ContextAnswers, ConversationMessage, UseConversationStateReturn } from 
 import { useMessageActions } from "./useMessageActions";
 import { useResponseHandlers } from "./useResponseHandlers";
 
-export {
+export type {
   ContextAnswers,
   ConversationMessage,
   UseConversationStateReturn
