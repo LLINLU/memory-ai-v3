@@ -107,7 +107,7 @@ export const useConversationState = (steps: Step[]) => {
     // Add the next question immediately after adding the user response
     if (currentStep + 1 < steps.length) {
       addNextQuestion(currentStep + 1);
-    } else {
+    } else if (!completionMessageAdded) {
       addCompletionMessage();
     }
   };
