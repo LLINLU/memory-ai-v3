@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Step } from "@/components/research-context/ResearchSteps";
 import { Button } from "@/components/ui/button";
@@ -29,6 +28,7 @@ export const useConversationState = (steps: Step[]) => {
   });
   const [helpButtonClicked, setHelpButtonClicked] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string>("");
+  const [completionMessageAdded, setCompletionMessageAdded] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
@@ -203,14 +203,18 @@ export const useConversationState = (steps: Step[]) => {
   };
 
   const addCompletionMessage = () => {
-    // Add completion message to conversation history (only one time)
-    setConversationHistory(prev => [
-      ...prev,
-      { 
-        type: "system", 
-        content: "ご回答をもとに、いくつかの研究シナリオを作成しました。右側のプレビューパネルから選んでみてください!"
-      }
-    ]);
+    // Only add completion message if it hasn't been added yet
+    if (!completionMessageAdded) {
+      setConversationHistory(prev => [
+        ...prev,
+        { 
+          type: "system", 
+          content: "ご回答をもとに、いくつかの研究シナリオを作成しました。右側のプレビューパネルから選んでみてください!"
+        }
+      ]);
+      // Mark that we've added the completion message
+      setCompletionMessageAdded(true);
+    }
   };
 
   const addInitialMessage = () => {
@@ -298,6 +302,7 @@ export const useConversationState = (steps: Step[]) => {
     });
     setHelpButtonClicked(false);
     setSelectedOption("");
+    setCompletionMessageAdded(false);
   };
 
   return {
