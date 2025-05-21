@@ -15,8 +15,8 @@ export function SidebarHeader() {
       <div className="flex items-center justify-between">
         {isExpanded && (
           <Link to="/" className="flex items-center gap-2 text-2xl font-bold">
-            <span className="text-blue-600">M</span>
-            <span>Memory AI</span>
+            <span className="text-blue-600">R</span>
+            <span>Research AI</span>
           </Link>
         )}
         <Tooltip>
