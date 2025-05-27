@@ -1,3 +1,4 @@
+
 import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -115,7 +116,7 @@ export const SearchSection = () => {
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="max-w-xs">早期探索フェーズ向け：特定の研究文脈がなくても、キーワードから関連技術や新興トレンドを発見できます。女性ホルモンのような一般的なキーワードから始めて、幅広い可能性を探索できます。</p>
+                    <p className="max-w-xs">仮説がまだ固まっていない初期段階に最適：「全固体電池」や「女性ホルモン」など一般的なキーワードを入力するだけで、関連技術やトレンドが自動で構造化され、視覚的に表示されます。これにより、自分でも気づいていなかった領域を含め、幅広い探索が可能になります。研究の出発点やアイデア収集に向いています。</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -133,7 +134,7 @@ export const SearchSection = () => {
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="max-w-xs">具体的な研究文脈や仮説がある場合に最適：研究者、対象、環境、手法、目的などの詳細を入力することで、的確な研究内容に絞り込めます。その後、システムの質問に答えることでさらに研究コンテキストを洗練させ、無関係な情報を排除した効率的な探索ができます。</p>
+                    <p className="max-w-xs">研究テーマや仮説がある程度明確なときに最適：一般的なキーワードを入力した後、研究者や対象、手法などの詳細を追加することで、情報を的確に絞り込めます。さらに、システムの質問に答えることでコンテキストが洗練され、不要な情報を排除した効率的な探索が可能になります。具体的な研究の仮説があり、技術を深堀りしたいときに特に有効です。</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
