@@ -30,16 +30,8 @@ export const ScenarioSection = ({
   }
 
   const handleEditScenario = () => {
-    // Navigate to Research Context page with editing flag, current scenario and conversation history
-    navigate('/research-context', { 
-      state: { 
-        editingScenario: true,
-        currentScenario: scenario,
-        savedConversationHistory: conversationHistory,
-        // Preserve any existing query from the current state
-        query: location.state?.query
-      } 
-    });
+    // Since research-context is removed, just show an alert for now
+    alert("Research context editing is not available");
   };
 
   return (
