@@ -11,23 +11,24 @@ interface ChatInputProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onSend?: () => void;
+  isLoading?: boolean;
 }
 
-export const ChatInput = ({ value, onChange, onSend }: ChatInputProps) => {
-  const [searchMode, setSearchMode] = useState("quick"); // Default to "quick"
+export const ChatInput = ({ value, onChange, onSend, isLoading = false }: ChatInputProps) => {
+  const [searchMode, setSearchMode] = useState("quick");
   
   const handleSearchModeChange = (mode: string) => {
     setSearchMode(mode);
   };
   
   const handleSend = () => {
-    if (onSend && value.trim()) {
+    if (onSend && value.trim() && !isLoading) {
       onSend();
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey && value.trim()) {
+    if (e.key === 'Enter' && !e.shiftKey && value.trim() && !isLoading) {
       e.preventDefault();
       handleSend();
     }
@@ -46,6 +47,7 @@ export const ChatInput = ({ value, onChange, onSend }: ChatInputProps) => {
           onKeyDown={handleKeyDown}
           rows={1}
           autoResize
+          disabled={isLoading}
         />
         
         <div className="flex items-center justify-between pt-2">
@@ -72,12 +74,16 @@ export const ChatInput = ({ value, onChange, onSend }: ChatInputProps) => {
           </TooltipProvider>
           
           <Button 
-            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-0 w-10 h-10 flex items-center justify-center"
+            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-0 w-10 h-10 flex items-center justify-center disabled:opacity-50"
             onClick={handleSend}
-            disabled={!value.trim()}
+            disabled={!value.trim() || isLoading}
             size="icon"
           >
-            <ArrowUp className="h-5 w-5" />
+            {isLoading ? (
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            ) : (
+              <ArrowUp className="h-5 w-5" />
+            )}
           </Button>
         </div>
       </div>

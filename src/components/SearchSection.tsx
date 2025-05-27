@@ -1,4 +1,3 @@
-
 import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +6,7 @@ import { FormEvent, useState } from "react";
 import { Search } from "lucide-react";
 import { ExplorationIcon } from "./icons/ExplorationIcon";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SuggestionProps {
   label: string;
@@ -30,27 +30,66 @@ const SearchSuggestion = ({ label, onClick }: SuggestionProps) => {
 export const SearchSection = () => {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
-  const [searchMode, setSearchMode] = useState("quick"); // Default to "quick"
+  const [searchMode, setSearchMode] = useState("quick");
+  const [isLoading, setIsLoading] = useState(false);
   
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (searchValue.trim()) {
-      // If searchMode is "quick", navigate directly to technology-tree
-      if (searchMode === "quick") {
-        navigate('/technology-tree', { 
-          state: { 
-            query: searchValue,
-            searchMode: searchMode
-          } 
+      setIsLoading(true);
+      
+      try {
+        // Generate research context using ChatGPT before navigation
+        const { data, error } = await supabase.functions.invoke('chat-gpt', {
+          body: { 
+            message: `研究クエリ「${searchValue}」について、技術ツリー分析のための背景情報を提供してください。`, 
+            context: 'research' 
+          }
         });
-      } else {
-        // For "deep" mode, continue to go to research-context
-        navigate('/research-context', { 
-          state: { 
-            query: searchValue,
-            searchMode: searchMode
-          } 
-        });
+
+        let chatGptContext = "";
+        if (!error && data?.response) {
+          chatGptContext = data.response;
+        }
+
+        // Navigate with ChatGPT-generated context
+        if (searchMode === "quick") {
+          navigate('/technology-tree', { 
+            state: { 
+              query: searchValue,
+              searchMode: searchMode,
+              chatGptContext: chatGptContext
+            } 
+          });
+        } else {
+          navigate('/research-context', { 
+            state: { 
+              query: searchValue,
+              searchMode: searchMode,
+              chatGptContext: chatGptContext
+            } 
+          });
+        }
+      } catch (error) {
+        console.error('Error generating ChatGPT context:', error);
+        // Navigate without ChatGPT context if there's an error
+        if (searchMode === "quick") {
+          navigate('/technology-tree', { 
+            state: { 
+              query: searchValue,
+              searchMode: searchMode
+            } 
+          });
+        } else {
+          navigate('/research-context', { 
+            state: { 
+              query: searchValue,
+              searchMode: searchMode
+            } 
+          });
+        }
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -145,9 +184,13 @@ export const SearchSection = () => {
                 onClick={handleSubmit}
                 size="icon"
                 className="h-8 w-8 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={!searchValue.trim()}
+                disabled={!searchValue.trim() || isLoading}
               >
-                <ArrowUp className="h-4 w-4 text-gray-600" />
+                {isLoading ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-600 border-t-transparent" />
+                ) : (
+                  <ArrowUp className="h-4 w-4 text-gray-600" />
+                )}
               </Button>
             </div>
           </div>

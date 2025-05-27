@@ -66,6 +66,7 @@ const TechnologyTree = () => {
   const {
     inputValue,
     chatMessages,
+    isLoading,
     handleInputChange,
     handleSendMessage,
     initializeChat,
