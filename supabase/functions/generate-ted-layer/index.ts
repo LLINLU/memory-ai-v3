@@ -9,25 +9,41 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Retry logic with exponential backoff
+// Improved retry logic with exponential backoff and better error handling
 const retryWithBackoff = async (fn: () => Promise<Response>, maxRetries = 3) => {
   for (let i = 0; i <= maxRetries; i++) {
     try {
       const response = await fn();
+      
       if (response.status === 429) {
-        if (i === maxRetries) throw new Error('Rate limit exceeded after all retries');
+        if (i === maxRetries) {
+          console.error('Rate limit exceeded after all retries');
+          throw new Error('OpenAI API rate limit exceeded. Please try again in a few minutes.');
+        }
         
+        // Parse retry-after header or use exponential backoff
         const retryAfter = response.headers.get('retry-after');
-        const waitTime = retryAfter ? parseInt(retryAfter) * 1000 : Math.pow(2, i) * 1000;
+        const waitTime = retryAfter ? parseInt(retryAfter) * 1000 : Math.min(Math.pow(2, i) * 2000, 30000); // Cap at 30 seconds
         
         console.log(`Rate limited, waiting ${waitTime}ms before retry ${i + 1}/${maxRetries}`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
         continue;
       }
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`OpenAI API error: ${response.status} - ${errorText}`);
+        throw new Error(`OpenAI API error: ${response.status} - ${response.statusText}`);
+      }
+      
       return response;
     } catch (error) {
-      if (i === maxRetries) throw error;
-      const waitTime = Math.pow(2, i) * 1000;
+      if (i === maxRetries) {
+        console.error('Max retries exceeded:', error.message);
+        throw error;
+      }
+      
+      const waitTime = Math.min(Math.pow(2, i) * 2000, 30000); // Cap at 30 seconds
       console.log(`Request failed, retrying in ${waitTime}ms (attempt ${i + 1}/${maxRetries}):`, error.message);
       await new Promise(resolve => setTimeout(resolve, waitTime));
     }
@@ -151,29 +167,16 @@ Generate the ${target_layer} layer following TED methodology.
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gpt-4o-mini',
+          model: 'gpt-4o-mini', // Using the faster, cheaper model to reduce rate limiting
           messages: [
             { role: 'system', content: TED_LAYER_PROMPT },
             { role: 'user', content: contextPrompt }
           ],
           temperature: 0.7,
-          max_tokens: 2000,
+          max_tokens: 1500, // Reduced from 2000 to be more conservative
         }),
       });
     });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenAI API error:', response.status, response.statusText, errorText);
-      return new Response(
-        JSON.stringify({ 
-          error: 'Failed to generate TED layer', 
-          details: `OpenAI API returned ${response.status}: ${response.statusText}`,
-          openai_error: errorText
-        }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
 
     const data = await response.json();
     console.log('OpenAI response received for layer generation');
