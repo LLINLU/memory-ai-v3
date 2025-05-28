@@ -2,6 +2,8 @@
 export const convertTedToTreeData = (tedResults: any) => {
   if (!tedResults) return null;
 
+  console.log('Converting TED data:', tedResults);
+
   const level1Items: any[] = [];
   const level2Items: Record<string, any[]> = {};
   const level3Items: Record<string, any[]> = {};
@@ -18,6 +20,7 @@ export const convertTedToTreeData = (tedResults: any) => {
         level: 1
       });
     });
+    console.log('Level 1 items:', level1Items);
   }
 
   // Convert function layer (level 2)
@@ -35,6 +38,7 @@ export const convertTedToTreeData = (tedResults: any) => {
         level: 2
       });
     });
+    console.log('Level 2 items:', level2Items);
   }
 
   // Convert measure layer (level 3)
@@ -52,6 +56,7 @@ export const convertTedToTreeData = (tedResults: any) => {
         level: 3
       });
     });
+    console.log('Level 3 items:', level3Items);
   }
 
   // Convert implementation layer (level 4)
@@ -69,12 +74,16 @@ export const convertTedToTreeData = (tedResults: any) => {
         level: 4
       });
     });
+    console.log('Level 4 items:', level4Items);
   }
 
-  return {
+  const result = {
     level1Items,
     level2Items,
     level3Items,
     level4Items
   };
+
+  console.log('Final converted tree data:', result);
+  return result;
 };

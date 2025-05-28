@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { PathDisplay } from "./PathDisplay";
-import { LevelSelection } from "./LevelSelection";
+import { LevelSelection } from "./level-selection/LevelSelection";
 import { ScenarioSection } from "./ScenarioSection";
 
 interface MainContentProps {
