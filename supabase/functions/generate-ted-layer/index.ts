@@ -9,8 +9,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Improved retry logic with exponential backoff and better error handling
-const retryWithBackoff = async (fn: () => Promise<Response>, maxRetries = 3) => {
+// More conservative retry logic with shorter waits
+const retryWithBackoff = async (fn: () => Promise<Response>, maxRetries = 2) => {
   for (let i = 0; i <= maxRetries; i++) {
     try {
       const response = await fn();
@@ -18,12 +18,11 @@ const retryWithBackoff = async (fn: () => Promise<Response>, maxRetries = 3) => 
       if (response.status === 429) {
         if (i === maxRetries) {
           console.error('Rate limit exceeded after all retries');
-          throw new Error('OpenAI API rate limit exceeded. Please try again in a few minutes.');
+          throw new Error('OpenAI API is currently rate limited. Please wait a moment and try again.');
         }
         
-        // Parse retry-after header or use exponential backoff
-        const retryAfter = response.headers.get('retry-after');
-        const waitTime = retryAfter ? parseInt(retryAfter) * 1000 : Math.min(Math.pow(2, i) * 2000, 30000); // Cap at 30 seconds
+        // Use shorter, more conservative wait times
+        const waitTime = Math.min(5000 + (i * 3000), 15000); // 5s, 8s, max 15s
         
         console.log(`Rate limited, waiting ${waitTime}ms before retry ${i + 1}/${maxRetries}`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
@@ -43,7 +42,8 @@ const retryWithBackoff = async (fn: () => Promise<Response>, maxRetries = 3) => 
         throw error;
       }
       
-      const waitTime = Math.min(Math.pow(2, i) * 2000, 30000); // Cap at 30 seconds
+      // Shorter wait for general errors
+      const waitTime = Math.min(2000 + (i * 1000), 5000); // 2s, 3s, max 5s
       console.log(`Request failed, retrying in ${waitTime}ms (attempt ${i + 1}/${maxRetries}):`, error.message);
       await new Promise(resolve => setTimeout(resolve, waitTime));
     }
@@ -167,13 +167,13 @@ Generate the ${target_layer} layer following TED methodology.
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gpt-4o-mini', // Using the faster, cheaper model to reduce rate limiting
+          model: 'gpt-4o-mini',
           messages: [
             { role: 'system', content: TED_LAYER_PROMPT },
             { role: 'user', content: contextPrompt }
           ],
           temperature: 0.7,
-          max_tokens: 1500, // Reduced from 2000 to be more conservative
+          max_tokens: 1200, // Further reduced to minimize rate limiting
         }),
       });
     });
