@@ -3,7 +3,7 @@ import { level1Items as initialLevel1Items, level2Items as initialLevel2Items, l
 import { NodeSuggestion } from "@/types/chat";
 import { PathLevel } from "@/types/tree";
 import { useNodeOperations } from "./useNodeOperations";
-import { usePathSelectionState } from "./usePathSelectionState";
+import { usePathSelectionState, PathState } from "./usePathSelectionState";
 
 export const usePathSelection = (
   initialPath = {
@@ -70,12 +70,17 @@ export const usePathSelection = (
     handlePathNodeClick(level, nodeId);
   };
 
+  // Create a wrapper function that matches the expected signature
+  const setSelectedPathWrapper = (updater: (prev: PathState) => PathState) => {
+    setSelectedPath(updater);
+  };
+
   const addCustomNode = (level: PathLevel, node: NodeSuggestion) => {
-    addNode(level, node, selectedPath, setSelectedPath);
+    addNode(level, node, selectedPath, setSelectedPathWrapper);
   };
 
   const deleteNode = (level: PathLevel, nodeId: string) => {
-    removeNode(level, nodeId, selectedPath, setSelectedPath);
+    removeNode(level, nodeId, selectedPath, setSelectedPathWrapper);
   };
 
   return {
