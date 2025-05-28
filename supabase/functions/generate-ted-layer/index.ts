@@ -9,8 +9,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// More conservative retry logic with shorter waits
-const retryWithBackoff = async (fn: () => Promise<Response>, maxRetries = 2) => {
+// Very conservative retry logic with minimal retries
+const retryWithBackoff = async (fn: () => Promise<Response>, maxRetries = 1) => {
   for (let i = 0; i <= maxRetries; i++) {
     try {
       const response = await fn();
@@ -21,8 +21,8 @@ const retryWithBackoff = async (fn: () => Promise<Response>, maxRetries = 2) => 
           throw new Error('OpenAI API is currently rate limited. Please wait a moment and try again.');
         }
         
-        // Use shorter, more conservative wait times
-        const waitTime = Math.min(5000 + (i * 3000), 15000); // 5s, 8s, max 15s
+        // Much longer wait for rate limits
+        const waitTime = 30000; // 30 seconds wait
         
         console.log(`Rate limited, waiting ${waitTime}ms before retry ${i + 1}/${maxRetries}`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
@@ -42,8 +42,8 @@ const retryWithBackoff = async (fn: () => Promise<Response>, maxRetries = 2) => 
         throw error;
       }
       
-      // Shorter wait for general errors
-      const waitTime = Math.min(2000 + (i * 1000), 5000); // 2s, 3s, max 5s
+      // Longer wait for general errors
+      const waitTime = 10000; // 10 seconds wait
       console.log(`Request failed, retrying in ${waitTime}ms (attempt ${i + 1}/${maxRetries}):`, error.message);
       await new Promise(resolve => setTimeout(resolve, waitTime));
     }
@@ -159,6 +159,9 @@ ${context ? `Additional Context: ${context}` : ''}
 Generate the ${target_layer} layer following TED methodology.
     `;
 
+    // Add a longer delay before making the request
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
     const response = await retryWithBackoff(async () => {
       return await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -173,7 +176,7 @@ Generate the ${target_layer} layer following TED methodology.
             { role: 'user', content: contextPrompt }
           ],
           temperature: 0.7,
-          max_tokens: 1200, // Further reduced to minimize rate limiting
+          max_tokens: 800, // Further reduced to minimize processing time
         }),
       });
     });
