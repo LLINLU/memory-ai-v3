@@ -1,33 +1,111 @@
 
 export const getMockTedData = (query: string) => {
-  // Base mock data structure based on the provided forest management example
+  // Forest management mock data based on the provided structure
   const mockData = {
     purpose: {
       layer: {
         nodes: [
           {
-            id: "efficiency-improvement",
-            name: "効率性向上((Efficiency Improvement))",
-            description: "作業プロセスの最適化と生産性の向上を図る",
+            id: "portable-laser-forest-management",
+            name: "携帯型レーザー計測による森林管理((Portable Laser Forest Management))",
+            description: "携帯型レーザー技術を用いた効率的な森林管理システムの実現",
             parent_id: null
           },
           {
-            id: "safety-enhancement", 
-            name: "安全性向上((Safety Enhancement))",
-            description: "作業者の安全確保と事故防止対策の強化",
+            id: "unmeasured-forest-data-collection",
+            name: "未測量森林地域のデータ収集((Unmeasured Forest Data Collection))", 
+            description: "これまで測量されていない森林地域の包括的データ収集",
             parent_id: null
           },
           {
-            id: "environmental-impact-reduction",
-            name: "環境への影響低減((Environmental Impact Reduction))",
-            description: "持続可能な技術の導入と環境保護の推進",
+            id: "forestry-worker-field-survey",
+            name: "林業従事者の現場測量((Forestry Worker Field Survey))",
+            description: "林業従事者による効率的な現場測量業務の支援",
             parent_id: null
+          }
+        ]
+      },
+      evaluation: {
+        total_score: 88
+      }
+    },
+    function: {
+      layer: {
+        nodes: [
+          // Portable Laser Forest Management functions
+          {
+            id: "realtime-data-analysis",
+            name: "リアルタイムデータ分析の実現((Real-time Data Analysis))",
+            description: "森林データのリアルタイム収集と即座の分析機能",
+            parent_id: "portable-laser-forest-management"
           },
           {
-            id: "precision-improvement",
-            name: "精度の向上((Precision Improvement))",
-            description: "測定や処理の正確性を高め、品質向上を実現",
-            parent_id: null
+            id: "forest-conservation-efficiency",
+            name: "森林保全の効率化((Forest Conservation Efficiency))",
+            description: "データ駆動型アプローチによる森林保全活動の最適化",
+            parent_id: "portable-laser-forest-management"
+          },
+          {
+            id: "ecosystem-monitoring-enhancement", 
+            name: "生態系モニタリングの充実((Ecosystem Monitoring Enhancement))",
+            description: "包括的な生態系監視システムの構築と運用",
+            parent_id: "portable-laser-forest-management"
+          },
+          {
+            id: "precision-data-collection-improvement",
+            name: "精密データ収集の向上((Precision Data Collection Improvement))",
+            description: "高精度レーザー技術による詳細な森林データ取得",
+            parent_id: "portable-laser-forest-management"
+          },
+          // Unmeasured Forest functions
+          {
+            id: "data-accuracy-improvement",
+            name: "データ精度向上((Data Accuracy Improvement))",
+            description: "未測量地域での高精度データ収集技術の確立",
+            parent_id: "unmeasured-forest-data-collection"
+          },
+          {
+            id: "new-species-discovery",
+            name: "新種生物の発見((New Species Discovery))",
+            description: "未開拓地域における新種生物の発見と記録",
+            parent_id: "unmeasured-forest-data-collection"
+          },
+          {
+            id: "forest-conservation-activity-support",
+            name: "森林保全活動支援((Forest Conservation Activity Support))",
+            description: "地域コミュニティと連携した森林保全活動の推進",
+            parent_id: "unmeasured-forest-data-collection"
+          },
+          {
+            id: "forest-loss-monitoring",
+            name: "森林損失の監視((Forest Loss Monitoring))",
+            description: "森林減少の早期発見と対策立案システム",
+            parent_id: "unmeasured-forest-data-collection"
+          },
+          // Forestry Worker functions
+          {
+            id: "terrain-survey-efficiency",
+            name: "地形調査の効率化((Terrain Survey Efficiency))",
+            description: "現場作業員による効率的な地形調査手法の確立",
+            parent_id: "forestry-worker-field-survey"
+          },
+          {
+            id: "undeveloped-area-discovery",
+            name: "未開発地域の発見((Undeveloped Area Discovery))",
+            description: "新たな林業開発可能地域の特定と評価",
+            parent_id: "forestry-worker-field-survey"
+          },
+          {
+            id: "forestry-management-optimization",
+            name: "林業管理の最適化((Forestry Management Optimization))",
+            description: "持続可能な林業経営のための管理システム最適化",
+            parent_id: "forestry-worker-field-survey"
+          },
+          {
+            id: "high-precision-data-collection",
+            name: "高精度データ収集((High Precision Data Collection))",
+            description: "現場レベルでの高精度データ収集技術の実装",
+            parent_id: "forestry-worker-field-survey"
           }
         ]
       },
@@ -35,72 +113,102 @@ export const getMockTedData = (query: string) => {
         total_score: 85
       }
     },
-    function: {
+    measure: {
       layer: {
         nodes: [
-          // Efficiency Improvement functions
+          // Real-time Data Analysis measures
           {
-            id: "cut-path-optimization",
-            name: "カットパス最適化((Cut Path Optimization))",
-            description: "最適な経路設計により作業効率を最大化",
-            parent_id: "efficiency-improvement"
+            id: "data-sharing-security-enhancement",
+            name: "データ共有のセキュリティ強化((Data Sharing Security Enhancement))",
+            description: "森林データの安全な共有と保護システム",
+            parent_id: "realtime-data-analysis"
           },
           {
-            id: "target-identification",
-            name: "ターゲット識別((Target Identification))", 
-            description: "処理対象の正確な特定と分類",
-            parent_id: "efficiency-improvement"
+            id: "data-collection-automation",
+            name: "データ収集の自動化((Data Collection Automation))",
+            description: "自動化されたデータ収集システムの構築",
+            parent_id: "realtime-data-analysis"
           },
-          {
-            id: "safety-zone-setting",
-            name: "安全ゾーン設定((Safety Zone Setting))",
-            description: "作業領域の安全範囲を明確に定義",
-            parent_id: "safety-enhancement"
-          },
-          {
-            id: "distance-measurement",
-            name: "距離測定((Distance Measurement))",
-            description: "対象物との正確な距離計測機能",
-            parent_id: "efficiency-improvement"
-          },
-          // Safety Enhancement functions
-          {
-            id: "protective-equipment-use",
-            name: "保護装備の使用((Protective Equipment Use))",
-            description: "適切な安全装備の選択と着用管理",
-            parent_id: "safety-enhancement"
-          },
-          {
-            id: "safety-monitoring-system",
-            name: "安全監視システムの導入((Safety Monitoring System Implementation))",
-            description: "リアルタイム安全状況の監視と管理",
-            parent_id: "safety-enhancement"
-          },
-          // Environmental functions
-          {
-            id: "reforestation-program",
-            name: "再植林プログラムの実施((Reforestation Program Implementation))",
-            description: "環境復元と持続可能な資源管理",
-            parent_id: "environmental-impact-reduction"
-          },
-          {
-            id: "sustainable-technology",
-            name: "持続可能な技術の導入((Sustainable Technology Implementation))",
-            description: "環境に配慮した技術の採用と普及",
-            parent_id: "environmental-impact-reduction"
-          },
-          // Precision functions
           {
             id: "ui-optimization",
             name: "ユーザーインターフェースの最適化((UI Optimization))",
-            description: "操作性と視認性の向上による精度向上",
-            parent_id: "precision-improvement"
+            description: "直感的で効率的なユーザーインターフェースの設計",
+            parent_id: "realtime-data-analysis"
           },
           {
-            id: "laser-guide-system",
-            name: "レーザーガイドシステムの設計((Laser Guide System Design))",
-            description: "高精度レーザー誘導システムの構築",
-            parent_id: "precision-improvement"
+            id: "immediate-environmental-data-analysis",
+            name: "環境データの即時分析((Immediate Environmental Data Analysis))",
+            description: "収集された環境データの即座の解析処理",
+            parent_id: "realtime-data-analysis"
+          },
+          // Forest Conservation Efficiency measures
+          {
+            id: "target-intervention-optimization",
+            name: "ターゲット介入の最適化((Target Intervention Optimization))",
+            description: "効果的な森林保全介入ポイントの特定",
+            parent_id: "forest-conservation-efficiency"
+          },
+          {
+            id: "data-driven-decision-making",
+            name: "データ駆動型意思決定((Data-driven Decision Making))",
+            description: "データに基づく科学的な森林管理決定",
+            parent_id: "forest-conservation-efficiency"
+          },
+          {
+            id: "detailed-data-collection",
+            name: "詳細データ収集((Detailed Data Collection))",
+            description: "森林状態の詳細な情報収集システム",
+            parent_id: "forest-conservation-efficiency"
+          },
+          // Ecosystem Monitoring measures
+          {
+            id: "realtime-data-analysis-ecosystem",
+            name: "リアルタイムデータ分析((Real-time Data Analysis))",
+            description: "生態系データのリアルタイム解析機能",
+            parent_id: "ecosystem-monitoring-enhancement"
+          },
+          {
+            id: "impact-assessment-modeling",
+            name: "影響評価モデリング((Impact Assessment Modeling))",
+            description: "環境変化の影響を予測するモデリングシステム",
+            parent_id: "ecosystem-monitoring-enhancement"
+          },
+          {
+            id: "early-warning-system",
+            name: "環境変化の早期警告システム((Early Warning System))",
+            description: "環境変化の早期発見と警告システム",
+            parent_id: "ecosystem-monitoring-enhancement"
+          },
+          {
+            id: "high-precision-data-acquisition",
+            name: "高精度データ取得((High Precision Data Acquisition))",
+            description: "生態系の詳細な情報を高精度で取得",
+            parent_id: "ecosystem-monitoring-enhancement"
+          },
+          // Precision Data Collection measures
+          {
+            id: "3d-mapping-integration",
+            name: "3Dマッピング統合((3D Mapping Integration))",
+            description: "三次元地形データの統合マッピングシステム",
+            parent_id: "precision-data-collection-improvement"
+          },
+          {
+            id: "data-correction-algorithm",
+            name: "データ補正アルゴリズム((Data Correction Algorithm))",
+            description: "測定データの精度向上のための補正処理",
+            parent_id: "precision-data-collection-improvement"
+          },
+          {
+            id: "realtime-data-processing",
+            name: "リアルタイムデータ処理((Real-time Data Processing))",
+            description: "収集データの即時処理と解析システム",
+            parent_id: "precision-data-collection-improvement"
+          },
+          {
+            id: "optical-distance-measurement",
+            name: "光学距離測定((Optical Distance Measurement))",
+            description: "レーザー光学技術による高精度距離測定",
+            parent_id: "precision-data-collection-improvement"
           }
         ]
       },
@@ -108,182 +216,136 @@ export const getMockTedData = (query: string) => {
         total_score: 82
       }
     },
-    measure: {
-      layer: {
-        nodes: [
-          // Cut Path Optimization measures
-          {
-            id: "supply-chain-optimization",
-            name: "サプライチェーン最適化((Supply Chain Optimization))",
-            description: "効率的な資材調達と配送システムの構築",
-            parent_id: "cut-path-optimization"
-          },
-          {
-            id: "market-expansion-strategy",
-            name: "市場展開戦略((Market Expansion Strategy))",
-            description: "新規市場への効果的な参入戦略",
-            parent_id: "cut-path-optimization"
-          },
-          {
-            id: "technology-licensing",
-            name: "技術ライセンシング((Technology Licensing))",
-            description: "技術の知的財産権管理と活用",
-            parent_id: "cut-path-optimization"
-          },
-          // Target Identification measures
-          {
-            id: "ai-recognition-algorithm",
-            name: "AI認識アルゴリズム((AI Recognition Algorithm))",
-            description: "機械学習による対象物の自動識別",
-            parent_id: "target-identification"
-          },
-          {
-            id: "spectral-analysis",
-            name: "スペクトル分析((Spectral Analysis))",
-            description: "光スペクトラムによる物質特性の解析",
-            parent_id: "target-identification"
-          },
-          // Safety Zone Setting measures
-          {
-            id: "partnership-development",
-            name: "パートナーシップ開発((Partnership Development))",
-            description: "協力関係の構築と維持",
-            parent_id: "safety-zone-setting"
-          },
-          {
-            id: "market-education",
-            name: "市場教育((Market Education))",
-            description: "顧客や市場への技術啓発活動",
-            parent_id: "safety-zone-setting"
-          },
-          // Distance Measurement measures
-          {
-            id: "lidar-sensor",
-            name: "LiDARセンサー((LiDAR Sensor))",
-            description: "レーザー光による高精度距離測定技術",
-            parent_id: "distance-measurement"
-          },
-          {
-            id: "ultrasonic-measurement",
-            name: "超音波測定((Ultrasonic Measurement))",
-            description: "音波を利用した非接触距離計測",
-            parent_id: "distance-measurement"
-          },
-          // Protective Equipment measures
-          {
-            id: "innovation-improvement",
-            name: "イノベーションと改善((Innovation and Improvement))",
-            description: "継続的な技術革新と品質向上",
-            parent_id: "protective-equipment-use"
-          },
-          {
-            id: "quality-control",
-            name: "品質管理((Quality Control))",
-            description: "製品・サービス品質の管理と保証",
-            parent_id: "protective-equipment-use"
-          },
-          // Safety Monitoring measures
-          {
-            id: "realtime-monitoring",
-            name: "リアルタイム監視((Real-time Monitoring))",
-            description: "即座の状況把握と対応システム",
-            parent_id: "safety-monitoring-system"
-          },
-          {
-            id: "iot-sensors",
-            name: "IoTセンサー((IoT Sensors))",
-            description: "インターネット接続センサーネットワーク",
-            parent_id: "safety-monitoring-system"
-          }
-        ]
-      },
-      evaluation: {
-        total_score: 78
-      }
-    },
     implementation: {
       layer: {
         nodes: [
-          // Supply Chain Optimization implementations
+          // Data Sharing Security implementations
           {
-            id: "automated-inventory-management",
-            name: "自動在庫管理システム((Automated Inventory Management))",
-            description: "AIによる在庫最適化と自動発注システム",
-            parent_id: "supply-chain-optimization"
+            id: "access-control-list-setting",
+            name: "アクセスコントロールリストの設定((Access Control List Setting))",
+            description: "データアクセス権限の詳細な管理システム",
+            parent_id: "data-sharing-security-enhancement"
           },
           {
-            id: "logistics-optimization-platform",
-            name: "物流最適化プラットフォーム((Logistics Optimization Platform))",
-            description: "配送ルートと時間の最適化システム",
-            parent_id: "supply-chain-optimization"
+            id: "data-sharing-protocol-update",
+            name: "データ共有プロトコルの更新((Data Sharing Protocol Update))",
+            description: "最新のセキュリティ基準に準拠したプロトコル",
+            parent_id: "data-sharing-security-enhancement"
           },
           {
-            id: "supplier-management-system",
-            name: "サプライヤー管理システム((Supplier Management System))",
-            description: "サプライヤー評価と関係管理システム",
-            parent_id: "supply-chain-optimization"
-          },
-          // Market Expansion implementations
-          {
-            id: "market-analysis-dashboard",
-            name: "市場分析ダッシュボード((Market Analysis Dashboard))",
-            description: "リアルタイム市場データと競合分析システム",
-            parent_id: "market-expansion-strategy"
+            id: "two-factor-authentication",
+            name: "二要素認証の実装((Two-factor Authentication))",
+            description: "多層認証による高度なセキュリティ確保",
+            parent_id: "data-sharing-security-enhancement"
           },
           {
-            id: "customer-segmentation-tool",
-            name: "顧客セグメンテーションツール((Customer Segmentation Tool))",
-            description: "データ駆動型顧客分析と戦略策定システム",
-            parent_id: "market-expansion-strategy"
-          },
-          // Technology Licensing implementations
-          {
-            id: "ip-management-platform",
-            name: "知的財産管理プラットフォーム((IP Management Platform))",
-            description: "特許・ライセンス管理と収益最適化システム",
-            parent_id: "technology-licensing"
+            id: "regular-security-audit",
+            name: "定期的なセキュリティ監査の実施((Regular Security Audit))",
+            description: "継続的なセキュリティ評価と改善システム",
+            parent_id: "data-sharing-security-enhancement"
           },
           {
-            id: "licensing-portal",
-            name: "ライセンシングポータル((Licensing Portal))",
-            description: "技術ライセンス契約と管理のオンラインプラットフォーム",
-            parent_id: "technology-licensing"
+            id: "encryption-algorithm-application",
+            name: "暗号化アルゴリズムの適用((Encryption Algorithm Application))",
+            description: "最新暗号化技術によるデータ保護システム",
+            parent_id: "data-sharing-security-enhancement"
           },
-          // AI Recognition implementations
+          // Data Collection Automation implementations
           {
-            id: "deep-learning-model",
-            name: "深層学習モデル((Deep Learning Model))",
-            description: "画像認識のための畳み込みニューラルネットワーク",
-            parent_id: "ai-recognition-algorithm"
-          },
-          {
-            id: "edge-ai-processor",
-            name: "エッジAIプロセッサ((Edge AI Processor))",
-            description: "リアルタイム処理のための専用AIチップ",
-            parent_id: "ai-recognition-algorithm"
-          },
-          // Spectral Analysis implementations
-          {
-            id: "spectral-sensor-array",
-            name: "スペクトルセンサーアレイ((Spectral Sensor Array))",
-            description: "多波長同時測定のためのセンサー配列",
-            parent_id: "spectral-analysis"
+            id: "portable-laser-scanner",
+            name: "ポータブルレーザースキャナー((Portable Laser Scanner))",
+            description: "携帯可能な高精度レーザースキャニング装置",
+            parent_id: "data-collection-automation"
           },
           {
-            id: "spectral-database",
-            name: "スペクトルデータベース((Spectral Database))",
-            description: "物質特性の参照用スペクトルライブラリ",
-            parent_id: "spectral-analysis"
+            id: "environmental-sensor-placement",
+            name: "環境センサー配置((Environmental Sensor Placement))",
+            description: "森林環境の包括的モニタリング用センサー",
+            parent_id: "data-collection-automation"
+          },
+          {
+            id: "weather-resistant-device-case",
+            name: "耐候性装置ケース((Weather-resistant Device Case))",
+            description: "厳しい森林環境に対応する保護ケース",
+            parent_id: "data-collection-automation"
+          },
+          {
+            id: "automatic-data-sync-software",
+            name: "自動データ同期ソフトウェア((Automatic Data Sync Software))",
+            description: "クラウドとの自動データ同期システム",
+            parent_id: "data-collection-automation"
+          },
+          // UI Optimization implementations
+          {
+            id: "accessibility-guideline-compliance",
+            name: "アクセシビリティガイドラインの遵守((Accessibility Guideline Compliance))",
+            description: "全ユーザーが利用可能なインターフェース設計",
+            parent_id: "ui-optimization"
+          },
+          {
+            id: "interactive-design-adoption",
+            name: "インタラクティブデザインの採用((Interactive Design Adoption))",
+            description: "直感的で応答性の高いユーザーインターフェース",
+            parent_id: "ui-optimization"
+          },
+          {
+            id: "data-visualization-tool-integration",
+            name: "データ可視化ツールの統合((Data Visualization Tool Integration))",
+            description: "複雑なデータを分かりやすく表示するツール",
+            parent_id: "ui-optimization"
+          },
+          {
+            id: "performance-optimization-technology",
+            name: "パフォーマンス最適化技術((Performance Optimization Technology))",
+            description: "高速で効率的なシステム動作の実現",
+            parent_id: "ui-optimization"
+          },
+          {
+            id: "user-research-based-design",
+            name: "ユーザー研究に基づく設計((User Research-based Design))",
+            description: "実際のユーザーニーズに基づいたインターフェース",
+            parent_id: "ui-optimization"
+          },
+          // Immediate Environmental Data Analysis implementations
+          {
+            id: "cloud-based-analysis-platform",
+            name: "クラウドベース解析プラットフォーム((Cloud-based Analysis Platform))",
+            description: "スケーラブルなクラウド分析基盤システム",
+            parent_id: "immediate-environmental-data-analysis"
+          },
+          {
+            id: "data-filtering-technology",
+            name: "データフィルタリング技術((Data Filtering Technology))",
+            description: "ノイズ除去と重要データ抽出システム",
+            parent_id: "immediate-environmental-data-analysis"
+          },
+          {
+            id: "realtime-data-transfer-technology",
+            name: "リアルタイムデータ転送技術((Real-time Data Transfer Technology))",
+            description: "低遅延でのデータ伝送システム",
+            parent_id: "immediate-environmental-data-analysis"
+          },
+          {
+            id: "machine-learning-model-for-analysis",
+            name: "分析のための機械学習モデル((Machine Learning Model for Analysis))",
+            description: "AI技術を活用した高度な分析システム",
+            parent_id: "immediate-environmental-data-analysis"
+          },
+          {
+            id: "high-speed-processing-algorithm",
+            name: "高速処理アルゴリズム((High-speed Processing Algorithm))",
+            description: "リアルタイム分析のための最適化アルゴリズム",
+            parent_id: "immediate-environmental-data-analysis"
           }
         ]
       },
       evaluation: {
-        total_score: 75
+        total_score: 79
       }
     }
   };
 
-  // Customize the mock data based on query keywords
+  // Customize based on query keywords
   if (query.includes('医療') || query.includes('診断')) {
     mockData.purpose.layer.nodes = [
       {
