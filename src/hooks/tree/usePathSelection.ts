@@ -1,4 +1,5 @@
 
+import React from "react";
 import { level1Items as initialLevel1Items, level2Items as initialLevel2Items, level3Items as initialLevel3Items } from "@/data/technologyTreeData";
 import { NodeSuggestion } from "@/types/chat";
 import { PathLevel } from "@/types/tree";
