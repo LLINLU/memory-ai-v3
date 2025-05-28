@@ -1,6 +1,7 @@
 
 import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 export interface TreemapData {
   name: string;
@@ -46,6 +47,21 @@ export const useTreemapGeneration = () => {
       if (data?.treemapData && Array.isArray(data.treemapData)) {
         setTreemapData(data.treemapData);
         console.log("Generated treemap data:", data.treemapData);
+        
+        // Show warning if fallback data was used
+        if (data.warning) {
+          toast({
+            title: "研究エリア生成",
+            description: "AI生成に失敗したため、デフォルトデータを表示しています。後でもう一度お試しください。",
+            variant: "default",
+          });
+        } else {
+          toast({
+            title: "研究エリア生成完了",
+            description: "AIが研究エリアを正常に生成しました。",
+            variant: "default",
+          });
+        }
       } else {
         console.log("No treemap data received, using fallback");
         throw new Error("No treemap data received from edge function");
@@ -62,8 +78,14 @@ export const useTreemapGeneration = () => {
         { name: `${query} - その他`, size: 10, fill: "#4A3D78", papers: 10 }
       ];
       
-      console.log("Using query-based fallback data:", fallbackData);
+      console.log("Using client-side fallback data:", fallbackData);
       setTreemapData(fallbackData);
+      
+      toast({
+        title: "研究エリア生成エラー",
+        description: "研究エリアの生成中にエラーが発生しました。デフォルトデータを表示しています。",
+        variant: "destructive",
+      });
     } finally {
       setIsGenerating(false);
     }
