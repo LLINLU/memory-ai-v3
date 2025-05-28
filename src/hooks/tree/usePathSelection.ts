@@ -34,7 +34,7 @@ export const usePathSelection = (
     handleAddLevel4
   } = usePathSelectionState(initialPath);
 
-  // Determine data source: use provided treeData, or generate from mock data, or fall back to default
+  // Determine data source: use provided treeData, or generate from mock data, or fall back to mock default
   let level1Data, level2Data, level3Data, level4Data;
 
   if (treeData?.level1Items) {
@@ -44,29 +44,22 @@ export const usePathSelection = (
     level3Data = treeData.level3Items || {};
     level4Data = treeData.level4Items || {};
     console.log('Using provided TED tree data');
-  } else if (locationState?.query) {
-    // Generate mock data based on query
-    const mockDataResult = getMockTedData(locationState.query);
-    level1Data = mockDataResult.treeData?.level1Items || initialLevel1Items;
-    level2Data = mockDataResult.treeData?.level2Items || initialLevel2Items;
-    level3Data = mockDataResult.treeData?.level3Items || initialLevel3Items;
-    level4Data = mockDataResult.treeData?.level4Items || {};
-    console.log('Using mock data for query:', locationState.query);
   } else {
-    // Fall back to default data
-    level1Data = initialLevel1Items;
-    level2Data = initialLevel2Items;
-    level3Data = initialLevel3Items;
-    level4Data = {};
-    console.log('Using default static data');
+    // Always use mock data for technology tree page - either from query or default to forest management
+    const query = locationState?.query || "森林管理"; // Default to forest management
+    const mockDataResult = getMockTedData(query);
+    level1Data = mockDataResult.treeData?.level1Items || [];
+    level2Data = mockDataResult.treeData?.level2Items || {};
+    level3Data = mockDataResult.treeData?.level3Items || {};
+    level4Data = mockDataResult.treeData?.level4Items || {};
+    console.log('Using mock data for query:', query);
+    console.log('Mock data loaded:', {
+      level1Count: level1Data.length,
+      level2Count: Object.keys(level2Data).length,
+      level3Count: Object.keys(level3Data).length,
+      level4Count: Object.keys(level4Data).length
+    });
   }
-
-  console.log('usePathSelection - Final data sources:', {
-    level1Count: level1Data.length,
-    level2Count: Object.keys(level2Data).length,
-    level3Count: Object.keys(level3Data).length,
-    level4Count: Object.keys(level4Data).length
-  });
 
   const {
     level1Items,
@@ -78,20 +71,29 @@ export const usePathSelection = (
     deleteNode: removeNode
   } = useNodeOperations(level1Data, level2Data, level3Data, level4Data);
 
-  // Set initial path to first available item if TED data is provided and current path doesn't exist
-  if (level1Data.length > 0) {
-    const currentLevel1Exists = level1Data.find(item => item.id === selectedPath.level1);
-    if (!currentLevel1Exists) {
-      console.log('Setting initial path to first item:', level1Data[0].id);
-      setSelectedPath(prev => ({
-        ...prev,
-        level1: level1Data[0].id,
-        level2: "",
-        level3: "",
-        level4: ""
-      }));
+  // Set initial path to first available item when data loads
+  React.useEffect(() => {
+    if (level1Data.length > 0) {
+      const firstLevel1 = level1Data[0];
+      const firstLevel2 = level2Data[firstLevel1.id]?.[0];
+      const firstLevel3 = firstLevel2 ? level3Data[firstLevel2.id]?.[0] : null;
+      const firstLevel4 = firstLevel3 ? level4Data[firstLevel3.id]?.[0] : null;
+
+      console.log('Setting initial path:', {
+        level1: firstLevel1.id,
+        level2: firstLevel2?.id || "",
+        level3: firstLevel3?.id || "",
+        level4: firstLevel4?.id || ""
+      });
+
+      setSelectedPath({
+        level1: firstLevel1.id,
+        level2: firstLevel2?.id || "",
+        level3: firstLevel3?.id || "",
+        level4: firstLevel4?.id || ""
+      });
     }
-  }
+  }, [level1Data, level2Data, level3Data, level4Data, setSelectedPath]);
 
   // Wrapper functions to maintain the same API
   const handleNodeClick = (level: PathLevel, nodeId: string) => {

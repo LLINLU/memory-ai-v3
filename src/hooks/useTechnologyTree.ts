@@ -39,28 +39,13 @@ export const useTechnologyTree = () => {
   const searchMode = locationState?.searchMode || "quick";
   const [selectedView, setSelectedView] = useState("tree");
   
-  // Determine initial path based on TED data availability
-  let initialPath = {
-    level1: "astronomy",
-    level2: "turbulence-compensation",
-    level3: "laser-guide-star",
+  // Always start with empty initial path - let usePathSelection determine the correct path
+  const initialPath = {
+    level1: "",
+    level2: "",
+    level3: "",
     level4: ""
   };
-
-  // If we have TED-generated data, use the first nodes as initial selection
-  if (locationState?.treeData?.level1Items?.[0]) {
-    const firstLevel1 = locationState.treeData.level1Items[0];
-    const firstLevel2 = locationState.treeData.level2Items?.[firstLevel1.id]?.[0];
-    const firstLevel3 = firstLevel2 ? locationState.treeData.level3Items?.[firstLevel2.id]?.[0] : null;
-    const firstLevel4 = firstLevel3 ? locationState.treeData.level4Items?.[firstLevel3.id]?.[0] : null;
-    
-    initialPath = {
-      level1: firstLevel1.id,
-      level2: firstLevel2?.id || "",
-      level3: firstLevel3?.id || "",
-      level4: firstLevel4?.id || ""
-    };
-  }
   
   const { 
     selectedPath, 
