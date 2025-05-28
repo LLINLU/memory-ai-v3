@@ -39,7 +39,8 @@ export const useTreemapGeneration = () => {
       console.log("Edge function error:", functionError);
 
       if (functionError) {
-        throw new Error(functionError.message);
+        console.error("Edge function error:", functionError);
+        throw new Error(functionError.message || "Failed to generate treemap");
       }
 
       if (data?.treemapData && Array.isArray(data.treemapData)) {

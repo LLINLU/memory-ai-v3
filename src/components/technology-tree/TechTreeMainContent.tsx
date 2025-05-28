@@ -26,6 +26,9 @@ interface TechTreeMainContentProps {
   conversationHistory?: any[];
   handleAddLevel4?: () => void;
   searchMode?: string;
+  treemapData?: any[];
+  isGeneratingTreemap?: boolean;
+  treemapError?: string | null;
 }
 
 export const TechTreeMainContent = ({
@@ -42,7 +45,10 @@ export const TechTreeMainContent = ({
   onEditScenario,
   conversationHistory,
   handleAddLevel4,
-  searchMode
+  searchMode,
+  treemapData,
+  isGeneratingTreemap,
+  treemapError
 }: TechTreeMainContentProps) => {
   return (
     <MainContent
@@ -60,6 +66,9 @@ export const TechTreeMainContent = ({
       conversationHistory={conversationHistory}
       onAddLevel4={handleAddLevel4}
       searchMode={searchMode}
+      treemapData={treemapData}
+      isGeneratingTreemap={isGeneratingTreemap}
+      treemapError={treemapError}
     />
   );
 };

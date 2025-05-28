@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
@@ -15,6 +14,7 @@ import { TechTreeMainContent } from "@/components/technology-tree/TechTreeMainCo
 import { useScenarioState } from "@/hooks/tree/useScenarioState";
 import { useChatInitialization } from "@/hooks/tree/useChatInitialization";
 import { useNodeSelectionEffect } from "@/hooks/tree/useNodeSelectionEffect";
+import { useTreemapGeneration } from "@/hooks/research-context/useTreemapGeneration";
 import { toast } from "@/components/ui/use-toast";
 
 const TechnologyTree = () => {
@@ -24,7 +24,8 @@ const TechnologyTree = () => {
     scenario?: string; 
     searchMode?: string;
     researchAnswers?: any;
-    conversationHistory?: any[] 
+    conversationHistory?: any[];
+    treemapData?: any[];
   } | null;
   
   // Store the conversation history from the research context
@@ -41,6 +42,19 @@ const TechnologyTree = () => {
     initialScenario: locationState?.scenario,
     initialSearchMode: locationState?.searchMode
   });
+
+  // Add treemap generation hook
+  const { treemapData, isGenerating, error, generateTreemap } = useTreemapGeneration();
+
+  // Generate treemap when we have scenario and query from research context
+  useEffect(() => {
+    const query = locationState?.query;
+    if (scenario && query && scenario.trim() !== '' && query.trim() !== '') {
+      console.log("Technology Tree: Generating treemap for scenario:", scenario);
+      console.log("Technology Tree: With query:", query);
+      generateTreemap(query, scenario);
+    }
+  }, [scenario, locationState?.query, generateTreemap]);
 
   const {
     selectedPath,
@@ -177,6 +191,9 @@ const TechnologyTree = () => {
               conversationHistory={savedConversationHistory}
               handleAddLevel4={handleAddLevel4}
               searchMode={searchMode}
+              treemapData={treemapData}
+              isGeneratingTreemap={isGenerating}
+              treemapError={error}
             />
           </TechTreeLayout>
           
