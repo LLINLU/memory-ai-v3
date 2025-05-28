@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
@@ -16,6 +15,7 @@ import { useScenarioState } from "@/hooks/tree/useScenarioState";
 import { useChatInitialization } from "@/hooks/tree/useChatInitialization";
 import { useNodeSelectionEffect } from "@/hooks/tree/useNodeSelectionEffect";
 import { toast } from "@/components/ui/use-toast";
+import { FallbackAlert } from "@/components/technology-tree/FallbackAlert";
 
 const TechnologyTree = () => {
   const location = useLocation();
@@ -31,6 +31,7 @@ const TechnologyTree = () => {
   
   // Store the conversation history from the research context
   const [savedConversationHistory, setSavedConversationHistory] = useState<any[]>([]);
+  const [showFallbackAlert, setShowFallbackAlert] = useState(false);
   
   // Extract conversation history from location state if available
   useEffect(() => {
@@ -70,8 +71,18 @@ const TechnologyTree = () => {
     if (locationState?.treeData && locationState?.tedResults) {
       console.log('Initializing with TED-generated tree data:', locationState.treeData);
       
-      // Show success message with TED evaluation scores
+      // Check if any fallback data was used
       const tedResults = locationState.tedResults;
+      let hasFallbackData = false;
+      
+      if (tedResults.purpose?.layer?.generation_metadata?.coverage_note?.includes('Fallback') ||
+          tedResults.function?.layer?.generation_metadata?.coverage_note?.includes('Fallback') ||
+          tedResults.measure?.layer?.generation_metadata?.coverage_note?.includes('Fallback')) {
+        hasFallbackData = true;
+        setShowFallbackAlert(true);
+      }
+      
+      // Show success message with TED evaluation scores
       const scores = [];
       if (tedResults.purpose?.evaluation?.total_score) {
         scores.push(`Purpose: ${Math.round(tedResults.purpose.evaluation.total_score / 4)}%`);
@@ -84,8 +95,8 @@ const TechnologyTree = () => {
       }
       
       toast({
-        title: "TED Tree Generated Successfully",
-        description: `Quality scores: ${scores.join(', ')}`,
+        title: hasFallbackData ? "TED Tree Generated with Templates" : "TED Tree Generated Successfully",
+        description: scores.length > 0 ? `Quality scores: ${scores.join(', ')}` : "Tree structure created successfully",
       });
     }
   }, [locationState?.treeData, locationState?.tedResults]);
@@ -190,22 +201,28 @@ const TechnologyTree = () => {
             handlePanelResize={handlePanelResize}
             sidebarContent={sidebarContent}
           >
-            <TechTreeMainContent
-              selectedPath={selectedPath}
-              level1Items={level1Items}
-              level2Items={level2Items}
-              level3Items={level3Items}
-              handleNodeClick={handleNodeClick}
-              editNode={editNode}
-              deleteNode={deleteNode}
-              levelNames={levelNames}
-              hasUserMadeSelection={hasUserMadeSelection}
-              scenario={scenario}
-              onEditScenario={handleEditScenario}
-              conversationHistory={savedConversationHistory}
-              handleAddLevel4={handleAddLevel4}
-              searchMode={searchMode}
-            />
+            <div className="p-4">
+              <FallbackAlert 
+                isVisible={showFallbackAlert}
+                onDismiss={() => setShowFallbackAlert(false)}
+              />
+              <TechTreeMainContent
+                selectedPath={selectedPath}
+                level1Items={level1Items}
+                level2Items={level2Items}
+                level3Items={level3Items}
+                handleNodeClick={handleNodeClick}
+                editNode={editNode}
+                deleteNode={deleteNode}
+                levelNames={levelNames}
+                hasUserMadeSelection={hasUserMadeSelection}
+                scenario={scenario}
+                onEditScenario={handleEditScenario}
+                conversationHistory={savedConversationHistory}
+                handleAddLevel4={handleAddLevel4}
+                searchMode={searchMode}
+              />
+            </div>
           </TechTreeLayout>
           
           <ChatBox

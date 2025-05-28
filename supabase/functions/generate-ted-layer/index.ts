@@ -9,16 +9,20 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Retry logic with exponential backoff
-const retryWithBackoff = async (fn: () => Promise<Response>, maxRetries = 3) => {
+// Improved retry logic with more conservative backoff
+const retryWithBackoff = async (fn: () => Promise<Response>, maxRetries = 2) => {
   for (let i = 0; i <= maxRetries; i++) {
     try {
       const response = await fn();
       if (response.status === 429) {
-        if (i === maxRetries) throw new Error('Rate limit exceeded after all retries');
+        if (i === maxRetries) {
+          console.log('Rate limit exceeded after all retries, returning fallback');
+          throw new Error('RATE_LIMITED');
+        }
         
         const retryAfter = response.headers.get('retry-after');
-        const waitTime = retryAfter ? parseInt(retryAfter) * 1000 : Math.pow(2, i) * 1000;
+        // Cap wait time at 30 seconds max to avoid extremely long waits
+        const waitTime = retryAfter ? Math.min(parseInt(retryAfter) * 1000, 30000) : Math.min(Math.pow(2, i) * 2000, 30000);
         
         console.log(`Rate limited, waiting ${waitTime}ms before retry ${i + 1}/${maxRetries}`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
@@ -26,13 +30,78 @@ const retryWithBackoff = async (fn: () => Promise<Response>, maxRetries = 3) => 
       }
       return response;
     } catch (error) {
+      if (error.message === 'RATE_LIMITED') throw error;
       if (i === maxRetries) throw error;
-      const waitTime = Math.pow(2, i) * 1000;
+      const waitTime = Math.min(Math.pow(2, i) * 2000, 15000);
       console.log(`Request failed, retrying in ${waitTime}ms (attempt ${i + 1}/${maxRetries}):`, error.message);
       await new Promise(resolve => setTimeout(resolve, waitTime));
     }
   }
   throw new Error('Max retries exceeded');
+};
+
+// Fallback TED data generator
+const generateFallbackTedLayer = (query: string, targetLayer: "purpose" | "function" | "measure", parentNodes: any[] = []) => {
+  const fallbackData = {
+    purpose: {
+      layer: "purpose",
+      nodes: [
+        {
+          id: "purpose_1",
+          name: "効率を向上する((Improve Efficiency))",
+          description: "システムの動作効率を向上させることで、より良いパフォーマンスを実現する",
+          parent_id: null
+        },
+        {
+          id: "purpose_2", 
+          name: "精度を高める((Enhance Accuracy))",
+          description: "測定や処理の精度を向上させることで、信頼性の高い結果を得る",
+          parent_id: null
+        },
+        {
+          id: "purpose_3",
+          name: "コストを削減する((Reduce Cost))",
+          description: "運用コストや開発コストを削減し、経済的な効果を実現する",
+          parent_id: null
+        }
+      ],
+      generation_metadata: {
+        total_nodes: 3,
+        abstraction_level: "high",
+        coverage_note: "Fallback template covering common research purposes"
+      }
+    },
+    function: {
+      layer: "function",
+      nodes: parentNodes.slice(0, 3).map((parent, index) => ({
+        id: `function_${index + 1}`,
+        name: `機能${index + 1}((Function ${index + 1}))`,
+        description: `${parent.name}を実現するための具体的な機能`,
+        parent_id: parent.id
+      })),
+      generation_metadata: {
+        total_nodes: Math.min(parentNodes.length, 3),
+        abstraction_level: "medium", 
+        coverage_note: "Fallback functions based on purpose nodes"
+      }
+    },
+    measure: {
+      layer: "measure",
+      nodes: parentNodes.slice(0, 3).map((parent, index) => ({
+        id: `measure_${index + 1}`,
+        name: `手段${index + 1}((Measure ${index + 1}))`,
+        description: `${parent.name}を実装するための具体的な技術や手法`,
+        parent_id: parent.id
+      })),
+      generation_metadata: {
+        total_nodes: Math.min(parentNodes.length, 3),
+        abstraction_level: "low",
+        coverage_note: "Fallback measures based on function nodes"
+      }
+    }
+  };
+
+  return fallbackData[targetLayer];
 };
 
 const TED_LAYER_PROMPT = `You are an **expert facilitator of TED (Technology Element Decomposition) hierarchical trees** and are fully versed in the **TED workshop technique** developed by JAXA & Ritsumeikan University.
@@ -48,7 +117,7 @@ The current layer configuration is: Purpose → Function → Measure (3 layers)
 ### Generation Rules for Single Layer
 1. Generate ONLY the requested layer (Purpose, Function, or Measure)
 2. Output every node name in the format **日本語訳((English phrase))**
-3. Generate 3-5 nodes for the layer to ensure comprehensive coverage
+3. Generate 3-4 nodes for the layer to ensure comprehensive coverage
 4. Ensure siblings are mutually exclusive and collectively exhaustive (MECE)
 5. Follow Why-How logic: child answers HOW parent is achieved, parent answers WHY child exists
 6. Use appropriate abstraction level for the layer type
@@ -105,7 +174,7 @@ Return a JSON object with this exact structure:
 - Appropriate abstraction level for the layer
 - Clear Why-How relationships between layers
 - Bilingual naming format consistently applied
-- Comprehensive but not excessive (3-5 nodes typically optimal)
+- Comprehensive but not excessive (3-4 nodes typically optimal)
 
 Focus on generating high-quality, TED-compliant nodes for the specified layer only.`;
 
@@ -127,10 +196,16 @@ serve(async (req) => {
     }
 
     if (!openAIApiKey) {
-      console.error('OpenAI API key is missing');
+      console.error('OpenAI API key is missing, using fallback');
+      const fallbackData = generateFallbackTedLayer(query, target_layer, parent_nodes);
       return new Response(
-        JSON.stringify({ error: 'OpenAI API key not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ 
+          success: true, 
+          layer_data: fallbackData,
+          fallback_used: true,
+          fallback_reason: "OpenAI API key not configured"
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -140,115 +215,115 @@ Target Layer: ${target_layer}
 ${parent_nodes.length > 0 ? `Parent Nodes: ${JSON.stringify(parent_nodes, null, 2)}` : 'This is the root Purpose layer.'}
 ${context ? `Additional Context: ${context}` : ''}
 
-Generate the ${target_layer} layer following TED methodology.
+Generate the ${target_layer} layer following TED methodology. Be concise and generate exactly 3-4 high-quality nodes.
     `;
 
-    const response = await retryWithBackoff(async () => {
-      return await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openAIApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            { role: 'system', content: TED_LAYER_PROMPT },
-            { role: 'user', content: contextPrompt }
-          ],
-          temperature: 0.7,
-          max_tokens: 2000,
-        }),
-      });
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenAI API error:', response.status, response.statusText, errorText);
-      return new Response(
-        JSON.stringify({ 
-          error: 'Failed to generate TED layer', 
-          details: `OpenAI API returned ${response.status}: ${response.statusText}`,
-          openai_error: errorText
-        }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const data = await response.json();
-    console.log('OpenAI response received for layer generation');
-
-    const generatedContent = data.choices?.[0]?.message?.content;
-    
-    if (!generatedContent) {
-      console.error('No content in OpenAI response:', data);
-      return new Response(
-        JSON.stringify({ error: 'No content received from OpenAI' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-    
-    // Try to parse JSON from the response
-    let layerData;
     try {
-      layerData = JSON.parse(generatedContent);
-    } catch (e) {
-      // If JSON parsing fails, extract JSON from markdown or other formatting
-      const jsonMatch = generatedContent.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        try {
-          layerData = JSON.parse(jsonMatch[0]);
-        } catch (parseError) {
-          console.error('Failed to parse extracted JSON:', parseError);
-          return new Response(
-            JSON.stringify({ 
-              error: 'Failed to parse OpenAI response as JSON',
-              raw_content: generatedContent
-            }),
-            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-      } else {
-        console.error('No JSON found in OpenAI response:', generatedContent);
-        return new Response(
-          JSON.stringify({ 
-            error: 'No valid JSON found in OpenAI response',
-            raw_content: generatedContent
+      const response = await retryWithBackoff(async () => {
+        return await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openAIApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            messages: [
+              { role: 'system', content: TED_LAYER_PROMPT },
+              { role: 'user', content: contextPrompt }
+            ],
+            temperature: 0.7,
+            max_tokens: 1500,
           }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-    }
+        });
+      });
 
-    // Validate the response structure
-    if (!layerData.layer || !layerData.nodes || !Array.isArray(layerData.nodes)) {
-      console.error('Invalid layer data structure:', layerData);
+      if (!response.ok) {
+        throw new Error(`OpenAI API returned ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log('OpenAI response received for layer generation');
+
+      const generatedContent = data.choices?.[0]?.message?.content;
+      
+      if (!generatedContent) {
+        throw new Error('No content received from OpenAI');
+      }
+      
+      // Try to parse JSON from the response
+      let layerData;
+      try {
+        layerData = JSON.parse(generatedContent);
+      } catch (e) {
+        // If JSON parsing fails, extract JSON from markdown or other formatting
+        const jsonMatch = generatedContent.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          try {
+            layerData = JSON.parse(jsonMatch[0]);
+          } catch (parseError) {
+            throw new Error('Failed to parse OpenAI response as JSON');
+          }
+        } else {
+          throw new Error('No valid JSON found in OpenAI response');
+        }
+      }
+
+      // Validate the response structure
+      if (!layerData.layer || !layerData.nodes || !Array.isArray(layerData.nodes)) {
+        throw new Error('Invalid layer data structure received from OpenAI');
+      }
+
       return new Response(
         JSON.stringify({ 
-          error: 'Invalid layer data structure received from OpenAI',
-          received_data: layerData
+          success: true, 
+          layer_data: layerData,
+          fallback_used: false
         }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+
+    } catch (error) {
+      console.error('OpenAI API failed, using fallback:', error.message);
+      
+      // Use fallback data when OpenAI fails
+      const fallbackData = generateFallbackTedLayer(query, target_layer, parent_nodes);
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          layer_data: fallbackData,
+          fallback_used: true,
+          fallback_reason: error.message.includes('RATE_LIMITED') ? 'OpenAI rate limit exceeded' : 'OpenAI API error'
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        layer_data: layerData,
-        raw_response: generatedContent 
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
   } catch (error) {
     console.error('Error in generate-ted-layer function:', error);
-    return new Response(
-      JSON.stringify({ 
-        error: 'Internal server error', 
-        details: error.message,
-        stack: error.stack
-      }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    
+    // Even in case of general errors, try to provide fallback
+    try {
+      const { query, target_layer, parent_nodes = [] } = await req.json();
+      const fallbackData = generateFallbackTedLayer(query || "research query", target_layer || "purpose", parent_nodes);
+      
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          layer_data: fallbackData,
+          fallback_used: true,
+          fallback_reason: 'System error, using template data'
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    } catch (fallbackError) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Internal server error', 
+          details: error.message
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
   }
 });
