@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { TreeNode } from "@/types/tree";
-import { getTextColor } from "../node-utils/nodeStyles";
 
 interface NodeContentProps {
   item: TreeNode;
@@ -16,9 +15,9 @@ export const NodeContent: React.FC<NodeContentProps> = ({
   isHovered,
   level
 }) => {
-  const textColorClass = getTextColor(item, isSelected, level);
-  // Determine text color for description based on selection state
-  const descriptionTextColor = isSelected ? "text-[#f3f3f3]" : textColorClass;
+  // Force white text for better contrast on blue backgrounds
+  const textColorClass = isSelected ? "text-white" : "text-gray-800";
+  const descriptionTextColor = isSelected ? "text-gray-100" : "text-gray-600";
   
   return (
     <div className="flex flex-col w-full">
