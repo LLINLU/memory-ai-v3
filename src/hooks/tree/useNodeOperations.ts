@@ -1,21 +1,25 @@
-
 import { useState } from "react";
 import { TreeNode, PathLevel } from "@/types/tree";
 import { NodeSuggestion } from "@/types/chat";
 import { toast } from "@/hooks/use-toast";
 import { createNodeFromSuggestion, generateChildNode } from "./utils/nodeGenerationUtils";
-import { PathState } from "./usePathSelectionState";
+
+export interface PathState {
+  level1: string;
+  level2: string;
+  level3: string;
+  level4?: string;
+}
 
 export const useNodeOperations = (
   initialLevel1Items: TreeNode[], 
   initialLevel2Items: Record<string, TreeNode[]>, 
-  initialLevel3Items: Record<string, TreeNode[]>,
-  initialLevel4Items: Record<string, TreeNode[]> = {}
+  initialLevel3Items: Record<string, TreeNode[]>
 ) => {
   const [level1Items, setLevel1Items] = useState(initialLevel1Items);
   const [level2Items, setLevel2Items] = useState(initialLevel2Items);
   const [level3Items, setLevel3Items] = useState(initialLevel3Items);
-  const [level4Items, setLevel4Items] = useState<Record<string, TreeNode[]>>(initialLevel4Items);
+  const [level4Items, setLevel4Items] = useState<Record<string, TreeNode[]>>({});
   
   const addCustomNode = (level: PathLevel, node: NodeSuggestion, selectedPath: PathState, setSelectedPath: (updater: (prev: PathState) => PathState) => void) => {
     console.log('Adding custom node:', { level, node });
@@ -81,22 +85,6 @@ export const useNodeOperations = (
       setLevel3Items(prev => ({
         ...prev,
         [currentLevel2]: [...currentItems, newNode]
-      }));
-      
-      const childNode = generateChildNode(node.title, 4);
-      const childId = childNode.title.toLowerCase().replace(/\s+/g, '-');
-      const childTreeNode = {
-        id: childId,
-        name: childNode.title,
-        info: "18論文 • 4事例",
-        isCustom: true,
-        description: childNode.description,
-        level: 4
-      };
-      
-      setLevel4Items(prev => ({
-        ...prev,
-        [nodeId]: [childTreeNode]
       }));
       
       setSelectedPath(prev => ({ ...prev, level3: nodeId, level4: "" }));

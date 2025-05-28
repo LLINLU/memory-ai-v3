@@ -6,7 +6,7 @@ export interface PathState {
   level1: string;
   level2: string;
   level3: string;
-  level4: string;
+  level4?: string;
 }
 
 export const usePathSelectionState = (initialPath: PathState = {
@@ -17,7 +17,7 @@ export const usePathSelectionState = (initialPath: PathState = {
 }) => {
   const [selectedPath, setSelectedPath] = useState<PathState>(initialPath);
   const [hasUserMadeSelection, setHasUserMadeSelection] = useState(false);
-  const [showLevel4, setShowLevel4] = useState(true); // Always show level4 now
+  const [showLevel4, setShowLevel4] = useState(false);
 
   const handleNodeClick = (level: PathLevel, nodeId: string) => {
     setHasUserMadeSelection(true);
@@ -49,7 +49,6 @@ export const usePathSelectionState = (initialPath: PathState = {
   };
 
   const handleAddLevel4 = () => {
-    // Level 4 is always shown now, this function can remain for compatibility
     setShowLevel4(true);
   };
 

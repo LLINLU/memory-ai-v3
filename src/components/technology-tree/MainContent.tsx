@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { PathDisplay } from "./PathDisplay";
-import { LevelSelection } from "./level-selection/LevelSelection";
+import { LevelSelection } from "./LevelSelection";
 import { ScenarioSection } from "./ScenarioSection";
 
 interface MainContentProps {
@@ -9,12 +9,11 @@ interface MainContentProps {
     level1: string;
     level2: string;
     level3: string;
-    level4: string;
+    level4?: string;
   };
   level1Items: any[];
   level2Items: Record<string, any[]>;
   level3Items: Record<string, any[]>;
-  level4Items: Record<string, any[]>;
   onNodeClick: (level: string, nodeId: string) => void;
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
@@ -22,7 +21,7 @@ interface MainContentProps {
     level1: string;
     level2: string;
     level3: string;
-    level4: string;
+    level4?: string;
   };
   query?: string;
   hasUserMadeSelection: boolean;
@@ -38,14 +37,13 @@ export const MainContent = ({
   level1Items,
   level2Items,
   level3Items,
-  level4Items,
   onNodeClick,
   onEditNode,
   onDeleteNode,
   levelNames = {
     level1: "目的",
     level2: "機能",
-    level3: "手段／技術",
+    level3: "測定/技術",
     level4: "実装"
   },
   query,
@@ -68,7 +66,6 @@ export const MainContent = ({
         level1Items={level1Items}
         level2Items={level2Items}
         level3Items={level3Items}
-        level4Items={level4Items}
         onAddLevel4={onAddLevel4}
       />
       <LevelSelection
@@ -76,7 +73,6 @@ export const MainContent = ({
         level1Items={level1Items}
         level2Items={level2Items}
         level3Items={level3Items}
-        level4Items={level4Items}
         onNodeClick={onNodeClick}
         onEditNode={onEditNode}
         onDeleteNode={onDeleteNode}

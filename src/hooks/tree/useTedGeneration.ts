@@ -119,6 +119,7 @@ export const useTedGeneration = () => {
       toast({
         title: "Generation Error",
         description: "Failed to generate TED tree. Please try again later.",
+        variant: "destructive",
       });
       
       return null;
