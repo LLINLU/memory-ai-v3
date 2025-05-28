@@ -46,15 +46,43 @@ const TechnologyTree = () => {
   // Add treemap generation hook
   const { treemapData, isGenerating, error, generateTreemap } = useTreemapGeneration();
 
-  // Generate treemap when we have scenario and query from research context
+  // Generate treemap based on search mode and available data
   useEffect(() => {
     const query = locationState?.query;
-    if (scenario && query && scenario.trim() !== '' && query.trim() !== '') {
-      console.log("Technology Tree: Generating treemap for scenario:", scenario);
-      console.log("Technology Tree: With query:", query);
-      generateTreemap(query, scenario);
+    const currentSearchMode = locationState?.searchMode || "quick";
+    
+    console.log("TechnologyTree: Checking treemap generation conditions");
+    console.log("- Query:", query);
+    console.log("- Scenario:", scenario);
+    console.log("- Search Mode:", currentSearchMode);
+    
+    if (query && query.trim() !== '') {
+      if (currentSearchMode === "quick") {
+        // For quick exploration, generate treemap with just the query
+        console.log("TechnologyTree: Quick mode - generating treemap with query only");
+        generateTreemap(query);
+      } else if (currentSearchMode === "deep" && scenario && scenario.trim() !== '') {
+        // For deep exploration, use both scenario and query
+        console.log("TechnologyTree: Deep mode - generating treemap with scenario and query");
+        generateTreemap(query, scenario);
+      } else if (currentSearchMode === "deep") {
+        console.log("TechnologyTree: Deep mode but no scenario available yet");
+      }
+    } else {
+      console.log("TechnologyTree: No query available for treemap generation");
     }
-  }, [scenario, locationState?.query, generateTreemap]);
+  }, [scenario, locationState?.query, locationState?.searchMode, generateTreemap]);
+
+  // Show error toast if treemap generation fails
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "研究エリア生成エラー",
+        description: "研究エリアの生成中にエラーが発生しました。デフォルトデータを表示しています。",
+        variant: "destructive",
+      });
+    }
+  }, [error]);
 
   const {
     selectedPath,

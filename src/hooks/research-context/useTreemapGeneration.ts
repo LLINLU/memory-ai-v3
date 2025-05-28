@@ -25,12 +25,12 @@ export const useTreemapGeneration = () => {
     
     try {
       console.log("Generating treemap for query:", query);
-      console.log("With scenario:", scenario);
+      console.log("With scenario:", scenario || "No scenario provided");
       
       const { data, error: functionError } = await supabase.functions.invoke('generate-treemap', {
         body: { 
           query,
-          scenario,
+          scenario: scenario || undefined,
           context: "research_areas" 
         }
       });
@@ -54,15 +54,15 @@ export const useTreemapGeneration = () => {
       console.error("Error generating treemap:", err);
       setError(err instanceof Error ? err.message : "Failed to generate treemap");
       
-      // Fallback to default data on error
+      // Generate query-based fallback data
       const fallbackData = [
-        { name: "Primary Research", size: 40, fill: "#4C7CFC", papers: 40 },
-        { name: "Secondary Analysis", size: 30, fill: "#8D84C6", papers: 30 },
-        { name: "Applications", size: 20, fill: "#A94CF7", papers: 20 },
-        { name: "Other Areas", size: 10, fill: "#4A3D78", papers: 10 }
+        { name: `${query} - 主要研究`, size: 40, fill: "#4C7CFC", papers: 40 },
+        { name: `${query} - 応用研究`, size: 30, fill: "#8D84C6", papers: 30 },
+        { name: `${query} - 技術開発`, size: 20, fill: "#A94CF7", papers: 20 },
+        { name: `${query} - その他`, size: 10, fill: "#4A3D78", papers: 10 }
       ];
       
-      console.log("Using fallback data:", fallbackData);
+      console.log("Using query-based fallback data:", fallbackData);
       setTreemapData(fallbackData);
     } finally {
       setIsGenerating(false);
