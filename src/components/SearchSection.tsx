@@ -1,4 +1,3 @@
-
 import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,13 +68,18 @@ export const SearchSection = () => {
   };
 
   const convertTedToTreeData = (results: any) => {
+    console.log('Converting TED results to tree data:', results);
+    
     // Convert TED structure to existing tree data format
     const level1Items = results.purpose?.layer.nodes.map((node: any, index: number) => ({
       id: node.id,
-      title: node.name,
+      name: node.name, // Fixed: use 'name' instead of 'title'
+      info: `Purpose node ${index + 1}`, // Add info field
       description: node.description,
       color: `hsl(${200 + index * 30}, 70%, 50%)`
     })) || [];
+
+    console.log('Level 1 items:', level1Items);
 
     const level2Items: Record<string, any[]> = {};
     const level3Items: Record<string, any[]> = {};
@@ -88,12 +92,15 @@ export const SearchSection = () => {
         }
         level2Items[parentId].push({
           id: node.id,
-          title: node.name,
+          name: node.name, // Fixed: use 'name' instead of 'title'
+          info: `Function of ${parentId}`, // Add info field
           description: node.description,
           color: `hsl(${220 + index * 25}, 65%, 55%)`
         });
       });
     }
+
+    console.log('Level 2 items:', level2Items);
 
     if (results.measure?.layer.nodes) {
       results.measure.layer.nodes.forEach((node: any, index: number) => {
@@ -103,18 +110,24 @@ export const SearchSection = () => {
         }
         level3Items[parentId].push({
           id: node.id,
-          title: node.name,
+          name: node.name, // Fixed: use 'name' instead of 'title'
+          info: `Measure for ${parentId}`, // Add info field
           description: node.description,
           color: `hsl(${240 + index * 20}, 60%, 60%)`
         });
       });
     }
 
-    return {
+    console.log('Level 3 items:', level3Items);
+
+    const convertedData = {
       level1Items,
       level2Items,
       level3Items
     };
+
+    console.log('Final converted tree data:', convertedData);
+    return convertedData;
   };
 
   const handleSuggestionClick = () => {

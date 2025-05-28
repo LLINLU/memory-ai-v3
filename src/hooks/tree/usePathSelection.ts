@@ -33,6 +33,10 @@ export const usePathSelection = (
   const level2Data = treeData?.level2Items || initialLevel2Items;
   const level3Data = treeData?.level3Items || initialLevel3Items;
 
+  console.log('usePathSelection - level1Data:', level1Data);
+  console.log('usePathSelection - level2Data:', level2Data);
+  console.log('usePathSelection - level3Data:', level3Data);
+
   const {
     level1Items,
     level2Items,
@@ -42,6 +46,20 @@ export const usePathSelection = (
     editNode,
     deleteNode: removeNode
   } = useNodeOperations(level1Data, level2Data, level3Data);
+
+  // Set initial path to first available item if TED data is provided and current path doesn't exist
+  if (treeData?.level1Items && level1Data.length > 0) {
+    const currentLevel1Exists = level1Data.find(item => item.id === selectedPath.level1);
+    if (!currentLevel1Exists) {
+      console.log('Setting initial path to first TED item:', level1Data[0].id);
+      setSelectedPath(prev => ({
+        ...prev,
+        level1: level1Data[0].id,
+        level2: "",
+        level3: ""
+      }));
+    }
+  }
 
   // Wrapper functions to maintain the same API
   const handleNodeClick = (level: PathLevel, nodeId: string) => {
