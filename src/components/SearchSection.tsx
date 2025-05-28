@@ -1,3 +1,4 @@
+
 import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +7,8 @@ import { FormEvent, useState } from "react";
 import { Search } from "lucide-react";
 import { ExplorationIcon } from "./icons/ExplorationIcon";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { supabase } from "@/integrations/supabase/client";
+import { useTedGeneration } from "@/hooks/tree/useTedGeneration";
+import { toast } from "@/hooks/use-toast";
 
 interface SuggestionProps {
   label: string;
@@ -31,67 +33,88 @@ export const SearchSection = () => {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
   const [searchMode, setSearchMode] = useState("quick");
-  const [isLoading, setIsLoading] = useState(false);
+  const { isGenerating, generateCompleteTree, getProgressText } = useTedGeneration();
   
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (searchValue.trim()) {
-      setIsLoading(true);
+    if (searchValue.trim() && !isGenerating) {
       
-      try {
-        // Generate research context using ChatGPT before navigation
-        const { data, error } = await supabase.functions.invoke('chat-gpt', {
-          body: { 
-            message: `研究クエリ「${searchValue}」について、技術ツリー分析のための背景情報を提供してください。`, 
-            context: 'research' 
-          }
+      if (searchMode === "quick") {
+        // Generate TED tree using the new layer-by-layer process
+        const results = await generateCompleteTree(searchValue);
+        
+        if (results) {
+          // Convert TED results to the format expected by the technology tree
+          const convertedTreeData = convertTedToTreeData(results);
+          
+          navigate('/technology-tree', { 
+            state: { 
+              query: searchValue,
+              searchMode: searchMode,
+              tedResults: results,
+              treeData: convertedTreeData
+            } 
+          });
+        }
+      } else {
+        // Deep refiner mode - navigate to research context
+        navigate('/research-context', { 
+          state: { 
+            query: searchValue,
+            searchMode: searchMode
+          } 
         });
-
-        let chatGptContext = "";
-        if (!error && data?.response) {
-          chatGptContext = data.response;
-        }
-
-        // Navigate with ChatGPT-generated context
-        if (searchMode === "quick") {
-          navigate('/technology-tree', { 
-            state: { 
-              query: searchValue,
-              searchMode: searchMode,
-              chatGptContext: chatGptContext
-            } 
-          });
-        } else {
-          navigate('/research-context', { 
-            state: { 
-              query: searchValue,
-              searchMode: searchMode,
-              chatGptContext: chatGptContext
-            } 
-          });
-        }
-      } catch (error) {
-        console.error('Error generating ChatGPT context:', error);
-        // Navigate without ChatGPT context if there's an error
-        if (searchMode === "quick") {
-          navigate('/technology-tree', { 
-            state: { 
-              query: searchValue,
-              searchMode: searchMode
-            } 
-          });
-        } else {
-          navigate('/research-context', { 
-            state: { 
-              query: searchValue,
-              searchMode: searchMode
-            } 
-          });
-        }
-      } finally {
-        setIsLoading(false);
       }
     }
+  };
+
+  const convertTedToTreeData = (results: any) => {
+    // Convert TED structure to existing tree data format
+    const level1Items = results.purpose?.layer.nodes.map((node: any, index: number) => ({
+      id: node.id,
+      title: node.name,
+      description: node.description,
+      color: `hsl(${200 + index * 30}, 70%, 50%)`
+    })) || [];
+
+    const level2Items: Record<string, any[]> = {};
+    const level3Items: Record<string, any[]> = {};
+
+    if (results.function?.layer.nodes) {
+      results.function.layer.nodes.forEach((node: any, index: number) => {
+        const parentId = node.parent_id;
+        if (!level2Items[parentId]) {
+          level2Items[parentId] = [];
+        }
+        level2Items[parentId].push({
+          id: node.id,
+          title: node.name,
+          description: node.description,
+          color: `hsl(${220 + index * 25}, 65%, 55%)`
+        });
+      });
+    }
+
+    if (results.measure?.layer.nodes) {
+      results.measure.layer.nodes.forEach((node: any, index: number) => {
+        const parentId = node.parent_id;
+        if (!level3Items[parentId]) {
+          level3Items[parentId] = [];
+        }
+        level3Items[parentId].push({
+          id: node.id,
+          title: node.name,
+          description: node.description,
+          color: `hsl(${240 + index * 20}, 60%, 60%)`
+        });
+      });
+    }
+
+    return {
+      level1Items,
+      level2Items,
+      level3Items
+    };
   };
 
   const handleSuggestionClick = () => {
@@ -136,6 +159,7 @@ export const SearchSection = () => {
             className="w-full px-4 py-3 text-lg border-none bg-gray-50 focus-visible:ring-0 placeholder:text-gray-400 truncate"
             value={searchValue}
             onChange={handleSearchChange}
+            disabled={isGenerating}
           />
           
           <div className="flex mt-2 items-center">
@@ -149,6 +173,7 @@ export const SearchSection = () => {
                       className={`inline-flex items-center rounded-full py-1 px-4 h-[28px] text-sm transition-colors ${
                         searchMode === "quick" ? "bg-blue-100 text-blue-600" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
                       }`}
+                      disabled={isGenerating}
                     >
                       <ExplorationIcon className={`mr-1 ${searchMode === "quick" ? "stroke-[2.5px]" : ""}`} />
                       Quick Exploration
@@ -168,6 +193,7 @@ export const SearchSection = () => {
                       className={`inline-flex items-center rounded-full py-1 px-4 h-[28px] text-sm transition-colors ${
                         searchMode === "deep" ? "bg-blue-100 text-blue-600" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
                       }`}
+                      disabled={isGenerating}
                     >
                       <Search className={`h-3 w-3 mr-1 ${searchMode === "deep" ? "stroke-[2.5px]" : ""}`} /> Deep Refiner
                     </button>
@@ -184,9 +210,9 @@ export const SearchSection = () => {
                 onClick={handleSubmit}
                 size="icon"
                 className="h-8 w-8 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={!searchValue.trim() || isLoading}
+                disabled={!searchValue.trim() || isGenerating}
               >
-                {isLoading ? (
+                {isGenerating ? (
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-600 border-t-transparent" />
                 ) : (
                   <ArrowUp className="h-4 w-4 text-gray-600" />
@@ -195,6 +221,19 @@ export const SearchSection = () => {
             </div>
           </div>
         </div>
+        
+        {/* Progress indicator */}
+        {isGenerating && (
+          <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-center space-x-3">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+              <span className="text-blue-700 font-medium">{getProgressText()}</span>
+            </div>
+            <p className="text-sm text-blue-600 mt-2">
+              TED手法を使用して高品質な技術ツリーを生成しています...
+            </p>
+          </div>
+        )}
       </div>
       
       <div className="flex flex-col">

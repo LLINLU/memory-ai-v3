@@ -24,7 +24,9 @@ const TechnologyTree = () => {
     scenario?: string; 
     searchMode?: string;
     researchAnswers?: any;
-    conversationHistory?: any[] 
+    conversationHistory?: any[];
+    tedResults?: any;
+    treeData?: any;
   } | null;
   
   // Store the conversation history from the research context
@@ -62,6 +64,31 @@ const TechnologyTree = () => {
     showLevel4,
     handleAddLevel4
   } = useTechnologyTree();
+
+  // Initialize tree data with TED results if available
+  useEffect(() => {
+    if (locationState?.treeData && locationState?.tedResults) {
+      console.log('Initializing with TED-generated tree data:', locationState.treeData);
+      
+      // Show success message with TED evaluation scores
+      const tedResults = locationState.tedResults;
+      const scores = [];
+      if (tedResults.purpose?.evaluation?.total_score) {
+        scores.push(`Purpose: ${Math.round(tedResults.purpose.evaluation.total_score / 4)}%`);
+      }
+      if (tedResults.function?.evaluation?.total_score) {
+        scores.push(`Function: ${Math.round(tedResults.function.evaluation.total_score / 4)}%`);
+      }
+      if (tedResults.measure?.evaluation?.total_score) {
+        scores.push(`Measure: ${Math.round(tedResults.measure.evaluation.total_score / 4)}%`);
+      }
+      
+      toast({
+        title: "TED Tree Generated Successfully",
+        description: `Quality scores: ${scores.join(', ')}`,
+      });
+    }
+  }, [locationState?.treeData, locationState?.tedResults]);
 
   const {
     inputValue,
@@ -114,8 +141,8 @@ const TechnologyTree = () => {
 
   // Set default tabs
   useEffect(() => {
-    updateTabsHorizontalState("result"); // Default to result tab
-    setSidebarTab("result"); // Set default tab to result
+    updateTabsHorizontalState("result");
+    setSidebarTab("result");
   }, [setSidebarTab]);
 
   // Initialize chat when sidebar tab changes
