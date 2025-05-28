@@ -1,13 +1,13 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
 import { ContextAnswers } from "@/hooks/research-context/useConversationState";
 import { BuildingScenario } from "./scenario-preview/BuildingScenario";
 import { ScenarioList } from "./scenario-preview/ScenarioList";
 import { ResearchAreas } from "./scenario-preview/ResearchAreas";
 import { PreviewHeader } from "./scenario-preview/PreviewHeader";
-import { researchAreasData } from "./scenario-preview/constants";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useTreemapGeneration } from "@/hooks/research-context/useTreemapGeneration";
 
 interface ScenarioPreviewProps {
   initialQuery: string;
@@ -35,6 +35,15 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
   isResearchAreaVisible
 }) => {
   const hasAnswers = Object.values(answers).some(answer => answer.trim() !== '');
+  const { treemapData, isGenerating, error, generateTreemap } = useTreemapGeneration();
+  
+  // Generate treemap when scenario is selected
+  useEffect(() => {
+    if (selectedScenario && selectedScenario.trim() !== '') {
+      console.log("Generating treemap for selected scenario:", selectedScenario);
+      generateTreemap(initialQuery, selectedScenario);
+    }
+  }, [selectedScenario, initialQuery, generateTreemap]);
   
   return (
     <div className="flex flex-col h-full">
@@ -47,10 +56,8 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
       
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
-          {/* Building Your Scenario Section */}
           <BuildingScenario answers={answers} />
 
-          {/* Suggested Scenarios Section */}
           {showScenarios && (
             <>
               <ScenarioList 
@@ -64,9 +71,11 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
                   <Separator className="my-4" />
                   <ResearchAreas 
                     selectedScenario={selectedScenario}
-                    researchAreasData={researchAreasData}
+                    researchAreasData={treemapData}
                     onGenerateResult={onGenerateResult!}
                     researchAreasRef={researchAreasRef}
+                    isGenerating={isGenerating}
+                    generationError={error}
                   />
                 </>
               )}

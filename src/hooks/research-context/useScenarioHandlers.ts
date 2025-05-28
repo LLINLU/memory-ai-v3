@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { NavigateFunction } from "react-router-dom";
 import { ContextAnswers } from "./useConversationState";
@@ -16,7 +15,8 @@ interface ScenarioHandlersProps {
   resetNavigation: () => void;
   resetConversation: () => void;
   answers: ContextAnswers;
-  conversationHistory: ConversationMessage[]; 
+  conversationHistory: ConversationMessage[];
+  treemapData?: any[]; // Add treemap data parameter
 }
 
 export const useScenarioHandlers = ({
@@ -31,7 +31,8 @@ export const useScenarioHandlers = ({
   resetNavigation,
   resetConversation,
   answers,
-  conversationHistory
+  conversationHistory,
+  treemapData = []
 }: ScenarioHandlersProps) => {
   // Track selected scenario
   const [selectedScenario, setSelectedScenario] = useState<string>(currentScenario || "");
@@ -87,6 +88,7 @@ export const useScenarioHandlers = ({
   // Function to generate search results and navigate to technology tree
   const handleGenerateResult = () => {
     console.log("Navigating to technology tree with scenario:", selectedScenario);
+    console.log("Including treemap data:", treemapData);
     
     // Create a serializable version of the conversation history
     const serializableHistory = conversationHistory.map(msg => ({
@@ -102,7 +104,8 @@ export const useScenarioHandlers = ({
         scenario: selectedScenario || `Research on ${initialQuery}`,
         searchMode: "deep", // Explicitly set searchMode to "deep" when coming from research-context
         researchAnswers: answers,
-        conversationHistory: serializableHistory
+        conversationHistory: serializableHistory,
+        treemapData: treemapData // Pass generated treemap data
       }
     });
   };
