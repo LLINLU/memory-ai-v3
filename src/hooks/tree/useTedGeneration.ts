@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -118,6 +119,7 @@ export const useTedGeneration = () => {
       toast({
         title: "Generation Error",
         description: "Failed to generate TED tree. Please try again later.",
+        variant: "destructive",
       });
       
       return null;

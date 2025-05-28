@@ -14,15 +14,12 @@ export interface PathState {
 export const useNodeOperations = (
   initialLevel1Items: TreeNode[], 
   initialLevel2Items: Record<string, TreeNode[]>, 
-  initialLevel3Items: Record<string, TreeNode[]>,
-  initialLevel4Items: Record<string, TreeNode[]> = {}
+  initialLevel3Items: Record<string, TreeNode[]>
 ) => {
   const [level1Items, setLevel1Items] = useState(initialLevel1Items);
   const [level2Items, setLevel2Items] = useState(initialLevel2Items);
   const [level3Items, setLevel3Items] = useState(initialLevel3Items);
-  const [level4Items, setLevel4Items] = useState<Record<string, TreeNode[]>>(initialLevel4Items);
-  
-  console.log('useNodeOperations - initialized with level4Items:', initialLevel4Items);
+  const [level4Items, setLevel4Items] = useState<Record<string, TreeNode[]>>({});
   
   const addCustomNode = (level: PathLevel, node: NodeSuggestion, selectedPath: PathState, setSelectedPath: (updater: (prev: PathState) => PathState) => void) => {
     console.log('Adding custom node:', { level, node });
