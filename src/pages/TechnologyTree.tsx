@@ -73,12 +73,17 @@ const TechnologyTree = () => {
     document.dispatchEvent(event);
   };
 
+  // Create a wrapper function that doesn't require parameters
+  const handleSwitchToChatWrapper = () => {
+    handleSwitchToChat("Chat initialized");
+  };
+
   // Initialize chat with context data
   useChatInitialization({
     locationState,
     chatMessages,
     setChatMessages,
-    handleSwitchToChat
+    handleSwitchToChat: handleSwitchToChatWrapper
   });
 
   // Handle all effects
@@ -90,7 +95,7 @@ const TechnologyTree = () => {
     setShowSidebar,
     chatMessages,
     setChatMessages,
-    handleSwitchToChat,
+    handleSwitchToChat: handleSwitchToChatWrapper,
     locationState
   });
 
