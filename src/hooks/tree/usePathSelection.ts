@@ -5,12 +5,19 @@ import { PathLevel } from "@/types/tree";
 import { useNodeOperations } from "./useNodeOperations";
 import { usePathSelectionState } from "./usePathSelectionState";
 
-export const usePathSelection = (initialPath = {
-  level1: "astronomy",
-  level2: "turbulence-compensation",
-  level3: "laser-guide-star",
-  level4: ""
-}) => {
+export const usePathSelection = (
+  initialPath = {
+    level1: "astronomy",
+    level2: "turbulence-compensation", 
+    level3: "laser-guide-star",
+    level4: ""
+  },
+  treeData?: {
+    level1Items?: any[];
+    level2Items?: Record<string, any[]>;
+    level3Items?: Record<string, any[]>;
+  }
+) => {
   const {
     selectedPath,
     setSelectedPath,
@@ -21,15 +28,20 @@ export const usePathSelection = (initialPath = {
     handleAddLevel4
   } = usePathSelectionState(initialPath);
 
+  // Use TED-generated data if available, otherwise fall back to default data
+  const level1Data = treeData?.level1Items || initialLevel1Items;
+  const level2Data = treeData?.level2Items || initialLevel2Items;
+  const level3Data = treeData?.level3Items || initialLevel3Items;
+
   const {
     level1Items,
     level2Items,
     level3Items,
-    level4Items = {},  // Default empty object for level4
+    level4Items = {},
     addCustomNode: addNode,
     editNode,
     deleteNode: removeNode
-  } = useNodeOperations(initialLevel1Items, initialLevel2Items, initialLevel3Items);
+  } = useNodeOperations(level1Data, level2Data, level3Data);
 
   // Wrapper functions to maintain the same API
   const handleNodeClick = (level: PathLevel, nodeId: string) => {
