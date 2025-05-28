@@ -10,15 +10,18 @@ interface LevelSelectionProps {
     level1: string;
     level2: string;
     level3: string;
+    level4?: string;
   };
   level1Items: any[];
   level2Items: Record<string, any[]>;
   level3Items: Record<string, any[]>;
+  level4Items?: Record<string, any[]>;
   onNodeClick: (level: string, nodeId: string) => void;
   levelNames: {
     level1: string;
     level2: string;
     level3: string;
+    level4?: string;
   };
 }
 
@@ -27,6 +30,7 @@ export const LevelSelection = ({
   level1Items,
   level2Items,
   level3Items,
+  level4Items = {},
   onNodeClick,
   levelNames
 }: LevelSelectionProps) => {
@@ -65,6 +69,17 @@ export const LevelSelection = ({
     }
     return items;
   }, [level3Items, selectedPath]);
+
+  const visibleLevel4Items = React.useMemo(() => {
+    if (!selectedPath.level3) return [];
+    const items = [...(level4Items[selectedPath.level3] || [])];
+    const selectedIndex = items.findIndex(item => item.id === selectedPath.level4);
+    if (selectedIndex > 0) {
+      const [selectedItem] = items.splice(selectedIndex, 1);
+      items.unshift(selectedItem);
+    }
+    return items;
+  }, [level4Items, selectedPath]);
 
   const handleNodeClick = (level: string, nodeId: string) => {
     onNodeClick(level, nodeId);
@@ -115,6 +130,14 @@ export const LevelSelection = ({
         items={visibleLevel3Items}
         selectedId={selectedPath.level3}
         onNodeClick={(nodeId) => handleNodeClick('level3', nodeId)}
+      />
+
+      <LevelColumn
+        title="Level 4"
+        subtitle={levelNames.level4 || "実装"}
+        items={visibleLevel4Items}
+        selectedId={selectedPath.level4 || ""}
+        onNodeClick={(nodeId) => handleNodeClick('level4', nodeId)}
       />
 
       <ConnectionLines
