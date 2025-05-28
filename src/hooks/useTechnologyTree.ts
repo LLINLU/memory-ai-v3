@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { usePathSelection } from "./tree/usePathSelection";
+import { useDynamicPathSelection } from "./tree/useDynamicPathSelection";
 import { useSidebar } from "./tree/useSidebar";
 import { useInputQuery } from "./tree/useInputQuery";
 import { useLocation } from "react-router-dom";
@@ -42,7 +42,7 @@ export const useTechnologyTree = () => {
     level4Items,
     showLevel4,
     handleAddLevel4
-  } = usePathSelection();
+  } = useDynamicPathSelection();
   
   const { 
     sidebarTab, 
