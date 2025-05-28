@@ -11,24 +11,23 @@ interface ChatInputProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onSend?: () => void;
-  isLoading?: boolean;
 }
 
-export const ChatInput = ({ value, onChange, onSend, isLoading = false }: ChatInputProps) => {
-  const [searchMode, setSearchMode] = useState("quick");
+export const ChatInput = ({ value, onChange, onSend }: ChatInputProps) => {
+  const [searchMode, setSearchMode] = useState("quick"); // Default to "quick"
   
   const handleSearchModeChange = (mode: string) => {
     setSearchMode(mode);
   };
   
   const handleSend = () => {
-    if (onSend && value.trim() && !isLoading) {
+    if (onSend && value.trim()) {
       onSend();
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey && value.trim() && !isLoading) {
+    if (e.key === 'Enter' && !e.shiftKey && value.trim()) {
       e.preventDefault();
       handleSend();
     }
@@ -47,7 +46,6 @@ export const ChatInput = ({ value, onChange, onSend, isLoading = false }: ChatIn
           onKeyDown={handleKeyDown}
           rows={1}
           autoResize
-          disabled={isLoading}
         />
         
         <div className="flex items-center justify-between pt-2">
@@ -74,16 +72,12 @@ export const ChatInput = ({ value, onChange, onSend, isLoading = false }: ChatIn
           </TooltipProvider>
           
           <Button 
-            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-0 w-10 h-10 flex items-center justify-center disabled:opacity-50"
+            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-0 w-10 h-10 flex items-center justify-center"
             onClick={handleSend}
-            disabled={!value.trim() || isLoading}
+            disabled={!value.trim()}
             size="icon"
           >
-            {isLoading ? (
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-            ) : (
-              <ArrowUp className="h-5 w-5" />
-            )}
+            <ArrowUp className="h-5 w-5" />
           </Button>
         </div>
       </div>

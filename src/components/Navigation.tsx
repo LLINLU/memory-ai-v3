@@ -5,7 +5,7 @@ export const Navigation = () => {
   return (
     <nav className="flex items-center justify-between py-4 px-6 bg-white border-b border-gray-200">
       <div className="flex items-center">
-        <Link to="/" className="text-2xl font-bold text-gray-800">Memory AI</Link>
+        <Link to="/" className="text-2xl font-bold text-gray-800">Research AI</Link>
       </div>
       <div className="flex items-center space-x-8">
         <Link to="/saved" className="text-gray-600 hover:text-gray-900">保存済み</Link>

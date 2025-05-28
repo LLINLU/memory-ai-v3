@@ -1,13 +1,13 @@
+
 import { useState, useEffect } from "react";
+import { processUserMessage } from '@/utils/chatUtils';
 import { ChatMessage } from "@/types/chat";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 export const useTechTreeChat = () => {
   const [inputValue, setInputValue] = useState("");
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-  const [searchMode, setSearchMode] = useState("quick");
-  const [isLoading, setIsLoading] = useState(false);
+  const [searchMode, setSearchMode] = useState("quick"); // Default to "quick"
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
@@ -17,35 +17,7 @@ export const useTechTreeChat = () => {
     if (value) setSearchMode(value);
   };
   
-  const callChatGPT = async (message: string, context: string = 'research') => {
-    try {
-      setIsLoading(true);
-      console.log('Calling ChatGPT with message:', message);
-
-      const { data, error } = await supabase.functions.invoke('chat-gpt', {
-        body: { message, context }
-      });
-
-      if (error) {
-        console.error('Supabase function error:', error);
-        throw error;
-      }
-
-      console.log('ChatGPT response:', data);
-      return data.response;
-    } catch (error) {
-      console.error('Error calling ChatGPT:', error);
-      toast({
-        title: "エラー",
-        description: "ChatGPTからの応答を取得できませんでした。もう一度お試しください。",
-      });
-      return "申し訳ございませんが、現在応答を生成できません。もう一度お試しください。";
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  const handleSendMessage = async () => {
+  const handleSendMessage = () => {
     if (inputValue.trim()) {
       const userMessage: ChatMessage = {
         content: inputValue,
@@ -53,19 +25,15 @@ export const useTechTreeChat = () => {
       };
       
       setChatMessages(prev => [...prev, userMessage]);
-      const currentInput = inputValue;
+      
+      // Process user message to get AI response
+      const aiResponse = processUserMessage(inputValue);
+      
       setInputValue("");
       
-      // Get ChatGPT response
-      const aiResponseContent = await callChatGPT(currentInput, 'research');
-      
-      const aiResponse: ChatMessage = {
-        content: aiResponseContent,
-        isUser: false,
-        type: "text"
-      };
-      
-      setChatMessages(prev => [...prev, aiResponse]);
+      setTimeout(() => {
+        setChatMessages(prev => [...prev, aiResponse]);
+      }, 500);
     }
   };
 
@@ -81,52 +49,65 @@ export const useTechTreeChat = () => {
     }]);
   };
   
-  const handleButtonClick = async (action: string) => {
+  const handleButtonClick = (action: string) => {
     if (action === 'quick') {
+      // Handle quick results action
       setSearchMode("quick");
-      const response = await callChatGPT("研究に関するクイック検索結果を提供してください。", 'research');
       setChatMessages(prev => [
         ...prev,
         {
           type: "text",
-          content: response,
+          content: "Retrieving quick results for your query...",
           isUser: false
         }
       ]);
       
+      // Here you would typically trigger some action to fetch results
+      
     } else if (action === 'personalized') {
+      // Handle personalized search action
       setSearchMode("deep");
-      const response = await callChatGPT("この研究トピックについて、より詳細で個別化された情報を提供してください。どのような特定の側面に最も興味がありますか？", 'research');
       setChatMessages(prev => [
         ...prev,
         {
           type: "text",
-          content: response,
+          content: "Let's personalize your search. What specific aspects of this topic are you most interested in?",
           isUser: false
         }
       ]);
     } else if (action === 'generate-scenario') {
-      const response = await callChatGPT("研究シナリオを作成するために、まず取り組みたい課題や現象について教えてください。具体的には何について研究されていますか？", 'research');
+      // Handle generate scenario action
       setChatMessages(prev => [
         ...prev,
         {
           type: "text",
-          content: response,
+          content: "研究シナリオを作成するために、まず取り組みたい課題や現象について教えてください。",
           isUser: false
         }
       ]);
+      
+      // Add a slight delay and then display the follow-up question
+      setTimeout(() => {
+        setChatMessages(prev => [...prev, 
+          {
+            type: "text",
+            content: "具体的には何について研究されていますか？",
+            isUser: false
+          }
+        ]);
+      }, 1000);
       
       toast({
         title: "研究シナリオ生成",
         description: "詳細な研究シナリオを生成中です。少々お待ちください。",
       });
     } else if (action === 'summarize-trends') {
-      const response = await callChatGPT("最新の研究動向を要約してください。現在の技術トレンドと重要な研究領域について説明してください。", 'research');
+      // Handle summarize trends action
       setChatMessages(prev => [
         ...prev,
         {
           type: "text",
-          content: response,
+          content: "最新の研究動向を要約しています...",
           isUser: false
         }
       ]);
@@ -135,13 +116,27 @@ export const useTechTreeChat = () => {
         title: "研究動向の要約",
         description: "最新の研究トレンドを分析中です。少々お待ちください。",
       });
+      
+      // Simulate response after a delay
+      setTimeout(() => {
+        setChatMessages(prev => {
+          // Replace the loading message with the actual response
+          const updatedMessages = [...prev];
+          updatedMessages[updatedMessages.length - 1] = {
+            type: "text",
+            content: "このテーマに関する最新の研究動向は以下のとおりです...",
+            isUser: false
+          };
+          return updatedMessages;
+        });
+      }, 2000);
     } else if (action === 'generate-node') {
-      const response = await callChatGPT("新しいノードを作成しましょう。どのような内容のノードを、どのレベルに追加したいですか？", 'research');
+      // Update to show the specified message when Treemap を調整する is clicked
       setChatMessages(prev => [
         ...prev,
         {
           type: "text",
-          content: response,
+          content: "新しいノードを作成しましょう。どのような内容のノードを、どのレベルに追加したいですか？",
           isUser: false
         }
       ]);
@@ -160,7 +155,6 @@ export const useTechTreeChat = () => {
     inputValue,
     chatMessages,
     searchMode,
-    isLoading,
     handleInputChange,
     handleSearchModeChange,
     handleSendMessage,
