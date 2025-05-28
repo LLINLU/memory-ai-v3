@@ -74,7 +74,7 @@ export const SearchSection = () => {
     const level1Items = results.purpose?.layer.nodes.map((node: any, index: number) => ({
       id: node.id,
       name: node.name, // Fixed: use 'name' instead of 'title'
-      info: `Purpose node ${index + 1}`, // Add info field
+      info: `${Math.floor(Math.random() * 50) + 1}論文 • ${Math.floor(Math.random() * 20) + 1}事例`, // Random numbers for papers and cases
       description: node.description,
       color: `hsl(${200 + index * 30}, 70%, 50%)`
     })) || [];
@@ -93,7 +93,7 @@ export const SearchSection = () => {
         level2Items[parentId].push({
           id: node.id,
           name: node.name, // Fixed: use 'name' instead of 'title'
-          info: `Function of ${parentId}`, // Add info field
+          info: `${Math.floor(Math.random() * 50) + 1}論文 • ${Math.floor(Math.random() * 20) + 1}事例`, // Random numbers for papers and cases
           description: node.description,
           color: `hsl(${220 + index * 25}, 65%, 55%)`
         });
@@ -111,7 +111,7 @@ export const SearchSection = () => {
         level3Items[parentId].push({
           id: node.id,
           name: node.name, // Fixed: use 'name' instead of 'title'
-          info: `Measure for ${parentId}`, // Add info field
+          info: `${Math.floor(Math.random() * 50) + 1}論文 • ${Math.floor(Math.random() * 20) + 1}事例`, // Random numbers for papers and cases
           description: node.description,
           color: `hsl(${240 + index * 20}, 60%, 60%)`
         });
