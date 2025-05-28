@@ -256,9 +256,6 @@ export const useNodeOperations = (
     level4Items,
     addCustomNode,
     editNode,
-    deleteNode,
-    setLevel1Items,
-    setLevel2Items,
-    setLevel3Items
+    deleteNode
   };
 };

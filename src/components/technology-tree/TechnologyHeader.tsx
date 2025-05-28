@@ -11,11 +11,8 @@ interface TechnologyHeaderProps {
 export const TechnologyHeader = ({ query: propQuery }: TechnologyHeaderProps) => {
   const location = useLocation();
   const stateQuery = location.state?.query;
-  const stateScenario = location.state?.scenario;
   const searchMode = location.state?.searchMode || 'quick';
-  
-  // Use scenario if available, otherwise use query
-  const displayQuery = stateScenario || stateQuery || propQuery || 'Dynamic technology tree based on your research context';
+  const displayQuery = stateQuery || propQuery || 'アダプティブオプティクス技術の高度化を 研究者や技術者が天文学のユーザーに対して 天文台で実施し、精密な波面補正技術によって大気のゆらぎや光学的な歪みなどの状況に対応するものです。他の方法と比較しては、高精度かつ複数分野に応用可能な技術基盤に位置づけられます。';
 
   return (
     <div className="bg-blue-50 rounded-lg p-6 mb-6">
@@ -35,7 +32,7 @@ export const TechnologyHeader = ({ query: propQuery }: TechnologyHeaderProps) =>
         {displayQuery}
       </h1>
       <p className="text-gray-600 mt-2">
-        下のノードをクリックして検索を絞り込み、結果を更新してください。Technology tree is dynamically generated based on your research context.
+        下のノードをクリックして検索を絞り込み、結果を更新してください。
       </p>
     </div>
   );
