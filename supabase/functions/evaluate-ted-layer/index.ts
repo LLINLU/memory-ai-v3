@@ -9,6 +9,32 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Retry logic with exponential backoff
+const retryWithBackoff = async (fn: () => Promise<Response>, maxRetries = 3) => {
+  for (let i = 0; i <= maxRetries; i++) {
+    try {
+      const response = await fn();
+      if (response.status === 429) {
+        if (i === maxRetries) throw new Error('Rate limit exceeded after all retries');
+        
+        const retryAfter = response.headers.get('retry-after');
+        const waitTime = retryAfter ? parseInt(retryAfter) * 1000 : Math.pow(2, i) * 1000;
+        
+        console.log(`Rate limited, waiting ${waitTime}ms before retry ${i + 1}/${maxRetries}`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        continue;
+      }
+      return response;
+    } catch (error) {
+      if (i === maxRetries) throw error;
+      const waitTime = Math.pow(2, i) * 1000;
+      console.log(`Request failed, retrying in ${waitTime}ms (attempt ${i + 1}/${maxRetries}):`, error.message);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+    }
+  }
+  throw new Error('Max retries exceeded');
+};
+
 const TED_EVALUATOR_PROMPT = `You are an **expert evaluator of TED (Technology Element Decomposition) hierarchical trees** and are fully versed in the TED workshop technique developed by JAXA & Ritsumeikan University.
 
 Your task is to **critically evaluate a SINGLE LAYER** of a TED tree and return a structured scorecard that diagnoses strengths, weaknesses, and concrete improvement actions.
@@ -124,6 +150,14 @@ serve(async (req) => {
       );
     }
 
+    if (!openAIApiKey) {
+      console.error('OpenAI API key is missing');
+      return new Response(
+        JSON.stringify({ error: 'OpenAI API key not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const evaluationPrompt = `
 Evaluate this TED layer:
 
@@ -140,27 +174,34 @@ ${parent_layer.length > 0 ? JSON.stringify(parent_layer, null, 2) : 'This is the
 Provide a detailed evaluation with specific, actionable feedback for improving this layer.
     `;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: TED_EVALUATOR_PROMPT },
-          { role: 'user', content: evaluationPrompt }
-        ],
-        temperature: 0.3,
-        max_tokens: 2000,
-      }),
+    const response = await retryWithBackoff(async () => {
+      return await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openAIApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: TED_EVALUATOR_PROMPT },
+            { role: 'user', content: evaluationPrompt }
+          ],
+          temperature: 0.3,
+          max_tokens: 2000,
+        }),
+      });
     });
 
     if (!response.ok) {
-      console.error('OpenAI API error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('OpenAI API error:', response.status, response.statusText, errorText);
       return new Response(
-        JSON.stringify({ error: 'Failed to evaluate TED layer' }),
+        JSON.stringify({ 
+          error: 'Failed to evaluate TED layer',
+          details: `OpenAI API returned ${response.status}: ${response.statusText}`,
+          openai_error: errorText
+        }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -168,7 +209,15 @@ Provide a detailed evaluation with specific, actionable feedback for improving t
     const data = await response.json();
     console.log('OpenAI evaluation response received');
 
-    const evaluationContent = data.choices[0].message.content;
+    const evaluationContent = data.choices?.[0]?.message?.content;
+    
+    if (!evaluationContent) {
+      console.error('No content in OpenAI response:', data);
+      return new Response(
+        JSON.stringify({ error: 'No content received from OpenAI' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     
     // Try to parse JSON from the response
     let evaluationData;
@@ -178,9 +227,27 @@ Provide a detailed evaluation with specific, actionable feedback for improving t
       // If JSON parsing fails, extract JSON from markdown or other formatting
       const jsonMatch = evaluationContent.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        evaluationData = JSON.parse(jsonMatch[0]);
+        try {
+          evaluationData = JSON.parse(jsonMatch[0]);
+        } catch (parseError) {
+          console.error('Failed to parse extracted JSON:', parseError);
+          return new Response(
+            JSON.stringify({ 
+              error: 'Failed to parse OpenAI evaluation response as JSON',
+              raw_content: evaluationContent
+            }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
       } else {
-        throw new Error('Could not parse JSON from evaluation response');
+        console.error('No JSON found in OpenAI response:', evaluationContent);
+        return new Response(
+          JSON.stringify({ 
+            error: 'No valid JSON found in OpenAI evaluation response',
+            raw_content: evaluationContent
+          }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
       }
     }
 
@@ -195,7 +262,11 @@ Provide a detailed evaluation with specific, actionable feedback for improving t
   } catch (error) {
     console.error('Error in evaluate-ted-layer function:', error);
     return new Response(
-      JSON.stringify({ error: 'Internal server error', details: error.message }),
+      JSON.stringify({ 
+        error: 'Internal server error', 
+        details: error.message,
+        stack: error.stack
+      }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

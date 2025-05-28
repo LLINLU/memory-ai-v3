@@ -59,6 +59,9 @@ export const useTedGeneration = () => {
     try {
       console.log(`Generating ${targetLayer} layer...`);
       
+      // Add delay between requests to avoid rate limiting
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       const { data, error } = await supabase.functions.invoke('generate-ted-layer', {
         body: {
           query,
@@ -70,17 +73,32 @@ export const useTedGeneration = () => {
 
       if (error) {
         console.error('Layer generation error:', error);
-        throw error;
+        throw new Error(`Generation failed: ${error.message || 'Unknown error'}`);
       }
 
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to generate layer');
+      if (!data?.success) {
+        const errorMsg = data?.error || 'Failed to generate layer';
+        console.error('Generation failed:', errorMsg, data);
+        throw new Error(errorMsg);
+      }
+
+      if (!data.layer_data) {
+        console.error('No layer data in response:', data);
+        throw new Error('No layer data received from generation service');
       }
 
       return data.layer_data;
     } catch (error) {
       console.error(`Error generating ${targetLayer} layer:`, error);
-      return null;
+      
+      // Provide more specific error messages
+      if (error.message?.includes('Rate limit')) {
+        throw new Error(`OpenAI API rate limit exceeded. Please wait a moment and try again.`);
+      } else if (error.message?.includes('API key')) {
+        throw new Error(`OpenAI API key issue. Please check your configuration.`);
+      } else {
+        throw new Error(`Failed to generate ${targetLayer} layer: ${error.message}`);
+      }
     }
   };
 
@@ -93,6 +111,9 @@ export const useTedGeneration = () => {
     try {
       console.log(`Evaluating ${layerData.layer} layer...`);
       
+      // Add delay between requests to avoid rate limiting
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       const { data, error } = await supabase.functions.invoke('evaluate-ted-layer', {
         body: {
           layer_data: layerData,
@@ -104,17 +125,32 @@ export const useTedGeneration = () => {
 
       if (error) {
         console.error('Layer evaluation error:', error);
-        throw error;
+        throw new Error(`Evaluation failed: ${error.message || 'Unknown error'}`);
       }
 
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to evaluate layer');
+      if (!data?.success) {
+        const errorMsg = data?.error || 'Failed to evaluate layer';
+        console.error('Evaluation failed:', errorMsg, data);
+        throw new Error(errorMsg);
+      }
+
+      if (!data.evaluation) {
+        console.error('No evaluation data in response:', data);
+        throw new Error('No evaluation data received from evaluation service');
       }
 
       return data.evaluation;
     } catch (error) {
       console.error(`Error evaluating ${layerData.layer} layer:`, error);
-      return null;
+      
+      // Provide more specific error messages
+      if (error.message?.includes('Rate limit')) {
+        throw new Error(`OpenAI API rate limit exceeded during evaluation. Please wait a moment and try again.`);
+      } else if (error.message?.includes('API key')) {
+        throw new Error(`OpenAI API key issue during evaluation. Please check your configuration.`);
+      } else {
+        throw new Error(`Failed to evaluate ${layerData.layer} layer: ${error.message}`);
+      }
     }
   };
 
@@ -148,55 +184,66 @@ export const useTedGeneration = () => {
             attempt_count: attemptCount
           }));
 
-          // Get parent nodes for this layer
-          const parentNodes = layerType === "purpose" ? [] : 
-                             layerType === "function" ? results.purpose?.layer.nodes || [] :
-                             results.function?.layer.nodes || [];
+          try {
+            // Get parent nodes for this layer
+            const parentNodes = layerType === "purpose" ? [] : 
+                               layerType === "function" ? results.purpose?.layer.nodes || [] :
+                               results.function?.layer.nodes || [];
 
-          // Generate layer
-          const layerData = await generateLayer(
-            query,
-            layerType,
-            parentNodes,
-            `Attempt ${attemptCount} for ${layerType} layer`
-          );
+            // Generate layer
+            const layerData = await generateLayer(
+              query,
+              layerType,
+              parentNodes,
+              `Attempt ${attemptCount} for ${layerType} layer`
+            );
 
-          if (!layerData) {
-            throw new Error(`Failed to generate ${layerType} layer on attempt ${attemptCount}`);
-          }
+            if (!layerData) {
+              throw new Error(`Failed to generate ${layerType} layer on attempt ${attemptCount}`);
+            }
 
-          // Update progress to evaluation
-          setProgress(prev => ({
-            ...prev,
-            current_step: "evaluating"
-          }));
+            // Update progress to evaluation
+            setProgress(prev => ({
+              ...prev,
+              current_step: "evaluating"
+            }));
 
-          // Evaluate layer
-          const evaluation = await evaluateLayer(
-            layerData,
-            parentNodes,
-            query,
-            `Evaluation attempt ${attemptCount}`
-          );
+            // Evaluate layer
+            const evaluation = await evaluateLayer(
+              layerData,
+              parentNodes,
+              query,
+              `Evaluation attempt ${attemptCount}`
+            );
 
-          if (!evaluation) {
-            throw new Error(`Failed to evaluate ${layerType} layer on attempt ${attemptCount}`);
-          }
+            if (!evaluation) {
+              throw new Error(`Failed to evaluate ${layerType} layer on attempt ${attemptCount}`);
+            }
 
-          // Check if layer passes
-          if (!evaluation.needs_regeneration) {
-            results[layerType] = { layer: layerData, evaluation };
-            layerGenerated = true;
+            // Check if layer passes
+            if (!evaluation.needs_regeneration) {
+              results[layerType] = { layer: layerData, evaluation };
+              layerGenerated = true;
+              
+              toast({
+                title: `${layerType} layer completed`,
+                description: `Score: ${evaluation.total_score}/${evaluation.passing_grade * 4} (${Math.round(evaluation.total_score / 4)}%)`,
+              });
+            } else {
+              toast({
+                title: `${layerType} layer needs improvement`,
+                description: `Score: ${evaluation.total_score}/${evaluation.passing_grade * 4}. Regenerating...`,
+              });
+            }
+          } catch (layerError) {
+            console.error(`Error in attempt ${attemptCount} for ${layerType}:`, layerError);
             
-            toast({
-              title: `${layerType} layer completed`,
-              description: `Score: ${evaluation.total_score}/${evaluation.passing_grade * 4} (${Math.round(evaluation.total_score / 4)}%)`,
-            });
-          } else {
-            toast({
-              title: `${layerType} layer needs improvement`,
-              description: `Score: ${evaluation.total_score}/${evaluation.passing_grade * 4}. Regenerating...`,
-            });
+            if (attemptCount === maxAttempts) {
+              throw layerError;
+            }
+            
+            // Wait longer between failed attempts
+            await new Promise(resolve => setTimeout(resolve, 2000 * attemptCount));
           }
         }
 
@@ -222,11 +269,12 @@ export const useTedGeneration = () => {
 
     } catch (error) {
       console.error('TED generation error:', error);
-      setError(error instanceof Error ? error.message : 'Failed to generate TED tree');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to generate TED tree';
+      setError(errorMessage);
       
       toast({
         title: "Generation Failed",
-        description: error instanceof Error ? error.message : 'Failed to generate TED tree',
+        description: errorMessage,
       });
       
       return null;
