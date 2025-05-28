@@ -46,7 +46,6 @@ export const useTreemapEffects = ({ query, scenario, searchMode }: TreemapEffect
       toast({
         title: "研究エリア生成エラー",
         description: "研究エリアの生成中にエラーが発生しました。デフォルトデータを表示しています。",
-        variant: "destructive",
       });
     }
   }, [error]);
