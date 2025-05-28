@@ -1,4 +1,3 @@
-
 import { useLocation } from "react-router-dom";
 import { TechTreeLayout } from "@/components/technology-tree/TechTreeLayout";
 import { TechTreeSidebar } from "@/components/technology-tree/TechTreeSidebar";
@@ -27,16 +26,18 @@ const TechnologyTree = () => {
     treemapData?: any[];
   } | null;
   
+  console.log("TechnologyTree: Location state:", locationState);
+  
   const { scenario, handleEditScenario, searchMode } = useScenarioState({ 
     initialScenario: locationState?.scenario,
     initialSearchMode: locationState?.searchMode
   });
 
-  // Add treemap generation effects
+  // Add treemap generation effects - make sure to pass the query from location state
   const { treemapData, isGenerating, error } = useTreemapEffects({
     query: locationState?.query,
     scenario,
-    searchMode: locationState?.searchMode
+    searchMode
   });
 
   const {

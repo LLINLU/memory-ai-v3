@@ -30,11 +30,15 @@ export const useTreemapEffects = ({ query, scenario, searchMode }: TreemapEffect
         generateTreemap(query, scenario);
       } else if (searchMode === "deep") {
         console.log("TreemapEffects: Deep mode but no scenario available yet");
+      } else {
+        // Fallback: if searchMode is undefined or other value, generate with query
+        console.log("TreemapEffects: Fallback mode - generating treemap with query only");
+        generateTreemap(query);
       }
     } else {
       console.log("TreemapEffects: No query available for treemap generation");
     }
-  }, [scenario, query, searchMode, generateTreemap]);
+  }, [query, scenario, searchMode, generateTreemap]);
 
   // Show error toast if treemap generation fails
   useEffect(() => {
