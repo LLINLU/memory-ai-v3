@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { ChatMessage } from "@/types/chat";
 import { toast } from "@/hooks/use-toast";
@@ -39,7 +38,6 @@ export const useTechTreeChat = () => {
       toast({
         title: "エラー",
         description: "ChatGPTからの応答を取得できませんでした。もう一度お試しください。",
-        variant: "destructive",
       });
       return "申し訳ございませんが、現在応答を生成できません。もう一度お試しください。";
     } finally {
