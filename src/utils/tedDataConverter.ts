@@ -1,6 +1,9 @@
 
 export const convertTedToTreeData = (tedResults: any) => {
-  if (!tedResults) return null;
+  if (!tedResults) {
+    console.log('No TED results provided to converter');
+    return null;
+  }
 
   console.log('Converting TED data:', tedResults);
 
@@ -20,7 +23,7 @@ export const convertTedToTreeData = (tedResults: any) => {
         level: 1
       });
     });
-    console.log('Level 1 items:', level1Items);
+    console.log('Level 1 items converted:', level1Items.length);
   }
 
   // Convert function layer (level 2)
@@ -38,7 +41,7 @@ export const convertTedToTreeData = (tedResults: any) => {
         level: 2
       });
     });
-    console.log('Level 2 items:', level2Items);
+    console.log('Level 2 items converted:', Object.keys(level2Items).length, 'parents');
   }
 
   // Convert measure layer (level 3)
@@ -56,7 +59,7 @@ export const convertTedToTreeData = (tedResults: any) => {
         level: 3
       });
     });
-    console.log('Level 3 items:', level3Items);
+    console.log('Level 3 items converted:', Object.keys(level3Items).length, 'parents');
   }
 
   // Convert implementation layer (level 4)
@@ -74,7 +77,7 @@ export const convertTedToTreeData = (tedResults: any) => {
         level: 4
       });
     });
-    console.log('Level 4 items:', level4Items);
+    console.log('Level 4 items converted:', Object.keys(level4Items).length, 'parents');
   }
 
   const result = {
@@ -84,6 +87,13 @@ export const convertTedToTreeData = (tedResults: any) => {
     level4Items
   };
 
-  console.log('Final converted tree data:', result);
+  console.log('Final converted tree data summary:', {
+    level1Count: level1Items.length,
+    level2ParentCount: Object.keys(level2Items).length,
+    level3ParentCount: Object.keys(level3Items).length,
+    level4ParentCount: Object.keys(level4Items).length,
+    totalLevel4Nodes: Object.values(level4Items).reduce((total, nodes) => total + nodes.length, 0)
+  });
+
   return result;
 };
