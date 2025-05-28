@@ -37,10 +37,11 @@ export const ScenarioPreview: React.FC<ScenarioPreviewProps> = ({
   const hasAnswers = Object.values(answers).some(answer => answer.trim() !== '');
   const { treemapData, isGenerating, error, generateTreemap } = useTreemapGeneration();
   
-  // Generate treemap when scenario is selected
+  // Generate treemap when scenario is selected and we have a valid query
   useEffect(() => {
-    if (selectedScenario && selectedScenario.trim() !== '') {
-      console.log("Generating treemap for selected scenario:", selectedScenario);
+    if (selectedScenario && selectedScenario.trim() !== '' && initialQuery && initialQuery.trim() !== '') {
+      console.log("Triggering treemap generation for scenario:", selectedScenario);
+      console.log("With query:", initialQuery);
       generateTreemap(initialQuery, selectedScenario);
     }
   }, [selectedScenario, initialQuery, generateTreemap]);

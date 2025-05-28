@@ -44,6 +44,15 @@ export const ResearchAreas: React.FC<ResearchAreasProps> = ({
     }
   };
 
+  // Add debug logging
+  console.log("ResearchAreas rendering with:", {
+    selectedScenario,
+    researchAreasData,
+    isGenerating,
+    generationError,
+    dataLength: researchAreasData?.length
+  });
+
   return (
     <div ref={researchAreasRef}>
       <div className="flex items-center gap-2 mb-3">
@@ -76,19 +85,27 @@ export const ResearchAreas: React.FC<ResearchAreasProps> = ({
           </div>
         ) : (
           <>
-            <TreemapVisualization researchAreasData={researchAreasData} />
-            
-            <div className="space-y-2 text-sm">
-              {researchAreasData.map((area, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <div 
-                    className="w-3 h-3 rounded-sm" 
-                    style={{ backgroundColor: area.fill }}
-                  ></div>
-                  <span>{area.name}（{area.papers}論文）</span>
+            {researchAreasData && researchAreasData.length > 0 ? (
+              <>
+                <TreemapVisualization researchAreasData={researchAreasData} />
+                
+                <div className="space-y-2 text-sm">
+                  {researchAreasData.map((area, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <div 
+                        className="w-3 h-3 rounded-sm" 
+                        style={{ backgroundColor: area.fill }}
+                      ></div>
+                      <span>{area.name}（{area.papers}論文）</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            ) : (
+              <div className="flex items-center justify-center h-[270px] bg-gray-50 rounded-md">
+                <p className="text-gray-600">研究分野データがありません</p>
+              </div>
+            )}
           </>
         )}
       </div>
