@@ -1,27 +1,27 @@
 
 export const researchAreasData = [
   {
-    name: "森林測定技術",
-    size: 35,
+    name: "Retinal Imaging",
+    size: 42,
     fill: "#4C7CFC", // Updated to brighter blue from image
-    papers: 35
+    papers: 42
   },
   {
-    name: "精密レーザー応用",
+    name: "Wavefront Sensing",
     size: 28,
     fill: "#8D84C6", // Updated to medium purple from image
     papers: 28
   },
   {
-    name: "安全監視システム",
-    size: 22,
+    name: "Clinical Applications",
+    size: 18,
     fill: "#A94CF7", // Updated to brighter purple from image
-    papers: 22
+    papers: 18
   },
   {
-    name: "環境影響評価",
-    size: 15,
+    name: "Other Fields",
+    size: 12,
     fill: "#4A3D78", // Updated to dark purple/navy from image
-    papers: 15
+    papers: 12
   }
 ];
