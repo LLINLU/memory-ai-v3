@@ -228,7 +228,9 @@ export const getMockTedData = (query: string) => {
         evaluation: {
           total_score: 80
         }
-      }
+      },
+      // Add level4Items property for proper data flow
+      level4Items: level4Data
     };
   }
 

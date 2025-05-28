@@ -47,6 +47,12 @@ export const useTechnologyTree = () => {
     level4: ""
   };
 
+  // Extract Level 4 data from TED results if available
+  let level4Data = {};
+  if (locationState?.tedResults?.level4Items) {
+    level4Data = locationState.tedResults.level4Items;
+  }
+
   // If we have TED-generated data, use the first nodes as initial selection
   if (locationState?.treeData?.level1Items?.[0]) {
     const firstLevel1 = locationState.treeData.level1Items[0];
@@ -74,7 +80,10 @@ export const useTechnologyTree = () => {
     level4Items,
     showLevel4,
     handleAddLevel4
-  } = usePathSelection(initialPath, locationState?.treeData);
+  } = usePathSelection(initialPath, {
+    ...locationState?.treeData,
+    level4Items: level4Data
+  });
   
   const { 
     sidebarTab, 
