@@ -30,9 +30,6 @@ interface MainContentProps {
   conversationHistory?: any[];
   onAddLevel4?: () => void;
   searchMode?: string;
-  treemapData?: any[];
-  isGeneratingTreemap?: boolean;
-  treemapError?: string | null;
 }
 
 export const MainContent = ({
@@ -55,10 +52,7 @@ export const MainContent = ({
   hasUserMadeSelection,
   conversationHistory,
   onAddLevel4,
-  searchMode,
-  treemapData,
-  isGeneratingTreemap,
-  treemapError
+  searchMode
 }: MainContentProps) => {
   return (
     <div className="container mx-auto px-4 py-6">
@@ -66,9 +60,6 @@ export const MainContent = ({
         scenario={scenario} 
         onEditScenario={onEditScenario} 
         conversationHistory={conversationHistory}
-        treemapData={treemapData}
-        isGeneratingTreemap={isGeneratingTreemap}
-        treemapError={treemapError}
       />
       <PathDisplay 
         selectedPath={selectedPath}

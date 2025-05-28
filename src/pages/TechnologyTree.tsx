@@ -1,4 +1,7 @@
+
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { updateTabsHorizontalState } from "@/components/ui/tabs";
 import { TechTreeLayout } from "@/components/technology-tree/TechTreeLayout";
 import { TechTreeSidebar } from "@/components/technology-tree/TechTreeSidebar";
 import { useTechnologyTree } from "@/hooks/useTechnologyTree";
@@ -12,8 +15,7 @@ import { TechTreeMainContent } from "@/components/technology-tree/TechTreeMainCo
 import { useScenarioState } from "@/hooks/tree/useScenarioState";
 import { useChatInitialization } from "@/hooks/tree/useChatInitialization";
 import { useNodeSelectionEffect } from "@/hooks/tree/useNodeSelectionEffect";
-import { useTreemapEffects } from "@/hooks/tree/useTreemapEffects";
-import { TechnologyTreeProvider } from "@/components/technology-tree/TechnologyTreeProvider";
+import { toast } from "@/components/ui/use-toast";
 
 const TechnologyTree = () => {
   const location = useLocation();
@@ -23,21 +25,23 @@ const TechnologyTree = () => {
     searchMode?: string;
     researchAnswers?: any;
     conversationHistory?: any[];
-    treemapData?: any[];
+    tedResults?: any;
+    treeData?: any;
   } | null;
   
-  console.log("TechnologyTree: Location state:", locationState);
+  // Store the conversation history from the research context
+  const [savedConversationHistory, setSavedConversationHistory] = useState<any[]>([]);
+  
+  // Extract conversation history from location state if available
+  useEffect(() => {
+    if (locationState?.conversationHistory) {
+      setSavedConversationHistory(locationState.conversationHistory);
+    }
+  }, [locationState]);
   
   const { scenario, handleEditScenario, searchMode } = useScenarioState({ 
     initialScenario: locationState?.scenario,
     initialSearchMode: locationState?.searchMode
-  });
-
-  // Add treemap generation effects - make sure to pass the query from location state
-  const { treemapData, isGenerating, error } = useTreemapEffects({
-    query: locationState?.query,
-    scenario,
-    searchMode
   });
 
   const {
@@ -61,9 +65,35 @@ const TechnologyTree = () => {
     handleAddLevel4
   } = useTechnologyTree();
 
+  // Initialize tree data with TED results if available
+  useEffect(() => {
+    if (locationState?.treeData && locationState?.tedResults) {
+      console.log('Initializing with TED-generated tree data:', locationState.treeData);
+      
+      // Show success message with TED evaluation scores
+      const tedResults = locationState.tedResults;
+      const scores = [];
+      if (tedResults.purpose?.evaluation?.total_score) {
+        scores.push(`Purpose: ${Math.round(tedResults.purpose.evaluation.total_score / 4)}%`);
+      }
+      if (tedResults.function?.evaluation?.total_score) {
+        scores.push(`Function: ${Math.round(tedResults.function.evaluation.total_score / 4)}%`);
+      }
+      if (tedResults.measure?.evaluation?.total_score) {
+        scores.push(`Measure: ${Math.round(tedResults.measure.evaluation.total_score / 4)}%`);
+      }
+      
+      toast({
+        title: "TED Tree Generated Successfully",
+        description: `Quality scores: ${scores.join(', ')}`,
+      });
+    }
+  }, [locationState?.treeData, locationState?.tedResults]);
+
   const {
     inputValue,
     chatMessages,
+    isLoading,
     handleInputChange,
     handleSendMessage,
     initializeChat,
@@ -109,6 +139,22 @@ const TechnologyTree = () => {
     setSidebarTab
   });
 
+  // Set default tabs
+  useEffect(() => {
+    updateTabsHorizontalState("result");
+    setSidebarTab("result");
+  }, [setSidebarTab]);
+
+  // Initialize chat when sidebar tab changes
+  useEffect(() => {
+    initializeChat(sidebarTab);
+  }, [sidebarTab, initializeChat]);
+
+  // Update page title to reflect the new text if needed
+  useEffect(() => {
+    document.title = "研究背景を整理します | Technology Tree";
+  }, []);
+
   const sidebarContent = (
     <TechTreeSidebar
       sidebarTab={sidebarTab}
@@ -131,59 +177,50 @@ const TechnologyTree = () => {
   );
 
   return (
-    <TechnologyTreeProvider
-      setSidebarTab={setSidebarTab}
-      sidebarTab={sidebarTab}
-      initializeChat={initializeChat}
-    >
-      <SidebarProvider>
-        <div className="min-h-screen flex w-full">
-          <AppSidebar />
-          <div className="flex-1">
-            <TechTreeLayout
-              showSidebar={showSidebar}
-              collapsedSidebar={collapsedSidebar}
-              isExpanded={isExpanded}
-              toggleSidebar={toggleSidebar}
-              setShowSidebar={setShowSidebar}
-              handlePanelResize={handlePanelResize}
-              sidebarContent={sidebarContent}
-            >
-              <TechTreeMainContent
-                selectedPath={selectedPath}
-                level1Items={level1Items}
-                level2Items={level2Items}
-                level3Items={level3Items}
-                handleNodeClick={handleNodeClick}
-                editNode={editNode}
-                deleteNode={deleteNode}
-                levelNames={levelNames}
-                hasUserMadeSelection={hasUserMadeSelection}
-                scenario={scenario}
-                onEditScenario={handleEditScenario}
-                conversationHistory={locationState?.conversationHistory || []}
-                handleAddLevel4={handleAddLevel4}
-                searchMode={searchMode}
-                treemapData={treemapData}
-                isGeneratingTreemap={isGenerating}
-                treemapError={error}
-              />
-            </TechTreeLayout>
-            
-            <ChatBox
-              messages={chatMessages}
-              inputValue={inputValue}
-              onInputChange={handleInputChange}
-              onSendMessage={handleSendMessage}
-              onButtonClick={handleButtonClick}
-              onUseNode={handleUseNode}
-              onEditNode={handleEditNodeFromChat}
-              onRefine={handleRefineNode}
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        <div className="flex-1">
+          <TechTreeLayout
+            showSidebar={showSidebar}
+            collapsedSidebar={collapsedSidebar}
+            isExpanded={isExpanded}
+            toggleSidebar={toggleSidebar}
+            setShowSidebar={setShowSidebar}
+            handlePanelResize={handlePanelResize}
+            sidebarContent={sidebarContent}
+          >
+            <TechTreeMainContent
+              selectedPath={selectedPath}
+              level1Items={level1Items}
+              level2Items={level2Items}
+              level3Items={level3Items}
+              handleNodeClick={handleNodeClick}
+              editNode={editNode}
+              deleteNode={deleteNode}
+              levelNames={levelNames}
+              hasUserMadeSelection={hasUserMadeSelection}
+              scenario={scenario}
+              onEditScenario={handleEditScenario}
+              conversationHistory={savedConversationHistory}
+              handleAddLevel4={handleAddLevel4}
+              searchMode={searchMode}
             />
-          </div>
+          </TechTreeLayout>
+          
+          <ChatBox
+            messages={chatMessages}
+            inputValue={inputValue}
+            onInputChange={handleInputChange}
+            onSendMessage={handleSendMessage}
+            onButtonClick={handleButtonClick}
+            onUseNode={handleUseNode}
+            onEditNode={handleEditNodeFromChat}
+            onRefine={handleRefineNode}
+          />
         </div>
-      </SidebarProvider>
-    </TechnologyTreeProvider>
+      </div>
+    </SidebarProvider>
   );
 };
 

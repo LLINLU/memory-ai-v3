@@ -6,6 +6,8 @@ import { FormEvent, useState } from "react";
 import { Search } from "lucide-react";
 import { ExplorationIcon } from "./icons/ExplorationIcon";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useTedGeneration } from "@/hooks/tree/useTedGeneration";
+import { toast } from "@/hooks/use-toast";
 
 interface SuggestionProps {
   label: string;
@@ -29,21 +31,32 @@ const SearchSuggestion = ({ label, onClick }: SuggestionProps) => {
 export const SearchSection = () => {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
-  const [searchMode, setSearchMode] = useState("quick"); // Default to "quick"
+  const [searchMode, setSearchMode] = useState("quick");
+  const { isGenerating, generateCompleteTree, getProgressText } = useTedGeneration();
   
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (searchValue.trim()) {
-      // If searchMode is "quick", navigate directly to technology-tree
+    if (searchValue.trim() && !isGenerating) {
+      
       if (searchMode === "quick") {
-        navigate('/technology-tree', { 
-          state: { 
-            query: searchValue,
-            searchMode: searchMode
-          } 
-        });
+        // Generate TED tree using the new layer-by-layer process
+        const results = await generateCompleteTree(searchValue);
+        
+        if (results) {
+          // Convert TED results to the format expected by the technology tree
+          const convertedTreeData = convertTedToTreeData(results);
+          
+          navigate('/technology-tree', { 
+            state: { 
+              query: searchValue,
+              searchMode: searchMode,
+              tedResults: results,
+              treeData: convertedTreeData
+            } 
+          });
+        }
       } else {
-        // For "deep" mode, continue to go to research-context
+        // Deep refiner mode - navigate to research context
         navigate('/research-context', { 
           state: { 
             query: searchValue,
@@ -52,6 +65,69 @@ export const SearchSection = () => {
         });
       }
     }
+  };
+
+  const convertTedToTreeData = (results: any) => {
+    console.log('Converting TED results to tree data:', results);
+    
+    // Convert TED structure to existing tree data format
+    const level1Items = results.purpose?.layer.nodes.map((node: any, index: number) => ({
+      id: node.id,
+      name: node.name, // Fixed: use 'name' instead of 'title'
+      info: `${Math.floor(Math.random() * 50) + 1}論文 • ${Math.floor(Math.random() * 20) + 1}事例`, // Random numbers for papers and cases
+      description: node.description,
+      color: `hsl(${200 + index * 30}, 70%, 50%)`
+    })) || [];
+
+    console.log('Level 1 items:', level1Items);
+
+    const level2Items: Record<string, any[]> = {};
+    const level3Items: Record<string, any[]> = {};
+
+    if (results.function?.layer.nodes) {
+      results.function.layer.nodes.forEach((node: any, index: number) => {
+        const parentId = node.parent_id;
+        if (!level2Items[parentId]) {
+          level2Items[parentId] = [];
+        }
+        level2Items[parentId].push({
+          id: node.id,
+          name: node.name, // Fixed: use 'name' instead of 'title'
+          info: `${Math.floor(Math.random() * 50) + 1}論文 • ${Math.floor(Math.random() * 20) + 1}事例`, // Random numbers for papers and cases
+          description: node.description,
+          color: `hsl(${220 + index * 25}, 65%, 55%)`
+        });
+      });
+    }
+
+    console.log('Level 2 items:', level2Items);
+
+    if (results.measure?.layer.nodes) {
+      results.measure.layer.nodes.forEach((node: any, index: number) => {
+        const parentId = node.parent_id;
+        if (!level3Items[parentId]) {
+          level3Items[parentId] = [];
+        }
+        level3Items[parentId].push({
+          id: node.id,
+          name: node.name, // Fixed: use 'name' instead of 'title'
+          info: `${Math.floor(Math.random() * 50) + 1}論文 • ${Math.floor(Math.random() * 20) + 1}事例`, // Random numbers for papers and cases
+          description: node.description,
+          color: `hsl(${240 + index * 20}, 60%, 60%)`
+        });
+      });
+    }
+
+    console.log('Level 3 items:', level3Items);
+
+    const convertedData = {
+      level1Items,
+      level2Items,
+      level3Items
+    };
+
+    console.log('Final converted tree data:', convertedData);
+    return convertedData;
   };
 
   const handleSuggestionClick = () => {
@@ -96,6 +172,7 @@ export const SearchSection = () => {
             className="w-full px-4 py-3 text-lg border-none bg-gray-50 focus-visible:ring-0 placeholder:text-gray-400 truncate"
             value={searchValue}
             onChange={handleSearchChange}
+            disabled={isGenerating}
           />
           
           <div className="flex mt-2 items-center">
@@ -109,13 +186,14 @@ export const SearchSection = () => {
                       className={`inline-flex items-center rounded-full py-1 px-4 h-[28px] text-sm transition-colors ${
                         searchMode === "quick" ? "bg-blue-100 text-blue-600" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
                       }`}
+                      disabled={isGenerating}
                     >
                       <ExplorationIcon className={`mr-1 ${searchMode === "quick" ? "stroke-[2.5px]" : ""}`} />
                       Quick Exploration
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="max-w-xs">早期探索フェーズ向け：特定の研究文脈がなくても、キーワードから関連技術や新興トレンドを発見できます。女性ホルモンのような一般的なキーワードから始めて、幅広い可能性を探索できます。</p>
+                    <p className="max-w-xs">仮説がまだ固まっていない初期段階に最適：「全固体電池」や「女性ホルモン」など一般的なキーワードを入力するだけで、関連技術やトレンドが自動で構造化され、視覚的に表示されます。これにより、自分でも気づいていなかった領域を含め、幅広い探索が可能になります。研究の出発点やアイデア収集に向いています。</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -128,12 +206,13 @@ export const SearchSection = () => {
                       className={`inline-flex items-center rounded-full py-1 px-4 h-[28px] text-sm transition-colors ${
                         searchMode === "deep" ? "bg-blue-100 text-blue-600" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
                       }`}
+                      disabled={isGenerating}
                     >
                       <Search className={`h-3 w-3 mr-1 ${searchMode === "deep" ? "stroke-[2.5px]" : ""}`} /> Deep Refiner
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="max-w-xs">具体的な研究文脈や仮説がある場合に最適：研究者、対象、環境、手法、目的などの詳細を入力することで、的確な研究内容に絞り込めます。その後、システムの質問に答えることでさらに研究コンテキストを洗練させ、無関係な情報を排除した効率的な探索ができます。</p>
+                    <p className="max-w-xs">研究テーマや仮説がある程度明確なときに最適：一般的なキーワードを入力した後、研究者や対象、手法などの詳細を追加することで、情報を的確に絞り込めます。さらに、システムの質問に答えることでコンテキストが洗練され、不要な情報を排除した効率的な探索が可能になります。具体的な研究の仮説があり、技術を深堀りしたいときに特に有効です。</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -144,13 +223,30 @@ export const SearchSection = () => {
                 onClick={handleSubmit}
                 size="icon"
                 className="h-8 w-8 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={!searchValue.trim()}
+                disabled={!searchValue.trim() || isGenerating}
               >
-                <ArrowUp className="h-4 w-4 text-gray-600" />
+                {isGenerating ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-600 border-t-transparent" />
+                ) : (
+                  <ArrowUp className="h-4 w-4 text-gray-600" />
+                )}
               </Button>
             </div>
           </div>
         </div>
+        
+        {/* Progress indicator */}
+        {isGenerating && (
+          <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-center space-x-3">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+              <span className="text-blue-700 font-medium">{getProgressText()}</span>
+            </div>
+            <p className="text-sm text-blue-600 mt-2">
+              TED手法を使用して高品質な技術ツリーを生成しています...
+            </p>
+          </div>
+        )}
       </div>
       
       <div className="flex flex-col">

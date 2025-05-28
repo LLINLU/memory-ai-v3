@@ -43,8 +43,8 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   }, []);
 
   const nodeStyleClass = getNodeStyle(item, isSelected, level);
-  // Determine text color for description based on selection state
-  const descriptionTextColor = isSelected ? "text-[#f3f3f3]" : "text-gray-600";
+  // Force white text for selected nodes to ensure visibility
+  const descriptionTextColor = isSelected ? "text-gray-100" : "text-gray-600";
 
   return (
     <div
@@ -58,7 +58,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex flex-col">
+      <div className="flex flex-col relative z-10">
         <NodeContent 
           item={item} 
           isSelected={isSelected} 
