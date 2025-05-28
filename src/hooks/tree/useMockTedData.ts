@@ -200,6 +200,86 @@ export const getMockTedData = (query: string) => {
       evaluation: {
         total_score: 78
       }
+    },
+    implementation: {
+      layer: {
+        nodes: [
+          // Supply Chain Optimization implementations
+          {
+            id: "automated-inventory-management",
+            name: "自動在庫管理システム((Automated Inventory Management))",
+            description: "AIによる在庫最適化と自動発注システム",
+            parent_id: "supply-chain-optimization"
+          },
+          {
+            id: "logistics-optimization-platform",
+            name: "物流最適化プラットフォーム((Logistics Optimization Platform))",
+            description: "配送ルートと時間の最適化システム",
+            parent_id: "supply-chain-optimization"
+          },
+          {
+            id: "supplier-management-system",
+            name: "サプライヤー管理システム((Supplier Management System))",
+            description: "サプライヤー評価と関係管理システム",
+            parent_id: "supply-chain-optimization"
+          },
+          // Market Expansion implementations
+          {
+            id: "market-analysis-dashboard",
+            name: "市場分析ダッシュボード((Market Analysis Dashboard))",
+            description: "リアルタイム市場データと競合分析システム",
+            parent_id: "market-expansion-strategy"
+          },
+          {
+            id: "customer-segmentation-tool",
+            name: "顧客セグメンテーションツール((Customer Segmentation Tool))",
+            description: "データ駆動型顧客分析と戦略策定システム",
+            parent_id: "market-expansion-strategy"
+          },
+          // Technology Licensing implementations
+          {
+            id: "ip-management-platform",
+            name: "知的財産管理プラットフォーム((IP Management Platform))",
+            description: "特許・ライセンス管理と収益最適化システム",
+            parent_id: "technology-licensing"
+          },
+          {
+            id: "licensing-portal",
+            name: "ライセンシングポータル((Licensing Portal))",
+            description: "技術ライセンス契約と管理のオンラインプラットフォーム",
+            parent_id: "technology-licensing"
+          },
+          // AI Recognition implementations
+          {
+            id: "deep-learning-model",
+            name: "深層学習モデル((Deep Learning Model))",
+            description: "画像認識のための畳み込みニューラルネットワーク",
+            parent_id: "ai-recognition-algorithm"
+          },
+          {
+            id: "edge-ai-processor",
+            name: "エッジAIプロセッサ((Edge AI Processor))",
+            description: "リアルタイム処理のための専用AIチップ",
+            parent_id: "ai-recognition-algorithm"
+          },
+          // Spectral Analysis implementations
+          {
+            id: "spectral-sensor-array",
+            name: "スペクトルセンサーアレイ((Spectral Sensor Array))",
+            description: "多波長同時測定のためのセンサー配列",
+            parent_id: "spectral-analysis"
+          },
+          {
+            id: "spectral-database",
+            name: "スペクトルデータベース((Spectral Database))",
+            description: "物質特性の参照用スペクトルライブラリ",
+            parent_id: "spectral-analysis"
+          }
+        ]
+      },
+      evaluation: {
+        total_score: 75
+      }
     }
   };
 

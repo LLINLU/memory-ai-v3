@@ -20,11 +20,12 @@ interface PathDisplayProps {
     level1: string;
     level2: string;
     level3: string;
-    level4?: string;
+    level4: string;
   };
   level1Items: any[];
   level2Items: Record<string, any[]>;
   level3Items: Record<string, any[]>;
+  level4Items: Record<string, any[]>;
   onAddLevel4?: () => void;
 }
 
@@ -33,6 +34,7 @@ export const PathDisplay = ({
   level1Items,
   level2Items,
   level3Items,
+  level4Items,
   onAddLevel4
 }: PathDisplayProps) => {
   // Find the selected items by ID to display their names
@@ -51,7 +53,9 @@ export const PathDisplay = ({
     ? findItemName(selectedPath.level3, level3Items[selectedPath.level2] || [])
     : '';
 
-  const showLevel4Button = selectedPath.level3 && level3Name;
+  const level4Name = selectedPath.level4 && selectedPath.level3
+    ? findItemName(selectedPath.level4, level4Items[selectedPath.level3] || [])
+    : '';
 
   return (
     <div className="mb-6" style={{ paddingTop: '0rem' }}>
@@ -89,31 +93,8 @@ export const PathDisplay = ({
           {level1Name && level1Name}
           {level2Name && ` → ${level2Name}`}
           {level3Name && ` → ${level3Name}`}
+          {level4Name && ` → ${level4Name}`}
         </p>
-        {showLevel4Button && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="ghost"
-                  size="sm"
-                  className="ml-2 text-blue-600 hover:bg-blue-50 px-2 py-1 h-6 text-xs"
-                  onClick={onAddLevel4}
-                >
-                  <Plus className="h-3 w-3" />
-                  レベル４
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-[200px]">
-                <div className="whitespace-normal text-center">
-                  <p className="my-0.5">ボタンをクリックすると、</p>
-                  <p className="my-0.5">レベル4が生成され、</p>
-                  <p className="my-0.5">技術のより詳細な分野を学ぶことができます。</p>
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
       </div>
     </div>
   );

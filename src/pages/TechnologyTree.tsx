@@ -195,6 +195,7 @@ const TechnologyTree = () => {
               level1Items={level1Items}
               level2Items={level2Items}
               level3Items={level3Items}
+              level4Items={level4Items}
               handleNodeClick={handleNodeClick}
               editNode={editNode}
               deleteNode={deleteNode}

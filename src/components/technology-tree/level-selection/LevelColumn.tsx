@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { TreeNode } from './TreeNode';
 import { EditNodeDialog } from './EditNodeDialog';
@@ -42,6 +43,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   const levelNumber = title === "レベル1" ? 1 : 
                       title === "レベル2" ? 2 : 
                       title === "レベル3" ? 3 : 
+                      title === "レベル4" ? 4 :
                       undefined;
   
   const handleCustomNodeClick = () => {
@@ -53,6 +55,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
     const levelNumber = title === "レベル1" ? "1" : 
                         title === "レベル2" ? "2" : 
                         title === "レベル3" ? "3" : 
+                        title === "レベル4" ? "4" :
                         title.slice(-1);
     
     // Update sidebar tab to chat with level-specific message
@@ -109,6 +112,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
     if (title === "レベル1") return "#3d5e80";
     if (title === "レベル2") return "#3774c2";
     if (title === "レベル3") return "#467efd";
+    if (title === "レベル4") return "#5b8def";
     return "text-blue-700"; // default color
   };
 
@@ -120,7 +124,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   };
 
   return (
-    <div className="w-1/3 bg-white p-4 rounded-lg relative">
+    <div className="w-1/4 bg-white p-4 rounded-lg relative">
       <div className="flex items-center justify-between mb-4">
         <h2 
           className="text-base"

@@ -10,7 +10,7 @@ export interface TechnologyTreeState {
     level1: string;
     level2: string;
     level3: string;
-    level4?: string;
+    level4: string;
   };
   selectedView: string;
   sidebarTab: string;
@@ -52,12 +52,13 @@ export const useTechnologyTree = () => {
     const firstLevel1 = locationState.treeData.level1Items[0];
     const firstLevel2 = locationState.treeData.level2Items?.[firstLevel1.id]?.[0];
     const firstLevel3 = firstLevel2 ? locationState.treeData.level3Items?.[firstLevel2.id]?.[0] : null;
+    const firstLevel4 = firstLevel3 ? locationState.treeData.level4Items?.[firstLevel3.id]?.[0] : null;
     
     initialPath = {
       level1: firstLevel1.id,
       level2: firstLevel2?.id || "",
       level3: firstLevel3?.id || "",
-      level4: ""
+      level4: firstLevel4?.id || ""
     };
   }
   

@@ -16,6 +16,7 @@ export const usePathSelection = (
     level1Items?: any[];
     level2Items?: Record<string, any[]>;
     level3Items?: Record<string, any[]>;
+    level4Items?: Record<string, any[]>;
   }
 ) => {
   const {
@@ -32,20 +33,22 @@ export const usePathSelection = (
   const level1Data = treeData?.level1Items || initialLevel1Items;
   const level2Data = treeData?.level2Items || initialLevel2Items;
   const level3Data = treeData?.level3Items || initialLevel3Items;
+  const level4Data = treeData?.level4Items || {};
 
   console.log('usePathSelection - level1Data:', level1Data);
   console.log('usePathSelection - level2Data:', level2Data);
   console.log('usePathSelection - level3Data:', level3Data);
+  console.log('usePathSelection - level4Data:', level4Data);
 
   const {
     level1Items,
     level2Items,
     level3Items,
-    level4Items = {},
+    level4Items,
     addCustomNode: addNode,
     editNode,
     deleteNode: removeNode
-  } = useNodeOperations(level1Data, level2Data, level3Data);
+  } = useNodeOperations(level1Data, level2Data, level3Data, level4Data);
 
   // Set initial path to first available item if TED data is provided and current path doesn't exist
   if (treeData?.level1Items && level1Data.length > 0) {
@@ -56,7 +59,8 @@ export const usePathSelection = (
         ...prev,
         level1: level1Data[0].id,
         level2: "",
-        level3: ""
+        level3: "",
+        level4: ""
       }));
     }
   }
