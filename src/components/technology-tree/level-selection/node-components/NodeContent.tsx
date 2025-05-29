@@ -19,10 +19,23 @@ export const NodeContent: React.FC<NodeContentProps> = ({
   const textColorClass = isSelected ? "text-white" : "text-gray-800";
   const descriptionTextColor = isSelected ? "text-gray-100" : "text-gray-600";
   
+  // Extract only the Japanese part of the title (before the English part in parentheses)
+  const getJapaneseTitle = (name: string) => {
+    // Check if the name contains both Japanese and English parts
+    const match = name.match(/^(.+?)\s*\(\([^)]+\)\)$/);
+    if (match) {
+      return match[1].trim();
+    }
+    // If no English part found, return the original name
+    return name;
+  };
+  
+  const japaneseTitle = getJapaneseTitle(item.name);
+  
   return (
     <div className="flex flex-col w-full">
-      {/* Always show the title */}
-      <h4 className={`text-base leading-6 font-medium ${textColorClass}`}>{item.name}</h4>
+      {/* Display only the Japanese title */}
+      <h4 className={`text-base leading-6 font-medium ${textColorClass}`}>{japaneseTitle}</h4>
       
       {/* Always show info if it exists */}
       {item.info && (
