@@ -41,14 +41,27 @@ export const PathDisplay = ({
     return item ? item.name : '';
   };
 
-  const level1Name = findItemName(selectedPath.level1, level1Items);
+  // Extract only the Japanese part of the name (before the English part in parentheses)
+  const getJapaneseName = (name: string) => {
+    // Check if the name contains both Japanese and English parts
+    const match = name.match(/^(.+?)\s*\(\([^)]+\)\)$/);
+    if (match) {
+      return match[1].trim();
+    }
+    // If no English part found, return the original name
+    return name;
+  };
+
+  const level1Name = selectedPath.level1 
+    ? getJapaneseName(findItemName(selectedPath.level1, level1Items))
+    : '';
   
   const level2Name = selectedPath.level2 && selectedPath.level1
-    ? findItemName(selectedPath.level2, level2Items[selectedPath.level1] || [])
+    ? getJapaneseName(findItemName(selectedPath.level2, level2Items[selectedPath.level1] || []))
     : '';
   
   const level3Name = selectedPath.level3 && selectedPath.level2
-    ? findItemName(selectedPath.level3, level3Items[selectedPath.level2] || [])
+    ? getJapaneseName(findItemName(selectedPath.level3, level3Items[selectedPath.level2] || []))
     : '';
 
   const showLevel4Button = selectedPath.level3 && level3Name;
