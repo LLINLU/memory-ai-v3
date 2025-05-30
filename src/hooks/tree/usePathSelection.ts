@@ -25,7 +25,7 @@ export const usePathSelection = (
     handleNodeClick: handlePathNodeClick,
     showLevel4,
     setShowLevel4,
-    handleAddLevel4
+    handleAddLevel4: baseHandleAddLevel4
   } = usePathSelectionState(initialPath);
 
   // Use TED-generated data if available, otherwise fall back to default data
@@ -44,7 +44,8 @@ export const usePathSelection = (
     level4Items = {},
     addCustomNode: addNode,
     editNode,
-    deleteNode: removeNode
+    deleteNode: removeNode,
+    generateLevel4Nodes
   } = useNodeOperations(level1Data, level2Data, level3Data);
 
   // Set initial path to first available item if TED data is provided and current path doesn't exist
@@ -60,6 +61,14 @@ export const usePathSelection = (
       }));
     }
   }
+
+  // Enhanced handleAddLevel4 that generates nodes
+  const handleAddLevel4 = () => {
+    if (selectedPath.level3) {
+      setShowLevel4(true);
+      generateLevel4Nodes(selectedPath.level3, selectedPath, setSelectedPath);
+    }
+  };
 
   // Wrapper functions to maintain the same API
   const handleNodeClick = (level: PathLevel, nodeId: string) => {

@@ -25,6 +25,7 @@ interface PathDisplayProps {
   level1Items: any[];
   level2Items: Record<string, any[]>;
   level3Items: Record<string, any[]>;
+  level4Items?: Record<string, any[]>;
   onAddLevel4?: () => void;
 }
 
@@ -33,6 +34,7 @@ export const PathDisplay = ({
   level1Items,
   level2Items,
   level3Items,
+  level4Items = {},
   onAddLevel4
 }: PathDisplayProps) => {
   // Find the selected items by ID to display their names
@@ -64,7 +66,11 @@ export const PathDisplay = ({
     ? getJapaneseName(findItemName(selectedPath.level3, level3Items[selectedPath.level2] || []))
     : '';
 
-  const showLevel4Button = selectedPath.level3 && level3Name;
+  const level4Name = selectedPath.level4 && selectedPath.level3
+    ? getJapaneseName(findItemName(selectedPath.level4, level4Items[selectedPath.level3] || []))
+    : '';
+
+  const showLevel4Button = selectedPath.level3 && level3Name && !selectedPath.level4;
 
   return (
     <div className="mb-6" style={{ paddingTop: '0rem' }}>
@@ -102,6 +108,7 @@ export const PathDisplay = ({
           {level1Name && level1Name}
           {level2Name && ` → ${level2Name}`}
           {level3Name && ` → ${level3Name}`}
+          {level4Name && ` → ${level4Name}`}
         </p>
         {showLevel4Button && (
           <TooltipProvider>
