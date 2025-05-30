@@ -33,6 +33,7 @@ export const ChatBox = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isNodeCreation, setIsNodeCreation] = useState(false);
+  const [currentLevelNumber, setCurrentLevelNumber] = useState<string>('');
 
   const toggleOpen = () => setIsOpen(!isOpen);
   const toggleExpand = () => setIsExpanded(!isExpanded);
@@ -40,10 +41,12 @@ export const ChatBox = ({
   // Listen for custom node button clicks and switch-to-chat events
   useEffect(() => {
     const handleSwitchToChat = (event: CustomEvent) => {
+      console.log('ChatBox - Received switch-to-chat event:', event.detail);
       if (event.detail?.levelNumber) {
         setIsOpen(true);
         setIsExpanded(true);
         setIsNodeCreation(true);
+        setCurrentLevelNumber(event.detail.levelNumber);
         
         // Trigger the node creation flow with level information
         if (onButtonClick) {
@@ -103,6 +106,12 @@ export const ChatBox = ({
     };
   }, [onButtonClick]);
 
+  // Debug logging
+  useEffect(() => {
+    console.log('ChatBox - Current level number:', currentLevelNumber);
+    console.log('ChatBox - Is node creation:', isNodeCreation);
+  }, [currentLevelNumber, isNodeCreation]);
+
   return (
     <div data-chatbox>
       {!isOpen ? (
@@ -133,6 +142,7 @@ export const ChatBox = ({
             onCheckResults={onCheckResults}
             inputValue={inputValue}
             isNodeCreation={isNodeCreation}
+            levelNumber={currentLevelNumber}
           />
           
           <ChatInputBox 

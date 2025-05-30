@@ -31,16 +31,6 @@ export const useChatInitialization = ({
     }
   }, [locationState, chatMessages.length, setChatMessages]);
 
-  // Set up event listener for switching to chat
-  useEffect(() => {
-    const handleSwitchToChatEvent = (event: CustomEvent) => {
-      handleSwitchToChat(event.detail.message);
-    };
-
-    document.addEventListener('switch-to-chat', handleSwitchToChatEvent as EventListener);
-    
-    return () => {
-      document.removeEventListener('switch-to-chat', handleSwitchToChatEvent as EventListener);
-    };
-  }, [handleSwitchToChat]);
+  // Note: Removed the conflicting 'switch-to-chat' event listener that was 
+  // interfering with the new ChatBox implementation
 };

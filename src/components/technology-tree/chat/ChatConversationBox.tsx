@@ -9,7 +9,7 @@ import { useMessageGrouping } from './useMessageGrouping';
 
 interface ChatConversationBoxProps {
   messages: any[];
-  onButtonClick?: (action: string) => void;
+  onButtonClick?: (action: string, levelNumber?: string) => void;
   onUseNode?: (suggestion: NodeSuggestion) => void;
   onEditNode?: (suggestion: NodeSuggestion) => void;
   onRefine?: (suggestion: NodeSuggestion) => void;
@@ -17,6 +17,7 @@ interface ChatConversationBoxProps {
   onResearchAreaVisible?: (isVisible: boolean) => void;
   inputValue?: string;
   isNodeCreation?: boolean;
+  levelNumber?: string;
 }
 
 export const ChatConversationBox = ({
@@ -28,7 +29,8 @@ export const ChatConversationBox = ({
   onCheckResults,
   onResearchAreaVisible,
   inputValue = '',
-  isNodeCreation = false
+  isNodeCreation = false,
+  levelNumber
 }: ChatConversationBoxProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -57,13 +59,20 @@ export const ChatConversationBox = ({
     }
   };
 
+  // Debug logging
+  useEffect(() => {
+    console.log('ChatConversationBox - Level number:', levelNumber);
+    console.log('ChatConversationBox - Messages:', filteredMessages);
+    console.log('ChatConversationBox - Has substantive messages:', hasSubstantiveMessages);
+  }, [levelNumber, filteredMessages, hasSubstantiveMessages]);
+
   return (
     <div className="flex-1 overflow-y-auto p-4 bg-white relative">
       {/* Only show welcome message if there are no substantive messages */}
       {!hasSubstantiveMessages && onButtonClick && (
         <WelcomeMessage
           inputValue={inputValue}
-          onButtonClick={onButtonClick}
+          onButtonClick={(action) => onButtonClick(action, levelNumber)}
         />
       )}
       
@@ -75,6 +84,7 @@ export const ChatConversationBox = ({
         onEditNode={onEditNode}
         onRefine={onRefine}
         handleCheckResults={handleCheckResults}
+        levelNumber={levelNumber}
       />
       
       {/* Invisible div to scroll to */}

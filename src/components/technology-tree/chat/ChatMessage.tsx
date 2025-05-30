@@ -19,10 +19,11 @@ interface ChatMessageProps {
     isGroup?: boolean;
   };
   isActionTaken: boolean;
-  onButtonClick?: (action: string) => void;
+  onButtonClick?: (action: string, levelNumber?: string) => void;
   onUseNode?: (suggestion: NodeSuggestion) => void;
   onEditNode?: (suggestion: NodeSuggestion) => void;
   onRefine?: (suggestion: NodeSuggestion) => void;
+  levelNumber?: string;
 }
 
 export const ChatMessage = ({
@@ -31,7 +32,8 @@ export const ChatMessage = ({
   onButtonClick,
   onUseNode,
   onEditNode,
-  onRefine
+  onRefine,
+  levelNumber
 }: ChatMessageProps) => {
   const isSkipped = message.isUser && message.content === "Skipped";
   
@@ -91,7 +93,10 @@ export const ChatMessage = ({
               {message.buttons.map((button, buttonIndex) => (
                 <Button
                   key={buttonIndex}
-                  onClick={() => onButtonClick && onButtonClick(button.action)}
+                  onClick={() => {
+                    console.log('Button clicked:', button.action, 'with level:', levelNumber);
+                    onButtonClick && onButtonClick(button.action, levelNumber);
+                  }}
                   className={cn(
                     button.primary
                       ? 'bg-blue-600 hover:bg-blue-700 text-white'
