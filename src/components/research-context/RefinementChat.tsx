@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,6 +8,7 @@ import { toast } from "@/hooks/use-toast";
 interface RefinementChatProps {
   initialQuery: string;
   onRefinementComplete: (context: any) => void;
+  onContextUpdate?: (context: any) => void;
 }
 
 interface ChatMessage {
@@ -20,15 +20,40 @@ interface ChatMessage {
   }>;
 }
 
-export const RefinementChat = ({ initialQuery, onRefinementComplete }: RefinementChatProps) => {
+export const RefinementChat = ({ 
+  initialQuery, 
+  onRefinementComplete,
+  onContextUpdate 
+}: RefinementChatProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [researchAnswers, setResearchAnswers] = useState<Record<string, string>>({});
+  const [refinementProgress, setRefinementProgress] = useState(0);
 
   useEffect(() => {
     initializeConversation();
   }, [initialQuery]);
+
+  // Emit context updates whenever state changes
+  useEffect(() => {
+    if (onContextUpdate) {
+      onContextUpdate({
+        query: initialQuery,
+        messages,
+        researchAnswers,
+        refinementProgress,
+        conversationHistory: messages
+      });
+    }
+  }, [messages, researchAnswers, refinementProgress, onContextUpdate, initialQuery]);
+
+  const updateProgress = (newAnswers: Record<string, string>) => {
+    const totalQuestions = 4; // focus, purpose, depth, specifics
+    const answeredQuestions = Object.keys(newAnswers).length;
+    const progress = Math.min((answeredQuestions / totalQuestions) * 100, 100);
+    setRefinementProgress(progress);
+  };
 
   const initializeConversation = async () => {
     setIsLoading(true);
@@ -55,6 +80,7 @@ export const RefinementChat = ({ initialQuery, onRefinementComplete }: Refinemen
       };
 
       setMessages([initialMessage]);
+      setRefinementProgress(10);
     } catch (error) {
       toast({
         title: "エラー",
@@ -68,20 +94,25 @@ export const RefinementChat = ({ initialQuery, onRefinementComplete }: Refinemen
   const handleButtonClick = async (value: string) => {
     const buttonResponse = value === "technical" ? "技術的な仕組み・原理に興味があります" : "市場応用・実用化に興味があります";
     
-    setMessages(prev => [...prev, { content: buttonResponse, isUser: true }]);
-    setResearchAnswers(prev => ({ ...prev, focus: value }));
+    const newMessages = [...messages, { content: buttonResponse, isUser: true }];
+    setMessages(newMessages);
+    
+    const newAnswers = { ...researchAnswers, focus: value };
+    setResearchAnswers(newAnswers);
+    updateProgress(newAnswers);
 
-    await generateFollowUpQuestion(value);
+    await generateFollowUpQuestion(value, newMessages);
   };
 
-  const generateFollowUpQuestion = async (focus: string) => {
+  const generateFollowUpQuestion = async (focus: string, currentMessages: ChatMessage[]) => {
     setIsLoading(true);
     try {
       const context = focus === "technical" ? "技術的な詳細" : "市場応用";
-      const prompt = `ユーザーは「${initialQuery}」について${context}に興味を持っています。次に、より具体的な研究対象や範囲を絞り込むための質問をしてください。`;
+      const prompt = `ユーザーは「${initialQuery}」について${context}に興味を持っています。次に、具体的な研究目的や用途について質問してください。例えば、特定の問題解決、改善したい課題、対象となるユーザー層などについて聞いてください。`;
 
       const response = await callChatGPT(prompt, 'research');
-      setMessages(prev => [...prev, { content: response, isUser: false }]);
+      const newMessages = [...currentMessages, { content: response, isUser: false }];
+      setMessages(newMessages);
     } finally {
       setIsLoading(false);
     }
@@ -92,24 +123,36 @@ export const RefinementChat = ({ initialQuery, onRefinementComplete }: Refinemen
 
     const userMessage = inputValue;
     setInputValue("");
-    setMessages(prev => [...prev, { content: userMessage, isUser: true }]);
+    const newMessages = [...messages, { content: userMessage, isUser: true }];
+    setMessages(newMessages);
+
+    // Update research answers based on conversation context
+    const updatedAnswers = { ...researchAnswers };
+    if (!updatedAnswers.purpose && messages.length >= 2) {
+      updatedAnswers.purpose = userMessage;
+      setResearchAnswers(updatedAnswers);
+      updateProgress(updatedAnswers);
+    }
 
     setIsLoading(true);
     try {
-      const conversationHistory = messages.map(m => `${m.isUser ? 'User' : 'Assistant'}: ${m.content}`).join('\n');
-      const prompt = `会話履歴:\n${conversationHistory}\nUser: ${userMessage}\n\n前の会話を踏まえて、研究コンテキストをさらに詳細化するための質問を続けるか、十分な情報が集まった場合は研究の詳細化完了を宣言してください。`;
+      const conversationHistory = newMessages.map(m => `${m.isUser ? 'User' : 'Assistant'}: ${m.content}`).join('\n');
+      const prompt = `会話履歴:\n${conversationHistory}\n\n前の会話を踏まえて、研究コンテキストをさらに詳細化するための質問を続けるか、十分な情報が集まった場合は研究の詳細化完了を宣言してください。`;
 
       const response = await callChatGPT(prompt, 'research');
       
-      setMessages(prev => [...prev, { content: response, isUser: false }]);
+      const finalMessages = [...newMessages, { content: response, isUser: false }];
+      setMessages(finalMessages);
 
-      // Check if refinement is complete (simple heuristic)
-      if (messages.length >= 6) {
+      // Check if refinement is complete
+      if (finalMessages.length >= 6 || Object.keys(updatedAnswers).length >= 3) {
+        setRefinementProgress(100);
         setTimeout(() => {
           onRefinementComplete({
             query: initialQuery,
-            researchAnswers,
-            conversationHistory: [...messages, { content: userMessage, isUser: true }, { content: response, isUser: false }]
+            researchAnswers: updatedAnswers,
+            conversationHistory: finalMessages,
+            refinementProgress: 100
           });
         }, 1000);
       }

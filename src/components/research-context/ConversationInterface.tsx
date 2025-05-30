@@ -14,10 +14,20 @@ export const ConversationInterface = ({ query, searchMode }: ConversationInterfa
   const navigate = useNavigate();
   const [isRefinementComplete, setIsRefinementComplete] = useState(false);
   const [refinedContext, setRefinedContext] = useState<any>(null);
+  const [conversationContext, setConversationContext] = useState<any>({
+    query,
+    messages: [],
+    researchAnswers: {},
+    refinementProgress: 0
+  });
 
   const handleRefinementComplete = (context: any) => {
     setRefinedContext(context);
     setIsRefinementComplete(true);
+  };
+
+  const handleContextUpdate = (context: any) => {
+    setConversationContext(context);
   };
 
   const handleProceedToTechnologyTree = () => {
@@ -44,6 +54,7 @@ export const ConversationInterface = ({ query, searchMode }: ConversationInterfa
         <RefinementChat 
           initialQuery={query}
           onRefinementComplete={handleRefinementComplete}
+          onContextUpdate={handleContextUpdate}
         />
       </div>
 
