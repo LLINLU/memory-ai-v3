@@ -141,7 +141,37 @@ export const useTechTreeChat = () => {
         ...prev,
         {
           type: "text",
-          content: "新しいノードを作成しましょう。どのような内容のノードを、どのレベルに追加したいですか？",
+          content: "こんにちは！レベル2の下に新しいノードを追加する準備はできていますか？始め方は次のとおりです：",
+          isUser: false,
+          buttons: [
+            {
+              label: "📝 直接入力",
+              action: "direct-input",
+              primary: true
+            },
+            {
+              label: "💭 アイデア共有", 
+              action: "idea-sharing",
+              primary: false
+            }
+          ]
+        }
+      ]);
+    } else if (action === 'direct-input') {
+      setChatMessages(prev => [
+        ...prev,
+        {
+          type: "text",
+          content: "📝 直接入力\n\nタイトルと説明をそのまま教えてください",
+          isUser: false
+        }
+      ]);
+    } else if (action === 'idea-sharing') {
+      setChatMessages(prev => [
+        ...prev,
+        {
+          type: "text",
+          content: "💭 アイデア共有\n\n考えを自然に話してください。私が整理します！",
           isUser: false
         }
       ]);
