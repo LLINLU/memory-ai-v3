@@ -9,7 +9,6 @@ import { useTechTreeSidebarActions } from "@/components/technology-tree/hooks/us
 import { useNodeInfo } from "@/hooks/tree/useNodeInfo";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { ChatBox } from "@/components/technology-tree/ChatBox";
 import { TechTreeMainContent } from "@/components/technology-tree/TechTreeMainContent";
 import { useScenarioState } from "@/hooks/tree/useScenarioState";
 import { useChatInitialization } from "@/hooks/tree/useChatInitialization";
@@ -29,11 +28,9 @@ const TechnologyTree = () => {
     treeData?: any;
   } | null;
   
-  // Store the conversation history from the research context
   const [savedConversationHistory, setSavedConversationHistory] = useState<any[]>([]);
   const [showFallbackAlert, setShowFallbackAlert] = useState(false);
   
-  // Extract conversation history from location state if available
   useEffect(() => {
     if (locationState?.conversationHistory) {
       setSavedConversationHistory(locationState.conversationHistory);
@@ -66,12 +63,10 @@ const TechnologyTree = () => {
     handleAddLevel4
   } = useTechnologyTree();
 
-  // Initialize tree data with TED results if available
   useEffect(() => {
     if (locationState?.treeData && locationState?.tedResults) {
       console.log('Initializing with TED-generated tree data:', locationState.treeData);
       
-      // Check if any fallback data was used
       const tedResults = locationState.tedResults;
       let hasFallbackData = false;
       
@@ -82,7 +77,6 @@ const TechnologyTree = () => {
         setShowFallbackAlert(true);
       }
       
-      // Show success message with TED evaluation scores
       const scores = [];
       if (tedResults.purpose?.evaluation?.total_score) {
         scores.push(`Purpose: ${Math.round(tedResults.purpose.evaluation.total_score / 4)}%`);
@@ -135,7 +129,6 @@ const TechnologyTree = () => {
     document.dispatchEvent(event);
   };
 
-  // Initialize chat with context data
   useChatInitialization({
     locationState,
     chatMessages,
@@ -143,25 +136,21 @@ const TechnologyTree = () => {
     handleSwitchToChat
   });
 
-  // Handle node selection effects
   useNodeSelectionEffect({
     selectedPath,
     setShowSidebar,
     setSidebarTab
   });
 
-  // Set default tabs
   useEffect(() => {
     updateTabsHorizontalState("result");
     setSidebarTab("result");
   }, [setSidebarTab]);
 
-  // Initialize chat when sidebar tab changes
   useEffect(() => {
     initializeChat(sidebarTab);
   }, [sidebarTab, initializeChat]);
 
-  // Update page title to reflect the new text if needed
   useEffect(() => {
     document.title = "研究背景を整理します | Technology Tree";
   }, []);
@@ -224,17 +213,6 @@ const TechnologyTree = () => {
               />
             </div>
           </TechTreeLayout>
-          
-          <ChatBox
-            messages={chatMessages}
-            inputValue={inputValue}
-            onInputChange={handleInputChange}
-            onSendMessage={handleSendMessage}
-            onButtonClick={handleButtonClick}
-            onUseNode={handleUseNode}
-            onEditNode={handleEditNodeFromChat}
-            onRefine={handleRefineNode}
-          />
         </div>
       </div>
     </SidebarProvider>
