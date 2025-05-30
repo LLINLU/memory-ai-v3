@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { ChatMessage } from "@/types/chat";
 import { toast } from "@/hooks/use-toast";
@@ -136,12 +137,11 @@ export const useTechTreeChat = () => {
         description: "最新の研究トレンドを分析中です。少々お待ちください。",
       });
     } else if (action === 'generate-node') {
-      const response = await callChatGPT("新しいノードを作成しましょう。どのような内容のノードを、どのレベルに追加したいですか？", 'research');
       setChatMessages(prev => [
         ...prev,
         {
           type: "text",
-          content: response,
+          content: "新しいノードを作成しましょう。どのような内容のノードを、どのレベルに追加したいですか？",
           isUser: false
         }
       ]);
