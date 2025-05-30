@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from "react";
 import { LevelColumn } from "./level-selection/LevelColumn";
 import { ConnectionLines } from "./level-selection/ConnectionLines";
@@ -16,17 +15,21 @@ interface LevelSelectionProps {
     level1: string;
     level2: string;
     level3: string;
+    level4?: string;
   };
   level1Items: LevelItem[];
   level2Items: Record<string, LevelItem[]>;
   level3Items: Record<string, LevelItem[]>;
+  level4Items?: Record<string, LevelItem[]>;
   onNodeClick: (level: string, nodeId: string) => void;
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
+  showLevel4?: boolean;
   levelNames: {
     level1: string;
     level2: string;
     level3: string;
+    level4?: string;
   };
 }
 
@@ -35,9 +38,11 @@ export const LevelSelection = ({
   level1Items,
   level2Items,
   level3Items,
+  level4Items = {},
   onNodeClick,
   onEditNode,
   onDeleteNode,
+  showLevel4 = false,
   levelNames
 }: LevelSelectionProps) => {
   // Reorder items to ensure selected items appear first
@@ -72,6 +77,17 @@ export const LevelSelection = ({
     }
     return items;
   }, [level3Items, selectedPath]);
+
+  const visibleLevel4Items = React.useMemo(() => {
+    if (!selectedPath.level3 || !showLevel4) return [];
+    const items = [...(level4Items[selectedPath.level3] || [])];
+    const selectedIndex = items.findIndex(item => item.id === selectedPath.level4);
+    if (selectedIndex > 0) {
+      const [selectedItem] = items.splice(selectedIndex, 1);
+      items.unshift(selectedItem);
+    }
+    return items;
+  }, [level4Items, selectedPath, showLevel4]);
 
   const [level2to3Line, setLevel2to3Line] = useState<{x1: number, y1: number, x2: number, y2: number} | null>(null);
   const [level1to2Line, setLevel1to2Line] = useState<{x1: number, y1: number, x2: number, y2: number} | null>(null);
@@ -154,6 +170,18 @@ export const LevelSelection = ({
         onEditNode={(nodeId, updatedNode) => handleEditNode('level3', nodeId, updatedNode)}
         onDeleteNode={(nodeId) => handleDeleteNode('level3', nodeId)}
       />
+
+      {showLevel4 && (
+        <LevelColumn
+          title="レベル4"
+          subtitle={levelNames.level4 || "実装"}
+          items={visibleLevel4Items}
+          selectedId={selectedPath.level4}
+          onNodeClick={(nodeId) => handleNodeSelection('level4', nodeId)}
+          onEditNode={(nodeId, updatedNode) => handleEditNode('level4', nodeId, updatedNode)}
+          onDeleteNode={(nodeId) => handleDeleteNode('level4', nodeId)}
+        />
+      )}
 
       <ConnectionLines
         level1to2Line={level1to2Line}
