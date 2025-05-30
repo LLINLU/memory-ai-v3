@@ -91,10 +91,11 @@ export const LevelSelection = ({
 
   const [level2to3Line, setLevel2to3Line] = useState<{x1: number, y1: number, x2: number, y2: number} | null>(null);
   const [level1to2Line, setLevel1to2Line] = useState<{x1: number, y1: number, x2: number, y2: number} | null>(null);
+  const [level3to4Line, setLevel3to4Line] = useState<{x1: number, y1: number, x2: number, y2: number} | null>(null);
   
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useConnectionLines(containerRef, selectedPath, setLevel1to2Line, setLevel2to3Line);
+  useConnectionLines(containerRef, selectedPath, setLevel1to2Line, setLevel2to3Line, setLevel3to4Line);
 
   const handleNodeSelection = (level: string, nodeId: string) => {
     if (selectedPath[level] !== nodeId) {
@@ -140,7 +141,15 @@ export const LevelSelection = ({
   };
 
   return (
-    <div className="flex flex-row gap-6 mb-8 relative" ref={containerRef}>
+    <div 
+      className={`flex flex-row gap-6 mb-8 relative ${showLevel4 ? 'grid-cols-4' : 'grid-cols-3'}`} 
+      ref={containerRef}
+      style={{ 
+        display: 'grid',
+        gridTemplateColumns: showLevel4 ? 'repeat(4, 1fr)' : 'repeat(3, 1fr)',
+        gap: '1.5rem'
+      }}
+    >
       <LevelColumn
         title="レベル1"
         subtitle={levelNames.level1}
@@ -186,6 +195,7 @@ export const LevelSelection = ({
       <ConnectionLines
         level1to2Line={level1to2Line}
         level2to3Line={level2to3Line}
+        level3to4Line={level3to4Line}
       />
     </div>
   );
