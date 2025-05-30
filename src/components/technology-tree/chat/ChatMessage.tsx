@@ -97,11 +97,8 @@ export const ChatMessage = ({
                     console.log('Button clicked:', button.action, 'with level:', levelNumber);
                     onButtonClick && onButtonClick(button.action, levelNumber);
                   }}
-                  className={cn(
-                    button.primary
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                      : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                  )}
+                  variant="outline"
+                  className="bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-200"
                   size="sm"
                 >
                   {button.label}
