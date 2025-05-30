@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { ChatMessage } from "@/types/chat";
 import { toast } from "@/hooks/use-toast";
@@ -136,7 +137,27 @@ export const useTechTreeChat = () => {
         description: "最新の研究トレンドを分析中です。少々お待ちください。",
       });
     } else if (action === 'generate-node') {
-      const response = await callChatGPT("新しいノードを作成しましょう。どのような内容のノードを、どのレベルに追加したいですか？", 'research');
+      // Show the new welcome message with two options
+      setChatMessages(prev => [
+        ...prev,
+        {
+          type: "welcome",
+          content: "新しいノードをレベル2に追加しましょう！",
+          isUser: false
+        }
+      ]);
+    } else if (action === 'direct-input') {
+      const response = await callChatGPT("ノードのタイトルと説明を直接入力する方法を選択されました。新しいノードのタイトルと説明を教えてください。", 'research');
+      setChatMessages(prev => [
+        ...prev,
+        {
+          type: "text",
+          content: response,
+          isUser: false
+        }
+      ]);
+    } else if (action === 'idea-sharing') {
+      const response = await callChatGPT("アイデア共有の方法を選択されました。あなたのアイデアや考えを自然に話してください。私がそれを整理して適切なノードとして提案します。", 'research');
       setChatMessages(prev => [
         ...prev,
         {
