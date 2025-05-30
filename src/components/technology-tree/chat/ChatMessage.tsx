@@ -50,44 +50,6 @@ export const ChatMessage = ({
       {message.content}
     </p>;
   };
-
-  // Special handling for welcome message with node creation options
-  const renderWelcomeOptions = () => {
-    if (message.type === 'welcome' && (
-      message.content.includes('こんにちは！新しいノード') || 
-      message.content.includes('新しいノードを')
-    )) {
-      return (
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-2xl">👋</span>
-            <h2 className="text-lg font-medium text-gray-800">こんにちは！新しいノードをレベル2に追加しましょう！</h2>
-          </div>
-          
-          <p className="text-gray-600 text-base mb-6">2つの簡単な方法があります：</p>
-          
-          <div className="flex flex-col gap-3">
-            <Button
-              onClick={() => onButtonClick && onButtonClick('direct-input')}
-              className="bg-blue-600 hover:bg-blue-700 text-white p-4 h-auto text-left flex flex-col items-start gap-1 rounded-xl"
-            >
-              <span className="font-medium text-base">タイトルと説明を入力</span>
-              <span className="text-blue-100 text-sm font-normal">タイトルと説明をそのまま教えてください</span>
-            </Button>
-
-            <Button
-              onClick={() => onButtonClick && onButtonClick('idea-sharing')}
-              className="bg-blue-600 hover:bg-blue-700 text-white p-4 h-auto text-left flex flex-col items-start gap-1 rounded-xl"
-            >
-              <span className="font-medium text-base">アイデアを話す</span>
-              <span className="text-blue-100 text-sm font-normal">内容を整理してタイトルと説明を提案します</span>
-            </Button>
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
   
   return (
     <div 
@@ -114,43 +76,34 @@ export const ChatMessage = ({
             ? "bg-blue-50 w-full border border-blue-100" 
             : "bg-blue-50 text-blue-900"
         )}>
-          {message.type === 'welcome' && (
-            message.content.includes('こんにちは！新しいノード') || 
-            message.content.includes('新しいノードを')
-          ) ? (
-            renderWelcomeOptions()
-          ) : (
-            <>
-              {renderContent()}
-              
-              {message.suggestion && !isActionTaken && (
-                <SuggestionActions 
-                  suggestion={message.suggestion}
-                  onUseNode={onUseNode}
-                  onEditNode={onEditNode}
-                  onRefine={onRefine}
-                />
-              )}
-              
-              {message.buttons && (
-                <div className="flex flex-col sm:flex-row gap-3 justify-start mt-3">
-                  {message.buttons.map((button, buttonIndex) => (
-                    <Button
-                      key={buttonIndex}
-                      onClick={() => onButtonClick && onButtonClick(button.action)}
-                      className={cn(
-                        button.primary
-                          ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                          : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                      )}
-                      size="sm"
-                    >
-                      {button.label}
-                    </Button>
-                  ))}
-                </div>
-              )}
-            </>
+          {renderContent()}
+          
+          {message.suggestion && !isActionTaken && (
+            <SuggestionActions 
+              suggestion={message.suggestion}
+              onUseNode={onUseNode}
+              onEditNode={onEditNode}
+              onRefine={onRefine}
+            />
+          )}
+          
+          {message.buttons && (
+            <div className="flex flex-col sm:flex-row gap-3 justify-start mt-3">
+              {message.buttons.map((button, buttonIndex) => (
+                <Button
+                  key={buttonIndex}
+                  onClick={() => onButtonClick && onButtonClick(button.action)}
+                  className={cn(
+                    button.primary
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                      : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                  )}
+                  size="sm"
+                >
+                  {button.label}
+                </Button>
+              ))}
+            </div>
           )}
         </div>
       )}
