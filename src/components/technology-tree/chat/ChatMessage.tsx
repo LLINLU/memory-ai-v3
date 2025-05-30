@@ -53,7 +53,10 @@ export const ChatMessage = ({
 
   // Special handling for welcome message with node creation options
   const renderWelcomeOptions = () => {
-    if (message.type === 'welcome' && message.content.includes('新しいノードを')) {
+    if (message.type === 'welcome' && (
+      message.content.includes('こんにちは！新しいノード') || 
+      message.content.includes('新しいノードを')
+    )) {
       return (
         <div className="space-y-4">
           <div className="flex items-center gap-2 mb-4">
@@ -111,7 +114,10 @@ export const ChatMessage = ({
             ? "bg-blue-50 w-full border border-blue-100" 
             : "bg-blue-50 text-blue-900"
         )}>
-          {message.type === 'welcome' && message.content.includes('新しいノードを') ? (
+          {message.type === 'welcome' && (
+            message.content.includes('こんにちは！新しいノード') || 
+            message.content.includes('新しいノードを')
+          ) ? (
             renderWelcomeOptions()
           ) : (
             <>

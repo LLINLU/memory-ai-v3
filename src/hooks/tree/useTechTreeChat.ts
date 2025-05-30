@@ -137,12 +137,12 @@ export const useTechTreeChat = () => {
         description: "最新の研究トレンドを分析中です。少々お待ちください。",
       });
     } else if (action === 'generate-node') {
-      // Add the welcome message with the correct type and content for node creation
+      // Add the welcome message with the correct type and content that will trigger the special rendering
       setChatMessages(prev => [
         ...prev,
         {
           type: "welcome",
-          content: "新しいノードをレベル2に追加しましょう！",
+          content: "こんにちは！新しいノードをレベル2に追加しましょう！",
           isUser: false
         }
       ]);
