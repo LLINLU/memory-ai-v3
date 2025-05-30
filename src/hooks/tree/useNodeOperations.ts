@@ -21,62 +21,6 @@ export const useNodeOperations = (
   const [level3Items, setLevel3Items] = useState(initialLevel3Items);
   const [level4Items, setLevel4Items] = useState<Record<string, TreeNode[]>>({});
   
-  // Generate Level 4 nodes based on the selected Level 3 node
-  const generateLevel4Nodes = (level3NodeId: string, selectedPath: PathState, setSelectedPath: (updater: (prev: PathState) => PathState) => void) => {
-    // Find the level 3 node to base level 4 generation on
-    const level3Node = Object.values(level3Items)
-      .flat()
-      .find(item => item.id === level3NodeId);
-    
-    if (!level3Node) return;
-
-    // Generate sample Level 4 nodes (implementation-specific technologies)
-    const sampleLevel4Nodes: TreeNode[] = [
-      {
-        id: `${level3NodeId}-impl-1`,
-        name: "デバイス統合",
-        info: "12論文 • 3事例",
-        description: "具体的なハードウェア実装とシステム統合",
-        isCustom: false,
-        level: 4
-      },
-      {
-        id: `${level3NodeId}-impl-2`,
-        name: "プロトタイプ開発",
-        info: "8論文 • 2事例",
-        description: "実験的な実装とテスト環境の構築",
-        isCustom: false,
-        level: 4
-      },
-      {
-        id: `${level3NodeId}-impl-3`,
-        name: "量産化技術",
-        info: "15論文 • 5事例",
-        description: "商用化に向けた製造プロセスと品質管理",
-        isCustom: false,
-        level: 4
-      }
-    ];
-
-    // Add the generated nodes to level4Items
-    setLevel4Items(prev => ({
-      ...prev,
-      [level3NodeId]: sampleLevel4Nodes
-    }));
-
-    // Select the first Level 4 node automatically
-    setSelectedPath(prev => ({ 
-      ...prev, 
-      level4: sampleLevel4Nodes[0].id 
-    }));
-
-    toast({
-      title: "レベル4が生成されました",
-      description: "実装レベルのノードが追加されました",
-      duration: 2000,
-    });
-  };
-  
   const addCustomNode = (level: PathLevel, node: NodeSuggestion, selectedPath: PathState, setSelectedPath: (updater: (prev: PathState) => PathState) => void) => {
     console.log('Adding custom node:', { level, node });
     
@@ -312,7 +256,6 @@ export const useNodeOperations = (
     level4Items,
     addCustomNode,
     editNode,
-    deleteNode,
-    generateLevel4Nodes
+    deleteNode
   };
 };

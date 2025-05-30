@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { NodeSuggestion } from "@/types/chat";
 import { SuggestionActions } from './SuggestionActions';
 import { cn } from "@/lib/utils";
-import { Edit, MessageCircle } from "lucide-react";
 
 interface ChatMessageProps {
   message: {
@@ -45,7 +44,7 @@ export const ChatMessage = ({
     }
     return <p className={cn(
       "whitespace-pre-line",
-      message.type === 'welcome' ? 'text-lg text-gray-800 mb-6 font-medium' : 'text-base'
+      message.type === 'welcome' ? 'text-lg text-blue-800 mb-4' : 'text-base'
     )}>
       {message.content}
     </p>;
@@ -73,7 +72,7 @@ export const ChatMessage = ({
         <div className={cn(
           "rounded-xl p-4 mb-4",
           message.type === 'welcome' 
-            ? "bg-blue-50 w-full border border-blue-100" 
+            ? "bg-blue-50 w-full" 
             : "bg-blue-50 text-blue-900"
         )}>
           {renderContent()}

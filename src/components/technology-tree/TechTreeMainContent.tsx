@@ -11,7 +11,6 @@ interface TechTreeMainContentProps {
   level1Items: any[];
   level2Items: Record<string, any[]>;
   level3Items: Record<string, any[]>;
-  level4Items?: Record<string, any[]>;
   handleNodeClick: (level: string, nodeId: string) => void;
   editNode: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   deleteNode: (level: string, nodeId: string) => void;
@@ -26,7 +25,6 @@ interface TechTreeMainContentProps {
   onEditScenario?: (newScenario: string) => void;
   conversationHistory?: any[];
   handleAddLevel4?: () => void;
-  showLevel4?: boolean;
   searchMode?: string;
 }
 
@@ -35,7 +33,6 @@ export const TechTreeMainContent = ({
   level1Items,
   level2Items,
   level3Items,
-  level4Items,
   handleNodeClick,
   editNode,
   deleteNode,
@@ -45,7 +42,6 @@ export const TechTreeMainContent = ({
   onEditScenario,
   conversationHistory,
   handleAddLevel4,
-  showLevel4,
   searchMode
 }: TechTreeMainContentProps) => {
   return (
@@ -54,7 +50,6 @@ export const TechTreeMainContent = ({
       level1Items={level1Items}
       level2Items={level2Items}
       level3Items={level3Items}
-      level4Items={level4Items}
       onNodeClick={handleNodeClick}
       onEditNode={editNode}
       onDeleteNode={deleteNode}
@@ -64,7 +59,6 @@ export const TechTreeMainContent = ({
       onEditScenario={onEditScenario}
       conversationHistory={conversationHistory}
       onAddLevel4={handleAddLevel4}
-      showLevel4={showLevel4}
       searchMode={searchMode}
     />
   );

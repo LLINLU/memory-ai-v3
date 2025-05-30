@@ -14,7 +14,6 @@ interface MainContentProps {
   level1Items: any[];
   level2Items: Record<string, any[]>;
   level3Items: Record<string, any[]>;
-  level4Items?: Record<string, any[]>;
   onNodeClick: (level: string, nodeId: string) => void;
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
@@ -30,7 +29,6 @@ interface MainContentProps {
   onEditScenario?: (newScenario: string) => void;
   conversationHistory?: any[];
   onAddLevel4?: () => void;
-  showLevel4?: boolean;
   searchMode?: string;
 }
 
@@ -39,7 +37,6 @@ export const MainContent = ({
   level1Items,
   level2Items,
   level3Items,
-  level4Items = {},
   onNodeClick,
   onEditNode,
   onDeleteNode,
@@ -55,7 +52,6 @@ export const MainContent = ({
   hasUserMadeSelection,
   conversationHistory,
   onAddLevel4,
-  showLevel4 = false,
   searchMode
 }: MainContentProps) => {
   return (
@@ -77,9 +73,9 @@ export const MainContent = ({
         level1Items={level1Items}
         level2Items={level2Items}
         level3Items={level3Items}
-        level4Items={level4Items}
         onNodeClick={onNodeClick}
-        showLevel4={showLevel4}
+        onEditNode={onEditNode}
+        onDeleteNode={onDeleteNode}
         levelNames={levelNames}
       />
     </div>

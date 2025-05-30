@@ -120,7 +120,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg relative">
+    <div className="w-1/3 bg-white p-4 rounded-lg relative">
       <div className="flex items-center justify-between mb-4">
         <h2 
           className="text-base"
@@ -169,7 +169,6 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
             onDeleteClick={(e) => handleDeleteClick(e, item.id)}
             level={levelNumber}
             showDescription={showDescriptions}
-            data-node-id={item.id}
           />
         ))}
 
