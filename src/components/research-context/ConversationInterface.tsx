@@ -8,26 +8,39 @@ import { ArrowRight } from "lucide-react";
 interface ConversationInterfaceProps {
   query: string;
   searchMode: string;
+  onContextUpdate?: (context: any) => void;
 }
 
-export const ConversationInterface = ({ query, searchMode }: ConversationInterfaceProps) => {
+export const ConversationInterface = ({ 
+  query, 
+  searchMode, 
+  onContextUpdate 
+}: ConversationInterfaceProps) => {
   const navigate = useNavigate();
   const [isRefinementComplete, setIsRefinementComplete] = useState(false);
   const [refinedContext, setRefinedContext] = useState<any>(null);
-  const [conversationContext, setConversationContext] = useState<any>({
-    query,
-    messages: [],
-    researchAnswers: {},
-    refinementProgress: 0
-  });
 
   const handleRefinementComplete = (context: any) => {
+    console.log('Refinement complete with context:', context);
     setRefinedContext(context);
     setIsRefinementComplete(true);
+    
+    // Update parent context
+    if (onContextUpdate) {
+      onContextUpdate({
+        ...context,
+        refinementProgress: 100
+      });
+    }
   };
 
   const handleContextUpdate = (context: any) => {
-    setConversationContext(context);
+    console.log('Context update received in ConversationInterface:', context);
+    
+    // Forward updates to parent
+    if (onContextUpdate) {
+      onContextUpdate(context);
+    }
   };
 
   const handleProceedToTechnologyTree = () => {

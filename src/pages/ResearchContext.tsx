@@ -8,12 +8,36 @@ import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/componen
 const ResearchContext = () => {
   const location = useLocation();
   const { query, searchMode } = location.state || { query: "", searchMode: "deep" };
+  
+  // Centralized conversation context state
   const [conversationContext, setConversationContext] = useState({
     query,
     messages: [],
     researchAnswers: {},
-    refinementProgress: 0
+    refinementProgress: 0,
+    confidenceLevels: {},
+    questionStatus: {
+      focus: false,
+      purpose: false,
+      depth: false,
+      targetField: false,
+      expectedOutcome: false,
+      applications: false
+    }
   });
+
+  const handleContextUpdate = (newContext: any) => {
+    console.log('ResearchContext received context update:', newContext);
+    setConversationContext(prevContext => ({
+      ...prevContext,
+      ...newContext,
+      messages: newContext.messages || prevContext.messages,
+      researchAnswers: newContext.researchAnswers || prevContext.researchAnswers,
+      refinementProgress: newContext.refinementProgress || prevContext.refinementProgress,
+      confidenceLevels: newContext.confidenceLevels || prevContext.confidenceLevels,
+      questionStatus: newContext.questionStatus || prevContext.questionStatus
+    }));
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -22,6 +46,7 @@ const ResearchContext = () => {
           <ConversationInterface 
             query={query} 
             searchMode={searchMode}
+            onContextUpdate={handleContextUpdate}
           />
         </ResizablePanel>
         
@@ -33,6 +58,8 @@ const ResearchContext = () => {
             conversationMessages={conversationContext.messages}
             researchAnswers={conversationContext.researchAnswers}
             refinementProgress={conversationContext.refinementProgress}
+            confidenceLevels={conversationContext.confidenceLevels}
+            questionStatus={conversationContext.questionStatus}
           />
         </ResizablePanel>
       </ResizablePanelGroup>
