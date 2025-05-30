@@ -82,7 +82,7 @@ export const useTechTreeChat = () => {
     }]);
   };
   
-  const handleButtonClick = async (action: string) => {
+  const handleButtonClick = async (action: string, levelNumber?: string) => {
     if (action === 'quick') {
       setSearchMode("quick");
       const response = await callChatGPT("研究に関するクイック検索結果を提供してください。", 'research');
@@ -137,11 +137,12 @@ export const useTechTreeChat = () => {
         description: "最新の研究トレンドを分析中です。少々お待ちください。",
       });
     } else if (action === 'generate-node') {
+      const dynamicLevelNumber = levelNumber || '2'; // Default to 2 if not provided
       setChatMessages(prev => [
         ...prev,
         {
           type: "text",
-          content: "こんにちは！レベル2の下に新しいノードを追加する準備はできていますか？始め方は次のとおりです：",
+          content: `こんにちは！レベル${dynamicLevelNumber}の下に新しいノードを追加する準備はできていますか？始め方は次のとおりです：`,
           isUser: false,
           buttons: [
             {

@@ -12,7 +12,7 @@ interface ChatBoxProps {
   inputValue: string;
   onInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onSendMessage: () => void;
-  onButtonClick?: (action: string) => void;
+  onButtonClick?: (action: string, levelNumber?: string) => void;
   onUseNode?: (suggestion: NodeSuggestion) => void;
   onEditNode?: (suggestion: NodeSuggestion) => void;
   onRefine?: (suggestion: NodeSuggestion) => void;
@@ -37,8 +37,21 @@ export const ChatBox = ({
   const toggleOpen = () => setIsOpen(!isOpen);
   const toggleExpand = () => setIsExpanded(!isExpanded);
 
-  // Listen for custom node button clicks
+  // Listen for custom node button clicks and switch-to-chat events
   useEffect(() => {
+    const handleSwitchToChat = (event: CustomEvent) => {
+      if (event.detail?.levelNumber) {
+        setIsOpen(true);
+        setIsExpanded(true);
+        setIsNodeCreation(true);
+        
+        // Trigger the node creation flow with level information
+        if (onButtonClick) {
+          onButtonClick('generate-node', event.detail.levelNumber);
+        }
+      }
+    };
+
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.type === "attributes") {
@@ -76,12 +89,18 @@ export const ChatBox = ({
       });
     });
 
+    // Listen for switch-to-chat custom events
+    document.addEventListener('switch-to-chat', handleSwitchToChat);
+
     const chatboxElement = document.querySelector('[data-chatbox]');
     if (chatboxElement) {
       observer.observe(chatboxElement, { attributes: true });
     }
 
-    return () => observer.disconnect();
+    return () => {
+      document.removeEventListener('switch-to-chat', handleSwitchToChat);
+      observer.disconnect();
+    };
   }, [onButtonClick]);
 
   return (
