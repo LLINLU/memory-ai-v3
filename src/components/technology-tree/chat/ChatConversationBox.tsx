@@ -121,23 +121,6 @@ export const ChatConversationBox = ({
       
       {/* Invisible div to scroll to */}
       <div ref={messagesEndRef} className="h-4" />
-      
-      {/* Custom scrollbar styles */}
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(156, 163, 175, 0.5);
-          border-radius: 3px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(156, 163, 175, 0.8);
-        }
-      `}</style>
     </div>
   );
 };
