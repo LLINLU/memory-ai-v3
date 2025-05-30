@@ -34,13 +34,6 @@ export const WelcomeMessage = ({ inputValue, onButtonClick }: WelcomeMessageProp
         >
           <span className="group-hover:text-[#1867cc]">最新の研究動向を要約してください</span>
         </Button>
-        <Button
-          onClick={() => handleCustomButtonClick('generate-node')}
-          className="bg-blue-100 hover:bg-blue-200 text-blue-800 group"
-          size="sm"
-        >
-          <span className="group-hover:text-[#1867cc]">Treemap を調整する</span>
-        </Button>
       </div>
     </div>
   );

@@ -32,85 +32,9 @@ export const ChatBox = ({
 }: ChatBoxProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isNodeCreation, setIsNodeCreation] = useState(false);
-  const [currentLevelNumber, setCurrentLevelNumber] = useState<string>('');
 
   const toggleOpen = () => setIsOpen(!isOpen);
   const toggleExpand = () => setIsExpanded(!isExpanded);
-
-  // Listen for custom node button clicks and switch-to-chat events
-  useEffect(() => {
-    const handleSwitchToChat = (event: CustomEvent) => {
-      console.log('ChatBox - Received switch-to-chat event:', event.detail);
-      if (event.detail?.levelNumber) {
-        setIsOpen(true);
-        setIsExpanded(true);
-        setIsNodeCreation(true);
-        setCurrentLevelNumber(event.detail.levelNumber);
-        
-        // Trigger the node creation flow with level information
-        if (onButtonClick) {
-          onButtonClick('generate-node', event.detail.levelNumber);
-        }
-      }
-    };
-
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === "attributes") {
-          const target = mutation.target as HTMLElement;
-          
-          // Handle open state
-          if (mutation.attributeName === "data-chatbox-open" &&
-              target.getAttribute("data-chatbox-open") === "true") {
-            setIsOpen(true);
-            // Reset the attribute
-            target.removeAttribute("data-chatbox-open");
-          }
-          
-          // Handle expanded state
-          if (mutation.attributeName === "data-chatbox-expanded" &&
-              target.getAttribute("data-chatbox-expanded") === "true") {
-            setIsExpanded(true);
-            // Reset the attribute
-            target.removeAttribute("data-chatbox-expanded");
-          }
-          
-          // Handle node creation mode
-          if (mutation.attributeName === "data-node-creation" &&
-              target.getAttribute("data-node-creation") === "true") {
-            setIsNodeCreation(true);
-            // Reset the attribute
-            target.removeAttribute("data-node-creation");
-            
-            // Trigger the node creation flow
-            if (onButtonClick) {
-              onButtonClick('generate-node');
-            }
-          }
-        }
-      });
-    });
-
-    // Listen for switch-to-chat custom events
-    document.addEventListener('switch-to-chat', handleSwitchToChat);
-
-    const chatboxElement = document.querySelector('[data-chatbox]');
-    if (chatboxElement) {
-      observer.observe(chatboxElement, { attributes: true });
-    }
-
-    return () => {
-      document.removeEventListener('switch-to-chat', handleSwitchToChat);
-      observer.disconnect();
-    };
-  }, [onButtonClick]);
-
-  // Debug logging
-  useEffect(() => {
-    console.log('ChatBox - Current level number:', currentLevelNumber);
-    console.log('ChatBox - Is node creation:', isNodeCreation);
-  }, [currentLevelNumber, isNodeCreation]);
 
   return (
     <div data-chatbox>
@@ -141,8 +65,6 @@ export const ChatBox = ({
             onRefine={onRefine}
             onCheckResults={onCheckResults}
             inputValue={inputValue}
-            isNodeCreation={isNodeCreation}
-            levelNumber={currentLevelNumber}
           />
           
           <ChatInputBox 

@@ -11,7 +11,6 @@ interface MessagesListProps {
   onEditNode?: (suggestion: NodeSuggestion) => void;
   onRefine?: (suggestion: NodeSuggestion) => void;
   handleCheckResults: () => void;
-  levelNumber?: string;
 }
 
 export const MessagesList = ({
@@ -20,20 +19,13 @@ export const MessagesList = ({
   onUseNode,
   onEditNode,
   onRefine,
-  handleCheckResults,
-  levelNumber
+  handleCheckResults
 }: MessagesListProps) => {
   // Function to check if a message contains the 潜在的な研究分野 section
   const isPotentialResearchFieldMessage = (message: any) => {
     return message.content && typeof message.content === 'string' && 
       message.content.includes('潜在的な研究分野');
   };
-
-  // Debug logging
-  React.useEffect(() => {
-    console.log('MessagesList - Level number:', levelNumber);
-    console.log('MessagesList - Messages count:', messages.length);
-  }, [levelNumber, messages]);
 
   return (
     <div className="space-y-1">
@@ -60,7 +52,6 @@ export const MessagesList = ({
                 onUseNode={onUseNode}
                 onEditNode={onEditNode}
                 onRefine={onRefine}
-                levelNumber={levelNumber}
               />
               
               {/* Add the 検索結果へ button at the bottom of research field section */}

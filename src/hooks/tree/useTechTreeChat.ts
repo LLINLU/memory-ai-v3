@@ -136,50 +136,6 @@ export const useTechTreeChat = () => {
         title: "研究動向の要約",
         description: "最新の研究トレンドを分析中です。少々お待ちください。",
       });
-    } else if (action === 'generate-node') {
-      const dynamicLevelNumber = levelNumber || '2'; // Default to 2 if not provided
-      setChatMessages(prev => [
-        ...prev,
-        {
-          type: "text",
-          content: `👋 新しいノードを作成しましょう
-
-レベル${dynamicLevelNumber}の下に追加するノードを作成します。
-
-以下の2つの簡単な方法があります：`,
-          isUser: false,
-          buttons: [
-            {
-              label: "📝 直接入力",
-              action: "direct-input",
-              primary: true
-            },
-            {
-              label: "💭 アイデア共有", 
-              action: "idea-sharing",
-              primary: false
-            }
-          ]
-        }
-      ]);
-    } else if (action === 'direct-input') {
-      setChatMessages(prev => [
-        ...prev,
-        {
-          type: "text",
-          content: "📝 直接入力\n\nタイトルと説明をそのまま教えてください",
-          isUser: false
-        }
-      ]);
-    } else if (action === 'idea-sharing') {
-      setChatMessages(prev => [
-        ...prev,
-        {
-          type: "text",
-          content: "💭 アイデア共有\n\n考えを自然に話してください。私が整理します！",
-          isUser: false
-        }
-      ]);
     }
   };
 

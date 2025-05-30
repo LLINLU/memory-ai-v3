@@ -9,19 +9,7 @@ interface CustomNodeButtonProps {
 export const CustomNodeButton: React.FC<CustomNodeButtonProps> = ({ onClick }) => {
   return (
     <button
-      onClick={(e) => {
-        // Expand the chatbox when custom node button is clicked
-        const chatbox = document.querySelector('[data-chatbox]');
-        if (chatbox) {
-          // Set custom attributes to indicate it should be opened and expanded
-          chatbox.setAttribute('data-chatbox-open', 'true');
-          chatbox.setAttribute('data-chatbox-expanded', 'true');
-          
-          // Add new attribute to indicate node creation mode
-          chatbox.setAttribute('data-node-creation', 'true');
-        }
-        
-        // Then call the original onClick handler
+      onClick={() => {
         console.log("Add node button clicked");
         onClick();
       }}

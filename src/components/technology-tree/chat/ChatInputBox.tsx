@@ -36,14 +36,6 @@ export const ChatInputBox = ({
     if (onButtonClick) {
       onButtonClick(action);
     }
-    
-    // If action is to adjust the treemap, also trigger the node creation flow via DOM
-    if (action === 'generate-node') {
-      const chatbox = document.querySelector('[data-chatbox]');
-      if (chatbox) {
-        chatbox.setAttribute('data-node-creation', 'true');
-      }
-    }
   };
 
   return (
@@ -72,12 +64,6 @@ export const ChatInputBox = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="bg-white border border-gray-200 shadow-lg rounded-md w-64">
-              <DropdownMenuItem 
-                className="py-2 cursor-pointer hover:bg-blue-50"
-                onClick={() => handleDropdownAction('generate-node')}
-              >
-                Treemapを調整する
-              </DropdownMenuItem>
               <DropdownMenuItem 
                 className="py-2 cursor-pointer hover:bg-blue-50"
                 onClick={() => handleDropdownAction('modify-scenario')}
