@@ -142,7 +142,11 @@ export const useTechTreeChat = () => {
         ...prev,
         {
           type: "text",
-          content: `こんにちは！レベル${dynamicLevelNumber}の下に新しいノードを追加する準備はできていますか？始め方は次のとおりです：`,
+          content: `👋 新しいノードを作成しましょう
+
+レベル${dynamicLevelNumber}の下に追加するノードを作成します。
+
+以下の2つの簡単な方法があります：`,
           isUser: false,
           buttons: [
             {

@@ -1,4 +1,3 @@
-
 import { useMemo } from 'react';
 
 export const useMessageGrouping = (messages: any[], isNodeCreation: boolean) => {
@@ -30,15 +29,14 @@ export const useMessageGrouping = (messages: any[], isNodeCreation: boolean) => 
   }, [groupedMessages, isNodeCreation]);
 
   // Check if there are any substantive messages (excluding welcome messages)
-  // Also check for node creation messages that start with "こんにちは！レベル"
+  // Also check for node creation messages that start with "👋 新しいノードを作成しましょう"
   const hasSubstantiveMessages = useMemo(() => {
     return messages.some(m => {
       if (!m.content) return false;
       
-      // Check for node creation messages
+      // Check for node creation messages with new format
       const hasNodeCreationMessage = typeof m.content === 'string' && 
-        m.content.includes('こんにちは！レベル') && 
-        m.content.includes('新しいノードを追加する準備はできていますか');
+        m.content.includes('👋 新しいノードを作成しましょう');
       
       // Check for other substantive messages (excluding generic welcome)
       const hasOtherMessage = !m.content.includes('何かお手伝いできることはありますか');
