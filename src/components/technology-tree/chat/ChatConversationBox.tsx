@@ -68,7 +68,7 @@ export const ChatConversationBox = ({
 
   return (
     <div className="flex-1 overflow-y-auto p-4 bg-white relative">
-      {/* Only show welcome message if there are no substantive messages */}
+      {/* Only show welcome message if there are no substantive messages AND we have an onButtonClick handler */}
       {!hasSubstantiveMessages && onButtonClick && (
         <WelcomeMessage
           inputValue={inputValue}
