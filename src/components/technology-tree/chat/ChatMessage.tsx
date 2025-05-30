@@ -55,35 +55,30 @@ export const ChatMessage = ({
   const renderWelcomeOptions = () => {
     if (message.type === 'welcome' && message.content.includes('新しいノードを')) {
       return (
-        <div className="space-y-3">
-          <p className="text-gray-600 text-sm mb-4">2つの簡単な方法があります：</p>
-          
-          {/* Direct Input Option */}
-          <div 
-            className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow cursor-pointer"
-            onClick={() => onButtonClick && onButtonClick('direct-input')}
-          >
-            <div className="flex items-start gap-3">
-              <div className="text-2xl">📝</div>
-              <div>
-                <h3 className="font-medium text-gray-900 mb-1">直接入力</h3>
-                <p className="text-gray-600 text-sm">タイトルと説明をそのまま教えてください</p>
-              </div>
-            </div>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-2xl">👋</span>
+            <h2 className="text-lg font-medium text-gray-800">こんにちは！新しいノードをレベル2に追加しましょう！</h2>
           </div>
+          
+          <p className="text-gray-600 text-base mb-6">2つの簡単な方法があります：</p>
+          
+          <div className="flex flex-col gap-3">
+            <Button
+              onClick={() => onButtonClick && onButtonClick('direct-input')}
+              className="bg-blue-600 hover:bg-blue-700 text-white p-4 h-auto text-left flex flex-col items-start gap-1 rounded-xl"
+            >
+              <span className="font-medium text-base">タイトルと説明を入力</span>
+              <span className="text-blue-100 text-sm font-normal">タイトルと説明をそのまま教えてください</span>
+            </Button>
 
-          {/* Idea Sharing Option */}
-          <div 
-            className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow cursor-pointer"
-            onClick={() => onButtonClick && onButtonClick('idea-sharing')}
-          >
-            <div className="flex items-start gap-3">
-              <div className="text-2xl">💭</div>
-              <div>
-                <h3 className="font-medium text-gray-900 mb-1">アイデア共有</h3>
-                <p className="text-gray-600 text-sm">考えを自然に話してください、私が整理します！</p>
-              </div>
-            </div>
+            <Button
+              onClick={() => onButtonClick && onButtonClick('idea-sharing')}
+              className="bg-blue-600 hover:bg-blue-700 text-white p-4 h-auto text-left flex flex-col items-start gap-1 rounded-xl"
+            >
+              <span className="font-medium text-base">アイデアを話す</span>
+              <span className="text-blue-100 text-sm font-normal">内容を整理してタイトルと説明を提案します</span>
+            </Button>
           </div>
         </div>
       );
@@ -117,13 +112,7 @@ export const ChatMessage = ({
             : "bg-blue-50 text-blue-900"
         )}>
           {message.type === 'welcome' && message.content.includes('新しいノードを') ? (
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">👋</span>
-                <h2 className="text-lg font-medium text-gray-800">こんにちは！新しいノードをレベル2に追加しましょう！</h2>
-              </div>
-              {renderWelcomeOptions()}
-            </div>
+            renderWelcomeOptions()
           ) : (
             <>
               {renderContent()}
