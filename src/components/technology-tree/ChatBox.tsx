@@ -37,6 +37,14 @@ export const ChatBox = ({
   const toggleOpen = () => setIsOpen(!isOpen);
   const toggleExpand = () => setIsExpanded(!isExpanded);
 
+  // Check if we're in node creation mode based on messages
+  useEffect(() => {
+    const hasNodeCreationMessage = messages.some(message => 
+      message.type === 'welcome' && message.content.includes('新しいノードを')
+    );
+    setIsNodeCreation(hasNodeCreationMessage);
+  }, [messages]);
+
   // Listen for custom node button clicks
   useEffect(() => {
     const observer = new MutationObserver((mutations) => {
@@ -48,7 +56,6 @@ export const ChatBox = ({
           if (mutation.attributeName === "data-chatbox-open" &&
               target.getAttribute("data-chatbox-open") === "true") {
             setIsOpen(true);
-            // Reset the attribute
             target.removeAttribute("data-chatbox-open");
           }
           
@@ -56,15 +63,12 @@ export const ChatBox = ({
           if (mutation.attributeName === "data-chatbox-expanded" &&
               target.getAttribute("data-chatbox-expanded") === "true") {
             setIsExpanded(true);
-            // Reset the attribute
             target.removeAttribute("data-chatbox-expanded");
           }
           
           // Handle node creation mode
           if (mutation.attributeName === "data-node-creation" &&
               target.getAttribute("data-node-creation") === "true") {
-            setIsNodeCreation(true);
-            // Reset the attribute
             target.removeAttribute("data-node-creation");
             
             // Trigger the node creation flow
