@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { MessageSquare, X, ArrowUpRight } from "lucide-react";
+import { MessageSquare, X, ArrowUpRight, Minimize2 } from "lucide-react";
 import { NodeSuggestion } from "@/types/chat";
 import { ChatHeader } from './chat/ChatHeader';
 import { ChatConversationBox } from './chat/ChatConversationBox';
 import { ChatInputBox } from './chat/ChatInputBox';
+import { cn } from "@/lib/utils";
 
 interface ChatBoxProps {
   messages: any[];
@@ -32,10 +33,18 @@ export const ChatBox = ({
 }: ChatBoxProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   const [isNodeCreation, setIsNodeCreation] = useState(false);
 
-  const toggleOpen = () => setIsOpen(!isOpen);
+  const toggleOpen = () => {
+    setIsOpen(!isOpen);
+    if (!isOpen) {
+      setIsMinimized(false);
+    }
+  };
+  
   const toggleExpand = () => setIsExpanded(!isExpanded);
+  const toggleMinimize = () => setIsMinimized(!isMinimized);
 
   // Check if we're in node creation mode based on messages
   useEffect(() => {
@@ -89,43 +98,57 @@ export const ChatBox = ({
   }, [onButtonClick]);
 
   return (
-    <div data-chatbox>
+    <div data-chatbox className="fixed bottom-6 right-6 z-50">
       {!isOpen ? (
         <Button
           onClick={toggleOpen}
-          className="fixed bottom-6 right-6 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg p-4 h-14 w-14"
+          className={cn(
+            "rounded-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700",
+            "shadow-xl hover:shadow-2xl p-4 h-16 w-16 transition-all duration-300 ease-in-out",
+            "transform hover:scale-105 active:scale-95"
+          )}
         >
-          <MessageSquare className="h-6 w-6 text-white" />
+          <MessageSquare className="h-7 w-7 text-white" />
         </Button>
       ) : (
         <div 
-          className={`fixed bottom-6 right-6 bg-white border border-gray-200 rounded-lg shadow-xl flex flex-col ${
-            isExpanded ? 'w-[500px] h-[600px]' : 'w-[350px] h-[500px]'
-          } transition-all duration-200 overflow-hidden`}
+          className={cn(
+            "bg-white border border-gray-100 rounded-2xl shadow-2xl flex flex-col",
+            "transition-all duration-300 ease-in-out transform",
+            "backdrop-blur-sm bg-white/95",
+            isMinimized ? 'h-16' : isExpanded ? 'w-[600px] h-[700px]' : 'w-[400px] h-[550px]',
+            isOpen ? 'animate-scale-in opacity-100' : 'animate-scale-out opacity-0'
+          )}
         >
           <ChatHeader 
             isExpanded={isExpanded}
+            isMinimized={isMinimized}
             toggleExpand={toggleExpand}
+            toggleMinimize={toggleMinimize}
             toggleOpen={toggleOpen}
           />
           
-          <ChatConversationBox 
-            messages={messages}
-            onButtonClick={onButtonClick}
-            onUseNode={onUseNode}
-            onEditNode={onEditNode}
-            onRefine={onRefine}
-            onCheckResults={onCheckResults}
-            inputValue={inputValue}
-            isNodeCreation={isNodeCreation}
-          />
-          
-          <ChatInputBox 
-            inputValue={inputValue}
-            onInputChange={onInputChange}
-            onSendMessage={onSendMessage}
-            onButtonClick={onButtonClick}
-          />
+          {!isMinimized && (
+            <>
+              <ChatConversationBox 
+                messages={messages}
+                onButtonClick={onButtonClick}
+                onUseNode={onUseNode}
+                onEditNode={onEditNode}
+                onRefine={onRefine}
+                onCheckResults={onCheckResults}
+                inputValue={inputValue}
+                isNodeCreation={isNodeCreation}
+              />
+              
+              <ChatInputBox 
+                inputValue={inputValue}
+                onInputChange={onInputChange}
+                onSendMessage={onSendMessage}
+                onButtonClick={onButtonClick}
+              />
+            </>
+          )}
         </div>
       )}
     </div>
