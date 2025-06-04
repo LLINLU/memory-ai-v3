@@ -55,17 +55,9 @@ export const TreeGenerationSection = () => {
     <Card className="max-w-4xl mx-auto">
       <CardHeader className="text-center">
         <div className="flex items-center justify-center gap-2 mb-2">
-          <Brain className="h-6 w-6 text-blue-500" />
           <CardTitle className="text-2xl font-bold">AI技術ツリー生成</CardTitle>
-          <Badge
-            variant="secondary"
-            className="bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700"
-          >
-            <Sparkles className="h-3 w-3 mr-1" />
-            Evaluator無し
-          </Badge>
         </div>
-        <CardDescription className="text-lg">
+        <CardDescription className="text-base">
           検索テーマを入力するだけで、シナリオ→目的→機能→技術→要素技術の5階層以上のツリーを自動生成します
         </CardDescription>
       </CardHeader>
@@ -94,7 +86,6 @@ export const TreeGenerationSection = () => {
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <TreePine className="h-4 w-4" />
                   ツリー生成
                 </div>
               )}
@@ -134,44 +125,6 @@ export const TreeGenerationSection = () => {
                 {theme}
               </button>
             ))}
-          </div>
-        </div>
-
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4">
-          <h4 className="font-medium text-blue-900 mb-2">
-            🎯 生成される階層構造
-          </h4>
-          <div className="space-y-2 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              <span>
-                <strong>シナリオ層：</strong> 活用場面・応用分野
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>
-                <strong>目的層：</strong> 各シナリオの達成目標
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-              <span>
-                <strong>機能層：</strong> 目的実現のための機能要件
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-              <span>
-                <strong>技術層：</strong> 中核技術と補完技術
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-              <span>
-                <strong>要素技術層：</strong> 詳細な技術構成要素
-              </span>
-            </div>
           </div>
         </div>
       </CardContent>
