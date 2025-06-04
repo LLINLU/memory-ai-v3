@@ -14,7 +14,7 @@ export const SidebarProvider = React.forwardRef<
 >(
   (
     {
-      defaultOpen = true,
+      defaultOpen: defaultOpen,
       open: openProp,
       onOpenChange: setOpenProp,
       className,
