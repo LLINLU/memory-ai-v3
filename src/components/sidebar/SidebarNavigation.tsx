@@ -30,7 +30,7 @@ export function SidebarNavigation() {
         <SidebarMenuButton 
           tooltip="履歴"
         >
-          <History />
+          {isExpanded && <History />}
           {isExpanded && <span>履歴</span>}
         </SidebarMenuButton>
       </SidebarMenuItem>
