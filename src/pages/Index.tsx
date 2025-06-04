@@ -18,7 +18,7 @@ const Index = () => {
               <div className="max-w-4xl mx-auto space-y-8">
                 <Tabs defaultValue="search" className="w-full">
                   <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="search">検索・探索</TabsTrigger>
+                    {/* Remove Search <TabsTrigger value="search">検索・探索</TabsTrigger> */}
                     <TabsTrigger value="generate">ツリー生成</TabsTrigger>
                   </TabsList>
                   {/* Remove Search
