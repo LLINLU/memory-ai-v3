@@ -41,12 +41,11 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
   onResize,
   selectedNodeTitle,
   selectedNodeDescription
-}) => {
-  return (
+}) => {  return (
     <ResizablePanel 
-      defaultSize={isExpanded ? 100 : 40} 
+      defaultSize={isExpanded ? 70 : 40} 
       minSize={20}
-      maxSize={isExpanded ? 100 : 50}
+      maxSize={isExpanded ? 80 : 50}
       onResize={onResize}
     >
       <div className="h-full bg-white border-l border-gray-200 shadow-lg flex flex-col">

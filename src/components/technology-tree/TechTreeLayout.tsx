@@ -25,15 +25,14 @@ export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
   toggleSidebar,
   setShowSidebar,
   handlePanelResize
-}) => {
-  return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <div className="flex flex-1 overflow-hidden">
-        <ResizablePanelGroup direction="horizontal" onLayout={handlePanelResize}>
+}) => {  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col overflow-hidden">
+      <div className="flex flex-1 overflow-hidden">        <ResizablePanelGroup direction="horizontal" onLayout={handlePanelResize}>
           <ResizablePanel 
-            defaultSize={60} 
-            minSize={30}
-            className={isExpanded ? 'hidden' : undefined}
+            defaultSize={isExpanded ? 20 : 60} 
+            minSize={isExpanded ? 15 : 30}
+            maxSize={isExpanded ? 30 : 70}
+            className="overflow-hidden"
             onResize={handlePanelResize}
           >
             {children}

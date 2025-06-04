@@ -367,12 +367,11 @@ const TechnologyTree = () => {
       selectedNodeDescription={selectedNodeInfo.description}
     />
   );
-
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+      <div className="min-h-screen flex w-full overflow-hidden">
         <AppSidebar />
-        <div className="flex-1">
+        <div className="flex-1 overflow-hidden">
           <TechTreeLayout
             showSidebar={showSidebar}
             collapsedSidebar={collapsedSidebar}

@@ -175,12 +175,11 @@ export const LevelSelection = ({
         duration: 2000,
       });
     }
-  };
-  return (
-    <div className="relative mb-8">
+  };  return (
+    <div className="h-full flex flex-col">
       {/* Horizontal scrollable container */}
       <div
-        className="flex flex-row gap-4 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pb-4"
+        className="flex flex-row gap-4 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pb-4 px-4"
         ref={containerRef}
         style={{
           scrollbarWidth: "thin",
