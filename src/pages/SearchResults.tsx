@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { PageLayout } from "@/components/search-results/PageLayout";
 import { SearchResultsContent } from "@/components/search-results/SearchResultsContent";
 import { useSidebar } from "@/hooks/use-sidebar";
