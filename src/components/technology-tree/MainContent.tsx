@@ -62,33 +62,37 @@ export const MainContent = ({
   searchMode,
 }: MainContentProps) => {
   return (
-    <div className="container mx-auto px-4 py-6">
-      <ScenarioSection
-        scenario={scenario}
-        onEditScenario={onEditScenario}
-        conversationHistory={conversationHistory}
-      />
-      <PathDisplay
-        selectedPath={selectedPath}
-        level1Items={level1Items}
-        level2Items={level2Items}
-        level3Items={level3Items}
-        level4Items={level4Items}
-        showLevel4={showLevel4}
-        onAddLevel4={onAddLevel4}
-      />
-      <LevelSelection
-        selectedPath={selectedPath}
-        level1Items={level1Items}
-        level2Items={level2Items}
-        level3Items={level3Items}
-        level4Items={level4Items}
-        showLevel4={showLevel4}
-        onNodeClick={onNodeClick}
-        onEditNode={onEditNode}
-        onDeleteNode={onDeleteNode}
-        levelNames={levelNames}
-      />
+    <div className="h-full flex flex-col overflow-hidden">
+      <div className="container mx-auto px-4 py-6 flex-shrink-0">
+        <ScenarioSection
+          scenario={scenario}
+          onEditScenario={onEditScenario}
+          conversationHistory={conversationHistory}
+        />
+        <PathDisplay
+          selectedPath={selectedPath}
+          level1Items={level1Items}
+          level2Items={level2Items}
+          level3Items={level3Items}
+          level4Items={level4Items}
+          showLevel4={showLevel4}
+          onAddLevel4={onAddLevel4}
+        />
+      </div>
+      <div className="flex-1 overflow-hidden">
+        <LevelSelection
+          selectedPath={selectedPath}
+          level1Items={level1Items}
+          level2Items={level2Items}
+          level3Items={level3Items}
+          level4Items={level4Items}
+          showLevel4={showLevel4}
+          onNodeClick={onNodeClick}
+          onEditNode={onEditNode}
+          onDeleteNode={onDeleteNode}
+          levelNames={levelNames}
+        />
+      </div>
     </div>
   );
 };
