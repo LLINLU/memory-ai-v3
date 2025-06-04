@@ -106,7 +106,7 @@ export const RecentGeneratedTrees = () => {
   }
 
   return (
-    <Card>
+    <Card className="border-0 shadow-none">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           最近生成されたツリー
