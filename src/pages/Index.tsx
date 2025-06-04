@@ -16,8 +16,8 @@ const Index = () => {
             <div className="relative w-full max-w-5xl">
               <SidebarTrigger className="absolute left-4 top-4 md:hidden" />
               <div className="max-w-4xl mx-auto space-y-8">
-                <Tabs defaultValue="search" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2">
+                <Tabs defaultValue="generate" className="w-full">
+                  <TabsList className="grid w-full grid-cols-1">
                     {/* Remove Search <TabsTrigger value="search">検索・探索</TabsTrigger> */}
                     <TabsTrigger value="generate">ツリー生成</TabsTrigger>
                   </TabsList>
