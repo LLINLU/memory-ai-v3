@@ -1,5 +1,4 @@
 
-import { level1Items as initialLevel1Items, level2Items as initialLevel2Items, level3Items as initialLevel3Items } from "@/data/technologyTreeData";
 import { NodeSuggestion } from "@/types/chat";
 import { PathLevel } from "@/types/tree";
 import { useNodeOperations } from "./useNodeOperations";
@@ -8,9 +7,9 @@ import { useEffect } from "react";
 
 export const usePathSelection = (
   initialPath = {
-    level1: "astronomy",
-    level2: "turbulence-compensation", 
-    level3: "laser-guide-star",
+    level1: "",
+    level2: "", 
+    level3: "",
     level4: ""
   },
   treeData?: {
@@ -28,14 +27,14 @@ export const usePathSelection = (
     showLevel4,
     setShowLevel4,
     handleAddLevel4
-  } = usePathSelectionState(initialPath);  // Use TED-generated data if available, otherwise fall back to default data
-  const level1Data = treeData?.level1Items || initialLevel1Items;
-  const level2Data = treeData?.level2Items || initialLevel2Items;
-  const level3Data = treeData?.level3Items || initialLevel3Items;
+  } = usePathSelectionState(initialPath);
+
+  // Use only TED-generated data if available, otherwise use empty arrays
+  const level1Data = treeData?.level1Items || [];
+  const level2Data = treeData?.level2Items || {};
+  const level3Data = treeData?.level3Items || {};
   const level4Data = treeData?.level4Items || {};
-  
-  console.log('usePathSelection - level4Data:', level4Data, 'keys:', Object.keys(level4Data));
-  
+ 
   const {
     level1Items,
     level2Items,

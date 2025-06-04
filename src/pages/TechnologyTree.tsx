@@ -43,6 +43,7 @@ const TechnologyTree = () => {
   const [showFallbackAlert, setShowFallbackAlert] = useState(false);
   const [databaseTreeData, setDatabaseTreeData] = useState<any>(null);
   const [hasLoadedDatabase, setHasLoadedDatabase] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(false);
   const { loadTreeFromDatabase } = useTreeGeneration();
 
   // Extract conversation history from location state if available
@@ -61,7 +62,43 @@ const TechnologyTree = () => {
   const { scenario, handleEditScenario, searchMode } = useScenarioState({
     initialScenario: locationState?.scenario,
     initialSearchMode: locationState?.searchMode,
-  });
+  }); // Don't render the tree if we're still initializing or no data is available
+  if (
+    isInitializing ||
+    (!databaseTreeData && !locationState?.fromDatabase && !hasLoadedDatabase)
+  ) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center p-8">
+          {isInitializing ? (
+            <>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <h2 className="text-xl font-semibold mb-4">読み込み中...</h2>
+              <p className="text-gray-600">
+                技術ツリーデータを初期化しています。
+              </p>
+            </>
+          ) : (
+            <>
+              <h2 className="text-xl font-semibold mb-4">
+                技術ツリーが見つかりません
+              </h2>
+              <p className="text-gray-600 mb-4">
+                有効な技術ツリーデータがありません。新しい検索を開始してください。
+              </p>
+              <a
+                href="/"
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                ホームに戻る
+              </a>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   const {
     selectedPath,
     sidebarTab,
@@ -91,9 +128,7 @@ const TechnologyTree = () => {
         const uuidRegex =
           /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
         return uuidRegex.test(str);
-      };
-
-      // Handle database-generated tree (only if it's a valid UUID and not a demo)
+      }; // Handle database-generated tree (only if it's a valid UUID and not a demo)
       if (
         locationState?.fromDatabase &&
         locationState?.treeId &&
@@ -111,9 +146,11 @@ const TechnologyTree = () => {
               "有効なUUID形式のツリーIDが必要です。新しいツリーを生成してください。",
           });
           return;
-        }        console.log("Loading tree from database, ID:", locationState.treeId);
+        }
+
+        console.log("Loading tree from database, ID:", locationState.treeId);
         setHasLoadedDatabase(true); // Prevent re-loading
-        
+
         try {
           const result = await loadTreeFromDatabase(locationState.treeId);
           if (result?.treeStructure) {
@@ -122,14 +159,10 @@ const TechnologyTree = () => {
               {
                 description: result.treeData?.description,
                 search_theme: result.treeData?.search_theme,
-                name: result.treeData?.name
+                name: result.treeData?.name,
               }
             );
             if (convertedData) {
-              console.log(
-                "Successfully converted database tree data:",
-                convertedData
-              );
               setDatabaseTreeData(convertedData);
               toast({
                 title: "データベースツリーを読み込みました",
@@ -142,63 +175,8 @@ const TechnologyTree = () => {
           setHasLoadedDatabase(false); // Allow retry on error
         }
         return;
-      }
-
-      // Handle preset technology trees from sidebar
-      if (locationState?.fromPreset && locationState?.treeId) {
-        console.log(
-          "Loading preset technology tree, ID:",
-          locationState.treeId
-        );
-
-        // Import the technology tree data dynamically
-        import("@/data/technologyTreeData")
-          .then(({ level1Items, level2Items, level3Items }) => {
-            const level1Item = level1Items.find(
-              (item) => item.id === locationState.treeId
-            );
-
-            if (level1Item) {
-              // Create a simplified tree structure for preset trees
-              const presetTreeData = {
-                level1Items,
-                level2Items,
-                level3Items,
-                selectedLevel1: locationState.treeId,
-                searchTheme: level1Item.name,
-                isPreset: true,
-              };
-
-              console.log(
-                "Successfully loaded preset tree data:",
-                presetTreeData
-              );
-              setDatabaseTreeData(presetTreeData);
-
-              toast({
-                title: "プリセット技術ツリーを読み込みました",
-                description: `${level1Item.name} の技術ツリーを表示しています。`,
-              });
-            } else {
-              console.error("Preset tree not found:", locationState.treeId);
-              toast({
-                title: "プリセットツリーが見つかりません",
-                description: "指定された技術ツリーが存在しません。",
-              });
-            }
-          })
-          .catch((error) => {
-            console.error("Error loading preset tree data:", error);
-            toast({
-              title: "プリセットツリーの読み込みエラー",
-              description: "技術ツリーデータの読み込みに失敗しました。",
-            });
-          });
-
-        return;
-      }
-
-      // Handle demo trees or trees with demo IDs - show error instead of demo mode
+      } // Handle preset technology trees from sidebar - REMOVED
+      // Preset functionality has been removed to clean up demo data      // Handle demo trees or trees with demo IDs - show error instead of demo mode
       if (
         locationState?.isDemo ||
         (locationState?.treeId && locationState.treeId.startsWith("demo-"))
@@ -270,10 +248,26 @@ const TechnologyTree = () => {
               ? `Quality scores: ${scores.join(", ")}`
               : "Tree structure created successfully",
         });
-      }
+      } // If no specific initialization is needed, just complete the initialization
+      console.log(
+        "No specific initialization required, completing initialization"
+      );
     };
+    //console.log("Starting tree data initialization...");
+    initializeTreeData().finally(() => {
+      //console.log("Tree data initialization completed, setting isInitializing to false");
+      setIsInitializing(false);
+    });
 
-    initializeTreeData();
+    // Fallback timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      //console.log("Initialization timeout reached, forcing completion");
+      setIsInitializing(false);
+    }, 5000);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [
     locationState?.treeData,
     locationState?.tedResults,
@@ -309,7 +303,8 @@ const TechnologyTree = () => {
     level1Items,
     level2Items,
     level3Items
-  );  const levelNames = {
+  );
+  const levelNames = {
     level1: "シナリオ",
     level2: "目的",
     level3: "機能",
@@ -391,7 +386,8 @@ const TechnologyTree = () => {
               <FallbackAlert
                 isVisible={showFallbackAlert}
                 onDismiss={() => setShowFallbackAlert(false)}
-              />              <TechTreeMainContent
+              />{" "}
+              <TechTreeMainContent
                 selectedPath={selectedPath}
                 level1Items={level1Items}
                 level2Items={level2Items}
@@ -402,7 +398,8 @@ const TechnologyTree = () => {
                 editNode={editNode}
                 deleteNode={deleteNode}
                 levelNames={levelNames}
-                hasUserMadeSelection={hasUserMadeSelection}                scenario={databaseScenario || scenario}
+                hasUserMadeSelection={hasUserMadeSelection}
+                scenario={databaseScenario || scenario}
                 onEditScenario={handleEditScenario}
                 conversationHistory={savedConversationHistory}
                 handleAddLevel4={handleAddLevel4}

@@ -23,7 +23,11 @@ interface LevelSelectionProps {
   level4Items: Record<string, LevelItem[]>;
   showLevel4: boolean;
   onNodeClick: (level: string, nodeId: string) => void;
-  onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
+  onEditNode?: (
+    level: string,
+    nodeId: string,
+    updatedNode: { title: string; description: string }
+  ) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
   levelNames: {
     level1: string;
@@ -43,12 +47,14 @@ export const LevelSelection = ({
   onNodeClick,
   onEditNode,
   onDeleteNode,
-  levelNames
+  levelNames,
 }: LevelSelectionProps) => {
   // Reorder items to ensure selected items appear first
   const reorderedLevel1Items = React.useMemo(() => {
     const items = [...level1Items];
-    const selectedIndex = items.findIndex(item => item.id === selectedPath.level1);
+    const selectedIndex = items.findIndex(
+      (item) => item.id === selectedPath.level1
+    );
     if (selectedIndex > 0) {
       const [selectedItem] = items.splice(selectedIndex, 1);
       items.unshift(selectedItem);
@@ -59,7 +65,9 @@ export const LevelSelection = ({
   const visibleLevel2Items = React.useMemo(() => {
     if (!selectedPath.level1) return [];
     const items = [...(level2Items[selectedPath.level1] || [])];
-    const selectedIndex = items.findIndex(item => item.id === selectedPath.level2);
+    const selectedIndex = items.findIndex(
+      (item) => item.id === selectedPath.level2
+    );
     if (selectedIndex > 0) {
       const [selectedItem] = items.splice(selectedIndex, 1);
       items.unshift(selectedItem);
@@ -69,7 +77,9 @@ export const LevelSelection = ({
   const visibleLevel3Items = React.useMemo(() => {
     if (!selectedPath.level2) return [];
     const items = [...(level3Items[selectedPath.level2] || [])];
-    const selectedIndex = items.findIndex(item => item.id === selectedPath.level3);
+    const selectedIndex = items.findIndex(
+      (item) => item.id === selectedPath.level3
+    );
     if (selectedIndex > 0) {
       const [selectedItem] = items.splice(selectedIndex, 1);
       items.unshift(selectedItem);
@@ -80,52 +90,72 @@ export const LevelSelection = ({
   const visibleLevel4Items = React.useMemo(() => {
     if (!selectedPath.level3) return [];
     const items = [...(level4Items[selectedPath.level3] || [])];
-    
-    // Debug logging
-    console.log('Level 4 Debug:', {
-      selectedLevel3: selectedPath.level3,
-      level4ItemsKeys: Object.keys(level4Items),
-      level4ItemsForSelectedLevel3: level4Items[selectedPath.level3],
-      visibleLevel4ItemsLength: items.length
-    });
-    
-    const selectedIndex = items.findIndex(item => item.id === selectedPath.level4);
+
+
+    const selectedIndex = items.findIndex(
+      (item) => item.id === selectedPath.level4
+    );
     if (selectedIndex > 0) {
       const [selectedItem] = items.splice(selectedIndex, 1);
       items.unshift(selectedItem);
     }
     return items;
   }, [level4Items, selectedPath]);
-  const [level2to3Line, setLevel2to3Line] = useState<{x1: number, y1: number, x2: number, y2: number} | null>(null);
-  const [level1to2Line, setLevel1to2Line] = useState<{x1: number, y1: number, x2: number, y2: number} | null>(null);
-  const [level3to4Line, setLevel3to4Line] = useState<{x1: number, y1: number, x2: number, y2: number} | null>(null);
-  
+  const [level2to3Line, setLevel2to3Line] = useState<{
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+  } | null>(null);
+  const [level1to2Line, setLevel1to2Line] = useState<{
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+  } | null>(null);
+  const [level3to4Line, setLevel3to4Line] = useState<{
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+  } | null>(null);
+
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useConnectionLines(containerRef, selectedPath, setLevel1to2Line, setLevel2to3Line, setLevel3to4Line);
+  useConnectionLines(
+    containerRef,
+    selectedPath,
+    setLevel1to2Line,
+    setLevel2to3Line,
+    setLevel3to4Line
+  );
 
   const handleNodeSelection = (level: string, nodeId: string) => {
     if (selectedPath[level] !== nodeId) {
       // Create custom event to refresh paper list with node information
-      const refreshEvent = new CustomEvent('refresh-papers', {
-        detail: { level, nodeId, timestamp: Date.now() }
+      const refreshEvent = new CustomEvent("refresh-papers", {
+        detail: { level, nodeId, timestamp: Date.now() },
       });
       document.dispatchEvent(refreshEvent);
-      
+
       // Show notification to user with 1-second duration
       toast({
         title: "Results updated",
         description: "The paper list has been updated based on your selection",
         duration: 1000,
       });
-      
+
       console.log("Node selection event:", { level, nodeId, refreshEvent });
     }
-    
+
     onNodeClick(level, nodeId);
   };
 
-  const handleEditNode = (level: string, nodeId: string, updatedNode: { title: string; description: string }) => {
+  const handleEditNode = (
+    level: string,
+    nodeId: string,
+    updatedNode: { title: string; description: string }
+  ) => {
     if (onEditNode) {
       onEditNode(level, nodeId, updatedNode);
       toast({
@@ -145,15 +175,16 @@ export const LevelSelection = ({
         duration: 2000,
       });
     }
-  };  return (
+  };
+  return (
     <div className="relative mb-8">
       {/* Horizontal scrollable container */}
-      <div 
-        className="flex flex-row gap-4 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pb-4" 
+      <div
+        className="flex flex-row gap-4 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pb-4"
         ref={containerRef}
-        style={{ 
-          scrollbarWidth: 'thin',
-          scrollBehavior: 'smooth' 
+        style={{
+          scrollbarWidth: "thin",
+          scrollBehavior: "smooth",
         }}
       >
         <LevelColumn
@@ -161,9 +192,11 @@ export const LevelSelection = ({
           subtitle={levelNames.level1}
           items={reorderedLevel1Items}
           selectedId={selectedPath.level1}
-          onNodeClick={(nodeId) => handleNodeSelection('level1', nodeId)}
-          onEditNode={(nodeId, updatedNode) => handleEditNode('level1', nodeId, updatedNode)}
-          onDeleteNode={(nodeId) => handleDeleteNode('level1', nodeId)}
+          onNodeClick={(nodeId) => handleNodeSelection("level1", nodeId)}
+          onEditNode={(nodeId, updatedNode) =>
+            handleEditNode("level1", nodeId, updatedNode)
+          }
+          onDeleteNode={(nodeId) => handleDeleteNode("level1", nodeId)}
         />
 
         <LevelColumn
@@ -171,9 +204,11 @@ export const LevelSelection = ({
           subtitle={levelNames.level2}
           items={visibleLevel2Items}
           selectedId={selectedPath.level2}
-          onNodeClick={(nodeId) => handleNodeSelection('level2', nodeId)}
-          onEditNode={(nodeId, updatedNode) => handleEditNode('level2', nodeId, updatedNode)}
-          onDeleteNode={(nodeId) => handleDeleteNode('level2', nodeId)}
+          onNodeClick={(nodeId) => handleNodeSelection("level2", nodeId)}
+          onEditNode={(nodeId, updatedNode) =>
+            handleEditNode("level2", nodeId, updatedNode)
+          }
+          onDeleteNode={(nodeId) => handleDeleteNode("level2", nodeId)}
         />
 
         <LevelColumn
@@ -181,9 +216,11 @@ export const LevelSelection = ({
           subtitle={levelNames.level3}
           items={visibleLevel3Items}
           selectedId={selectedPath.level3}
-          onNodeClick={(nodeId) => handleNodeSelection('level3', nodeId)}
-          onEditNode={(nodeId, updatedNode) => handleEditNode('level3', nodeId, updatedNode)}
-          onDeleteNode={(nodeId) => handleDeleteNode('level3', nodeId)}
+          onNodeClick={(nodeId) => handleNodeSelection("level3", nodeId)}
+          onEditNode={(nodeId, updatedNode) =>
+            handleEditNode("level3", nodeId, updatedNode)
+          }
+          onDeleteNode={(nodeId) => handleDeleteNode("level3", nodeId)}
         />
 
         {/* Always show level 4 if items exist, regardless of showLevel4 flag */}
@@ -193,16 +230,20 @@ export const LevelSelection = ({
             subtitle={levelNames.level4}
             items={visibleLevel4Items}
             selectedId={selectedPath.level4}
-            onNodeClick={(nodeId) => handleNodeSelection('level4', nodeId)}
-            onEditNode={(nodeId, updatedNode) => handleEditNode('level4', nodeId, updatedNode)}
-            onDeleteNode={(nodeId) => handleDeleteNode('level4', nodeId)}
+            onNodeClick={(nodeId) => handleNodeSelection("level4", nodeId)}
+            onEditNode={(nodeId, updatedNode) =>
+              handleEditNode("level4", nodeId, updatedNode)
+            }
+            onDeleteNode={(nodeId) => handleDeleteNode("level4", nodeId)}
           />
         )}
 
         <ConnectionLines
           level1to2Line={level1to2Line}
           level2to3Line={level2to3Line}
-          level3to4Line={visibleLevel4Items.length > 0 ? level3to4Line : undefined}
+          level3to4Line={
+            visibleLevel4Items.length > 0 ? level3to4Line : undefined
+          }
         />
       </div>
     </div>

@@ -10,9 +10,9 @@ export interface PathState {
 }
 
 export const usePathSelectionState = (initialPath: PathState = {
-  level1: "astronomy",
-  level2: "turbulence-compensation",
-  level3: "laser-guide-star",
+  level1: "",
+  level2: "",
+  level3: "",
   level4: ""
 }) => {
   const [selectedPath, setSelectedPath] = useState<PathState>(initialPath);

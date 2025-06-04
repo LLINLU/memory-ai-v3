@@ -40,20 +40,15 @@ export const useTechnologyTree = (databaseTreeData?: any) => {
   // Get searchMode from location state - default to "quick" if not provided
   const searchMode = locationState?.searchMode || "quick";
   const [selectedView, setSelectedView] = useState("tree");
-
   // Determine initial path based on TED data availability
   let initialPath = {
-    level1: "astronomy",
-    level2: "turbulence-compensation",
-    level3: "laser-guide-star",
+    level1: "",
+    level2: "",
+    level3: "",
     level4: "",
-  };  // Determine which tree data to use: database data takes priority, then location state data
+  };// Determine which tree data to use: database data takes priority, then location state data
   const treeDataToUse = databaseTreeData || locationState?.treeData;
   
-  console.log('useTechnologyTree - databaseTreeData:', !!databaseTreeData, databaseTreeData?.level1Items?.length);
-  console.log('useTechnologyTree - locationState?.treeData:', !!locationState?.treeData, locationState?.treeData?.level1Items?.length);
-  console.log('useTechnologyTree - treeDataToUse:', !!treeDataToUse, treeDataToUse?.level1Items?.length);
-
   // If we have TED-generated data or database data, use the first nodes as initial selection
   if (treeDataToUse?.level1Items?.[0]) {
     const firstLevel1 = treeDataToUse.level1Items[0];

@@ -156,12 +156,13 @@ serve(async (req) => {
       })
       .select("id")
       .single();
-    if (treeErr) throw new Error(`DB error: ${treeErr.message}`);
-
-    // recursive insert helper
+    if (treeErr) throw new Error(`DB error: ${treeErr.message}`);    // recursive insert helper
     const saveNode = async (node: TreeNode, parent: string | null, lvl = 0, idx = 0) => {
+      // Always generate a new UUID for database storage to avoid conflicts
+      const dbNodeId = crypto.randomUUID();
+      
       const { error } = await supabase.from("tree_nodes").insert({
-        id:             node.id || crypto.randomUUID(),        // built-in UUID v4 :contentReference[oaicite:0]{index=0}
+        id:             dbNodeId,
         tree_id:        treeRec.id,
         parent_id:      parent,
         name:           node.name,
@@ -172,8 +173,10 @@ serve(async (req) => {
         children_count: node.children?.length ?? 0,
       });
       if (error) throw new Error(`DB node error: ${error.message}`);
+      
+      // Use the database node ID for children's parent_id
       for (let i = 0; i < (node.children ?? []).length; i++) {
-        await saveNode(node.children[i], node.id, lvl + 1, i);
+        await saveNode(node.children[i], dbNodeId, lvl + 1, i);
       }
     };
     await saveNode(tree.root, null);

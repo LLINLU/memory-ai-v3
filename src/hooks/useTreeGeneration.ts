@@ -223,9 +223,6 @@ export const useTreeGeneration = () => {
         layer_config: treeData.layer_config,
         scenario_inputs: treeData.scenario_inputs,
       };
-
-      console.log("Reconstructed tree structure:", treeStructure);
-
       return {
         treeData,
         treeStructure,
@@ -260,7 +257,6 @@ export const useTreeGeneration = () => {
         throw new Error(error.message);
       }
 
-      console.log("Successfully fetched trees from database:", data?.length || 0);
       return data || [];
     } catch (error) {
       console.error("List trees error:", error);

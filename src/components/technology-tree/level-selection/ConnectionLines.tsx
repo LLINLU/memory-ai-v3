@@ -1,21 +1,20 @@
-
-import React from 'react';
+import React from "react";
 
 interface ConnectionLinesProps {
-  level1to2Line: {x1: number, y1: number, x2: number, y2: number} | null;
-  level2to3Line: {x1: number, y1: number, x2: number, y2: number} | null;
-  level3to4Line?: {x1: number, y1: number, x2: number, y2: number} | null;
+  level1to2Line: { x1: number; y1: number; x2: number; y2: number } | null;
+  level2to3Line: { x1: number; y1: number; x2: number; y2: number } | null;
+  level3to4Line?: { x1: number; y1: number; x2: number; y2: number } | null;
 }
 
 export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
   level1to2Line,
   level2to3Line,
-  level3to4Line
+  level3to4Line,
 }) => {
   return (
-    <svg 
+    <svg
       className="absolute top-0 left-0 w-full h-full pointer-events-none z-10"
-      style={{ overflow: 'visible' }}
+      style={{ overflow: "visible" }}
     >
       {level1to2Line && (
         <line
@@ -27,7 +26,8 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
           strokeWidth="2"
           strokeLinecap="round"
         />
-      )}      {level2to3Line && (
+      )}{" "}
+      {level2to3Line && (
         <line
           x1={level2to3Line.x1}
           y1={level2to3Line.y1}
