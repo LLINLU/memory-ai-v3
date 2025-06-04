@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React from "react";
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
 import { ScenarioSection } from "./ScenarioSection";
@@ -17,7 +16,11 @@ interface MainContentProps {
   level4Items: Record<string, any[]>;
   showLevel4: boolean;
   onNodeClick: (level: string, nodeId: string) => void;
-  onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
+  onEditNode?: (
+    level: string,
+    nodeId: string,
+    updatedNode: { title: string; description: string }
+  ) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
   levelNames?: {
     level1: string;
@@ -43,11 +46,12 @@ export const MainContent = ({
   showLevel4,
   onNodeClick,
   onEditNode,
-  onDeleteNode,  levelNames = {
+  onDeleteNode,
+  levelNames = {
     level1: "シナリオ",
     level2: "目的",
     level3: "機能",
-    level4: "手段"
+    level4: "手段",
   },
   query,
   scenario,
@@ -55,16 +59,16 @@ export const MainContent = ({
   hasUserMadeSelection,
   conversationHistory,
   onAddLevel4,
-  searchMode
+  searchMode,
 }: MainContentProps) => {
   return (
     <div className="container mx-auto px-4 py-6">
-      <ScenarioSection 
-        scenario={scenario} 
-        onEditScenario={onEditScenario} 
+      <ScenarioSection
+        scenario={scenario}
+        onEditScenario={onEditScenario}
         conversationHistory={conversationHistory}
       />
-      <PathDisplay 
+      <PathDisplay
         selectedPath={selectedPath}
         level1Items={level1Items}
         level2Items={level2Items}
@@ -83,7 +87,7 @@ export const MainContent = ({
         onNodeClick={onNodeClick}
         onEditNode={onEditNode}
         onDeleteNode={onDeleteNode}
-              levelNames={levelNames}
+        levelNames={levelNames}
       />
     </div>
   );

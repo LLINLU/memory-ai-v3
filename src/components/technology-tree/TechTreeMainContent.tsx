@@ -1,4 +1,3 @@
-
 import { MainContent } from "./MainContent";
 
 interface TechTreeMainContentProps {
@@ -14,7 +13,11 @@ interface TechTreeMainContentProps {
   level4Items: Record<string, any[]>;
   showLevel4: boolean;
   handleNodeClick: (level: string, nodeId: string) => void;
-  editNode: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
+  editNode: (
+    level: string,
+    nodeId: string,
+    updatedNode: { title: string; description: string }
+  ) => void;
   deleteNode: (level: string, nodeId: string) => void;
   levelNames: {
     level1: string;
@@ -46,7 +49,7 @@ export const TechTreeMainContent = ({
   onEditScenario,
   conversationHistory,
   handleAddLevel4,
-  searchMode
+  searchMode,
 }: TechTreeMainContentProps) => {
   return (
     <MainContent
