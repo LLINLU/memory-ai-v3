@@ -21,10 +21,12 @@ const Index = () => {
                     <TabsTrigger value="search">検索・探索</TabsTrigger>
                     <TabsTrigger value="generate">ツリー生成</TabsTrigger>
                   </TabsList>
-                  <TabsContent value="search" className="space-y-6">
+                  {/* Remove Search
+                  TabsContent value="search" className="space-y-6">
                     <SearchSection />
                     <RecentSearches />
-                  </TabsContent>{" "}
+                  </TabsContent--!>{" "}
+                  */}
                   <TabsContent value="generate" className="space-y-6">
                     <TreeGenerationSection />
                     <RecentGeneratedTrees />
