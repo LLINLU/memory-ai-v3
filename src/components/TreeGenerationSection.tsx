@@ -61,7 +61,7 @@ export const TreeGenerationSection = () => {
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 border-0">
         <div className="space-y-4">
           <div className="relative">
             <Input
