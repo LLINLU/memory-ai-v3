@@ -1,4 +1,3 @@
-
 import React from "react";
 import { ResizablePanel } from "@/components/ui/resizable";
 import { SidebarControls } from "@/components/technology-tree/SidebarControls";
@@ -40,10 +39,11 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
   onCheckResults,
   onResize,
   selectedNodeTitle,
-  selectedNodeDescription
-}) => {  return (
-    <ResizablePanel 
-      defaultSize={isExpanded ? 70 : 40} 
+  selectedNodeDescription,
+}) => {
+  return (
+    <ResizablePanel
+      defaultSize={isExpanded ? 70 : 40}
       minSize={20}
       maxSize={isExpanded ? 80 : 50}
       onResize={onResize}
@@ -57,7 +57,7 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
           toggleExpand={toggleExpand}
           selectedNodeTitle={selectedNodeTitle}
         />
-        
+
         <div className="flex-1 overflow-hidden">
           <SidebarContent
             sidebarTab={sidebarTab}
