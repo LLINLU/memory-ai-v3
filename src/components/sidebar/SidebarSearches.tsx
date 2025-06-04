@@ -36,7 +36,7 @@ function SearchSection({
 }: SearchSectionProps) {
   const { state } = useSidebar();
 
-  return (
+  return state === 'expanded' && (
     <>
       <div className="px-3 pt-3 text-xs font-medium text-muted-foreground">
         {title}
@@ -57,7 +57,7 @@ function SearchSection({
             </SidebarMenuButton>
           </SidebarMenuItem>
         ) : (
-          searches.map((search) => (
+         searches.map((search) => (
             <SidebarMenuItem key={search.treeId}>
               <SidebarMenuButton
                 onClick={() => onSearchClick(search.treeId, search.title)}

@@ -106,10 +106,9 @@ export const RecentGeneratedTrees = () => {
   }
 
   return (
-    <Card>
+    <Card className="border-0 shadow-none">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <TreePine className="h-5 w-5 text-green-500" />
           最近生成されたツリー
         </CardTitle>
         <CardDescription>
@@ -124,15 +123,12 @@ export const RecentGeneratedTrees = () => {
               className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors"
             >
               <div className="flex-1 space-y-1">
-                <h4 className="font-medium text-sm">{tree.name}</h4>
+                <h4 className="font-medium text-sm">{tree.search_theme}</h4>
                 <div className="flex items-center gap-3 text-xs text-gray-500">
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
                     {formatDate(tree.created_at)}
                   </div>
-                  <Badge variant="secondary" className="text-xs">
-                    {tree.search_theme}
-                  </Badge>
                 </div>
               </div>
               <Button
@@ -141,7 +137,6 @@ export const RecentGeneratedTrees = () => {
                 onClick={() => handleViewTree(tree)}
                 className="flex items-center gap-1"
               >
-                表示
                 <ArrowRight className="h-3 w-3" />
               </Button>
             </div>

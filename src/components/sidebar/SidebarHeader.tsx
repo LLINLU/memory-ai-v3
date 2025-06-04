@@ -14,7 +14,7 @@ export function SidebarHeader() {
     <div className="border-b p-4">
       <div className="flex items-center justify-between">
         {isExpanded && (
-          <Link to="/" className="flex items-center gap-2 text-2xl font-bold">
+          <Link to="/" className="flex items-center gap-2 text-2xl font-bold whitespace-nowrap">
             <span className="text-blue-600">M</span>
             <span>Memory AI</span>
           </Link>

@@ -6,6 +6,7 @@ import { Navigation } from "@/components/Navigation";
 
 interface PageLayoutProps {
   children: React.ReactNode;
+
 }
 
 export const PageLayout = ({ children }: PageLayoutProps) => {

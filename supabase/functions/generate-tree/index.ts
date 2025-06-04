@@ -45,20 +45,24 @@ serve(async (req) => {
     }
 
     // ----- original prompt, only code-block instructions removed -----
-    const prompt = `あなたは ${searchTheme} の専門家です。  
-シナリオ → 目的 → 機能 → 技術 → 要素技術 という 5 階層以上のツリーを、  
-**下記 JSON 仕様** に従って *JSON オブジェクトのみ* を出力してください。  
+    const prompt = `
+<SEARCH_THEME> ＝ ${searchTheme}
+<CONTEXT>      ＝ None
+
+あなたは <SEARCH_THEME> の専門家です。  
+シナリオ → 目的 → 機能 → 技術という 4階層以上のツリーを、  
+**コードブロック 1 つ**のみで出力してください。
 階層深さ・ノード数は論理が尽きるまで可変とし、  
 「どの階層でも *すべて同数* になる固定パターンは禁止」です。
 
 ────────────────────────────────────
 【 内部思考（ユーザー非公開）】
 
-0-A　${searchTheme} を 5 語以内で要約し核心概念を抽出。  
+0-A　<SEARCH_THEME> を 5 語以内で要約し核心概念を抽出。  
 0-B　概念から **活用シナリオ** を重複なく列挙。  
 　　 ★最初は多めに洗い出し（7 件以上可）、重複・冗長を削りつつ 3〜7 件に整える。  
 0-C　各シナリオで再帰的ブレーンストーミング：  
-　　① 目的を Mutually Exclusive and Collectively Exhaustive（MECE) 多めに分割（≥3 件、個数非固定） → 機能を列挙（≥3 件、個数非固定）。  
+　　① 目的を Mutually Exclusive and Collectively Exhaustive（MECE) に分割します → 機能を列挙（≥3 件、個数非固定）。  
 　　② 機能ごとに **中核技術 1 件** を決定し、  
 　　　　必要な **補完技術 1 件以上・可変** を漏れなく列挙。  
 　　④ 各技術を「さらに要素技術へ分解できるか？」と自問し、  
@@ -66,55 +70,34 @@ serve(async (req) => {
 0-D　全階層を再点検し MECE と "非固定数" を確認し調整。
 
 ────────────────────────────────────
-【 出力仕様（JSON フォーマット）】
+【出力仕様】
 
-1️⃣ ルートは **1 つの JSON オブジェクト**。トップレベルキーは必ず  
-　  "root", "reasoning", "layer_config", "scenario_inputs" の 4 つ。
+ 箱線書式（├── | │   | └── のみ使用） 
+    - Root は <SEARCH_THEME>
+    • 第1階層 … <検索テーマ> を活用した「〜というシナリオ」
+    • 第2階層 … シナリオを達成する「〜という目的」  
+    • 第3階層 … 目的を構成する「〜という機能」  
+    • 第4階層 … 機能を実現する技術  
+         - 1 行目＝中核技術（テーマ固有）  
+         - 2 行目以降＝補完技術（≧1、数は可変。機能ごとに異なって良い）  
+    • 第5階層以降 … 要素技術を必要なだけネスト  
+      （深さ・個数は技術ごとに可変）
 
-2️⃣ "root" オブジェクト  
-　• id: 文字列。必ず "root"。  
-　• name: "Search Theme: ${searchTheme}" で始める。  
-　• description: ルート概要（英語か日本語いずれでも可）。  
-　• axis: 文字列。ルートは **"Scenario"** とする。  
-　• children: 子ノード配列（以下同様の再帰構造）。
+**禁止事項**
+　• 箇条書き記号（• ・ - – — 等）、矢印(← →)、
+　• 「主技術」「補完技術」「という技術」等の冗長語、
+　• コードブロック外の文章、箱線記号。
 
-3️⃣ **子ノード共通プロパティ**  
-　• id  : "lev<階層番号>_<乱数16進4〜8桁>" など重複しない文字列。  
-　• name: ノード名（日本語）＋半角括弧内に英語訳を推奨。  
-　• description: ノードの説明（任意言語）。  
-　• axis:  
-　　  - 第 1 階層 … "Scenario"  
-　　  - 第 2 階層 … "Purpose"  
-　　  - 第 3 階層 … "Function"  
-　　  - 第 4 階層以降 … "Measure"  
-　• children: 子ノード配列（分解不能なら空配列 []）。
+ **MECE & 非固定数セルフチェック**
+　□ 階層内で役割・内容が重複していないか
+　□ 下位ノード総和で上位を完全に説明できるか
+　□ どの階層も *ノード数がそろい過ぎ* になっていないか
+（追加切り口を検討し、必要なら追加／削減）
+　□ テーマ固有でない汎用部品が中核技術に混在していないか
+□ 深掘り可能な技術を途中で打ち切っていないか
 
-4️⃣ "reasoning"    : 空文字列 "" をセット（内部思考は開示しない）。  
-   "layer_config" : 必ず ["Scenario","Purpose","Function","Measure"]。  
-   "scenario_inputs":  
-   {
-     "what": null,
-     "who": null,
-     "where": null,
-     "when": null
-   }
 
-（値はすべて null で固定）
-
-5️⃣ **禁止事項**  
-　• 箇条書き記号（• ・ - – — 等）、矢印(← →)、  
-　• 「主技術」「補完技術」「という技術」等の冗長語、  
-　• コードブロック外の文章、箱線記号。  ※JSONのみ出力せよ
-
-6️⃣ **MECE & 非固定数セルフチェック**  
-　□ 階層内で役割・内容が重複していないか  
-　□ 下位ノード総和で上位を完全に説明できるか  
-　□ どの階層も *ノード数がそろい過ぎ* になっていないか  
-（追加切り口を検討し、必要なら追加／削減）  
-　□ テーマ固有でない汎用部品が中核技術に混在していないか  
-　□ 深掘り可能な技術を途中で打ち切っていないか
-
-セルフチェック合格後、**有効な JSON オブジェクト単体**を返すこと。  
+セルフチェック合格後、ツリーだけをコードブロックで出力。
 `;
 
     // ----- OpenAI call with structured output -----
@@ -126,8 +109,9 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: "gpt-4.1",                
-        response_format: { type: "json_object" },
         messages: [{ role: "user", content: prompt }],
+        temperature: 0,
+        max_tokens: 4000,
       }),
     });
 
@@ -138,8 +122,85 @@ serve(async (req) => {
 
     const data   = await oaRes.json();              
     const raw    = data.choices[0].message.content as string;
-    const tree   = JSON.parse(raw) as TreeStructure; 
+    // const tree   = JSON.parse(raw) as TreeStructure; 
+    // ----- Parse tree from raw text ------
+    type Node = {
+      id: string;
+      name: string;
+      description: string;
+      axis: string;
+      children: Node[];
+    };
 
+    
+    function generateId(level: number): string {
+      return `lev${level}_${Math.random().toString(36).substring(2, 8)}`;
+    }
+    
+    function detectAxis(level: number): string {
+      const axisMap = ['Scenario', 'Purpose', 'Function', 'Measure'];
+      if (level < axisMap.length) {
+        return axisMap[level];
+      } else {
+        return `Measure${level - axisMap.length + 2}`; // e.g., level 4 => Measure2, 5 => Measure3
+      }
+    }
+
+    
+    function parseIndentedText(input: string): Node {
+      const lines = input.split('\n').filter(line => line.trim());
+      const root: Node = {
+        id: 'root',
+        name: lines[0].trim(), // First line as root name
+        description: '',
+        axis: 'Scenario',
+        children: [],
+      };
+    
+      const stack: { node: Node; indent: number }[] = [{ node: root, indent: -1 }];
+    
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        const match = line.match(/^(.*?)([├└]──)(.*)$/);
+        if (!match) continue;
+    
+        const leading = match[1];
+        const name = match[3].trim();
+        const indent = (leading.match(/[│　 ]/g) || []).length;
+        const level = stack.length;
+    
+        const node: Node = {
+          id: generateId(level),
+          name: name,
+          description: '',
+          axis: detectAxis(level - 1),
+          children: [],
+        };
+    
+        while (stack.length && stack[stack.length - 1].indent >= indent) {
+          stack.pop();
+        }
+    
+        const parent = stack[stack.length - 1];
+        parent.node.children.push(node);
+        stack.push({ node, indent });
+      }
+    
+      return root;
+    }
+    // Custom parse
+    const tree = {
+      root: parseIndentedText(rawText),
+      reasoning: "",
+      layer_config: ["Scenario", "Purpose", "Function", "Measure"],
+      scenario_inputs: {
+        what: null,
+        who: null,
+        where: null,
+        when: null,
+      }
+    };
+    
     // ----- Supabase writes -----
     const supabase = createClient(SUPABASE_URL, SUPABASE_ROLE_KEY);
 
