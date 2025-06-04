@@ -45,20 +45,19 @@ export const TreeGenerationSection = () => {
   };
 
   const exampleThemes = [
-    "脳神経外科における低侵襲手術技術",
-    "持続可能なエネルギー貯蔵システム",
-    "量子暗号通信の実用化",
-    "精密農業のためのIoTセンサー",
+     "心筋梗塞の新たな予防法は？",
+    "量子コンピューティングの医療応用",
+    "持続可能な農業技術のトレンド"
   ];
 
   return (
     <Card className="max-w-4xl mx-auto border-0">
       <CardHeader className="text-center">
         <div className="flex items-center justify-center gap-2 mb-2">
-          <CardTitle className="text-2xl font-bold">AI技術ツリー生成</CardTitle>
+          <CardTitle className="text-2xl font-bold">研究情報を俯瞰する</CardTitle>
         </div>
         <CardDescription className="text-base">
-          検索テーマを入力するだけで、シナリオ→目的→機能→技術→要素技術の5階層以上のツリーを自動生成します
+          検索テーマを入力するだけで、シナリオ→目的→機能→技術の4階層以上のツリーを自動生成します
         </CardDescription>
       </CardHeader>
 
@@ -98,10 +97,10 @@ export const TreeGenerationSection = () => {
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
                 <div className="space-y-1">
                   <p className="font-medium text-blue-900">
-                    AIが技術ツリーを生成しています...
+                    MECE原則に基づいて階層構造を構築し、各レベルで重複のない技術要素を抽出しています...
                   </p>
                   <p className="text-sm text-blue-700">
-                    MECE原則に基づいて階層構造を構築し、各レベルで重複のない技術要素を抽出しています。
+                    TED手法を使用して高品質な技術ツリーを生成しています...
                   </p>
                 </div>
               </div>
