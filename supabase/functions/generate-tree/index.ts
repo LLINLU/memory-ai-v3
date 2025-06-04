@@ -45,7 +45,10 @@ serve(async (req) => {
     }
 
     // ----- original prompt, only code-block instructions removed -----
-    const prompt = `あなたは ${searchTheme} の専門家です。  
+    const prompt = `
+<SEARCH_THEME> ＝ ピエゾ素子を使った骨伝導の補聴器・イヤホン
+    
+あなたは <SEARCH_THEME>  の専門家です。  
 シナリオ → 目的 → 機能 → 技術 → 要素技術 という 5 階層以上のツリーを、  
 **下記 JSON 仕様** に従って *JSON オブジェクトのみ* を出力してください。  
 階層深さ・ノード数は論理が尽きるまで可変とし、  
@@ -54,7 +57,7 @@ serve(async (req) => {
 ────────────────────────────────────
 【 内部思考（ユーザー非公開）】
 
-0-A　${searchTheme} を 5 語以内で要約し核心概念を抽出。  
+0-A　<SEARCH_THEME> を 5 語以内で要約し核心概念を抽出。  
 0-B　概念から **活用シナリオ** を重複なく列挙。  
 　　 ★最初は多めに洗い出し（7 件以上可）、重複・冗長を削りつつ 3〜7 件に整える。  
 0-C　各シナリオで再帰的ブレーンストーミング：  
@@ -73,7 +76,7 @@ serve(async (req) => {
 
 2️⃣ "root" オブジェクト  
 　• id: 文字列。必ず "root"。  
-　• name: "Search Theme: ${searchTheme}" で始める。  
+　• name: "Search Theme: "<SEARCH_THEME>" で始める。  
 　• description: ルート概要（英語か日本語いずれでも可）。  
 　• axis: 文字列。ルートは **"Scenario"** とする。  
 　• children: 子ノード配列（以下同様の再帰構造）。
@@ -128,6 +131,8 @@ serve(async (req) => {
         model: "gpt-4.1",                
         response_format: { type: "json_object" },
         messages: [{ role: "user", content: prompt }],
+        temperature: 0,
+        max_tokens: 4000,
       }),
     });
 
