@@ -129,7 +129,6 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: "gpt-4.1",                
-        response_format: { type: "json_object" },
         messages: [{ role: "user", content: prompt }],
         temperature: 0,
         max_tokens: 4000,
@@ -143,8 +142,85 @@ serve(async (req) => {
 
     const data   = await oaRes.json();              
     const raw    = data.choices[0].message.content as string;
-    const tree   = JSON.parse(raw) as TreeStructure; 
+    // const tree   = JSON.parse(raw) as TreeStructure; 
+    // ----- Parse tree from raw text ------
+    type Node = {
+      id: string;
+      name: string;
+      description: string;
+      axis: string;
+      children: Node[];
+    };
 
+    
+    function generateId(level: number): string {
+      return `lev${level}_${Math.random().toString(36).substring(2, 8)}`;
+    }
+    
+    function detectAxis(level: number): string {
+      const axisMap = ['Scenario', 'Purpose', 'Function', 'Measure'];
+      if (level < axisMap.length) {
+        return axisMap[level];
+      } else {
+        return `Measure${level - axisMap.length + 2}`; // e.g., level 4 => Measure2, 5 => Measure3
+      }
+    }
+
+    
+    function parseIndentedText(input: string): Node {
+      const lines = input.split('\n').filter(line => line.trim());
+      const root: Node = {
+        id: 'root',
+        name: lines[0].trim(), // First line as root name
+        description: '',
+        axis: 'Scenario',
+        children: [],
+      };
+    
+      const stack: { node: Node; indent: number }[] = [{ node: root, indent: -1 }];
+    
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        const match = line.match(/^(.*?)([├└]──)(.*)$/);
+        if (!match) continue;
+    
+        const leading = match[1];
+        const name = match[3].trim();
+        const indent = (leading.match(/[│　 ]/g) || []).length;
+        const level = stack.length;
+    
+        const node: Node = {
+          id: generateId(level),
+          name: name,
+          description: '',
+          axis: detectAxis(level - 1),
+          children: [],
+        };
+    
+        while (stack.length && stack[stack.length - 1].indent >= indent) {
+          stack.pop();
+        }
+    
+        const parent = stack[stack.length - 1];
+        parent.node.children.push(node);
+        stack.push({ node, indent });
+      }
+    
+      return root;
+    }
+    // Custom parse
+    const tree = {
+      root: parseIndentedText(rawText),
+      reasoning: "",
+      layer_config: ["Scenario", "Purpose", "Function", "Measure"],
+      scenario_inputs: {
+        what: null,
+        who: null,
+        where: null,
+        when: null,
+      }
+    };
+    
     // ----- Supabase writes -----
     const supabase = createClient(SUPABASE_URL, SUPABASE_ROLE_KEY);
 
