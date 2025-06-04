@@ -31,20 +31,19 @@ export const NodeContent: React.FC<NodeContentProps> = ({
   };
   
   const japaneseTitle = getJapaneseTitle(item.name);
-  
-  return (
+    return (
     <div className="flex flex-col w-full">
       {/* Display only the Japanese title */}
-      <h4 className={`text-base leading-6 font-medium ${textColorClass}`}>{japaneseTitle}</h4>
+      <h4 className={`text-base leading-6 font-medium ${textColorClass} break-words`}>{japaneseTitle}</h4>
       
       {/* Always show info if it exists */}
       {item.info && (
-        <p className={`text-xs mt-1 ${textColorClass}`}>{item.info}</p>
+        <p className={`text-xs mt-1 ${textColorClass} break-words`}>{item.info}</p>
       )}
       
       {/* Only display description when hovered */}
       {isHovered && item.description && (
-        <p className={`mt-3 text-sm ${descriptionTextColor}`}>{item.description}</p>
+        <p className={`mt-3 text-sm ${descriptionTextColor} break-words`}>{item.description}</p>
       )}
     </div>
   );

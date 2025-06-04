@@ -12,7 +12,7 @@ interface ScenarioSectionProps {
 }
 
 export const ScenarioSection = ({ 
-  scenario = "網膜疾患を持つ医療専門家と患者が、早期発見のための非侵襲的診断方法を求める臨床環境",
+  scenario,
   onEditScenario,
   conversationHistory = []
 }: ScenarioSectionProps) => {
@@ -23,9 +23,13 @@ export const ScenarioSection = ({
   // 'quick' mode means user came directly from home page, hide the section
   // any other mode (e.g. "deep", undefined) means user came from research-context, show the section
   const searchMode = location.state?.searchMode;
-  
-  // If searchMode is "quick", don't render the component
+    // If searchMode is "quick", don't render the component
   if (searchMode === "quick") {
+    return null;
+  }
+
+  // If no scenario is provided, don't render the component
+  if (!scenario || scenario.trim() === "") {
     return null;
   }
 
