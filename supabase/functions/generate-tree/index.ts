@@ -126,7 +126,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4.1",                
+        model: "gpt-4.5",                
         response_format: { type: "json_object" },
         messages: [{ role: "user", content: prompt }],
       }),
