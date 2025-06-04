@@ -19,7 +19,7 @@ interface AppSidebarProps {
   isOpen?: boolean;
 }
 
-export function AppSidebar({ isOpen = true }: AppSidebarProps)) {
+export function AppSidebar({ isOpen = true }: AppSidebarProps) {
   const { setOpen } = useSidebar();
 
   React.useEffect(() => {
