@@ -52,7 +52,7 @@ export const TreeGenerationSection = () => {
   ];
 
   return (
-    <Card className="max-w-4xl mx-auto">
+    <Card className="max-w-4xl mx-auto border-0">
       <CardHeader className="text-center">
         <div className="flex items-center justify-center gap-2 mb-2">
           <CardTitle className="text-2xl font-bold">AI技術ツリー生成</CardTitle>
