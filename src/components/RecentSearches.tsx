@@ -1,40 +1,128 @@
-
 import { SearchCard } from "./SearchCard";
+import { useTreeGeneration } from "@/hooks/useTreeGeneration";
+import { useState, useEffect } from "react";
+import { Loader2 } from "lucide-react";
+
+interface SavedTree {
+  id: string;
+  name: string;
+  search_theme: string;
+  created_at: string;
+}
 
 export const RecentSearches = () => {
-  // Mock data for recent searches
-  const recentSearches = [
-    {
-      title: "ナノ材料複合体",
-      paperCount: 15,
-      implementationCount: 4,
-      tags: [
-        { label: "材料", variant: "materials" as const },
-        { label: "工学", variant: "engineering" as const },
-      ],
-      timeAgo: "2日前",
-    },
-    {
-      title: "バイオインフォマティクスAI",
-      paperCount: 28,
-      implementationCount: 7,
-      tags: [
-        { label: "人工知能・機械学習", variant: "aiml" as const },
-        { label: "医療", variant: "healthcare" as const },
-      ],
-      timeAgo: "1週間前",
-    },
-    {
-      title: "グリーン水素貯蔵",
-      paperCount: 21,
-      implementationCount: 2,
-      tags: [
-        { label: "エネルギー", variant: "energy" as const },
-        { label: "持続可能性", variant: "sustainability" as const },
-      ],
-      timeAgo: "2週間前",
-    },
-  ];
+  const { listSavedTrees } = useTreeGeneration();
+  const [recentSearches, setRecentSearches] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRecentSearches = async () => {
+      try {
+        setIsLoading(true);
+        const trees = await listSavedTrees();
+
+        // Convert trees to search format and take most recent 6
+        const searchData = trees.slice(0, 6).map((tree: SavedTree) => ({
+          title: tree.search_theme,
+          paperCount: Math.floor(Math.random() * 40) + 10, // Random paper count for display
+          implementationCount: Math.floor(Math.random() * 8) + 1, // Random implementation count
+          tags: generateTagsFromTheme(tree.search_theme),
+          timeAgo: formatTimeAgo(tree.created_at),
+          treeId: tree.id, // Store tree ID for navigation
+        }));
+
+        setRecentSearches(searchData);
+      } catch (error) {
+        console.error("Error fetching recent searches:", error);
+        // Fallback to empty array on error
+        setRecentSearches([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRecentSearches();
+  }, []);
+
+  const generateTagsFromTheme = (theme: string) => {
+    const keywords = theme.toLowerCase();
+    const tags: { label: string; variant: string }[] = [];
+
+    // Simple keyword-based tag generation
+    if (
+      keywords.includes("ai") ||
+      keywords.includes("機械学習") ||
+      keywords.includes("深層学習")
+    ) {
+      tags.push({ label: "人工知能・機械学習", variant: "aiml" });
+    }
+    if (
+      keywords.includes("医療") ||
+      keywords.includes("医学") ||
+      keywords.includes("バイオ")
+    ) {
+      tags.push({ label: "医療", variant: "healthcare" });
+    }
+    if (
+      keywords.includes("エネルギー") ||
+      keywords.includes("電力") ||
+      keywords.includes("水素")
+    ) {
+      tags.push({ label: "エネルギー", variant: "energy" });
+    }
+    if (keywords.includes("材料") || keywords.includes("ナノ")) {
+      tags.push({ label: "材料", variant: "materials" });
+    }
+    if (keywords.includes("量子") || keywords.includes("暗号")) {
+      tags.push({ label: "量子技術", variant: "quantum" });
+    }
+    if (keywords.includes("手術") || keywords.includes("外科")) {
+      tags.push({ label: "工学", variant: "engineering" });
+    }
+
+    // Default tag if no matches
+    if (tags.length === 0) {
+      tags.push({ label: "技術", variant: "default" });
+    }
+
+    return tags;
+  };
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return "今日";
+    if (diffDays === 1) return "1日前";
+    if (diffDays < 7) return `${diffDays}日前`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)}週間前`;
+    return `${Math.floor(diffDays / 30)}ヶ月前`;
+  };
+
+  if (isLoading) {
+    return (
+      <section className="mt-12">
+        <h2 className="text-[1.2rem] font-bold mb-6">最近の検索</h2>
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-6 w-6 animate-spin mr-2" />
+          読み込み中...
+        </div>
+      </section>
+    );
+  }
+
+  if (recentSearches.length === 0) {
+    return (
+      <section className="mt-12">
+        <h2 className="text-[1.2rem] font-bold mb-6">最近の検索</h2>
+        <div className="text-center py-8 text-gray-500">
+          まだ検索履歴がありません
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="mt-12">

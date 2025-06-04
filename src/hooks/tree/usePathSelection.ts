@@ -4,6 +4,7 @@ import { NodeSuggestion } from "@/types/chat";
 import { PathLevel } from "@/types/tree";
 import { useNodeOperations } from "./useNodeOperations";
 import { usePathSelectionState } from "./usePathSelectionState";
+import { useEffect } from "react";
 
 export const usePathSelection = (
   initialPath = {
@@ -26,17 +27,10 @@ export const usePathSelection = (
     showLevel4,
     setShowLevel4,
     handleAddLevel4
-  } = usePathSelectionState(initialPath);
-
-  // Use TED-generated data if available, otherwise fall back to default data
+  } = usePathSelectionState(initialPath);  // Use TED-generated data if available, otherwise fall back to default data
   const level1Data = treeData?.level1Items || initialLevel1Items;
   const level2Data = treeData?.level2Items || initialLevel2Items;
   const level3Data = treeData?.level3Items || initialLevel3Items;
-
-  console.log('usePathSelection - level1Data:', level1Data);
-  console.log('usePathSelection - level2Data:', level2Data);
-  console.log('usePathSelection - level3Data:', level3Data);
-
   const {
     level1Items,
     level2Items,
@@ -45,21 +39,21 @@ export const usePathSelection = (
     addCustomNode: addNode,
     editNode,
     deleteNode: removeNode
-  } = useNodeOperations(level1Data, level2Data, level3Data);
-
-  // Set initial path to first available item if TED data is provided and current path doesn't exist
-  if (treeData?.level1Items && level1Data.length > 0) {
-    const currentLevel1Exists = level1Data.find(item => item.id === selectedPath.level1);
-    if (!currentLevel1Exists) {
-      console.log('Setting initial path to first TED item:', level1Data[0].id);
-      setSelectedPath(prev => ({
-        ...prev,
-        level1: level1Data[0].id,
-        level2: "",
-        level3: ""
-      }));
+  } = useNodeOperations(level1Data, level2Data, level3Data);  // Update path when tree data changes to ensure valid selections
+  useEffect(() => {
+    if (treeData?.level1Items && treeData.level1Items.length > 0) {
+      const currentLevel1Exists = treeData.level1Items.find(item => item.id === selectedPath.level1);
+      if (!currentLevel1Exists) {
+        setSelectedPath(prev => ({
+          ...prev,
+          level1: treeData.level1Items[0].id,
+          level2: "",
+          level3: "",
+          level4: ""
+        }));
+      }
     }
-  }
+  }, [treeData, setSelectedPath]);
 
   // Wrapper functions to maintain the same API
   const handleNodeClick = (level: PathLevel, nodeId: string) => {

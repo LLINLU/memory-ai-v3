@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TreeNode, PathLevel } from "@/types/tree";
 import { NodeSuggestion } from "@/types/chat";
 import { toast } from "@/hooks/use-toast";
@@ -20,10 +20,13 @@ export const useNodeOperations = (
   const [level2Items, setLevel2Items] = useState(initialLevel2Items);
   const [level3Items, setLevel3Items] = useState(initialLevel3Items);
   const [level4Items, setLevel4Items] = useState<Record<string, TreeNode[]>>({});
-  
-  const addCustomNode = (level: PathLevel, node: NodeSuggestion, selectedPath: PathState, setSelectedPath: (updater: (prev: PathState) => PathState) => void) => {
-    console.log('Adding custom node:', { level, node });
-    
+    // Update state when initial data changes (e.g., when database data is loaded)
+  useEffect(() => {
+    setLevel1Items(initialLevel1Items);
+    setLevel2Items(initialLevel2Items);
+    setLevel3Items(initialLevel3Items);
+  }, [initialLevel1Items, initialLevel2Items, initialLevel3Items]);
+    const addCustomNode = (level: PathLevel, node: NodeSuggestion, selectedPath: PathState, setSelectedPath: (updater: (prev: PathState) => PathState) => void) => {
     const newNode = createNodeFromSuggestion(node);
     const nodeId = newNode.id;
     
