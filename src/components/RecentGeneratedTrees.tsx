@@ -123,7 +123,7 @@ export const RecentGeneratedTrees = () => {
               className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors"
             >
               <div className="flex-1 space-y-1">
-                <h4 className="font-medium text-sm">検索テーマ：{tree.search_theme}</h4>
+                <h4 className="font-medium text-sm">{tree.search_theme}</h4>
                 <div className="flex items-center gap-3 text-xs text-gray-500">
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
