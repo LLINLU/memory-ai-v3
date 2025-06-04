@@ -42,7 +42,7 @@ function SearchSection({
         {title}
       </div>
       <SidebarMenu>
-        {isLoading && state === 'expanded' ? (
+        {isLoading ? (
           <SidebarMenuItem>
             <SidebarMenuButton disabled>
               <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
@@ -57,7 +57,7 @@ function SearchSection({
             </SidebarMenuButton>
           </SidebarMenuItem>
         ) : (
-          searches.map((search) => (
+         state === 'expanded' && searches.map((search) => (
             <SidebarMenuItem key={search.treeId}>
               <SidebarMenuButton
                 onClick={() => onSearchClick(search.treeId, search.title)}
