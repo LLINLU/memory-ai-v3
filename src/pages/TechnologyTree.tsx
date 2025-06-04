@@ -16,33 +16,51 @@ import { useChatInitialization } from "@/hooks/tree/useChatInitialization";
 import { useNodeSelectionEffect } from "@/hooks/tree/useNodeSelectionEffect";
 import { toast } from "@/components/ui/use-toast";
 import { FallbackAlert } from "@/components/technology-tree/FallbackAlert";
+import { convertDatabaseTreeToAppFormat } from "@/utils/databaseTreeConverter";
+import { useTreeGeneration } from "@/hooks/useTreeGeneration";
 
 const TechnologyTree = () => {
   const location = useLocation();
-  const locationState = location.state as { 
-    query?: string; 
-    scenario?: string; 
+  const locationState = location.state as {
+    query?: string;
+    scenario?: string;
     searchMode?: string;
     researchAnswers?: any;
     conversationHistory?: any[];
     tedResults?: any;
     treeData?: any;
+    treeId?: string;
+    treeStructure?: any;
+    fromDatabase?: boolean;
+    fromPreset?: boolean;
+    isDemo?: boolean;
   } | null;
-  
+
   // Store the conversation history from the research context
-  const [savedConversationHistory, setSavedConversationHistory] = useState<any[]>([]);
+  const [savedConversationHistory, setSavedConversationHistory] = useState<
+    any[]
+  >([]);
   const [showFallbackAlert, setShowFallbackAlert] = useState(false);
-  
+  const [databaseTreeData, setDatabaseTreeData] = useState<any>(null);
+  const [hasLoadedDatabase, setHasLoadedDatabase] = useState(false);
+  const { loadTreeFromDatabase } = useTreeGeneration();
+
   // Extract conversation history from location state if available
   useEffect(() => {
     if (locationState?.conversationHistory) {
       setSavedConversationHistory(locationState.conversationHistory);
     }
   }, [locationState]);
-  
-  const { scenario, handleEditScenario, searchMode } = useScenarioState({ 
+
+  // Reset database tree data when tree ID changes
+  useEffect(() => {
+    setDatabaseTreeData(null);
+    setHasLoadedDatabase(false);
+  }, [locationState?.treeId]);
+
+  const { scenario, handleEditScenario, searchMode } = useScenarioState({
     initialScenario: locationState?.scenario,
-    initialSearchMode: locationState?.searchMode
+    initialSearchMode: locationState?.searchMode,
   });
 
   const {
@@ -63,43 +81,204 @@ const TechnologyTree = () => {
     level3Items,
     level4Items,
     showLevel4,
-    handleAddLevel4
-  } = useTechnologyTree();
-
+    handleAddLevel4,
+  } = useTechnologyTree(databaseTreeData);
   // Initialize tree data with TED results if available
   useEffect(() => {
-    if (locationState?.treeData && locationState?.tedResults) {
-      console.log('Initializing with TED-generated tree data:', locationState.treeData);
-      
-      // Check if any fallback data was used
-      const tedResults = locationState.tedResults;
-      let hasFallbackData = false;
-      
-      if (tedResults.purpose?.layer?.generation_metadata?.coverage_note?.includes('Fallback') ||
-          tedResults.function?.layer?.generation_metadata?.coverage_note?.includes('Fallback') ||
-          tedResults.measure?.layer?.generation_metadata?.coverage_note?.includes('Fallback')) {
-        hasFallbackData = true;
-        setShowFallbackAlert(true);
+    const initializeTreeData = async () => {
+      // Helper function to validate UUID format
+      const isValidUUID = (str: string) => {
+        const uuidRegex =
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        return uuidRegex.test(str);
+      };
+
+      // Handle database-generated tree (only if it's a valid UUID and not a demo)
+      if (
+        locationState?.fromDatabase &&
+        locationState?.treeId &&
+        !locationState?.isDemo &&
+        !hasLoadedDatabase
+      ) {
+        if (!isValidUUID(locationState.treeId)) {
+          console.log(
+            "Invalid UUID format, cannot load tree:",
+            locationState.treeId
+          );
+          toast({
+            title: "無効なツリーID",
+            description:
+              "有効なUUID形式のツリーIDが必要です。新しいツリーを生成してください。",
+          });
+          return;
+        }
+
+        console.log("Loading tree from database, ID:", locationState.treeId);
+        setHasLoadedDatabase(true); // Prevent re-loading
+
+        try {
+          const result = await loadTreeFromDatabase(locationState.treeId);
+          if (result?.treeStructure) {
+            const convertedData = convertDatabaseTreeToAppFormat(
+              result.treeStructure
+            );
+            if (convertedData) {
+              console.log(
+                "Successfully converted database tree data:",
+                convertedData
+              );
+              setDatabaseTreeData(convertedData);
+              toast({
+                title: "データベースツリーを読み込みました",
+                description: "保存されたツリー構造を表示しています。",
+              });
+            }
+          }
+        } catch (error) {
+          console.error("Error loading database tree:", error);
+          setHasLoadedDatabase(false); // Allow retry on error
+        }
+        return;
       }
-      
-      // Show success message with TED evaluation scores
-      const scores = [];
-      if (tedResults.purpose?.evaluation?.total_score) {
-        scores.push(`Purpose: ${Math.round(tedResults.purpose.evaluation.total_score / 4)}%`);
+
+      // Handle preset technology trees from sidebar
+      if (locationState?.fromPreset && locationState?.treeId) {
+        console.log(
+          "Loading preset technology tree, ID:",
+          locationState.treeId
+        );
+
+        // Import the technology tree data dynamically
+        import("@/data/technologyTreeData")
+          .then(({ level1Items, level2Items, level3Items }) => {
+            const level1Item = level1Items.find(
+              (item) => item.id === locationState.treeId
+            );
+
+            if (level1Item) {
+              // Create a simplified tree structure for preset trees
+              const presetTreeData = {
+                level1Items,
+                level2Items,
+                level3Items,
+                selectedLevel1: locationState.treeId,
+                searchTheme: level1Item.name,
+                isPreset: true,
+              };
+
+              console.log(
+                "Successfully loaded preset tree data:",
+                presetTreeData
+              );
+              setDatabaseTreeData(presetTreeData);
+
+              toast({
+                title: "プリセット技術ツリーを読み込みました",
+                description: `${level1Item.name} の技術ツリーを表示しています。`,
+              });
+            } else {
+              console.error("Preset tree not found:", locationState.treeId);
+              toast({
+                title: "プリセットツリーが見つかりません",
+                description: "指定された技術ツリーが存在しません。",
+              });
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading preset tree data:", error);
+            toast({
+              title: "プリセットツリーの読み込みエラー",
+              description: "技術ツリーデータの読み込みに失敗しました。",
+            });
+          });
+
+        return;
       }
-      if (tedResults.function?.evaluation?.total_score) {
-        scores.push(`Function: ${Math.round(tedResults.function.evaluation.total_score / 4)}%`);
+
+      // Handle demo trees or trees with demo IDs - show error instead of demo mode
+      if (
+        locationState?.isDemo ||
+        (locationState?.treeId && locationState.treeId.startsWith("demo-"))
+      ) {
+        console.log("Demo tree detected - no longer supported");
+        toast({
+          title: "デモツリーは廃止されました",
+          description: `リアルなツリー生成のみサポートしています。新しいツリーを生成してください。`,
+        });
+        return;
       }
-      if (tedResults.measure?.evaluation?.total_score) {
-        scores.push(`Measure: ${Math.round(tedResults.measure.evaluation.total_score / 4)}%`);
+
+      // Handle TED-generated tree (existing logic)
+      if (locationState?.treeData && locationState?.tedResults) {
+        console.log(
+          "Initializing with TED-generated tree data:",
+          locationState.treeData
+        );
+
+        // Check if any fallback data was used
+        const tedResults = locationState.tedResults;
+        let hasFallbackData = false;
+
+        if (
+          tedResults.purpose?.layer?.generation_metadata?.coverage_note?.includes(
+            "Fallback"
+          ) ||
+          tedResults.function?.layer?.generation_metadata?.coverage_note?.includes(
+            "Fallback"
+          ) ||
+          tedResults.measure?.layer?.generation_metadata?.coverage_note?.includes(
+            "Fallback"
+          )
+        ) {
+          hasFallbackData = true;
+          setShowFallbackAlert(true);
+        }
+
+        // Show success message with TED evaluation scores
+        const scores = [];
+        if (tedResults.purpose?.evaluation?.total_score) {
+          scores.push(
+            `Purpose: ${Math.round(
+              tedResults.purpose.evaluation.total_score / 4
+            )}%`
+          );
+        }
+        if (tedResults.function?.evaluation?.total_score) {
+          scores.push(
+            `Function: ${Math.round(
+              tedResults.function.evaluation.total_score / 4
+            )}%`
+          );
+        }
+        if (tedResults.measure?.evaluation?.total_score) {
+          scores.push(
+            `Measure: ${Math.round(
+              tedResults.measure.evaluation.total_score / 4
+            )}%`
+          );
+        }
+
+        toast({
+          title: hasFallbackData
+            ? "TED Tree Generated with Templates"
+            : "TED Tree Generated Successfully",
+          description:
+            scores.length > 0
+              ? `Quality scores: ${scores.join(", ")}`
+              : "Tree structure created successfully",
+        });
       }
-      
-      toast({
-        title: hasFallbackData ? "TED Tree Generated with Templates" : "TED Tree Generated Successfully",
-        description: scores.length > 0 ? `Quality scores: ${scores.join(', ')}` : "Tree structure created successfully",
-      });
-    }
-  }, [locationState?.treeData, locationState?.tedResults]);
+    };
+
+    initializeTreeData();
+  }, [
+    locationState?.treeData,
+    locationState?.tedResults,
+    locationState?.fromDatabase,
+    locationState?.fromPreset,
+    locationState?.treeId,
+    hasLoadedDatabase, // Add this to prevent infinite loops
+  ]);
 
   const {
     inputValue,
@@ -110,28 +289,33 @@ const TechnologyTree = () => {
     initializeChat,
     handleSwitchToChat,
     handleButtonClick,
-    setChatMessages
+    setChatMessages,
   } = useTechTreeChat();
 
-  const { 
-    isExpanded, 
-    toggleExpand, 
-    handleCheckResults, 
-    handleUseNode, 
-    handleEditNodeFromChat, 
-    handleRefineNode 
+  const {
+    isExpanded,
+    toggleExpand,
+    handleCheckResults,
+    handleUseNode,
+    handleEditNodeFromChat,
+    handleRefineNode,
   } = useTechTreeSidebarActions(setChatMessages, addCustomNode, setSidebarTab);
 
-  const selectedNodeInfo = useNodeInfo(selectedPath, level1Items, level2Items, level3Items);
+  const selectedNodeInfo = useNodeInfo(
+    selectedPath,
+    level1Items,
+    level2Items,
+    level3Items
+  );
   const levelNames = {
     level1: "目的",
     level2: "機能",
     level3: "手段／技術",
-    level4: "実装"
+    level4: "実装",
   };
 
   const handlePanelResize = () => {
-    const event = new CustomEvent('panel-resize');
+    const event = new CustomEvent("panel-resize");
     document.dispatchEvent(event);
   };
 
@@ -140,14 +324,14 @@ const TechnologyTree = () => {
     locationState,
     chatMessages,
     setChatMessages,
-    handleSwitchToChat
+    handleSwitchToChat,
   });
 
   // Handle node selection effects
   useNodeSelectionEffect({
     selectedPath,
     setShowSidebar,
-    setSidebarTab
+    setSidebarTab,
   });
 
   // Set default tabs
@@ -202,7 +386,7 @@ const TechnologyTree = () => {
             sidebarContent={sidebarContent}
           >
             <div className="p-4">
-              <FallbackAlert 
+              <FallbackAlert
                 isVisible={showFallbackAlert}
                 onDismiss={() => setShowFallbackAlert(false)}
               />
@@ -224,7 +408,7 @@ const TechnologyTree = () => {
               />
             </div>
           </TechTreeLayout>
-          
+
           <ChatBox
             messages={chatMessages}
             inputValue={inputValue}
