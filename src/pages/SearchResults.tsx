@@ -5,7 +5,7 @@ import { SearchResultsContent } from "@/components/search-results/SearchResultsC
 
 const SearchResults = () => {
   return (
-    <PageLayout>
+    <PageLayout defaultOpen={false}>
       <SearchResultsContent />
     </PageLayout>
   );

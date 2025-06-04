@@ -6,11 +6,13 @@ import { Navigation } from "@/components/Navigation";
 
 interface PageLayoutProps {
   children: React.ReactNode;
+  defaultOpen?: boolean;
+
 }
 
-export const PageLayout = ({ children }: PageLayoutProps) => {
+export const PageLayout = ({ children, defaultOpen = true }: PageLayoutProps) => {
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={defaultOpen}>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 bg-gray-50 pb-12">
