@@ -91,7 +91,6 @@ export const LevelSelection = ({
     if (!selectedPath.level3) return [];
     const items = [...(level4Items[selectedPath.level3] || [])];
 
-
     const selectedIndex = items.findIndex(
       (item) => item.id === selectedPath.level4
     );
@@ -175,7 +174,8 @@ export const LevelSelection = ({
         duration: 2000,
       });
     }
-  };  return (
+  };
+  return (
     <div className="h-full flex flex-col">
       {/* Horizontal scrollable container */}
       <div
