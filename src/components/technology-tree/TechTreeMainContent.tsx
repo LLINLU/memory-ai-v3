@@ -11,6 +11,8 @@ interface TechTreeMainContentProps {
   level1Items: any[];
   level2Items: Record<string, any[]>;
   level3Items: Record<string, any[]>;
+  level4Items: Record<string, any[]>;
+  showLevel4: boolean;
   handleNodeClick: (level: string, nodeId: string) => void;
   editNode: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   deleteNode: (level: string, nodeId: string) => void;
@@ -18,7 +20,7 @@ interface TechTreeMainContentProps {
     level1: string;
     level2: string;
     level3: string;
-    level4?: string;
+    level4: string;
   };
   hasUserMadeSelection: boolean;
   scenario?: string;
@@ -33,6 +35,8 @@ export const TechTreeMainContent = ({
   level1Items,
   level2Items,
   level3Items,
+  level4Items,
+  showLevel4,
   handleNodeClick,
   editNode,
   deleteNode,
@@ -50,6 +54,8 @@ export const TechTreeMainContent = ({
       level1Items={level1Items}
       level2Items={level2Items}
       level3Items={level3Items}
+      level4Items={level4Items}
+      showLevel4={showLevel4}
       onNodeClick={handleNodeClick}
       onEditNode={editNode}
       onDeleteNode={deleteNode}

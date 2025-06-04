@@ -14,6 +14,8 @@ interface MainContentProps {
   level1Items: any[];
   level2Items: Record<string, any[]>;
   level3Items: Record<string, any[]>;
+  level4Items: Record<string, any[]>;
+  showLevel4: boolean;
   onNodeClick: (level: string, nodeId: string) => void;
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
@@ -21,7 +23,7 @@ interface MainContentProps {
     level1: string;
     level2: string;
     level3: string;
-    level4?: string;
+    level4: string;
   };
   query?: string;
   hasUserMadeSelection: boolean;
@@ -37,14 +39,15 @@ export const MainContent = ({
   level1Items,
   level2Items,
   level3Items,
+  level4Items,
+  showLevel4,
   onNodeClick,
   onEditNode,
-  onDeleteNode,
-  levelNames = {
-    level1: "目的",
-    level2: "機能",
-    level3: "測定/技術",
-    level4: "実装"
+  onDeleteNode,  levelNames = {
+    level1: "シナリオ",
+    level2: "目的",
+    level3: "機能",
+    level4: "手段"
   },
   query,
   scenario,
@@ -66,6 +69,8 @@ export const MainContent = ({
         level1Items={level1Items}
         level2Items={level2Items}
         level3Items={level3Items}
+        level4Items={level4Items}
+        showLevel4={showLevel4}
         onAddLevel4={onAddLevel4}
       />
       <LevelSelection
@@ -73,10 +78,12 @@ export const MainContent = ({
         level1Items={level1Items}
         level2Items={level2Items}
         level3Items={level3Items}
+        level4Items={level4Items}
+        showLevel4={showLevel4}
         onNodeClick={onNodeClick}
         onEditNode={onEditNode}
         onDeleteNode={onDeleteNode}
-        levelNames={levelNames}
+              levelNames={levelNames}
       />
     </div>
   );

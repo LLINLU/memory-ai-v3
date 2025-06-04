@@ -12,12 +12,12 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { ChatBox } from "@/components/technology-tree/ChatBox";
 import { TechTreeMainContent } from "@/components/technology-tree/TechTreeMainContent";
 import { useScenarioState } from "@/hooks/tree/useScenarioState";
+import { useTreeGeneration } from "@/hooks/useTreeGeneration";
+import { convertDatabaseTreeToAppFormat } from "@/utils/databaseTreeConverter";
+import { toast } from "@/components/ui/use-toast";
 import { useChatInitialization } from "@/hooks/tree/useChatInitialization";
 import { useNodeSelectionEffect } from "@/hooks/tree/useNodeSelectionEffect";
-import { toast } from "@/components/ui/use-toast";
 import { FallbackAlert } from "@/components/technology-tree/FallbackAlert";
-import { convertDatabaseTreeToAppFormat } from "@/utils/databaseTreeConverter";
-import { useTreeGeneration } from "@/hooks/useTreeGeneration";
 
 const TechnologyTree = () => {
   const location = useLocation();
@@ -62,7 +62,6 @@ const TechnologyTree = () => {
     initialScenario: locationState?.scenario,
     initialSearchMode: locationState?.searchMode,
   });
-
   const {
     selectedPath,
     sidebarTab,
@@ -82,6 +81,7 @@ const TechnologyTree = () => {
     level4Items,
     showLevel4,
     handleAddLevel4,
+    scenario: databaseScenario, // Get scenario from database tree data
   } = useTechnologyTree(databaseTreeData);
   // Initialize tree data with TED results if available
   useEffect(() => {
@@ -111,16 +111,19 @@ const TechnologyTree = () => {
               "有効なUUID形式のツリーIDが必要です。新しいツリーを生成してください。",
           });
           return;
-        }
-
-        console.log("Loading tree from database, ID:", locationState.treeId);
+        }        console.log("Loading tree from database, ID:", locationState.treeId);
         setHasLoadedDatabase(true); // Prevent re-loading
-
+        
         try {
           const result = await loadTreeFromDatabase(locationState.treeId);
           if (result?.treeStructure) {
             const convertedData = convertDatabaseTreeToAppFormat(
-              result.treeStructure
+              result.treeStructure,
+              {
+                description: result.treeData?.description,
+                search_theme: result.treeData?.search_theme,
+                name: result.treeData?.name
+              }
             );
             if (convertedData) {
               console.log(
@@ -306,12 +309,11 @@ const TechnologyTree = () => {
     level1Items,
     level2Items,
     level3Items
-  );
-  const levelNames = {
-    level1: "目的",
-    level2: "機能",
-    level3: "手段／技術",
-    level4: "実装",
+  );  const levelNames = {
+    level1: "シナリオ",
+    level2: "目的",
+    level3: "機能",
+    level4: "手段",
   };
 
   const handlePanelResize = () => {
@@ -389,18 +391,18 @@ const TechnologyTree = () => {
               <FallbackAlert
                 isVisible={showFallbackAlert}
                 onDismiss={() => setShowFallbackAlert(false)}
-              />
-              <TechTreeMainContent
+              />              <TechTreeMainContent
                 selectedPath={selectedPath}
                 level1Items={level1Items}
                 level2Items={level2Items}
                 level3Items={level3Items}
+                level4Items={level4Items}
+                showLevel4={showLevel4}
                 handleNodeClick={handleNodeClick}
                 editNode={editNode}
                 deleteNode={deleteNode}
                 levelNames={levelNames}
-                hasUserMadeSelection={hasUserMadeSelection}
-                scenario={scenario}
+                hasUserMadeSelection={hasUserMadeSelection}                scenario={databaseScenario || scenario}
                 onEditScenario={handleEditScenario}
                 conversationHistory={savedConversationHistory}
                 handleAddLevel4={handleAddLevel4}

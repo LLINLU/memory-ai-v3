@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Info } from 'lucide-react';
@@ -25,6 +24,8 @@ interface PathDisplayProps {
   level1Items: any[];
   level2Items: Record<string, any[]>;
   level3Items: Record<string, any[]>;
+  level4Items: Record<string, any[]>;
+  showLevel4: boolean;
   onAddLevel4?: () => void;
 }
 
@@ -33,6 +34,8 @@ export const PathDisplay = ({
   level1Items,
   level2Items,
   level3Items,
+  level4Items,
+  showLevel4,
   onAddLevel4
 }: PathDisplayProps) => {
   // Find the selected items by ID to display their names
@@ -59,12 +62,27 @@ export const PathDisplay = ({
   const level2Name = selectedPath.level2 && selectedPath.level1
     ? getJapaneseName(findItemName(selectedPath.level2, level2Items[selectedPath.level1] || []))
     : '';
-  
-  const level3Name = selectedPath.level3 && selectedPath.level2
+    const level3Name = selectedPath.level3 && selectedPath.level2
     ? getJapaneseName(findItemName(selectedPath.level3, level3Items[selectedPath.level2] || []))
     : '';
+    const level4Name = selectedPath.level4 && selectedPath.level3
+    ? getJapaneseName(findItemName(selectedPath.level4, level4Items[selectedPath.level3] || []))
+    : '';
 
-  const showLevel4Button = selectedPath.level3 && level3Name;
+  // Check if Level 4 data exists for the current Level 3 selection
+  const hasLevel4Data = selectedPath.level3 && level4Items[selectedPath.level3] && level4Items[selectedPath.level3].length > 0;
+  
+  // Debug logging for Level 4 data
+  console.log('PathDisplay - Level 4 Debug:', {
+    selectedLevel3: selectedPath.level3,
+    level4ItemsKeys: Object.keys(level4Items),
+    level4DataForSelected: level4Items[selectedPath.level3],
+    hasLevel4Data,
+    level4Name
+  });
+  
+  // Only show the "Add Level 4" button if Level 3 is selected but no Level 4 data exists
+  const showLevel4Button = selectedPath.level3 && level3Name && !hasLevel4Data;
 
   return (
     <div className="mb-6" style={{ paddingTop: '0rem' }}>
@@ -97,11 +115,11 @@ export const PathDisplay = ({
           </DropdownMenu>
         </div>
       </div>
-      <div className="flex items-center">
-        <p className="text-gray-600" style={{ fontSize: '14px' }}>
+      <div className="flex items-center">        <p className="text-gray-600" style={{ fontSize: '14px' }}>
           {level1Name && level1Name}
           {level2Name && ` → ${level2Name}`}
           {level3Name && ` → ${level3Name}`}
+          {level4Name && ` → ${level4Name}`}
         </p>
         {showLevel4Button && (
           <TooltipProvider>

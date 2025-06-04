@@ -1,6 +1,8 @@
-import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+// deno-lint-ignore-file no-explicit-any
+import { serve }        from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
+// ---------- domain types ----------
 interface TreeNode {
   id: string;
   name: string;
@@ -8,70 +10,44 @@ interface TreeNode {
   axis: "Scenario" | "Purpose" | "Function" | "Measure";
   children?: TreeNode[];
 }
-
 interface TreeStructure {
   root: TreeNode;
   reasoning: string;
   layer_config: string[];
-  scenario_inputs: {
-    what: null;
-    who: null;
-    where: null;
-    when: null;
-  };
+  scenario_inputs: { what: null; who: null; where: null; when: null };
 }
 
-const corsHeaders = {
+// ---------- CORS ----------
+const cors = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+// ---------- entry ----------
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", {
-      headers: corsHeaders,
-      status: 200,
-    });
-  }
+  if (req.method === "OPTIONS") return new Response("ok", { status: 200, headers: cors });
 
   try {
     const { searchTheme } = await req.json();
-
     if (!searchTheme) {
-      return new Response(
-        JSON.stringify({ error: "searchTheme is required" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "searchTheme is required" }),
+        { status: 400, headers: { ...cors, "Content-Type": "application/json" } });
     }
 
-    // Check if OpenAI API key is available
-    const openaiApiKey = Deno.env.get("OPENAI_API_KEY");
-    if (!openaiApiKey) {
-      console.error("OPENAI_API_KEY environment variable is not set");
-      return new Response(
-        JSON.stringify({
-          error:
-            "OpenAI API key is not configured. Please set OPENAI_API_KEY in Supabase Edge Function settings.",
-        }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+    // env vars
+    const OPENAI_API_KEY    = Deno.env.get("OPENAI_API_KEY");
+    const SUPABASE_URL      = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!OPENAI_API_KEY || !SUPABASE_URL || !SUPABASE_ROLE_KEY) {
+      return new Response(JSON.stringify({ error: "Server mis-config" }),
+        { status: 500, headers: cors });
     }
 
-    console.log(`Generating tree for theme: ${searchTheme}`);
-
-    // Create OpenAI request to generate tree structure
-
+    // ----- original prompt, only code-block instructions removed -----
     const prompt = `あなたは ${searchTheme} の専門家です。  
 シナリオ → 目的 → 機能 → 技術 → 要素技術 という 5 階層以上のツリーを、  
-**下記 JSON 仕様** で **コードブロック 1 つ** のみ出力してください。  
+**下記 JSON 仕様** に従って *JSON オブジェクトのみ* を出力してください。  
 階層深さ・ノード数は論理が尽きるまで可変とし、  
 「どの階層でも *すべて同数* になる固定パターンは禁止」です。
 
@@ -126,159 +102,88 @@ serve(async (req) => {
 
 （値はすべて null で固定）
 
-5️⃣ **禁止事項**
-　• 箇条書き記号（• ・ - – — 等）、矢印(← →)、
-　• 「主技術」「補完技術」「という技術」等の冗長語、
-　• コードブロック外の文章、箱線記号。
+5️⃣ **禁止事項**  
+　• 箇条書き記号（• ・ - – — 等）、矢印(← →)、  
+　• 「主技術」「補完技術」「という技術」等の冗長語、  
+　• コードブロック外の文章、箱線記号。  ※JSONのみ出力せよ
 
-6️⃣ **MECE & 非固定数セルフチェック**
-　□ 階層内で役割・内容が重複していないか
-　□ 下位ノード総和で上位を完全に説明できるか
-　□ どの階層も *ノード数がそろい過ぎ* になっていないか
-（追加切り口を検討し、必要なら追加／削減）
-　□ テーマ固有でない汎用部品が中核技術に混在していないか
-□ 深掘り可能な技術を途中で打ち切っていないか
+6️⃣ **MECE & 非固定数セルフチェック**  
+　□ 階層内で役割・内容が重複していないか  
+　□ 下位ノード総和で上位を完全に説明できるか  
+　□ どの階層も *ノード数がそろい過ぎ* になっていないか  
+（追加切り口を検討し、必要なら追加／削減）  
+　□ テーマ固有でない汎用部品が中核技術に混在していないか  
+　□ 深掘り可能な技術を途中で打ち切っていないか
 
-セルフチェック合格後、**JSON オブジェクト全体**を
+セルフチェック合格後、**有効な JSON オブジェクト単体**を返すこと。  
+`;
 
-\`\`\`json
-{ ... }
-\`\`\`
+    // ----- OpenAI call with structured output -----
+    const oaRes = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-4.1",                
+        response_format: { type: "json_object" },
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
 
-の 1 つのコードブロックだけで出力せよ。`;
-
-    const openaiResponse = await fetch(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${openaiApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "gpt-4o",
-          messages: [
-            {
-              role: "user",
-              content: prompt,
-            },
-          ],
-          max_tokens: 4000,
-          temperature: 0.7,
-        }),
-      }
-    );
-
-    if (!openaiResponse.ok) {
-      const responseText = await openaiResponse.text();
-      console.error("OpenAI API error response:", responseText);
-      throw new Error(
-        `OpenAI API error: ${openaiResponse.status} ${openaiResponse.statusText} - ${responseText}`
-      );
+    if (!oaRes.ok) {
+      const detail = await oaRes.text();
+      throw new Error(`OpenAI error ${oaRes.status}: ${detail}`);
     }
 
-    const openaiData = await openaiResponse.json();
-    const generatedContent = openaiData.choices[0].message.content;
+    const data   = await oaRes.json();              
+    const raw    = data.choices[0].message.content as string;
+    const tree   = JSON.parse(raw) as TreeStructure; 
 
-    // Extract JSON from the response (assuming it's in a code block)
-    const jsonMatch = generatedContent.match(/```json\n([\s\S]*?)\n```/);
-    if (!jsonMatch) {
-      throw new Error("No valid JSON found in OpenAI response");
-    }
+    // ----- Supabase writes -----
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ROLE_KEY);
 
-    const treeStructure: TreeStructure = JSON.parse(jsonMatch[1]);
-
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Save to database
-    const { data: treeRecord, error: treeError } = await supabase
+    const { data: treeRec, error: treeErr } = await supabase
       .from("technology_trees")
       .insert({
-        name: treeStructure.root.name,
-        description: treeStructure.root.description,
-        search_theme: searchTheme,
-        reasoning: treeStructure.reasoning,
-        layer_config: treeStructure.layer_config,
-        scenario_inputs: treeStructure.scenario_inputs,
+        name:            tree.root.name,
+        description:     tree.root.description,
+        search_theme:    searchTheme,
+        reasoning:       tree.reasoning,
+        layer_config:    tree.layer_config,
+        scenario_inputs: tree.scenario_inputs,
       })
       .select("id")
       .single();
+    if (treeErr) throw new Error(`DB error: ${treeErr.message}`);
 
-    if (treeError) {
-      throw new Error(`Database error: ${treeError.message}`);
-    }
-
-    // Function to generate unique node IDs
-    const generateUniqueNodeId = () => {
-      return `node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    };
-
-    // Function to ensure all node IDs are unique
-    const assignUniqueIds = (node: TreeNode): TreeNode => {
-      const newNode = {
-        ...node,
-        id: generateUniqueNodeId(),
-        children: node.children
-          ? node.children.map((child) => assignUniqueIds(child))
-          : [],
-      };
-      return newNode;
-    };
-
-    // Assign unique IDs to all nodes
-    const treeWithUniqueIds = assignUniqueIds(treeStructure.root);
-
-    // Recursive function to save nodes
-    const saveNodeRecursively = async (
-      node: TreeNode,
-      parentId: string | null,
-      level: number
-    ) => {
-      const { error: nodeError } = await supabase.from("tree_nodes").insert({
-        id: node.id,
-        tree_id: treeRecord.id,
-        parent_id: parentId,
-        name: node.name,
-        description: node.description,
-        axis: node.axis,
-        level: level,
-        children_count: node.children?.length || 0,
+    // recursive insert helper
+    const saveNode = async (node: TreeNode, parent: string | null, lvl = 0, idx = 0) => {
+      const { error } = await supabase.from("tree_nodes").insert({
+        id:             node.id || crypto.randomUUID(),        // built-in UUID v4 :contentReference[oaicite:0]{index=0}
+        tree_id:        treeRec.id,
+        parent_id:      parent,
+        name:           node.name,
+        description:    node.description,
+        axis:           node.axis,
+        level:          lvl,
+        node_order:     idx,
+        children_count: node.children?.length ?? 0,
       });
-
-      if (nodeError) {
-        throw new Error(`Node save error: ${nodeError.message}`);
-      }
-
-      // Save children recursively
-      if (node.children && node.children.length > 0) {
-        for (let i = 0; i < node.children.length; i++) {
-          await saveNodeRecursively(node.children[i], node.id, level + 1);
-        }
+      if (error) throw new Error(`DB node error: ${error.message}`);
+      for (let i = 0; i < (node.children ?? []).length; i++) {
+        await saveNode(node.children[i], node.id, lvl + 1, i);
       }
     };
+    await saveNode(tree.root, null);
 
-    // Save the root node and its children (use the tree with unique IDs)
-    await saveNodeRecursively(treeWithUniqueIds, null, 0);
+    return new Response(JSON.stringify({ success: true, treeId: treeRec.id, treeStructure: tree }),
+      { status: 200, headers: { ...cors, "Content-Type": "application/json" } });
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        treeId: treeRecord.id,
-        treeStructure: treeStructure,
-      }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
-      }
-    );
-  } catch (error) {
-    console.error("Error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+  } catch (err: any) {
+    console.error(err);
+    return new Response(JSON.stringify({ error: err.message ?? "unknown" }),
+      { status: 500, headers: { ...cors, "Content-Type": "application/json" } });
   }
 });

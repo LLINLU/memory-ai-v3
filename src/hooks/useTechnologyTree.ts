@@ -104,7 +104,6 @@ export const useTechnologyTree = (databaseTreeData?: any) => {
     setChatMessages,
     setInputValue,
   } = useInputQuery(sidebarTab);
-
   return {
     selectedPath,
     selectedView,
@@ -117,6 +116,7 @@ export const useTechnologyTree = (databaseTreeData?: any) => {
     hasUserMadeSelection,
     showLevel4,
     searchMode,
+    scenario: treeDataToUse?.scenario, // Add scenario from database tree data
     setSelectedView,
     setSidebarTab,
     setShowSidebar,

@@ -184,9 +184,7 @@ export const useTreeGeneration = () => {
           return null;
         }
         throw new Error(treeError.message);
-      }
-
-      // Load all nodes for this tree
+      }      // Load all nodes for this tree
       const { data: nodesData, error: nodesError } = await supabase
         .from("tree_nodes")
         .select("*")
@@ -197,6 +195,8 @@ export const useTreeGeneration = () => {
       if (nodesError) {
         throw new Error(nodesError.message);
       }
+
+      console.log("Loaded nodes from database:", nodesData?.length);
 
       // Reconstruct tree structure
       const nodeMap = new Map();
@@ -211,14 +211,20 @@ export const useTreeGeneration = () => {
         }
       });
 
-      // Find root node
+      // Find root node (level 0)
       const rootNode = nodesData.find((node) => node.level === 0);
+      if (!rootNode) {
+        throw new Error("Root node not found in database");
+      }
+
       const treeStructure = {
-        root: nodeMap.get(rootNode?.id),
+        root: nodeMap.get(rootNode.id),
         reasoning: treeData.reasoning,
         layer_config: treeData.layer_config,
         scenario_inputs: treeData.scenario_inputs,
       };
+
+      console.log("Reconstructed tree structure:", treeStructure);
 
       return {
         treeData,

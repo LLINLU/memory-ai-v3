@@ -10,16 +10,19 @@ interface ConnectionLine {
 
 export const useConnectionLines = (
   containerRef: RefObject<HTMLDivElement>,
-  selectedPath: { level1: string; level2: string; level3: string },
+  selectedPath: { level1: string; level2: string; level3: string; level4?: string },
   setLevel1to2Line?: (line: ConnectionLine | null) => void,
-  setLevel2to3Line?: (line: ConnectionLine | null) => void
+  setLevel2to3Line?: (line: ConnectionLine | null) => void,
+  setLevel3to4Line?: (line: ConnectionLine | null) => void
 ) => {
   const [level1to2Line, setInternalLevel1to2Line] = useState<ConnectionLine | null>(null);
   const [level2to3Line, setInternalLevel2to3Line] = useState<ConnectionLine | null>(null);
+  const [level3to4Line, setInternalLevel3to4Line] = useState<ConnectionLine | null>(null);
   
   // Use the provided setters if available, otherwise use internal state
   const updateLevel1to2Line = setLevel1to2Line || setInternalLevel1to2Line;
   const updateLevel2to3Line = setLevel2to3Line || setInternalLevel2to3Line;
+  const updateLevel3to4Line = setLevel3to4Line || setInternalLevel3to4Line;
 
   const updateConnectionLines = () => {
     if (containerRef.current) {
@@ -60,9 +63,28 @@ export const useConnectionLines = (
             x2: level3Rect.left - containerRect.left,
             y2: level3Rect.top + level3Rect.height/2 - containerRect.top
           });
+        }      } else {
+        updateLevel2to3Line(null);
+      }
+
+      // Update level 3 to level 4 connection
+      if (selectedPath.level3 && selectedPath.level4) {
+        const level3Node = document.getElementById(`level3-${selectedPath.level3}`);
+        const level4Node = document.getElementById(`level4-${selectedPath.level4}`);
+        
+        if (level3Node && level4Node) {
+          const level3Rect = level3Node.getBoundingClientRect();
+          const level4Rect = level4Node.getBoundingClientRect();
+          
+          updateLevel3to4Line({
+            x1: level3Rect.right - containerRect.left,
+            y1: level3Rect.top + level3Rect.height/2 - containerRect.top,
+            x2: level4Rect.left - containerRect.left,
+            y2: level4Rect.top + level4Rect.height/2 - containerRect.top
+          });
         }
       } else {
-        updateLevel2to3Line(null);
+        updateLevel3to4Line(null);
       }
     }
   };
@@ -91,15 +113,15 @@ export const useConnectionLines = (
       document.removeEventListener('panel-resize', handleResize);
       resizeObserver.disconnect();
     };
-  }, [selectedPath.level1, selectedPath.level2, selectedPath.level3]);
+  }, [selectedPath.level1, selectedPath.level2, selectedPath.level3, selectedPath.level4]);
 
   useEffect(() => {
     updateConnectionLines();
     const timeoutId = setTimeout(updateConnectionLines, 100);
     return () => clearTimeout(timeoutId);
   }, []);
-
   return { level1to2Line: setLevel1to2Line ? null : level1to2Line, 
-           level2to3Line: setLevel2to3Line ? null : level2to3Line, 
+           level2to3Line: setLevel2to3Line ? null : level2to3Line,
+           level3to4Line: setLevel3to4Line ? null : level3to4Line,
            updateConnectionLines };
 };

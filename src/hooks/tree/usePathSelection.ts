@@ -17,6 +17,7 @@ export const usePathSelection = (
     level1Items?: any[];
     level2Items?: Record<string, any[]>;
     level3Items?: Record<string, any[]>;
+    level4Items?: Record<string, any[]>;
   }
 ) => {
   const {
@@ -31,15 +32,19 @@ export const usePathSelection = (
   const level1Data = treeData?.level1Items || initialLevel1Items;
   const level2Data = treeData?.level2Items || initialLevel2Items;
   const level3Data = treeData?.level3Items || initialLevel3Items;
+  const level4Data = treeData?.level4Items || {};
+  
+  console.log('usePathSelection - level4Data:', level4Data, 'keys:', Object.keys(level4Data));
+  
   const {
     level1Items,
     level2Items,
     level3Items,
-    level4Items = {},
+    level4Items,
     addCustomNode: addNode,
     editNode,
     deleteNode: removeNode
-  } = useNodeOperations(level1Data, level2Data, level3Data);  // Update path when tree data changes to ensure valid selections
+  } = useNodeOperations(level1Data, level2Data, level3Data, level4Data);// Update path when tree data changes to ensure valid selections
   useEffect(() => {
     if (treeData?.level1Items && treeData.level1Items.length > 0) {
       const currentLevel1Exists = treeData.level1Items.find(item => item.id === selectedPath.level1);
