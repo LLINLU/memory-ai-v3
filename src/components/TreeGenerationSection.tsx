@@ -51,7 +51,7 @@ export const TreeGenerationSection = () => {
   ];
 
   return (
-    <Card className="max-w-4xl mx-auto border-0">
+    <Card className="max-w-4xl mx-auto border-0 shadow-none">
       <CardHeader className="text-center">
         <div className="flex items-center justify-center gap-2 mb-2">
           <CardTitle className="text-2xl font-bold">研究情報を俯瞰する</CardTitle>
@@ -61,7 +61,7 @@ export const TreeGenerationSection = () => {
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-6 border-0">
+      <CardContent className="space-y-6">
         <div className="space-y-4">
           <div className="relative">
             <Input
