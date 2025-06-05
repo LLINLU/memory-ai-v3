@@ -10,6 +10,12 @@ export interface TechnologyTreeState {
     level2: string;
     level3: string;
     level4?: string;
+    level5?: string;
+    level6?: string;
+    level7?: string;
+    level8?: string;
+    level9?: string;
+    level10?: string;
   };
   selectedView: string;
   sidebarTab: string;
@@ -23,7 +29,8 @@ export interface TechnologyTreeState {
 }
 
 export const useTechnologyTree = (databaseTreeData?: any) => {
-  const location = useLocation();  const locationState = location.state as {
+  const location = useLocation();
+  const locationState = location.state as {
     query?: string;
     scenario?: string;
     searchMode?: string;
@@ -39,33 +46,41 @@ export const useTechnologyTree = (databaseTreeData?: any) => {
 
   // Get searchMode from location state - default to "quick" if not provided
   const searchMode = locationState?.searchMode || "quick";
-  const [selectedView, setSelectedView] = useState("tree");
-  // Determine initial path based on TED data availability
+  const [selectedView, setSelectedView] = useState("tree"); // Determine initial path based on TED data availability
   let initialPath = {
     level1: "",
     level2: "",
     level3: "",
     level4: "",
-  };// Determine which tree data to use: database data takes priority, then location state data
+    level5: "",
+    level6: "",
+    level7: "",
+    level8: "",
+    level9: "",
+    level10: "",
+  }; // Determine which tree data to use: database data takes priority, then location state data
   const treeDataToUse = databaseTreeData || locationState?.treeData;
-  
+
   // If we have TED-generated data or database data, use the first nodes as initial selection
   if (treeDataToUse?.level1Items?.[0]) {
     const firstLevel1 = treeDataToUse.level1Items[0];
-    const firstLevel2 =
-      treeDataToUse.level2Items?.[firstLevel1.id]?.[0];
+    const firstLevel2 = treeDataToUse.level2Items?.[firstLevel1.id]?.[0];
     const firstLevel3 = firstLevel2
       ? treeDataToUse.level3Items?.[firstLevel2.id]?.[0]
       : null;
-
     initialPath = {
       level1: firstLevel1.id,
       level2: firstLevel2?.id || "",
       level3: firstLevel3?.id || "",
       level4: "",
+      level5: "",
+      level6: "",
+      level7: "",
+      level8: "",
+      level9: "",
+      level10: "",
     };
   }
-
   const {
     selectedPath,
     hasUserMadeSelection,
@@ -77,6 +92,12 @@ export const useTechnologyTree = (databaseTreeData?: any) => {
     level2Items,
     level3Items,
     level4Items,
+    level5Items,
+    level6Items,
+    level7Items,
+    level8Items,
+    level9Items,
+    level10Items,
     showLevel4,
     handleAddLevel4,
   } = usePathSelection(initialPath, treeDataToUse);
@@ -128,6 +149,12 @@ export const useTechnologyTree = (databaseTreeData?: any) => {
     level2Items,
     level3Items,
     level4Items,
+    level5Items,
+    level6Items,
+    level7Items,
+    level8Items,
+    level9Items,
+    level10Items,
     handleAddLevel4,
   };
 };

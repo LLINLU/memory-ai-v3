@@ -6,11 +6,23 @@ interface TechTreeMainContentProps {
     level2: string;
     level3: string;
     level4?: string;
+    level5?: string;
+    level6?: string;
+    level7?: string;
+    level8?: string;
+    level9?: string;
+    level10?: string;
   };
   level1Items: any[];
   level2Items: Record<string, any[]>;
   level3Items: Record<string, any[]>;
   level4Items: Record<string, any[]>;
+  level5Items?: Record<string, any[]>;
+  level6Items?: Record<string, any[]>;
+  level7Items?: Record<string, any[]>;
+  level8Items?: Record<string, any[]>;
+  level9Items?: Record<string, any[]>;
+  level10Items?: Record<string, any[]>;
   showLevel4: boolean;
   handleNodeClick: (level: string, nodeId: string) => void;
   editNode: (
@@ -24,6 +36,12 @@ interface TechTreeMainContentProps {
     level2: string;
     level3: string;
     level4: string;
+    level5?: string;
+    level6?: string;
+    level7?: string;
+    level8?: string;
+    level9?: string;
+    level10?: string;
   };
   hasUserMadeSelection: boolean;
   scenario?: string;
@@ -39,6 +57,12 @@ export const TechTreeMainContent = ({
   level2Items,
   level3Items,
   level4Items,
+  level5Items = {},
+  level6Items = {},
+  level7Items = {},
+  level8Items = {},
+  level9Items = {},
+  level10Items = {},
   showLevel4,
   handleNodeClick,
   editNode,
@@ -58,6 +82,12 @@ export const TechTreeMainContent = ({
       level2Items={level2Items}
       level3Items={level3Items}
       level4Items={level4Items}
+      level5Items={level5Items}
+      level6Items={level6Items}
+      level7Items={level7Items}
+      level8Items={level8Items}
+      level9Items={level9Items}
+      level10Items={level10Items}
       showLevel4={showLevel4}
       onNodeClick={handleNodeClick}
       onEditNode={editNode}

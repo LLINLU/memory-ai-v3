@@ -98,7 +98,6 @@ const TechnologyTree = () => {
       </div>
     );
   }
-
   const {
     selectedPath,
     sidebarTab,
@@ -116,6 +115,12 @@ const TechnologyTree = () => {
     level2Items,
     level3Items,
     level4Items,
+    level5Items,
+    level6Items,
+    level7Items,
+    level8Items,
+    level9Items,
+    level10Items,
     showLevel4,
     handleAddLevel4,
     scenario: databaseScenario, // Get scenario from database tree data
@@ -297,18 +302,30 @@ const TechnologyTree = () => {
     handleEditNodeFromChat,
     handleRefineNode,
   } = useTechTreeSidebarActions(setChatMessages, addCustomNode, setSidebarTab);
-
   const selectedNodeInfo = useNodeInfo(
     selectedPath,
     level1Items,
     level2Items,
-    level3Items
+    level3Items,
+    level4Items,
+    level5Items,
+    level6Items,
+    level7Items,
+    level8Items,
+    level9Items,
+    level10Items
   );
   const levelNames = {
     level1: "シナリオ",
     level2: "目的",
     level3: "機能",
     level4: "手段",
+    level5: "手段2",
+    level6: "手段3",
+    level7: "手段4",
+    level8: "手段5",
+    level9: "手段6",
+    level10: "手段7",
   };
 
   const handlePanelResize = () => {
@@ -370,7 +387,7 @@ const TechnologyTree = () => {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full overflow-hidden">
-        <AppSidebar isOpen={false}/>
+        <AppSidebar isOpen={false} />
         <div className="flex-1 overflow-hidden">
           <TechTreeLayout
             showSidebar={showSidebar}
@@ -392,6 +409,12 @@ const TechnologyTree = () => {
                 level2Items={level2Items}
                 level3Items={level3Items}
                 level4Items={level4Items}
+                level5Items={level5Items}
+                level6Items={level6Items}
+                level7Items={level7Items}
+                level8Items={level8Items}
+                level9Items={level9Items}
+                level10Items={level10Items}
                 showLevel4={showLevel4}
                 handleNodeClick={handleNodeClick}
                 editNode={editNode}

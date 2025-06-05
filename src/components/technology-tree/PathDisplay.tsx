@@ -20,11 +20,23 @@ interface PathDisplayProps {
     level2: string;
     level3: string;
     level4?: string;
+    level5?: string;
+    level6?: string;
+    level7?: string;
+    level8?: string;
+    level9?: string;
+    level10?: string;
   };
   level1Items: any[];
   level2Items: Record<string, any[]>;
   level3Items: Record<string, any[]>;
   level4Items: Record<string, any[]>;
+  level5Items?: Record<string, any[]>;
+  level6Items?: Record<string, any[]>;
+  level7Items?: Record<string, any[]>;
+  level8Items?: Record<string, any[]>;
+  level9Items?: Record<string, any[]>;
+  level10Items?: Record<string, any[]>;
   showLevel4: boolean;
   onAddLevel4?: () => void;
 }
@@ -35,6 +47,12 @@ export const PathDisplay = ({
   level2Items,
   level3Items,
   level4Items,
+  level5Items = {},
+  level6Items = {},
+  level7Items = {},
+  level8Items = {},
+  level9Items = {},
+  level10Items = {},
   showLevel4,
   onAddLevel4,
 }: PathDisplayProps) => {
@@ -83,6 +101,66 @@ export const PathDisplay = ({
           findItemName(
             selectedPath.level4,
             level4Items[selectedPath.level3] || []
+          )
+        )
+      : "";
+
+  const level5Name =
+    selectedPath.level5 && selectedPath.level4
+      ? getJapaneseName(
+          findItemName(
+            selectedPath.level5,
+            level5Items[selectedPath.level4] || []
+          )
+        )
+      : "";
+
+  const level6Name =
+    selectedPath.level6 && selectedPath.level5
+      ? getJapaneseName(
+          findItemName(
+            selectedPath.level6,
+            level6Items[selectedPath.level5] || []
+          )
+        )
+      : "";
+
+  const level7Name =
+    selectedPath.level7 && selectedPath.level6
+      ? getJapaneseName(
+          findItemName(
+            selectedPath.level7,
+            level7Items[selectedPath.level6] || []
+          )
+        )
+      : "";
+
+  const level8Name =
+    selectedPath.level8 && selectedPath.level7
+      ? getJapaneseName(
+          findItemName(
+            selectedPath.level8,
+            level8Items[selectedPath.level7] || []
+          )
+        )
+      : "";
+
+  const level9Name =
+    selectedPath.level9 && selectedPath.level8
+      ? getJapaneseName(
+          findItemName(
+            selectedPath.level9,
+            level9Items[selectedPath.level8] || []
+          )
+        )
+      : "";
+
+  const level10Name =
+    selectedPath.level10 && selectedPath.level9
+      ? getJapaneseName(
+          findItemName(
+            selectedPath.level10,
+            level10Items[selectedPath.level9] || []
           )
         )
       : "";
@@ -147,6 +225,12 @@ export const PathDisplay = ({
           {level2Name && ` → ${level2Name}`}
           {level3Name && ` → ${level3Name}`}
           {level4Name && ` → ${level4Name}`}
+          {level5Name && ` → ${level5Name}`}
+          {level6Name && ` → ${level6Name}`}
+          {level7Name && ` → ${level7Name}`}
+          {level8Name && ` → ${level8Name}`}
+          {level9Name && ` → ${level9Name}`}
+          {level10Name && ` → ${level10Name}`}
         </p>
         {showLevel4Button && (
           <TooltipProvider>

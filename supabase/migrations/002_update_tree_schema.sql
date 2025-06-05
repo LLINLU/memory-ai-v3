@@ -7,7 +7,7 @@ DROP TABLE IF EXISTS technology_trees CASCADE;
 DROP TYPE IF EXISTS axis_type CASCADE;
 
 -- Create enum for axis types (note: Measure can appear at multiple levels)
-CREATE TYPE axis_type AS ENUM ('Scenario', 'Purpose', 'Function', 'Measure');
+CREATE TYPE axis_type AS ENUM ('Root', 'Scenario', 'Purpose', 'Function', 'Measure', 'Measure2', 'Measure3', 'Measure4', 'Measure5', 'Measure6', 'Measure7');
 
 -- Create technology_trees table for storing entire tree metadata
 CREATE TABLE technology_trees (
