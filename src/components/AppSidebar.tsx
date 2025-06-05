@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 
 import {
   Sidebar,
@@ -9,7 +9,6 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 
-import { useSidebar } from "@/hooks/use-sidebar";
 import { SidebarHeader as CustomSidebarHeader } from "./sidebar/SidebarHeader";
 import { SidebarNavigation } from "./sidebar/SidebarNavigation";
 import { SidebarSearches } from "./sidebar/SidebarSearches";
@@ -20,11 +19,6 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ isOpen = true }: AppSidebarProps) {
-  const { setOpen } = useSidebar();
-
-  React.useEffect(() => {
-    setOpen(isOpen);
-  }, [isOpen, setOpen]);
   
   return (
     <Sidebar>

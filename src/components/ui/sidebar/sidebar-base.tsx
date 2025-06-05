@@ -59,12 +59,12 @@ export const SidebarProvider = React.forwardRef<
         }`;
       },
       [setOpenProp, open]
-    );
-
-    const toggleSidebar = React.useCallback(() => {
-      return isMobile
-        ? setOpenMobile((open) => !open)
-        : setOpen((open) => !open);
+    );    const toggleSidebar = React.useCallback(() => {
+      if (isMobile) {
+        setOpenMobile((open) => !open);
+      } else {
+        setOpen((open) => !open);
+      }
     }, [isMobile, setOpen, setOpenMobile]);
 
     React.useEffect(() => {

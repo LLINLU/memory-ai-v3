@@ -7,8 +7,9 @@ import { useTechnologyTree } from "@/hooks/useTechnologyTree";
 import { useTechTreeChat } from "@/hooks/tree/useTechTreeChat";
 import { useTechTreeSidebarActions } from "@/components/technology-tree/hooks/useTechTreeSidebarActions";
 import { useNodeInfo } from "@/hooks/tree/useNodeInfo";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+
 import { ChatBox } from "@/components/technology-tree/ChatBox";
 import { TechTreeMainContent } from "@/components/technology-tree/TechTreeMainContent";
 import { useScenarioState } from "@/hooks/tree/useScenarioState";
@@ -396,12 +397,11 @@ const TechnologyTree = () => {
       onResize={handlePanelResize}
       selectedNodeTitle={selectedNodeInfo.title}
       selectedNodeDescription={selectedNodeInfo.description}
-    />
-  );
+    />  );
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full overflow-hidden">
-        <AppSidebar isOpen={false} />
+        <AppSidebar />
         <div className="flex-1 overflow-hidden">
           <TechTreeLayout
             showSidebar={showSidebar}
@@ -416,7 +416,7 @@ const TechnologyTree = () => {
               <FallbackAlert
                 isVisible={showFallbackAlert}
                 onDismiss={() => setShowFallbackAlert(false)}
-              />{" "}
+              />
               <TechTreeMainContent
                 selectedPath={selectedPath}
                 level1Items={level1Items}
