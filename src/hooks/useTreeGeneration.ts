@@ -70,9 +70,9 @@ const createDemoTree = (searchTheme: string) => ({
 
 export const useTreeGeneration = () => {
   const [isGenerating, setIsGenerating] = useState(false);
-
   const generateTree = async (
-    searchTheme: string
+    searchTheme: string,
+    mode: "TED" | "FAST" = "TED"
   ): Promise<TreeGenerationResult | null> => {
     if (!searchTheme.trim()) {
       toast({
@@ -108,8 +108,12 @@ export const useTreeGeneration = () => {
         return null;
       }
 
+      // Choose the appropriate edge function based on mode
+      const functionName =
+        mode === "FAST" ? "generate-tree-fast" : "generate-tree";
+
       // Supabase is available, use the edge function
-      const { data, error } = await supabase.functions.invoke("generate-tree", {
+      const { data, error } = await supabase.functions.invoke(functionName, {
         body: { searchTheme },
       });
 
@@ -124,12 +128,14 @@ export const useTreeGeneration = () => {
         throw new Error("No data returned from Edge Function");
       }
 
+      const modeLabel =
+        mode === "FAST" ? "FAST（シーズ深掘り）" : "TED（ニーズ深掘り）";
       toast({
         title: "ツリー生成完了",
-        description: `「${searchTheme}」のテクノロジーツリーが生成されました`,
+        description: `「${searchTheme}」の${modeLabel}ツリーが生成されました`,
       });
 
-      return data as TreeGenerationResult;
+      return { ...data, mode } as TreeGenerationResult & { mode: string };
     } catch (error) {
       console.error("Tree generation error:", error);
 
@@ -184,7 +190,7 @@ export const useTreeGeneration = () => {
           return null;
         }
         throw new Error(treeError.message);
-      }      // Load all nodes for this tree
+      } // Load all nodes for this tree
       const { data: nodesData, error: nodesError } = await supabase
         .from("tree_nodes")
         .select("*")

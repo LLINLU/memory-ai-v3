@@ -14,7 +14,15 @@ interface TreeNodeFromDB {
     | "Measure4"
     | "Measure5"
     | "Measure6"
-    | "Measure7";
+    | "Measure7"
+    | "Technology"
+    | "How1"
+    | "How2"
+    | "How3"
+    | "How4"
+    | "How5"
+    | "How6"
+    | "How7";
   level: number;
   children?: TreeNodeFromDB[];
 }
@@ -26,15 +34,235 @@ interface TreeStructureFromDB {
   scenario_inputs: Json;
 }
 
-export const convertDatabaseTreeToAppFormat = (
+const convertFastTreeToAppFormat = (
   treeStructure: TreeStructureFromDB,
   treeMetadata?: { description?: string; search_theme?: string; name?: string }
+) => {
+  // Helper function to recursively collect all nodes
+  const collectAllNodes = (
+    node: TreeNodeFromDB,
+    allNodes: TreeNodeFromDB[] = []
+  ): TreeNodeFromDB[] => {
+    allNodes.push(node);
+    if (node.children) {
+      node.children.forEach((child) => collectAllNodes(child, allNodes));
+    }
+    return allNodes;
+  };
+  const allNodes = collectAllNodes(treeStructure.root);
+
+  // For FAST trees: Root IS the Technology (level 0)
+  // Level 1 items are How1 nodes - children of Technology root
+  const level1Nodes = treeStructure.root.children || [];
+
+  const level1Items = level1Nodes
+    .filter((node) => node.axis === "How1")
+    .map((node, index) => {
+      return {
+        id: node.id,
+        name: node.name,
+        info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
+          Math.floor(Math.random() * 20) + 1
+        }事例`,
+        description: node.description || "",
+        color: `hsl(${200 + index * 30}, 70%, 50%)`,
+      };
+    });
+  // Extract level 2 items (How2 nodes - children of How1 nodes)
+  const level2Items: Record<string, any[]> = {};
+  level1Nodes.forEach((how1Node) => {
+    if (how1Node.children && how1Node.children.length > 0) {
+      const how2Nodes = how1Node.children.filter(
+        (node) => node.axis === "How2"
+      );
+      if (how2Nodes.length > 0) {
+        level2Items[how1Node.id] = how2Nodes.map((node, index) => {
+          return {
+            id: node.id,
+            name: node.name,
+            info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
+              Math.floor(Math.random() * 20) + 1
+            }事例`,
+            description: node.description || "",
+            color: `hsl(${220 + index * 25}, 65%, 55%)`,
+          };
+        });
+      }
+    }
+  });
+  // Extract level 3 items (How3 nodes - children of How2 nodes)
+  const level3Items: Record<string, any[]> = {};
+  level1Nodes.forEach((how1Node) => {
+    how1Node.children?.forEach((how2Node) => {
+      if (
+        how2Node.axis === "How2" &&
+        how2Node.children &&
+        how2Node.children.length > 0
+      ) {
+        const how3Nodes = how2Node.children.filter(
+          (node) => node.axis === "How3"
+        );
+        if (how3Nodes.length > 0) {
+          level3Items[how2Node.id] = how3Nodes.map((node, index) => {
+            return {
+              id: node.id,
+              name: node.name,
+              info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
+                Math.floor(Math.random() * 20) + 1
+              }事例`,
+              description: node.description || "",
+              color: `hsl(${240 + index * 20}, 60%, 60%)`,
+            };
+          });
+        }
+      }
+    });
+  });
+  // Extract level 4 items (How4 nodes - children of How3 nodes)
+  const level4Items: Record<string, any[]> = {};
+  level1Nodes.forEach((how1Node) => {
+    how1Node.children?.forEach((how2Node) => {
+      if (how2Node.axis === "How2") {
+        how2Node.children?.forEach((how3Node) => {
+          if (
+            how3Node.axis === "How3" &&
+            how3Node.children &&
+            how3Node.children.length > 0
+          ) {
+            const how4Nodes = how3Node.children.filter(
+              (node) => node.axis === "How4"
+            );
+            if (how4Nodes.length > 0) {
+              level4Items[how3Node.id] = how4Nodes.map((node, index) => {
+                return {
+                  id: node.id,
+                  name: node.name,
+                  info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
+                    Math.floor(Math.random() * 20) + 1
+                  }事例`,
+                  description: node.description || "",
+                  color: `hsl(${260 + index * 15}, 55%, 65%)`,
+                };
+              });
+            }
+          }
+        });
+      }
+    });
+  });
+
+  // Helper function to extract children with specific axis types for FAST
+  const extractFastChildrenByAxis = (
+    parentNodes: TreeNodeFromDB[],
+    axisType: string
+  ): Record<string, any[]> => {
+    const items: Record<string, any[]> = {};
+
+    parentNodes.forEach((parentNode) => {
+      if (parentNode.children && parentNode.children.length > 0) {
+        const childNodes = parentNode.children.filter(
+          (node) => node.axis === axisType
+        );
+        if (childNodes.length > 0) {
+          items[parentNode.id] = childNodes.map((node, index) => ({
+            id: node.id,
+            name: node.name,
+            info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
+              Math.floor(Math.random() * 20) + 1
+            }事例`,
+            description: node.description || "",
+            color: `hsl(${260 + index * 15}, 55%, 65%)`,
+          }));
+        }
+      }
+    });
+
+    return items;
+  };
+  // Extract level 5+ items (How5, How6, etc.)
+  const level4Nodes: TreeNodeFromDB[] = [];
+  Object.values(level4Items).forEach((items) => {
+    items.forEach((item) => {
+      const dbNode = allNodes.find((node) => node.id === item.id);
+      if (dbNode) level4Nodes.push(dbNode);
+    });
+  });
+  const level5Items = extractFastChildrenByAxis(level4Nodes, "How5");
+
+  const level5Nodes: TreeNodeFromDB[] = [];
+  Object.values(level5Items).forEach((items) => {
+    items.forEach((item) => {
+      const dbNode = allNodes.find((node) => node.id === item.id);
+      if (dbNode) level5Nodes.push(dbNode);
+    });
+  });
+  const level6Items = extractFastChildrenByAxis(level5Nodes, "How6");
+
+  const level6Nodes: TreeNodeFromDB[] = [];
+  Object.values(level6Items).forEach((items) => {
+    items.forEach((item) => {
+      const dbNode = allNodes.find((node) => node.id === item.id);
+      if (dbNode) level6Nodes.push(dbNode);
+    });
+  });
+  const level7Items = extractFastChildrenByAxis(level6Nodes, "How7");
+
+  // For FAST trees, we stop at How7 (level 7) as per database schema
+  const level8Items: Record<string, any[]> = {};
+  const level9Items: Record<string, any[]> = {};
+  const level10Items: Record<string, any[]> = {};
+
+  const convertedData = {
+    level1Items,
+    level2Items,
+    level3Items,
+    level4Items,
+    level5Items,
+    level6Items,
+    level7Items,
+    level8Items,
+    level9Items,
+    level10Items,
+    scenario: treeMetadata?.description || "",
+    searchTheme: treeMetadata?.search_theme || "",
+    treeName: treeMetadata?.name || "",
+    mode: "FAST",
+  };
+
+  return convertedData;
+};
+
+export const convertDatabaseTreeToAppFormat = (
+  treeStructure: TreeStructureFromDB,
+  treeMetadata?: {
+    description?: string;
+    search_theme?: string;
+    name?: string;
+    mode?: string;
+  }
 ) => {
   if (!treeStructure?.root) {
     //console.error("Invalid tree structure received from database");
     return null;
   }
 
+  // Determine if this is a FAST tree based on metadata or axis types
+  const isFastTree =
+    treeMetadata?.mode === "FAST" ||
+    (treeStructure.root.children &&
+      treeStructure.root.children.some((child) => child.axis === "Technology"));
+
+  if (isFastTree) {
+    return convertFastTreeToAppFormat(treeStructure, treeMetadata);
+  } else {
+    return convertTedTreeToAppFormat(treeStructure, treeMetadata);
+  }
+};
+
+const convertTedTreeToAppFormat = (
+  treeStructure: TreeStructureFromDB,
+  treeMetadata?: { description?: string; search_theme?: string; name?: string }
+) => {
   // Helper function to recursively collect all nodes
   const collectAllNodes = (
     node: TreeNodeFromDB,
@@ -256,7 +484,6 @@ export const convertDatabaseTreeToAppFormat = (
     });
   });
   const level10Items = extractChildrenByAxis(level9Nodes, "Measure7");
-
   const convertedData = {
     level1Items,
     level2Items,
@@ -271,6 +498,7 @@ export const convertDatabaseTreeToAppFormat = (
     scenario: treeMetadata?.description || "",
     searchTheme: treeMetadata?.search_theme || "",
     treeName: treeMetadata?.name || "",
+    mode: "TED",
   };
 
   //console.log("Converted database tree to app format:", convertedData);

@@ -165,6 +165,7 @@ const TechnologyTree = () => {
                 description: result.treeData?.description,
                 search_theme: result.treeData?.search_theme,
                 name: result.treeData?.name,
+                mode: (result.treeData as any)?.mode, // Type assertion for mode field
               }
             );
             if (convertedData) {
@@ -314,19 +315,32 @@ const TechnologyTree = () => {
     level8Items,
     level9Items,
     level10Items
-  );
-  const levelNames = {
-    level1: "シナリオ",
-    level2: "目的",
-    level3: "機能",
-    level4: "手段",
-    level5: "手段2",
-    level6: "手段3",
-    level7: "手段4",
-    level8: "手段5",
-    level9: "手段6",
-    level10: "手段7",
-  };
+  ); // Dynamic level names based on tree mode
+  const treeMode =
+    databaseTreeData?.mode || locationState?.treeData?.mode || "TED";
+  const levelNames =
+    treeMode === "FAST"
+      ? {
+          level1: "How1", // Level 1 = How1 (first implementation methods)
+          level2: "How2", // Level 2 = How2 (detailed implementation)
+          level3: "How3", // Level 3 = How3 (specific techniques)
+          level4: "How4", // Level 4 = How4 (component details)
+          level5: "How5", // Level 5 = How5 (sub-components)
+          level6: "How6", // Level 6 = How6 (further details)
+          level7: "How7", // Level 7 = How7 (implementation specifics - max depth)
+        }
+      : {
+          level1: "シナリオ",
+          level2: "目的",
+          level3: "機能",
+          level4: "手段",
+          level5: "手段2",
+          level6: "手段3",
+          level7: "手段4",
+          level8: "手段5",
+          level9: "手段6",
+          level10: "手段7",
+        };
 
   const handlePanelResize = () => {
     const event = new CustomEvent("panel-resize");
