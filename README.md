@@ -59,6 +59,54 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Supabase (Backend & Authentication)
+
+## Supabase Database Schema Management
+
+This project uses Supabase as the backend database. Database type definitions are automatically generated and stored in `src/integrations/supabase/types/database.types.ts`.
+
+### Generating Database Types
+
+To regenerate the database types after making schema changes in Supabase:
+
+```sh
+# Method 1: Using npm script (recommended)
+npm run generate-types
+
+# Method 2: Direct command
+npx supabase gen types typescript --project-id=mnnvcyrohovytovydaig > src/integrations/supabase/types/database.types.ts
+```
+
+### Prerequisites for Type Generation
+
+Before running type generation commands, ensure you have:
+
+1. **Supabase CLI installed**: The commands use `npx supabase`
+2. **Proper authentication**: If you encounter permission errors, you may need to authenticate:
+   ```sh
+   npx supabase login
+   ```
+3. **Project access**: Ensure you have appropriate access to the Supabase project
+
+### Database Schema Structure
+
+The current database includes the following main tables:
+- `teams` - Team management
+- `technology_trees` - Main tree structures
+- `tree_nodes` - Individual nodes within trees
+- `user_profiles` - User profile information
+
+### Type Usage in Code
+
+Import and use the generated types:
+
+```typescript
+import type { Database } from '@/integrations/supabase/types/database.types';
+
+// Use specific table types
+type TechnologyTree = Database['public']['Tables']['technology_trees']['Row'];
+type TreeNode = Database['public']['Tables']['tree_nodes']['Row'];
+```
 
 ## How can I deploy this project?
 
