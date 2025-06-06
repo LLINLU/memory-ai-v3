@@ -1,13 +1,33 @@
--- Update technology tree schema to handle variable depth structure
--- This migration updates the existing schema to properly handle the reference JSON format
+-- Consolidated technology tree schema
+-- It creates a complete, clean schema for technology trees with variable depth structure
 
--- Drop existing tables and recreate with improved structure
+-- Drop existing tables and recreate with improved structure (if they exist)
 DROP TABLE IF EXISTS tree_nodes CASCADE;
 DROP TABLE IF EXISTS technology_trees CASCADE;
 DROP TYPE IF EXISTS axis_type CASCADE;
 
--- Create enum for axis types (note: Measure can appear at multiple levels)
-CREATE TYPE axis_type AS ENUM ('Root', 'Scenario', 'Purpose', 'Function', 'Measure', 'Measure2', 'Measure3', 'Measure4', 'Measure5', 'Measure6', 'Measure7');
+-- Create enum for axis types (supports both TED and FAST modes with variable depth)
+CREATE TYPE axis_type AS ENUM (
+  'Root', 
+  'Scenario', 
+  'Purpose', 
+  'Function', 
+  'Measure', 
+  'Measure2', 
+  'Measure3', 
+  'Measure4', 
+  'Measure5', 
+  'Measure6', 
+  'Measure7',
+  'Technology',
+  'How1',
+  'How2', 
+  'How3',
+  'How4',
+  'How5',
+  'How6',
+  'How7'
+);
 
 -- Create technology_trees table for storing entire tree metadata
 CREATE TABLE technology_trees (
@@ -18,6 +38,7 @@ CREATE TABLE technology_trees (
   reasoning TEXT DEFAULT '',
   layer_config JSONB DEFAULT '["Scenario","Purpose","Function","Measure"]'::jsonb,
   scenario_inputs JSONB DEFAULT '{"what": null, "who": null, "where": null, "when": null}'::jsonb,
+  mode TEXT DEFAULT 'TED' CHECK (mode IN ('TED', 'FAST')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -45,6 +66,7 @@ CREATE INDEX idx_tree_nodes_level ON tree_nodes(level);
 CREATE INDEX idx_tree_nodes_axis ON tree_nodes(axis);
 CREATE INDEX idx_tree_nodes_path ON tree_nodes(path);
 CREATE INDEX idx_technology_trees_search_theme ON technology_trees(search_theme);
+CREATE INDEX idx_technology_trees_mode ON technology_trees(mode);
 
 -- Create updated_at trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -56,16 +78,13 @@ END;
 $$ language 'plpgsql';
 
 -- Create triggers for updated_at
-CREATE TRIGGER update_technology_trees_updated_at BEFORE UPDATE ON technology_trees FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_tree_nodes_updated_at BEFORE UPDATE ON tree_nodes FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_technology_trees_updated_at 
+  BEFORE UPDATE ON technology_trees 
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Enable Row Level Security
-ALTER TABLE technology_trees ENABLE ROW LEVEL SECURITY;
-ALTER TABLE tree_nodes ENABLE ROW LEVEL SECURITY;
-
--- Create policies (for now, allow all operations - you can restrict later)
-CREATE POLICY "Allow all operations on technology_trees" ON technology_trees FOR ALL USING (true);
-CREATE POLICY "Allow all operations on tree_nodes" ON tree_nodes FOR ALL USING (true);
+CREATE TRIGGER update_tree_nodes_updated_at 
+  BEFORE UPDATE ON tree_nodes 
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Add function to update node paths automatically
 CREATE OR REPLACE FUNCTION update_node_path()
@@ -83,4 +102,17 @@ END;
 $$ language 'plpgsql';
 
 -- Create trigger to automatically update paths
-CREATE TRIGGER update_tree_node_path BEFORE INSERT OR UPDATE ON tree_nodes FOR EACH ROW EXECUTE FUNCTION update_node_path();
+CREATE TRIGGER update_tree_node_path 
+  BEFORE INSERT OR UPDATE ON tree_nodes 
+  FOR EACH ROW EXECUTE FUNCTION update_node_path();
+
+-- Enable Row Level Security
+ALTER TABLE technology_trees ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tree_nodes ENABLE ROW LEVEL SECURITY;
+
+-- Create policies (allow all operations for now - can be restricted later)
+CREATE POLICY "Allow all operations on technology_trees" 
+  ON technology_trees FOR ALL USING (true);
+
+CREATE POLICY "Allow all operations on tree_nodes" 
+  ON tree_nodes FOR ALL USING (true);
