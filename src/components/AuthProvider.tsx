@@ -1,39 +1,110 @@
-import { createContext, useContext, ReactNode } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import type { User, Session } from '@supabase/supabase-js';
-import type { Database } from '@/integrations/supabase/types/database.types';
-
-type UserProfile = Database['public']['Tables']['user_profiles']['Row'];
-
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { User, Session, AuthError } from '@supabase/supabase-js';
+import { useNavigate } from 'react-router-dom';
 interface AuthContextType {
   user: User | null;
-  profile: UserProfile | null;
   session: Session | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ data: unknown; error: unknown }>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function useAuthContext() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuthContext must be used within an AuthProvider');
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}
+};
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-export function AuthProvider({ children }: AuthProviderProps) {
-  const auth = useAuth();
+  useEffect(() => {
+    // 初期セッション状態を取得
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
-  return (
-    <AuthContext.Provider value={auth}>
-      {children}
-    </AuthContext.Provider>
-  );
-} 
+    // 認証状態の変更を監視
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+
+      // 認証に失敗した場合はデフォルトルート（ホーム）に移動
+      if (!session) {
+        navigate('/');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const signIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    
+    if (error) {
+      // 認証エラーの場合はデフォルトルートにリダイレクト
+      handleAuthError(error, navigate);
+      throw error;
+    }
+  };
+
+  const signUp = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+    
+    if (error) {
+      // サインアップエラーの場合はデフォルトルートにリダイレクト
+      handleAuthError(error, navigate);
+      throw error;
+    }
+  };
+
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      throw error;
+    }
+    navigate('/');
+  };
+
+  const value = {
+    user,
+    session,
+    loading,
+    signIn,
+    signUp,
+    signOut,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}; 
+
+export const handleAuthError = (error: AuthError, navigate: (path: string) => void) => {
+  console.error('Authentication error:', error);
+  
+  // 認証エラーの場合はホームページにリダイレクト
+  if (error.message.includes('Invalid login credentials') || 
+      error.message.includes('Email not confirmed') ||
+      error.message.includes('Invalid email or password')) {
+    navigate('/');
+  }
+}; 

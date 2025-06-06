@@ -1,8 +1,7 @@
-
-import React from "react";
+import React, { useMemo } from "react";
 import { Settings, LogOut, UserRound } from "lucide-react";
 import { useSidebar } from "@/hooks/use-sidebar";
-import { useAuthContext } from "@/components/AuthProvider";
+import { useAuth } from "@/components/AuthProvider";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -17,23 +16,25 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
+import { useUserDetail } from "@/hooks/useUserDetail";
 
 export function SidebarFooter() {
   const { state } = useSidebar();
-  const { profile, signOut } = useAuthContext();
+  const { user, signOut } = useAuth();
+  const { userDetails } = useUserDetail();
   const isExpanded = state === 'expanded';
 
   const handleSignOut = async () => {
     await signOut();
   };
 
-  const getUserInitials = (username: string) => {
-    return username
-      .split(' ')
-      .map(name => name.charAt(0).toUpperCase())
-      .join('')
-      .slice(0, 2);
-  };
+  const displayName = useMemo(() => {
+    return userDetails?.username || "ユーザー";
+  }, [userDetails, user]);
+
+  const nameForInitials = useMemo(() => {
+    return userDetails?.username || "User";
+  }, [userDetails, user]);
 
   return (
     <div className="border-t">
@@ -50,18 +51,15 @@ export function SidebarFooter() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
-                tooltip={profile?.username || "プロフィール"}
+                tooltip={displayName}
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
                 <Avatar className="size-4">
                   <AvatarFallback className="size-4 p-0 text-xs">
-                    {profile?.username 
-                      ? getUserInitials(profile.username)
-                      : <UserRound className="size-4" />
-                    }
+                    <UserRound className="size-4" />
                   </AvatarFallback>
                 </Avatar>
-                {isExpanded && <span>{profile?.username || "ユーザー"}</span>}
+                {isExpanded && <span>{displayName}</span>}
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -71,7 +69,7 @@ export function SidebarFooter() {
               side="top"
             >
               <DropdownMenuLabel className="text-xs">
-                {profile?.username || "ユーザー"}
+                {displayName}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleSignOut} className="text-red-600">

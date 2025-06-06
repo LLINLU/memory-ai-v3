@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/components/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -32,14 +32,13 @@ export default function Login() {
     setIsLoading(true);
     setError(null);
 
-    const { error } = await signIn(formData.email, formData.password);
-    
-    setIsLoading(false);
-    
-    if (error) {
-      setError(error.message);
-    } else {
+    try {
+      await signIn(formData.email, formData.password);
       navigate('/');
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Sign in failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 
