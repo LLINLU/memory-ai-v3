@@ -42,11 +42,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
-
-      // 認証に失敗した場合はデフォルトルート（ホーム）に移動
-      if (!session) {
-        navigate('/');
-      }
     });
 
     return () => subscription.unsubscribe();
@@ -59,8 +54,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
     
     if (error) {
-      // 認証エラーの場合はデフォルトルートにリダイレクト
-      handleAuthError(error, navigate);
       throw error;
     }
   };
@@ -72,8 +65,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
     
     if (error) {
-      // サインアップエラーの場合はデフォルトルートにリダイレクト
-      handleAuthError(error, navigate);
       throw error;
     }
   };
@@ -98,13 +89,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }; 
 
-export const handleAuthError = (error: AuthError, navigate: (path: string) => void) => {
+export const handleAuthError = (error: AuthError) => {
   console.error('Authentication error:', error);
-  
-  // 認証エラーの場合はホームページにリダイレクト
-  if (error.message.includes('Invalid login credentials') || 
-      error.message.includes('Email not confirmed') ||
-      error.message.includes('Invalid email or password')) {
-    navigate('/');
-  }
 }; 

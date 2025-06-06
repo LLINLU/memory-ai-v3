@@ -34,12 +34,33 @@ export type Database = {
           name?: string
           updated_at?: string | null
         }
+        Relationships: []
+      }
+      teams_members: {
+        Row: {
+          joined_at: string
+          role: string
+          team_id: string
+          user_id: string
+        }
+        Insert: {
+          joined_at?: string
+          role?: string
+          team_id: string
+          user_id: string
+        }
+        Update: {
+          joined_at?: string
+          role?: string
+          team_id?: string
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "teams_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: "teams_members_team_id_fkey"
+            columns: ["team_id"]
             isOneToOne: false
-            referencedRelation: "v_user_details"
+            referencedRelation: "teams"
             referencedColumns: ["id"]
           },
         ]
@@ -50,10 +71,12 @@ export type Database = {
           description: string | null
           id: string
           layer_config: Json | null
+          mode: string | null
           name: string
           reasoning: string | null
           scenario_inputs: Json | null
           search_theme: string
+          teamId: string | null
           updated_at: string
         }
         Insert: {
@@ -61,10 +84,12 @@ export type Database = {
           description?: string | null
           id?: string
           layer_config?: Json | null
+          mode?: string | null
           name: string
           reasoning?: string | null
           scenario_inputs?: Json | null
           search_theme: string
+          teamId?: string | null
           updated_at?: string
         }
         Update: {
@@ -72,13 +97,23 @@ export type Database = {
           description?: string | null
           id?: string
           layer_config?: Json | null
+          mode?: string | null
           name?: string
           reasoning?: string | null
           scenario_inputs?: Json | null
           search_theme?: string
+          teamId?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "technology_trees_teamId_fkey"
+            columns: ["teamId"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tree_nodes: {
         Row: {
@@ -92,6 +127,7 @@ export type Database = {
           node_order: number | null
           parent_id: string | null
           path: string | null
+          teamId: string | null
           tree_id: string | null
           updated_at: string
         }
@@ -106,6 +142,7 @@ export type Database = {
           node_order?: number | null
           parent_id?: string | null
           path?: string | null
+          teamId?: string | null
           tree_id?: string | null
           updated_at?: string
         }
@@ -120,6 +157,7 @@ export type Database = {
           node_order?: number | null
           parent_id?: string | null
           path?: string | null
+          teamId?: string | null
           tree_id?: string | null
           updated_at?: string
         }
@@ -129,6 +167,13 @@ export type Database = {
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "tree_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tree_nodes_teamId_fkey"
+            columns: ["teamId"]
+            isOneToOne: false
+            referencedRelation: "teams"
             referencedColumns: ["id"]
           },
           {
@@ -144,34 +189,39 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
-          team_id: string | null
           updated_at: string | null
           username: string
         }
         Insert: {
           created_at?: string | null
           id: string
-          team_id?: string | null
           updated_at?: string | null
           username: string
         }
         Update: {
           created_at?: string | null
           id?: string
-          team_id?: string | null
           updated_at?: string | null
           username?: string
         }
+        Relationships: []
+      }
+    }
+    Views: {
+      v_user_details: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          role: string | null
+          team_id: string | null
+          team_name: string | null
+          updated_at: string | null
+          user_id: string | null
+          username: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: "user_profiles_id_fkey"
-            columns: ["id"]
-            isOneToOne: true
-            referencedRelation: "v_user_details"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_profiles_team_id_fkey"
+            foreignKeyName: "teams_members_team_id_fkey"
             columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"
@@ -180,26 +230,39 @@ export type Database = {
         ]
       }
     }
-    Views: {
-      v_user_details: {
-        Row: {
-          email: string | null
-          id: string | null
-          profile_created_at: string | null
-          profile_updated_at: string | null
-          registered_at: string | null
-          team_description: string | null
-          team_name: string | null
-          username: string | null
-        }
-        Relationships: []
-      }
-    }
     Functions: {
-      [_ in never]: never
+      get_user_team_trees_and_nodes: {
+        Args: { user_id: string }
+        Returns: {
+          team_id: string
+          team_name: string
+          tree_id: string
+          tree_name: string
+          tree_description: string
+          node_id: string
+          node_name: string
+          node_description: string
+          node_level: number
+          node_order: number
+        }[]
+      }
+      get_user_technology_tree_data: {
+        Args: { user_id: string }
+        Returns: {
+          tree_id: string
+          tree_name: string
+          tree_description: string
+          node_id: string
+          node_name: string
+          node_description: string
+          node_level: number
+          node_order: number
+        }[]
+      }
     }
     Enums: {
       axis_type:
+        | "Root"
         | "Scenario"
         | "Purpose"
         | "Function"
@@ -207,6 +270,17 @@ export type Database = {
         | "Measure2"
         | "Measure3"
         | "Measure4"
+        | "Measure5"
+        | "Measure6"
+        | "Measure7"
+        | "Technology"
+        | "How1"
+        | "How2"
+        | "How3"
+        | "How4"
+        | "How5"
+        | "How6"
+        | "How7"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -323,6 +397,7 @@ export const Constants = {
   public: {
     Enums: {
       axis_type: [
+        "Root",
         "Scenario",
         "Purpose",
         "Function",
@@ -330,6 +405,17 @@ export const Constants = {
         "Measure2",
         "Measure3",
         "Measure4",
+        "Measure5",
+        "Measure6",
+        "Measure7",
+        "Technology",
+        "How1",
+        "How2",
+        "How3",
+        "How4",
+        "How5",
+        "How6",
+        "How7",
       ],
     },
   },

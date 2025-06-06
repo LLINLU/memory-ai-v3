@@ -61,6 +61,7 @@ export default function Login() {
                 type="email"
                 value={formData.email}
                 onChange={handleInputChange}
+                autoComplete="email"
                 required
                 disabled={isLoading}
               />
@@ -74,6 +75,7 @@ export default function Login() {
                 type="password"
                 value={formData.password}
                 onChange={handleInputChange}
+                autoComplete="current-password"
                 required
                 disabled={isLoading}
               />

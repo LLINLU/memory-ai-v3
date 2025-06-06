@@ -31,7 +31,7 @@ export function useUserDetail(): UseUserDetailReturn {
       const { data, error: fetchError } = await supabase
         .from('v_user_details')
         .select('*')
-        .eq('id', user.id)
+        .eq('user_id', user.id)
         .single();
 
 
