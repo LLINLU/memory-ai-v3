@@ -129,10 +129,9 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   const getTooltipText = () => {
     return showDescriptions
       ? "クリックすると、ツリーマップの簡潔なビューが表示されます。"
-      : "クリックすると、ツリーマップの詳細ビューが表示されます。";
-  };
+      : "クリックすると、ツリーマップの詳細ビューが表示されます。";  };
   return (
-    <div className="min-w-64 max-w-80 flex-shrink-0 bg-white p-4 rounded-lg relative">
+    <div className="min-w-36 max-w-64 flex-shrink-0 bg-white p-4 rounded-lg relative">
       <div className="flex items-center justify-between mb-4">
         <h2
           className="text-base"

@@ -1,4 +1,3 @@
-
 import React from "react";
 
 import {
@@ -19,7 +18,6 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ isOpen = true }: AppSidebarProps) {
-  
   return (
     <Sidebar>
       <SidebarHeader>

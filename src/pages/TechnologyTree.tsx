@@ -397,9 +397,9 @@ const TechnologyTree = () => {
       onResize={handlePanelResize}
       selectedNodeTitle={selectedNodeInfo.title}
       selectedNodeDescription={selectedNodeInfo.description}
-    />  );
-  return (
-    <SidebarProvider>
+    />
+  );  return (
+    <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen flex w-full overflow-hidden">
         <AppSidebar />
         <div className="flex-1 overflow-hidden">

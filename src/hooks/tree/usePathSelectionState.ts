@@ -35,18 +35,29 @@ export const usePathSelectionState = (
   // Store tree data for auto-selection
   const updateTreeData = (data: any) => {
     setTreeData(data);
-  };  // Auto-select first path through the entire tree when tree data is loaded
+  }; // Auto-select first path through the entire tree when tree data is loaded
   useEffect(() => {
-    if (treeData && !hasUserMadeSelection && treeData.level1Items && treeData.level1Items.length > 0) {
+    if (
+      treeData &&
+      !hasUserMadeSelection &&
+      treeData.level1Items &&
+      treeData.level1Items.length > 0
+    ) {
       // Only auto-select if current path is empty or invalid
       const firstLevel1 = treeData.level1Items[0];
-      const currentLevel1Exists = treeData.level1Items.find((item: any) => item.id === selectedPath.level1);
-      
+      const currentLevel1Exists = treeData.level1Items.find(
+        (item: any) => item.id === selectedPath.level1
+      );
+
       // Trigger auto-selection if:
       // 1. No level1 is selected, OR
-      // 2. Current level1 doesn't exist in tree data, OR  
+      // 2. Current level1 doesn't exist in tree data, OR
       // 3. Level1 is selected but level2 is empty (need cascade)
-      if (!selectedPath.level1 || !currentLevel1Exists || (selectedPath.level1 && !selectedPath.level2)) {
+      if (
+        !selectedPath.level1 ||
+        !currentLevel1Exists ||
+        (selectedPath.level1 && !selectedPath.level2)
+      ) {
         // Trigger the same logic as manual click to ensure cascade works
         setSelectedPath((prev) => {
           const newPath = { ...prev };
@@ -91,9 +102,14 @@ export const usePathSelectionState = (
       }
     }
   }, [treeData, hasUserMadeSelection]);
-
   const handleNodeClick = (level: PathLevel, nodeId: string) => {
     setHasUserMadeSelection(true);
+
+    // Scroll to top of the page when a node is selected
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
 
     setSelectedPath((prev) => {
       if (prev[level] === nodeId) {
