@@ -36,48 +36,50 @@ function SearchSection({
 }: SearchSectionProps) {
   const { state } = useSidebar();
 
-  return state === 'expanded' && (
-    <>
-      <div className="px-3 pt-3 text-xs font-medium text-muted-foreground">
-        {title}
-      </div>
-      <SidebarMenu>
-        {isLoading ? (
-          <SidebarMenuItem>
-            <SidebarMenuButton disabled>
-              <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
-              <span className="text-gray-500">読み込み中...</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        ) : searches.length === 0 ? (
-          <SidebarMenuItem>
-            <SidebarMenuButton disabled>
-              <Clock className="text-gray-400" />
-              <span className="text-gray-400 text-sm">履歴がありません</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        ) : (
-         searches.map((search) => (
-            <SidebarMenuItem key={search.treeId}>
-              <SidebarMenuButton
-                onClick={() => onSearchClick(search.treeId, search.title)}
-                className="hover:bg-gray-100 cursor-pointer"
-              >
-                <Clock className="text-gray-500" />
-                <span className="truncate" title={search.title}>
-                  {search.title}
-                </span>
+  return (
+    state === "expanded" && (
+      <>
+        <div className="px-3 pt-3 text-xs font-medium text-muted-foreground">
+          {title}
+        </div>
+        <SidebarMenu>
+          {isLoading ? (
+            <SidebarMenuItem>
+              <SidebarMenuButton disabled>
+                <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                <span className="text-gray-500">読み込み中...</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
-          ))
-        )}
-      </SidebarMenu>
-    </>
+          ) : searches.length === 0 ? (
+            <SidebarMenuItem>
+              <SidebarMenuButton disabled>
+                <Clock className="text-gray-400" />
+                <span className="text-gray-400 text-sm">履歴がありません</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ) : (
+            searches.map((search) => (
+              <SidebarMenuItem key={search.treeId}>
+                <SidebarMenuButton
+                  onClick={() => onSearchClick(search.treeId, search.title)}
+                  className="hover:bg-gray-100 cursor-pointer"
+                >
+                  <Clock className="text-gray-500" />
+                  <span className="truncate" title={search.title}>
+                    {search.title}
+                  </span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))
+          )}
+        </SidebarMenu>
+      </>
+    )
   );
 }
 
 export function SidebarSearches() {
-  const { listSavedTrees } = useTreeGeneration();
+  const { trees, treesLoading } = useTreeGeneration();
 
   const [recentSearches, setRecentSearches] = useState<
     { title: string; treeId: string; isMock?: boolean }[]
@@ -85,56 +87,41 @@ export function SidebarSearches() {
   const [previousSearches, setPreviousSearches] = useState<
     { title: string; treeId: string; isMock?: boolean }[]
   >([]);
-  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchSearches = async () => {
-      try {
-        setIsLoading(true);
-        const trees = await listSavedTrees();
+    // Process trees data when it changes
+    if (trees && Array.isArray(trees)) {
+      // Convert trees to search format      // Convert trees to search format
+      const searchData = trees.map((tree: SavedTree) => ({
+        title: tree.search_theme,
+        treeId: tree.id,
+        createdAt: new Date(tree.created_at),
+        isMock: false,
+      }));
 
-        // Ensure trees is an array
-        const validTrees = Array.isArray(trees) ? trees : [];
+      // Split into recent (last 7 days) and previous
+      const now = new Date();
+      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
+      const recentReal = searchData
+        .filter((search) => search.createdAt > sevenDaysAgo)
+        .slice(0, 5); // Show up to 5 recent searches
 
-        // Convert trees to search format
-        const searchData = validTrees.map((tree: SavedTree) => ({
-          title: tree.search_theme,
-          treeId: tree.id,
-          createdAt: new Date(tree.created_at),
-          isMock: false,
-        }));
+      const previousReal = searchData
+        .filter((search) => search.createdAt <= sevenDaysAgo)
+        .slice(0, 5); // Show up to 5 previous searches
 
-        // Split into recent (last 7 days) and previous
-        const now = new Date();
-        const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-
-        const recentReal = searchData
-          .filter((search) => search.createdAt > sevenDaysAgo)
-          .slice(0, 5); // Show up to 5 recent searches
-
-        const previousReal = searchData
-          .filter((search) => search.createdAt <= sevenDaysAgo)
-          .slice(0, 5); // Show up to 5 previous searches
-
-        setRecentSearches(recentReal);
-        setPreviousSearches(previousReal);
-      } catch (error) {
-        console.error("Error fetching searches:", error);
-        // Set empty arrays on error
-        setRecentSearches([]);
-        setPreviousSearches([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchSearches();
-  }, []);
+      setRecentSearches(recentReal);
+      setPreviousSearches(previousReal);
+    } else {
+      // Set empty arrays if no trees
+      setRecentSearches([]);
+      setPreviousSearches([]);
+    }
+  }, [trees]);
 
   const handleSearchClick = (treeId: string, searchTheme: string) => {
-
     navigate("/technology-tree", {
       state: {
         treeId,
@@ -147,11 +134,12 @@ export function SidebarSearches() {
 
   return (
     <>
+      {" "}
       <SearchSection
         title="最近の検索"
         searches={recentSearches}
         onSearchClick={handleSearchClick}
-        isLoading={isLoading}
+        isLoading={treesLoading}
       />
       <SearchSection
         title="過去の検索"

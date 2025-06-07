@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
+import { useUserDetail } from "@/hooks/useUserDetail";
 
 interface TreeGenerationResult {
   success: boolean;
@@ -70,6 +71,11 @@ const createDemoTree = (searchTheme: string) => ({
 
 export const useTreeGeneration = () => {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [trees, setTrees] = useState<any[]>([]);
+  const [treesLoading, setTreesLoading] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const { userDetails } = useUserDetail();
+
   const generateTree = async (
     searchTheme: string,
     mode: "TED" | "FAST" = "TED"
@@ -106,15 +112,16 @@ export const useTreeGeneration = () => {
               }`,
         });
         return null;
-      }
-
-      // Choose the appropriate edge function based on mode
+      } // Choose the appropriate edge function based on mode
       const functionName =
         mode === "FAST" ? "generate-tree-fast" : "generate-tree";
 
+      // Get teamId from user details
+      const teamId = userDetails?.team_id;
+
       // Supabase is available, use the edge function
       const { data, error } = await supabase.functions.invoke(functionName, {
-        body: { searchTheme },
+        body: { searchTheme, teamId },
       });
 
       if (error) {
@@ -170,9 +177,7 @@ export const useTreeGeneration = () => {
           description: `無効なツリーID形式です: ${treeId}。正しいUUIDを提供してください。`,
         });
         return null;
-      }
-
-      // Load tree metadata
+      } // Load tree metadata
       const { data: treeData, error: treeError } = await supabase
         .from("technology_trees")
         .select("*")
@@ -190,6 +195,16 @@ export const useTreeGeneration = () => {
           return null;
         }
         throw new Error(treeError.message);
+      }
+
+      // Check if user has access to this tree (same team or no team restriction)
+      const userTeamId = userDetails?.team_id;
+      if (treeData.teamId && userTeamId && treeData.teamId !== userTeamId) {
+        toast({
+          title: "アクセス権限エラー",
+          description: "このツリーにアクセスする権限がありません。",
+        });
+        return null;
       } // Load all nodes for this tree
       const { data: nodesData, error: nodesError } = await supabase
         .from("tree_nodes")
@@ -245,25 +260,41 @@ export const useTreeGeneration = () => {
       return null;
     }
   };
-
-  const listSavedTrees = async () => {
+  const listSavedTrees = useCallback(async () => {
     try {
-      const { data, error } = await supabase
+      setTreesLoading(true);
+      const userTeamId = userDetails?.team_id;
+
+      // Build query to filter by team
+      let query = supabase
         .from("technology_trees")
         .select("id, name, search_theme, created_at")
         .order("created_at", { ascending: false });
+
+      // If user has a team, filter by that team or trees with no team restriction
+      if (userTeamId) {
+        query = query.or(`teamId.eq.${userTeamId},teamId.is.null`);
+      } else {
+        // If user has no team, only show trees with no team restriction
+        query = query.is("teamId", null);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         console.error("Database error in listSavedTrees:", error);
         // Check if it's a table doesn't exist error
         if (error.message.includes("does not exist")) {
           console.log("Database tables not set up, returning empty array");
+          setTrees([]);
           return [];
         }
         throw new Error(error.message);
       }
 
-      return data || [];
+      const result = data || [];
+      setTrees(result);
+      return result;
     } catch (error) {
       console.error("List trees error:", error);
       toast({
@@ -273,14 +304,33 @@ export const useTreeGeneration = () => {
             ? error.message
             : "ツリー一覧の取得に失敗しました",
       });
+      setTrees([]);
       return [];
+    } finally {
+      setTreesLoading(false);
     }
-  };
+  }, [userDetails?.team_id]);
 
+  // Auto-fetch trees when userDetails changes
+  useEffect(() => {
+    if (userDetails !== undefined) {
+      // Wait for userDetails to be loaded (not undefined)
+      listSavedTrees();
+    }
+  }, [listSavedTrees, userDetails]);
+
+  // Function to manually trigger a refresh
+  const refreshTrees = useCallback(() => {
+    setRefreshTrigger((prev) => prev + 1);
+    listSavedTrees();
+  }, [listSavedTrees]);
   return {
     generateTree,
     loadTreeFromDatabase,
     listSavedTrees,
     isGenerating,
+    trees,
+    treesLoading,
+    refreshTrees,
   };
 };

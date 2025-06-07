@@ -11,38 +11,27 @@ interface SavedTree {
 }
 
 export const RecentSearches = () => {
-  const { listSavedTrees } = useTreeGeneration();
+  const { trees, treesLoading } = useTreeGeneration();
   const [recentSearches, setRecentSearches] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchRecentSearches = async () => {
-      try {
-        setIsLoading(true);
-        const trees = await listSavedTrees();
+    // Process trees data when it changes
+    if (trees && Array.isArray(trees)) {
+      // Convert trees to search format and take most recent 6
+      const searchData = trees.slice(0, 6).map((tree: SavedTree) => ({
+        title: tree.search_theme,
+        paperCount: Math.floor(Math.random() * 40) + 10, // Random paper count for display
+        implementationCount: Math.floor(Math.random() * 8) + 1, // Random implementation count
+        tags: generateTagsFromTheme(tree.search_theme),
+        timeAgo: formatTimeAgo(tree.created_at),
+        treeId: tree.id, // Store tree ID for navigation
+      }));
 
-        // Convert trees to search format and take most recent 6
-        const searchData = trees.slice(0, 6).map((tree: SavedTree) => ({
-          title: tree.search_theme,
-          paperCount: Math.floor(Math.random() * 40) + 10, // Random paper count for display
-          implementationCount: Math.floor(Math.random() * 8) + 1, // Random implementation count
-          tags: generateTagsFromTheme(tree.search_theme),
-          timeAgo: formatTimeAgo(tree.created_at),
-          treeId: tree.id, // Store tree ID for navigation
-        }));
-
-        setRecentSearches(searchData);
-      } catch (error) {
-        console.error("Error fetching recent searches:", error);
-        // Fallback to empty array on error
-        setRecentSearches([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchRecentSearches();
-  }, []);
+      setRecentSearches(searchData);
+    } else {
+      setRecentSearches([]);
+    }
+  }, [trees]);
 
   const generateTagsFromTheme = (theme: string) => {
     const keywords = theme.toLowerCase();
@@ -100,8 +89,7 @@ export const RecentSearches = () => {
     if (diffDays < 30) return `${Math.floor(diffDays / 7)}週間前`;
     return `${Math.floor(diffDays / 30)}ヶ月前`;
   };
-
-  if (isLoading) {
+  if (treesLoading) {
     return (
       <section className="mt-12">
         <h2 className="text-[1.2rem] font-bold mb-6">最近の検索</h2>
