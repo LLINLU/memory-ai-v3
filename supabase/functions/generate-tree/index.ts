@@ -102,9 +102,8 @@ const CORS = {
 serve(async (req) => {
   if (req.method === "OPTIONS")
     return new Response("ok", { status: 200, headers: CORS });
-
   try {
-    const { searchTheme } = await req.json();
+    const { searchTheme, teamId } = await req.json();
     if (!searchTheme)
       return new Response(
         JSON.stringify({ error: "searchTheme is required" }),
@@ -183,10 +182,10 @@ serve(async (req) => {
     for (let i = 1; i <= maxDepth + 1; i++) {
       // +1 because we count levels starting from 1
       dynamicLayerConfig.push(detectAxis(i - 1)); // Convert to 0-based for detectAxis
-    }
+    } /*──────── Supabase ────────*/
+    const sb = createClient(SUPABASE_URL, SUPABASE_ROLE_KEY);
 
-    /*──────── Supabase ────────*/
-    const sb = createClient(SUPABASE_URL, SUPABASE_ROLE_KEY); // 1️⃣ technology_trees - Save root metadata only
+    // 1️⃣ technology_trees - Save root metadata only
     const { data: tt, error: ttErr } = await sb
       .from("technology_trees")
       .insert({
@@ -203,6 +202,7 @@ serve(async (req) => {
           where: null,
           when: null,
         },
+        teamId: teamId || null, // Add teamId parameter
       })
       .select("id")
       .single();
@@ -218,6 +218,7 @@ serve(async (req) => {
       level: 0,
       node_order: 0,
       children_count: treeRoot.children.length,
+      teamId: teamId || null, // Add teamId parameter
       // path will be automatically set by the database trigger
     });
     if (rootError)
@@ -230,9 +231,7 @@ serve(async (req) => {
       lvl = 1, // Start at level 1 for scenarios
       idx = 0
     ) => {
-      const id = crypto.randomUUID();
-
-      // Map levels to correct axis:
+      const id = crypto.randomUUID(); // Map levels to correct axis:
       // Level 1 → Scenario, Level 2 → Purpose, Level 3 → Function, Level 4 → Measure, Level 5+ → Measure2, Measure3...
       const axisForLevel = detectAxis(lvl - 1); // lvl 1 maps to axis[0] = "Scenario"
 
@@ -246,6 +245,7 @@ serve(async (req) => {
         level: lvl,
         node_order: idx,
         children_count: node.children.length,
+        teamId: teamId || null, // Add teamId parameter
         // path will be automatically set by the database trigger
       });
       if (error) throw new Error(`DB error (node): ${error.message}`);

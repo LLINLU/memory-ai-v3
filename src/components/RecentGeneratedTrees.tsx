@@ -22,26 +22,7 @@ interface SavedTree {
 
 export const RecentGeneratedTrees = () => {
   const navigate = useNavigate();
-  const { listSavedTrees } = useTreeGeneration();
-  const [recentTrees, setRecentTrees] = useState<SavedTree[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchSavedTrees = async () => {
-      try {
-        setIsLoading(true);
-        const trees = await listSavedTrees();
-        // Take only the 5 most recent trees
-        setRecentTrees(trees.slice(0, 5));
-      } catch (error) {
-        console.error("Error fetching saved trees:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchSavedTrees();
-  }, []);
+  const { trees, treesLoading } = useTreeGeneration();
 
   const handleViewTree = (tree: SavedTree) => {
     // Navigate to tree view with real database tree
@@ -65,7 +46,7 @@ export const RecentGeneratedTrees = () => {
     });
   };
 
-  if (isLoading) {
+  if (treesLoading) {
     return (
       <Card>
         <CardHeader>
@@ -83,8 +64,7 @@ export const RecentGeneratedTrees = () => {
       </Card>
     );
   }
-
-  if (recentTrees.length === 0) {
+  if (trees.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -116,8 +96,9 @@ export const RecentGeneratedTrees = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {" "}
         <div className="space-y-3">
-          {recentTrees.map((tree) => (
+          {trees.map((tree) => (
             <div
               key={tree.id}
               className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors"
