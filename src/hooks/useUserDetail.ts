@@ -9,7 +9,6 @@ interface UseUserDetailReturn {
   userDetails: UserDetails | null;
   loading: boolean;
   error: string | null;
-  refetch: () => Promise<void>;
 }
 
 export function useUserDetail(): UseUserDetailReturn {
@@ -18,51 +17,45 @@ export function useUserDetail(): UseUserDetailReturn {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchUserDetails = async () => {
-    if (!user?.id) {
-      setUserDetails(null);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const { data, error: fetchError } = await supabase
-        .from('v_user_details')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-
-      if (fetchError) {
-        console.error('Error fetching user details:', fetchError);
-        setError(fetchError.message);
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      if (!user?.id) {
+        setUserDetails(null);
         return;
       }
 
-      setUserDetails(data);
-    } catch (err) {
-      console.error('Unexpected error fetching user details:', err);
-      setError('ユーザー詳細の取得に失敗しました');
-    } finally {
-      setLoading(false);
-    }
-  };
+      setLoading(true);
+      setError(null);
 
-  useEffect(() => {
+      try {
+        const { data, error: fetchError } = await supabase
+          .from('v_user_details')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (fetchError) {
+          console.error('Error fetching user details:', fetchError);
+          setError(fetchError.message);
+          return;
+        }
+
+        setUserDetails(data);
+      } catch (err) {
+        console.error('Unexpected error fetching user details:', err);
+        setError('ユーザー詳細の取得に失敗しました');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchUserDetails();
   }, [user?.id]);
-
-  const refetch = async () => {
-    await fetchUserDetails();
-  };
 
   return {
     userDetails,
     loading,
     error,
-    refetch,
   };
 }
 

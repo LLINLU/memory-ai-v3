@@ -3,77 +3,35 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import { useUserDetail } from "@/hooks/useUserDetail";
 
+interface TreeNode {
+  id: string;
+  content: string;
+  level: number;
+  children: TreeNode[];
+}
+
 interface TreeGenerationResult {
   success: boolean;
   treeId: string;
-  treeStructure: any;
+  treeStructure: {
+    root: TreeNode;
+    reasoning?: string;
+    layer_config?: Record<string, unknown>;
+    scenario_inputs?: Record<string, unknown>;
+  };
 }
 
-// Demo tree structure for when Supabase is not available
-const createDemoTree = (searchTheme: string) => ({
-  success: true,
-  treeId: `demo-${Date.now()}`,
-  treeStructure: {
-    name: searchTheme,
-    children: [
-      {
-        name: "シナリオ層",
-        children: [
-          {
-            name: `${searchTheme}の実現シナリオ`,
-            children: [
-              {
-                name: "目的層",
-                children: [
-                  {
-                    name: `${searchTheme}の効率化`,
-                    children: [
-                      {
-                        name: "機能層",
-                        children: [
-                          {
-                            name: "データ処理機能",
-                            children: [
-                              {
-                                name: "技術層",
-                                children: [
-                                  { name: "機械学習アルゴリズム" },
-                                  { name: "データベース技術" },
-                                ],
-                              },
-                            ],
-                          },
-                          {
-                            name: "ユーザーインターフェース",
-                            children: [
-                              {
-                                name: "技術層",
-                                children: [
-                                  { name: "Webフロントエンド技術" },
-                                  { name: "モバイルアプリ開発" },
-                                ],
-                              },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-});
+interface SavedTree {
+  id: string;
+  name: string;
+  search_theme: string;
+  created_at: string;
+}
 
 export const useTreeGeneration = () => {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [trees, setTrees] = useState<any[]>([]);
-  const [treesLoading, setTreesLoading] = useState(true);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [trees, setTrees] = useState<SavedTree[]>([]);
+  const [treesLoading, setTreesLoading] = useState(false);
   const { userDetails } = useUserDetail();
 
   const generateTree = async (
@@ -261,6 +219,17 @@ export const useTreeGeneration = () => {
     }
   };
   const listSavedTrees = useCallback(async () => {
+    // Prevent multiple simultaneous calls to avoid loading flicker
+    if (treesLoading) {
+      return trees;
+    }
+    if(trees.length > 0) {
+      return trees;
+    }
+    if (userDetails === undefined|| userDetails.team_id === null) {
+      return trees;
+    }
+    
     try {
       setTreesLoading(true);
       const userTeamId = userDetails?.team_id;
@@ -309,28 +278,20 @@ export const useTreeGeneration = () => {
     } finally {
       setTreesLoading(false);
     }
-  }, [userDetails?.team_id]);
+  }, [userDetails]);
 
-  // Auto-fetch trees when userDetails changes
   useEffect(() => {
-    if (userDetails !== undefined) {
-      // Wait for userDetails to be loaded (not undefined)
+    if (userDetails !== undefined && treesLoading === false && trees.length === 0) {
       listSavedTrees();
     }
-  }, [listSavedTrees, userDetails]);
+  }, [userDetails, treesLoading, trees.length]); // Remove listSavedTrees from dependencies
 
-  // Function to manually trigger a refresh
-  const refreshTrees = useCallback(() => {
-    setRefreshTrigger((prev) => prev + 1);
-    listSavedTrees();
-  }, [listSavedTrees]);
-  return {
-    generateTree,
-    loadTreeFromDatabase,
-    listSavedTrees,
-    isGenerating,
-    trees,
-    treesLoading,
-    refreshTrees,
-  };
+      return {
+      generateTree,
+      loadTreeFromDatabase,
+      listSavedTrees,
+      isGenerating,
+      trees,
+      treesLoading,
+    };
 };

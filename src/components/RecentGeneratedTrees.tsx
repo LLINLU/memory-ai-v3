@@ -9,9 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { TreePine, Clock, ArrowRight, Loader2 } from "lucide-react";
-import { toast } from "@/components/ui/use-toast";
 import { useTreeGeneration } from "@/hooks/useTreeGeneration";
-import { useState, useEffect } from "react";
 
 interface SavedTree {
   id: string;
@@ -48,28 +46,9 @@ export const RecentGeneratedTrees = () => {
 
   if (treesLoading) {
     return (
-      <Card>
+      <Card className="border-0 shadow-none">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <TreePine className="h-5 w-5 text-green-500" />
-            最近生成されたツリー
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center py-4">
-            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            読み込み中...
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-  if (trees.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TreePine className="h-5 w-5 text-green-500" />
             最近生成されたツリー
           </CardTitle>
           <CardDescription>
@@ -77,8 +56,9 @@ export const RecentGeneratedTrees = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-4 text-gray-500">
-            まだツリーが生成されていません
+          <div className="flex items-center justify-center py-4">
+            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            読み込み中...
           </div>
         </CardContent>
       </Card>
