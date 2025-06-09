@@ -1,5 +1,3 @@
-
-
 import { ArrowUp, Target, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +33,12 @@ export const TreeGenerationSection = () => {
   const [selectedMode, setSelectedMode] = useState<"TED" | "FAST">("TED");
   const { generateTree, isGenerating } = useTreeGeneration();
   
+  const getPlaceholderText = () => {
+    return selectedMode === "TED" 
+      ? "社会課題やニーズを出発点に、技術の可能性を探る"
+      : "技術テーマを掘り下げて、実現方法を探る";
+  };
+
   const handleSubmit = async (e?: FormEvent) => {
     if (e) e.preventDefault();
     if (searchValue.trim() && !isGenerating) {
@@ -83,7 +87,7 @@ export const TreeGenerationSection = () => {
           <div className="bg-gray-50 rounded-2xl p-4 border border-[#ebf0f7] border-[1px]">
             <Input 
               type="text" 
-              placeholder="検索テーマを入力してテクノロジーツリーを自動生成します"
+              placeholder={getPlaceholderText()}
               className="w-full px-4 py-3 text-lg border-none bg-gray-50 focus-visible:ring-0 placeholder:text-gray-400 truncate"
               value={searchValue}
               onChange={handleSearchChange}
@@ -108,7 +112,7 @@ export const TreeGenerationSection = () => {
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="max-w-xs">TED（ニーズ深掘り）シナリオ→目的→機能→手段</p>
+                      <p className="max-w-xs">社会課題やニーズを出発点に、技術の可能性を探る</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -128,7 +132,7 @@ export const TreeGenerationSection = () => {
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="max-w-xs">FAST（シーズ深掘り）技術→How1→How2→How3+</p>
+                      <p className="max-w-xs">技術テーマを掘り下げて、実現方法を探る</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
