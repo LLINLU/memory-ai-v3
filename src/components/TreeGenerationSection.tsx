@@ -1,3 +1,4 @@
+
 import { ArrowUp, Target, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -102,7 +103,7 @@ export const TreeGenerationSection = () => {
                         disabled={isGenerating}
                       >
                         <Target className={`h-3 w-3 mr-1 ${selectedMode === "TED" ? "stroke-[2.5px]" : ""}`} />
-                        テーマを活用シナリオ別に整理
+                        ニーズからはじめる
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
