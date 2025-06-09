@@ -44,7 +44,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   const [editingNode, setEditingNode] = useState<LevelItem | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
-  const [showDescriptions, setShowDescriptions] = useState(false);
+  const [showDescriptions, setShowDescriptions] = useState(true);
 
   // Determine level number based on title
   const levelNumber =
