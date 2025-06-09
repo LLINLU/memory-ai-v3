@@ -1,3 +1,4 @@
+
 import { ArrowUp, Target, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -96,7 +97,7 @@ export const TreeGenerationSection = () => {
             
             <div className="flex mt-2 items-center">
               <div className="flex space-x-2">
-                <TooltipProvider>
+                <TooltipProvider delayDuration={200}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button 
@@ -116,7 +117,7 @@ export const TreeGenerationSection = () => {
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-                <TooltipProvider>
+                <TooltipProvider delayDuration={200}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button 
