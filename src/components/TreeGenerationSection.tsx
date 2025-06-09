@@ -82,7 +82,7 @@ export const TreeGenerationSection = () => {
           <div className="bg-gray-50 rounded-2xl p-4 border border-[#ebf0f7] border-[1px]">
             <Input 
               type="text" 
-              placeholder="例：補償光学の眼科分野への利用"
+              placeholder="気になることを検索"
               className="w-full px-4 py-3 text-lg border-none bg-gray-50 focus-visible:ring-0 placeholder:text-gray-400 truncate"
               value={searchValue}
               onChange={handleSearchChange}
