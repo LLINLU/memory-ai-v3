@@ -112,7 +112,7 @@ export const TreeGenerationSection = () => {
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="max-w-xs">社会課題やニーズを出発点に、技術の可能性を探る</p>
+                      <p className="max-w-xs">社会課題やニーズを起点に、「シナリオ → 目的 → 機能 → 手段」のフレームで解決する可能性のある技術テーマを探索します。</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -132,7 +132,7 @@ export const TreeGenerationSection = () => {
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="max-w-xs">技術テーマを掘り下げて、実現方法を探る</p>
+                      <p className="max-w-xs">注目技術を軸に、「How1 → How2 → How3 …」と段階的に技術要素を深掘り。実装に必要な要素技術やアプローチを体系的に整理します。</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
