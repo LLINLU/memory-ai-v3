@@ -1,4 +1,5 @@
 
+
 import { ArrowUp, Target, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -123,7 +124,7 @@ export const TreeGenerationSection = () => {
                         disabled={isGenerating}
                       >
                         <Lightbulb className={`h-3 w-3 mr-1 ${selectedMode === "FAST" ? "stroke-[2.5px]" : ""}`} />
-                        テーマを深掘り技術別に整理
+                        技術からはじめる
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
