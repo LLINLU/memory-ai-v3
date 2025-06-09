@@ -103,7 +103,7 @@ export const TreeGenerationSection = () => {
                         disabled={isGenerating}
                       >
                         <Target className={`h-3 w-3 mr-1 ${selectedMode === "TED" ? "stroke-[2.5px]" : ""}`} />
-                        ニーズ深掘り
+                        テーマを活用シナリオ別に整理
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
