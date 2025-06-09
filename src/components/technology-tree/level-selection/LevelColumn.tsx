@@ -131,7 +131,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
       ? "クリックすると、ツリーマップの簡潔なビューが表示されます。"
       : "クリックすると、ツリーマップの詳細ビューが表示されます。";  };
   return (
-    <div className="min-w-36 max-w-64 flex-shrink-0 bg-white p-4 rounded-lg relative">
+    <div className="min-w-36 max-w-56 flex-shrink-0 bg-white p-4 rounded-lg relative">
       <div className="flex items-center justify-between mb-4">
         <h2
           className="text-base"
