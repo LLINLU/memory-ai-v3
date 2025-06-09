@@ -1,4 +1,3 @@
-
 import { ArrowUp, Target, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -82,7 +81,7 @@ export const TreeGenerationSection = () => {
           <div className="bg-gray-50 rounded-2xl p-4 border border-[#ebf0f7] border-[1px]">
             <Input 
               type="text" 
-              placeholder="気になることを検索"
+              placeholder="検索テーマを入力してテクノロジーツリーを自動生成します"
               className="w-full px-4 py-3 text-lg border-none bg-gray-50 focus-visible:ring-0 placeholder:text-gray-400 truncate"
               value={searchValue}
               onChange={handleSearchChange}
