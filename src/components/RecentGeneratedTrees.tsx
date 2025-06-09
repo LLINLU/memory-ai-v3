@@ -1,3 +1,4 @@
+
 import {
   Card,
   CardContent,
@@ -48,7 +49,7 @@ export const RecentGeneratedTrees = () => {
     return (
       <Card className="border-0 shadow-none">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-[18px]">
             最近生成されたツリー
           </CardTitle>
           <CardDescription>
@@ -68,7 +69,7 @@ export const RecentGeneratedTrees = () => {
   return (
     <Card className="border-0 shadow-none">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-[18px]">
           最近生成されたツリー
         </CardTitle>
         <CardDescription>
