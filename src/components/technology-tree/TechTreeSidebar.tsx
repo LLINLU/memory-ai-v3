@@ -43,7 +43,7 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
 }) => {
   return (
     <ResizablePanel
-      defaultSize={isExpanded ? 70 : 40}
+      defaultSize={20}
       minSize={20}
       maxSize={isExpanded ? 80 : 50}
       onResize={onResize}
