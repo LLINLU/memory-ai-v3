@@ -42,7 +42,7 @@ export const ChatInputBox = ({
     <div className="border-t border-gray-100 p-3 bg-white">
       <div className="flex flex-col gap-2">
         <Textarea 
-          placeholder="Ask a question about your research topic..."
+          placeholder="Ask anything"
           className="w-full resize-none border rounded-lg text-sm py-3 px-4 min-h-[50px] max-h-[120px]"
           value={inputValue}
           onChange={onInputChange}
