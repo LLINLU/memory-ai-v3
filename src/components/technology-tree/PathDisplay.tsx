@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
@@ -166,7 +167,7 @@ export const PathDisplay = ({
   };
 
   return (
-    <div className="mb-6" style={{ paddingTop: "0rem" }}>
+    <div className="mb-0" style={{ paddingTop: "0rem" }}>
       <div className="flex justify-between items-center mb-1">
         <div className="flex items-center gap-2">
           <h3
