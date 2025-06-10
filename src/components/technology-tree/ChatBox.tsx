@@ -45,6 +45,11 @@ export const ChatBox = ({
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
   const isExpanded = externalIsExpanded !== undefined ? externalIsExpanded : internalIsExpanded;
 
+  // Check if this is a guidance conversation (contains guidance messages)
+  const isGuidanceConversation = messages.some(message => 
+    message.content && message.content.includes('ツリーマップの使用方法を教えてください')
+  );
+
   const toggleOpen = () => {
     if (onToggleOpen) {
       onToggleOpen();
@@ -90,6 +95,7 @@ export const ChatBox = ({
             onRefine={onRefine}
             onCheckResults={onCheckResults}
             inputValue={inputValue}
+            scrollToTop={isGuidanceConversation}
           />
           
           <ChatInputBox 
