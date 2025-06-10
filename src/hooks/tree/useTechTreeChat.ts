@@ -1,3 +1,4 @@
+
 import { useChatState } from "./state/useChatState";
 import { useChatActions } from "./handlers/useChatActions";
 import { useMessageHandlers } from "./handlers/useMessageHandlers";
@@ -48,6 +49,14 @@ export const useTechTreeChat = () => {
 選択を重ねることで、データ階層をより深く探索することができます。
 各アイテムにマウスをホバーすると、そのアイテムを削除したり、タイトルや説明を編集したりすることができます。
 いずれかのレベルで不足しているオプションを見つけた場合は、「追加する」をクリックして追加してください。システムが自動的に、追加されたアイテムに対応する次のレベルのアイテムを生成します。`,
+          isUser: false,
+          type: 'text'
+        }
+      );
+    } else if (type === 'scenario-editing') {
+      guidanceMessages.push(
+        {
+          content: "こんにちは！研究シナリオを更新されたいですか？お手伝いできます。シナリオが更新されると、ツリーマップも自動的に更新されます。",
           isUser: false,
           type: 'text'
         }
