@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Toggle } from "@/components/ui/toggle";
+import { Switch } from "@/components/ui/switch";
 import { Info, ChevronDown, ChevronRight } from "lucide-react";
 import {
   DropdownMenu,
@@ -172,19 +172,19 @@ export const PathDisplay = ({
   return (
     <div className="mb-0" style={{ paddingTop: "0rem" }}>
       <div className="flex items-center">
-        <Toggle
-          pressed={showPath}
-          onPressedChange={setShowPath}
-          variant="default"
-          size="sm"
-          className="h-6 px-2 text-xs text-gray-500 hover:text-gray-700 data-[state=on]:bg-gray-100 data-[state=on]:text-gray-700"
-        >
-          {showPath ? <ChevronDown className="h-3 w-3 mr-1" /> : <ChevronRight className="h-3 w-3 mr-1" />}
-          パンくずリストを{showPath ? '隠す' : '表示'}
-        </Toggle>
+        <div className="flex items-center gap-2">
+          <Switch
+            checked={showPath}
+            onCheckedChange={setShowPath}
+            className="h-4 w-7"
+          />
+          <span className="text-xs text-gray-500">
+            パンくずリストを{showPath ? '隠す' : '表示'}
+          </span>
+        </div>
         
         {showPath && (
-          <p className="text-gray-600 ml-2" style={{ fontSize: "14px" }}>
+          <p className="text-gray-600 ml-4" style={{ fontSize: "14px" }}>
             {level1Name && level1Name}
             {level2Name && ` → ${level2Name}`}
             {level3Name && ` → ${level3Name}`}
