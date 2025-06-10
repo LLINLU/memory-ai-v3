@@ -177,6 +177,7 @@ export const MainContent = ({
           scenario={scenario}
           onEditScenario={onEditScenario}
           conversationHistory={conversationHistory}
+          onGuidanceClick={onGuidanceClick}
         />
 
         {/* Path Display with Navigation Controls */}
