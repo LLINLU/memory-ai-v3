@@ -32,6 +32,7 @@ interface PathDisplayProps {
   level9Items?: Record<string, any[]>;
   level10Items?: Record<string, any[]>;
   showLevel4: boolean;
+  onGuidanceClick?: (type: string) => void;
 }
 
 export const PathDisplay = ({
@@ -47,6 +48,7 @@ export const PathDisplay = ({
   level9Items = {},
   level10Items = {},
   showLevel4,
+  onGuidanceClick,
 }: PathDisplayProps) => {
   // Find the selected items by ID to display their names
   const findItemName = (itemId: string, items: any[]) => {
@@ -157,6 +159,12 @@ export const PathDisplay = ({
         )
       : "";
 
+  const handleGuidanceItemClick = (type: string) => {
+    if (onGuidanceClick) {
+      onGuidanceClick(type);
+    }
+  };
+
   return (
     <div className="mb-6" style={{ paddingTop: "0rem" }}>
       <div className="flex justify-between items-center mb-1">
@@ -191,7 +199,10 @@ export const PathDisplay = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-white">
-              <DropdownMenuItem className="cursor-pointer">
+              <DropdownMenuItem 
+                className="cursor-pointer"
+                onClick={() => handleGuidanceItemClick('treemap-usage')}
+              >
                 Treemapの使い方
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer">

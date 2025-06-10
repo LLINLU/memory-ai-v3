@@ -1,3 +1,4 @@
+
 import { MainContent } from "./MainContent";
 
 interface TechTreeMainContentProps {
@@ -49,6 +50,7 @@ interface TechTreeMainContentProps {
   conversationHistory?: any[];
   handleAddLevel4?: () => void;
   searchMode?: string;
+  onGuidanceClick?: (type: string) => void;
 }
 
 export const TechTreeMainContent = ({
@@ -74,6 +76,7 @@ export const TechTreeMainContent = ({
   conversationHistory,
   handleAddLevel4,
   searchMode,
+  onGuidanceClick,
 }: TechTreeMainContentProps) => {
   return (
     <MainContent
@@ -99,6 +102,7 @@ export const TechTreeMainContent = ({
       conversationHistory={conversationHistory}
       onAddLevel4={handleAddLevel4}
       searchMode={searchMode}
+      onGuidanceClick={onGuidanceClick}
     />
   );
 };

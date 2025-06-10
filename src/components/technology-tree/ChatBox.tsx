@@ -17,6 +17,10 @@ interface ChatBoxProps {
   onEditNode?: (suggestion: NodeSuggestion) => void;
   onRefine?: (suggestion: NodeSuggestion) => void;
   onCheckResults?: () => void;
+  isOpen?: boolean;
+  isExpanded?: boolean;
+  onToggleOpen?: () => void;
+  onToggleExpand?: () => void;
 }
 
 export const ChatBox = ({
@@ -28,13 +32,34 @@ export const ChatBox = ({
   onUseNode,
   onEditNode,
   onRefine,
-  onCheckResults
+  onCheckResults,
+  isOpen: externalIsOpen,
+  isExpanded: externalIsExpanded,
+  onToggleOpen,
+  onToggleExpand
 }: ChatBoxProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const [internalIsExpanded, setInternalIsExpanded] = useState(false);
 
-  const toggleOpen = () => setIsOpen(!isOpen);
-  const toggleExpand = () => setIsExpanded(!isExpanded);
+  // Use external state if provided, otherwise use internal state
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+  const isExpanded = externalIsExpanded !== undefined ? externalIsExpanded : internalIsExpanded;
+
+  const toggleOpen = () => {
+    if (onToggleOpen) {
+      onToggleOpen();
+    } else {
+      setInternalIsOpen(!internalIsOpen);
+    }
+  };
+
+  const toggleExpand = () => {
+    if (onToggleExpand) {
+      onToggleExpand();
+    } else {
+      setInternalIsExpanded(!internalIsExpanded);
+    }
+  };
 
   return (
     <div data-chatbox>

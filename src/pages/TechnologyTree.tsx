@@ -288,12 +288,17 @@ const TechnologyTree = () => {
     inputValue,
     chatMessages,
     isLoading,
+    chatBoxOpen,
+    chatBoxExpanded,
     handleInputChange,
     handleSendMessage,
     initializeChat,
     handleSwitchToChat,
     handleButtonClick,
     setChatMessages,
+    handleGuidanceClick,
+    toggleChatBoxOpen,
+    toggleChatBoxExpand
   } = useTechTreeChat();
 
   const {
@@ -398,7 +403,9 @@ const TechnologyTree = () => {
       selectedNodeTitle={selectedNodeInfo.title}
       selectedNodeDescription={selectedNodeInfo.description}
     />
-  );  return (
+  );
+
+  return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen flex w-full overflow-hidden">
         <AppSidebar />
@@ -440,6 +447,7 @@ const TechnologyTree = () => {
                 conversationHistory={savedConversationHistory}
                 handleAddLevel4={handleAddLevel4}
                 searchMode={searchMode}
+                onGuidanceClick={handleGuidanceClick}
               />
             </div>
           </TechTreeLayout>
@@ -453,6 +461,10 @@ const TechnologyTree = () => {
             onUseNode={handleUseNode}
             onEditNode={handleEditNodeFromChat}
             onRefine={handleRefineNode}
+            isOpen={chatBoxOpen}
+            isExpanded={chatBoxExpanded}
+            onToggleOpen={toggleChatBoxOpen}
+            onToggleExpand={toggleChatBoxExpand}
           />
         </div>
       </div>
@@ -461,3 +473,5 @@ const TechnologyTree = () => {
 };
 
 export default TechnologyTree;
+
+}

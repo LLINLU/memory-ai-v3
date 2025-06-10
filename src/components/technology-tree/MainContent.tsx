@@ -54,6 +54,7 @@ interface MainContentProps {
   conversationHistory?: any[];
   onAddLevel4?: () => void;
   searchMode?: string;
+  onGuidanceClick?: (type: string) => void;
 }
 
 export const MainContent = ({
@@ -85,6 +86,7 @@ export const MainContent = ({
   conversationHistory,
   onAddLevel4,
   searchMode,
+  onGuidanceClick,
 }: MainContentProps) => {
   return (
     <div className="h-full flex flex-col overflow-hidden">
@@ -107,6 +109,7 @@ export const MainContent = ({
           level9Items={level9Items}
           level10Items={level10Items}
           showLevel4={showLevel4}
+          onGuidanceClick={onGuidanceClick}
         />
       </div>
       <div className="flex-1 overflow-hidden">
