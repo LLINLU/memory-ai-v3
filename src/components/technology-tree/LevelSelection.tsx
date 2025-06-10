@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { LevelColumn } from "./level-selection/LevelColumn";
 import { ConnectionLines } from "./level-selection/ConnectionLines";
@@ -103,6 +104,7 @@ export const LevelSelection = ({
     }
     return items;
   }, [level2Items, selectedPath]);
+
   const visibleLevel3Items = React.useMemo(() => {
     if (!selectedPath.level2) return [];
     const items = [...(level3Items[selectedPath.level2] || [])];
@@ -115,6 +117,7 @@ export const LevelSelection = ({
     }
     return items;
   }, [level3Items, selectedPath]);
+
   const visibleLevel4Items = React.useMemo(() => {
     if (!selectedPath.level3) return [];
     const items = [...(level4Items[selectedPath.level3] || [])];
@@ -206,6 +209,7 @@ export const LevelSelection = ({
     }
     return items;
   }, [level10Items, selectedPath]);
+
   const [level1to2Line, setLevel1to2Line] = useState<{
     x1: number;
     y1: number;
@@ -289,89 +293,6 @@ export const LevelSelection = ({
 
   const lastVisibleLevel = getLastVisibleLevel();
 
-  // Update scroll button states with improved tolerance
-  const updateScrollButtons = () => {
-    if (containerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
-      
-      // Add debug logging to understand scroll values
-      console.log('Scroll debug:', { scrollLeft, scrollWidth, clientWidth, canScroll: scrollWidth > clientWidth });
-      
-      setCanScrollLeft(scrollLeft > 5); // Small tolerance for left scroll
-      
-      // Improved calculation for right scroll with smaller tolerance
-      const maxScrollLeft = scrollWidth - clientWidth;
-      const canScrollRightValue = scrollLeft < maxScrollLeft - 5; // Reduced tolerance from -10 to -5
-      
-      console.log('Right scroll debug:', { maxScrollLeft, currentScroll: scrollLeft, canScrollRight: canScrollRightValue });
-      
-      setCanScrollRight(canScrollRightValue);
-    }
-  };
-
-  // Handle scroll to start
-  const handleScrollToStart = () => {
-    if (containerRef.current) {
-      containerRef.current.scrollTo({
-        left: 0,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  // Handle scroll to end
-  const handleScrollToEnd = () => {
-    if (containerRef.current) {
-      containerRef.current.scrollTo({
-        left: containerRef.current.scrollWidth,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  // Listen for scroll events and panel resize events
-  useEffect(() => {
-    const container = containerRef.current;
-    if (container) {
-      updateScrollButtons();
-      container.addEventListener("scroll", updateScrollButtons);
-      
-      // Listen for panel resize events
-      const handlePanelResize = () => {
-        setTimeout(updateScrollButtons, 100); // Small delay to ensure layout is updated
-      };
-      
-      document.addEventListener("panel-resize", handlePanelResize);
-      
-      return () => {
-        container.removeEventListener("scroll", updateScrollButtons);
-        document.removeEventListener("panel-resize", handlePanelResize);
-      };
-    }
-  }, [lastVisibleLevel]);
-
-  // Update scroll buttons when content changes and add window resize listener
-  useEffect(() => {
-    const handleResize = () => {
-      setTimeout(updateScrollButtons, 100); // Delay to ensure layout is complete
-    };
-    
-    updateScrollButtons();
-    window.addEventListener("resize", handleResize);
-    
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [
-    visibleLevel4Items,
-    visibleLevel5Items,
-    visibleLevel6Items,
-    visibleLevel7Items,
-    visibleLevel8Items,
-    visibleLevel9Items,
-    visibleLevel10Items,
-  ]);
-
   const handleNodeSelection = (level: string, nodeId: string) => {
     if (selectedPath[level] !== nodeId) {
       // Create custom event to refresh paper list with node information
@@ -418,19 +339,9 @@ export const LevelSelection = ({
       });
     }
   };
+
   return (
     <div className="h-full flex flex-col">
-      {/* Navigation Controls - conditionally rendered */}
-      {!hideNavigationControls && (
-        <NavigationControls
-          onScrollToStart={handleScrollToStart}
-          onScrollToEnd={handleScrollToEnd}
-          canScrollLeft={canScrollLeft}
-          canScrollRight={canScrollRight}
-          lastVisibleLevel={lastVisibleLevel}
-        />
-      )}
-
       {/* Horizontal scrollable container */}
       <div
         className="flex flex-row gap-4 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pb-4 px-4"
@@ -475,7 +386,7 @@ export const LevelSelection = ({
           }
           onDeleteNode={(nodeId) => handleDeleteNode("level3", nodeId)}
           selectedPath={selectedPath}
-        />{" "}
+        />
         {/* Always show level 4 if items exist, regardless of showLevel4 flag */}
         {visibleLevel4Items.length > 0 && (
           <LevelColumn
@@ -575,7 +486,7 @@ export const LevelSelection = ({
             onDeleteNode={(nodeId) => handleDeleteNode("level10", nodeId)}
             selectedPath={selectedPath}
           />
-        )}{" "}
+        )}
         <ConnectionLines
           level1to2Line={level1to2Line}
           level2to3Line={level2to3Line}
