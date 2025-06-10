@@ -1,4 +1,5 @@
 
+import { useEffect } from "react";
 import { MainContent } from "./MainContent";
 
 interface TechTreeMainContentProps {
@@ -60,6 +61,7 @@ interface TechTreeMainContentProps {
   canScrollRight?: boolean;
   lastVisibleLevel?: number;
   containerRef?: React.RefObject<HTMLDivElement>;
+  triggerScrollUpdate?: () => void;
 }
 
 export const TechTreeMainContent = ({
@@ -94,7 +96,28 @@ export const TechTreeMainContent = ({
   canScrollRight,
   lastVisibleLevel,
   containerRef,
+  triggerScrollUpdate,
 }: TechTreeMainContentProps) => {
+  // Trigger scroll update when level data changes
+  useEffect(() => {
+    if (triggerScrollUpdate) {
+      console.log('Triggering scroll update due to level data change');
+      triggerScrollUpdate();
+    }
+  }, [
+    level1Items.length,
+    Object.keys(level2Items).length,
+    Object.keys(level3Items).length,
+    Object.keys(level4Items).length,
+    Object.keys(level5Items).length,
+    Object.keys(level6Items).length,
+    Object.keys(level7Items).length,
+    Object.keys(level8Items).length,
+    Object.keys(level9Items).length,
+    Object.keys(level10Items).length,
+    triggerScrollUpdate,
+  ]);
+
   return (
     <MainContent
       selectedPath={selectedPath}

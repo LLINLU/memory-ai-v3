@@ -25,6 +25,14 @@ export const useScrollNavigation = () => {
     }
   }, []);
 
+  // Force update scroll buttons with delay to ensure DOM is fully rendered
+  const triggerScrollUpdate = useCallback(() => {
+    // Use multiple timeouts to catch different rendering phases
+    setTimeout(() => updateScrollButtons(), 100);
+    setTimeout(() => updateScrollButtons(), 300);
+    setTimeout(() => updateScrollButtons(), 500);
+  }, [updateScrollButtons]);
+
   // Calculate the last visible level based on available items
   const updateLastVisibleLevel = useCallback((levelItems: {
     level4Items?: any[];
@@ -105,5 +113,6 @@ export const useScrollNavigation = () => {
     handleScrollToEnd,
     updateScrollButtons,
     updateLastVisibleLevel,
+    triggerScrollUpdate,
   };
 };

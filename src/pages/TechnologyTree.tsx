@@ -75,6 +75,7 @@ const TechnologyTree = () => {
     handleScrollToStart,
     handleScrollToEnd,
     updateLastVisibleLevel,
+    triggerScrollUpdate,
   } = useScrollNavigation();
 
   // Don't render the tree if we're still initializing or no data is available
@@ -142,7 +143,7 @@ const TechnologyTree = () => {
     scenario: databaseScenario, // Get scenario from database tree data
   } = useTechnologyTree(databaseTreeData);
 
-  // Update last visible level when tree data changes
+  // Update last visible level when tree data changes and trigger scroll update
   useEffect(() => {
     updateLastVisibleLevel({
       level4Items: Object.values(level4Items).flat(),
@@ -153,7 +154,19 @@ const TechnologyTree = () => {
       level9Items: Object.values(level9Items).flat(),
       level10Items: Object.values(level10Items).flat(),
     });
-  }, [level4Items, level5Items, level6Items, level7Items, level8Items, level9Items, level10Items, updateLastVisibleLevel]);
+    
+    // Trigger scroll update after level data changes
+    console.log('Tree data updated, triggering scroll update');
+    triggerScrollUpdate();
+  }, [level4Items, level5Items, level6Items, level7Items, level8Items, level9Items, level10Items, updateLastVisibleLevel, triggerScrollUpdate]);
+
+  // Trigger scroll update when database tree data is loaded
+  useEffect(() => {
+    if (databaseTreeData) {
+      console.log('Database tree data loaded, triggering scroll update');
+      triggerScrollUpdate();
+    }
+  }, [databaseTreeData, triggerScrollUpdate]);
 
   // Initialize tree data with TED results if available
   useEffect(() => {
@@ -488,6 +501,7 @@ const TechnologyTree = () => {
                 canScrollRight={canScrollRight}
                 lastVisibleLevel={lastVisibleLevel}
                 containerRef={containerRef}
+                triggerScrollUpdate={triggerScrollUpdate}
               />
             </div>
           </TechTreeLayout>
