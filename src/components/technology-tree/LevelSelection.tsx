@@ -448,6 +448,7 @@ export const LevelSelection = ({
             handleEditNode("level1", nodeId, updatedNode)
           }
           onDeleteNode={(nodeId) => handleDeleteNode("level1", nodeId)}
+          selectedPath={selectedPath}
         />
         <LevelColumn
           title="レベル2"
@@ -459,6 +460,7 @@ export const LevelSelection = ({
             handleEditNode("level2", nodeId, updatedNode)
           }
           onDeleteNode={(nodeId) => handleDeleteNode("level2", nodeId)}
+          selectedPath={selectedPath}
         />
         <LevelColumn
           title="レベル3"
@@ -470,6 +472,7 @@ export const LevelSelection = ({
             handleEditNode("level3", nodeId, updatedNode)
           }
           onDeleteNode={(nodeId) => handleDeleteNode("level3", nodeId)}
+          selectedPath={selectedPath}
         />{" "}
         {/* Always show level 4 if items exist, regardless of showLevel4 flag */}
         {visibleLevel4Items.length > 0 && (
@@ -483,6 +486,7 @@ export const LevelSelection = ({
               handleEditNode("level4", nodeId, updatedNode)
             }
             onDeleteNode={(nodeId) => handleDeleteNode("level4", nodeId)}
+            selectedPath={selectedPath}
           />
         )}
         {/* Level 5 and beyond */}
@@ -497,6 +501,7 @@ export const LevelSelection = ({
               handleEditNode("level5", nodeId, updatedNode)
             }
             onDeleteNode={(nodeId) => handleDeleteNode("level5", nodeId)}
+            selectedPath={selectedPath}
           />
         )}
         {visibleLevel6Items.length > 0 && (
@@ -510,6 +515,7 @@ export const LevelSelection = ({
               handleEditNode("level6", nodeId, updatedNode)
             }
             onDeleteNode={(nodeId) => handleDeleteNode("level6", nodeId)}
+            selectedPath={selectedPath}
           />
         )}
         {visibleLevel7Items.length > 0 && (
@@ -523,6 +529,7 @@ export const LevelSelection = ({
               handleEditNode("level7", nodeId, updatedNode)
             }
             onDeleteNode={(nodeId) => handleDeleteNode("level7", nodeId)}
+            selectedPath={selectedPath}
           />
         )}
         {visibleLevel8Items.length > 0 && (
@@ -536,6 +543,7 @@ export const LevelSelection = ({
               handleEditNode("level8", nodeId, updatedNode)
             }
             onDeleteNode={(nodeId) => handleDeleteNode("level8", nodeId)}
+            selectedPath={selectedPath}
           />
         )}
         {visibleLevel9Items.length > 0 && (
@@ -549,6 +557,7 @@ export const LevelSelection = ({
               handleEditNode("level9", nodeId, updatedNode)
             }
             onDeleteNode={(nodeId) => handleDeleteNode("level9", nodeId)}
+            selectedPath={selectedPath}
           />
         )}
         {visibleLevel10Items.length > 0 && (
@@ -562,6 +571,7 @@ export const LevelSelection = ({
               handleEditNode("level10", nodeId, updatedNode)
             }
             onDeleteNode={(nodeId) => handleDeleteNode("level10", nodeId)}
+            selectedPath={selectedPath}
           />
         )}{" "}
         <ConnectionLines

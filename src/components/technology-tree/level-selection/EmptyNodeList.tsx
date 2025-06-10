@@ -17,7 +17,7 @@ export const EmptyNodeList: React.FC<EmptyNodeListProps> = ({ level }) => {
   };
 
   return (
-    <div className="text-center py-8 text-gray-500">
+    <div className="text-center py-8 text-gray-500 text-sm">
       {getMessage()}
     </div>
   );

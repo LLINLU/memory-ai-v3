@@ -29,6 +29,18 @@ interface LevelColumnProps {
     updatedNode: { title: string; description: string }
   ) => void;
   onDeleteNode?: (nodeId: string) => void;
+  selectedPath: {
+    level1: string;
+    level2: string;
+    level3: string;
+    level4?: string;
+    level5?: string;
+    level6?: string;
+    level7?: string;
+    level8?: string;
+    level9?: string;
+    level10?: string;
+  };
 }
 
 export const LevelColumn: React.FC<LevelColumnProps> = ({
@@ -39,6 +51,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   onNodeClick,
   onEditNode,
   onDeleteNode,
+  selectedPath,
 }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingNode, setEditingNode] = useState<LevelItem | null>(null);
@@ -102,6 +115,15 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
 
   // Create the combined title (e.g., "レベル1：目的")
   const combinedTitle = title && subtitle ? `${title}：${subtitle}` : title;
+
+  // Determine if we should show the "追加する" button
+  const shouldShowAddButton = () => {
+    // Always show for level 1 (starting point)
+    if (levelNumber === 1) return true;
+    
+    // For other levels, only show if level 1 has been selected
+    return selectedPath.level1 !== "";
+  };
 
   // Define title color based on level
   const getTitleColor = () => {
@@ -191,7 +213,9 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
           />
         ))}
 
-        <CustomNodeButton onClick={handleCustomNodeClick} />
+        {shouldShowAddButton() && (
+          <CustomNodeButton onClick={handleCustomNodeClick} />
+        )}
 
         {items.length === 0 && <EmptyNodeList level={levelNumber} />}
       </div>
