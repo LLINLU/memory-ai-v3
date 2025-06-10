@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -64,7 +65,8 @@ export default {
 				},
 				'vivid-purple': '#8B5CF6',
 				'bright-orange': '#F97316',
-				'ocean-blue': '#0EA5E9'
+				'ocean-blue': '#0EA5E9',
+				'level-circle': '#5f729e'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
