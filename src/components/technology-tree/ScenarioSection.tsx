@@ -1,4 +1,5 @@
 
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -59,7 +60,7 @@ export const ScenarioSection = ({
               <h2 className="text-sm font-medium text-blue-600 mb-1">
                 研究シナリオ：
               </h2>
-              <p className="text-gray-800 text-base mb-3">{scenario}</p>
+              <p className="text-gray-800 text-base mb-0">{scenario}</p>
             </div>
             <Button
               onClick={handleEditScenario}
@@ -77,3 +78,4 @@ export const ScenarioSection = ({
     </div>
   );
 };
+
