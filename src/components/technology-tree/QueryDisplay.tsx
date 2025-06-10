@@ -98,36 +98,27 @@ export const QueryDisplay = ({ query, treeMode }: QueryDisplayProps) => {
   };
 
   return (
-    <div className="bg-green-50 rounded-lg p-6 mb-4">
-      <form onSubmit={handleSubmit} className="flex items-center gap-4">
-        {/* Left side: Search input */}
-        <div className="flex-1">
-          <label htmlFor="search-query" className="block text-sm font-medium text-green-600 mb-2">
-            検索クエリ：
-          </label>
+    <div className="mb-4">
+      <form onSubmit={handleSubmit}>
+        <div className="relative flex items-center border border-input rounded-md bg-background">
+          {/* Search Input */}
           <Input
-            id="search-query"
             type="text"
             value={inputQuery}
             onChange={(e) => setInputQuery(e.target.value)}
             placeholder="検索クエリを入力してください"
-            className="w-full"
             disabled={isGenerating}
+            className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 pr-32"
           />
-        </div>
-
-        {/* Right side: Mode selection and submit button */}
-        <div className="flex items-end gap-2">
-          <div className="min-w-[120px]">
-            <label htmlFor="search-mode" className="block text-sm font-medium text-green-600 mb-2">
-              モード：
-            </label>
+          
+          {/* Mode Selection Pill */}
+          <div className="absolute right-12 flex items-center">
             <Select
               value={selectedMode}
               onValueChange={(value: "TED" | "FAST") => setSelectedMode(value)}
               disabled={isGenerating}
             >
-              <SelectTrigger id="search-mode">
+              <SelectTrigger className="h-7 w-auto border-0 bg-muted rounded-full px-3 text-xs focus:ring-0 focus:ring-offset-0">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -137,14 +128,15 @@ export const QueryDisplay = ({ query, treeMode }: QueryDisplayProps) => {
             </Select>
           </div>
           
+          {/* Submit Button */}
           <Button
             type="submit"
             size="sm"
             disabled={isGenerating || !inputQuery.trim()}
-            className="h-10 w-10 p-0"
+            className="absolute right-2 h-8 w-8 p-0 bg-transparent hover:bg-muted border-0 text-foreground"
           >
             {isGenerating ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-foreground"></div>
             ) : (
               <ArrowUp className="h-4 w-4" />
             )}
