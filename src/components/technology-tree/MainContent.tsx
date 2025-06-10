@@ -70,6 +70,7 @@ interface MainContentProps {
   canScrollLeft?: boolean;
   canScrollRight?: boolean;
   lastVisibleLevel?: number;
+  containerRef?: React.RefObject<HTMLDivElement>;
 }
 
 export const MainContent = ({
@@ -108,6 +109,7 @@ export const MainContent = ({
   canScrollLeft,
   canScrollRight,
   lastVisibleLevel,
+  containerRef,
 }: MainContentProps) => {
   const handleGuidanceItemClick = (type: string) => {
     if (onGuidanceClick) {
@@ -218,6 +220,7 @@ export const MainContent = ({
           onDeleteNode={onDeleteNode}
           levelNames={levelNames}
           hideNavigationControls={true}
+          containerRef={containerRef}
         />
       </div>
     </div>

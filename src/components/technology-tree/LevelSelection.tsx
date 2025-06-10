@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { LevelColumn } from "./level-selection/LevelColumn";
 import { ConnectionLines } from "./level-selection/ConnectionLines";
 import { NavigationControls } from "./level-selection/NavigationControls";
@@ -55,6 +55,7 @@ interface LevelSelectionProps {
     level10?: string;
   };
   hideNavigationControls?: boolean;
+  containerRef?: React.RefObject<HTMLDivElement>;
 }
 
 export const LevelSelection = ({
@@ -75,6 +76,7 @@ export const LevelSelection = ({
   onDeleteNode,
   levelNames,
   hideNavigationControls = false,
+  containerRef,
 }: LevelSelectionProps) => {
   // Reorder items to ensure selected items appear first
   const reorderedLevel1Items = React.useMemo(() => {
@@ -258,10 +260,6 @@ export const LevelSelection = ({
     x2: number;
     y2: number;
   } | null>(null);
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
 
   useConnectionLines(
     containerRef,

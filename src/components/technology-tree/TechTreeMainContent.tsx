@@ -53,6 +53,13 @@ interface TechTreeMainContentProps {
   onGuidanceClick?: (type: string) => void;
   query?: string;
   treeMode?: string;
+  // Navigation control props
+  onScrollToStart?: () => void;
+  onScrollToEnd?: () => void;
+  canScrollLeft?: boolean;
+  canScrollRight?: boolean;
+  lastVisibleLevel?: number;
+  containerRef?: React.RefObject<HTMLDivElement>;
 }
 
 export const TechTreeMainContent = ({
@@ -81,6 +88,12 @@ export const TechTreeMainContent = ({
   onGuidanceClick,
   query,
   treeMode,
+  onScrollToStart,
+  onScrollToEnd,
+  canScrollLeft,
+  canScrollRight,
+  lastVisibleLevel,
+  containerRef,
 }: TechTreeMainContentProps) => {
   return (
     <MainContent
@@ -109,6 +122,12 @@ export const TechTreeMainContent = ({
       onGuidanceClick={onGuidanceClick}
       query={query}
       treeMode={treeMode}
+      onScrollToStart={onScrollToStart}
+      onScrollToEnd={onScrollToEnd}
+      canScrollLeft={canScrollLeft}
+      canScrollRight={canScrollRight}
+      lastVisibleLevel={lastVisibleLevel}
+      containerRef={containerRef}
     />
   );
 };

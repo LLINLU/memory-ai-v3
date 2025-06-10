@@ -9,6 +9,7 @@ import { useTechTreeSidebarActions } from "@/components/technology-tree/hooks/us
 import { useNodeInfo } from "@/hooks/tree/useNodeInfo";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { useScrollNavigation } from "@/hooks/tree/useScrollNavigation";
 
 import { ChatBox } from "@/components/technology-tree/ChatBox";
 import { TechTreeMainContent } from "@/components/technology-tree/TechTreeMainContent";
@@ -63,7 +64,20 @@ const TechnologyTree = () => {
   const { scenario, handleEditScenario, searchMode } = useScenarioState({
     initialScenario: locationState?.scenario,
     initialSearchMode: locationState?.searchMode,
-  }); // Don't render the tree if we're still initializing or no data is available
+  });
+
+  // Initialize scroll navigation hook
+  const {
+    containerRef,
+    canScrollLeft,
+    canScrollRight,
+    lastVisibleLevel,
+    handleScrollToStart,
+    handleScrollToEnd,
+    updateLastVisibleLevel,
+  } = useScrollNavigation();
+
+  // Don't render the tree if we're still initializing or no data is available
   if (
     isInitializing ||
     (!databaseTreeData && !locationState?.fromDatabase && !hasLoadedDatabase)
@@ -99,6 +113,7 @@ const TechnologyTree = () => {
       </div>
     );
   }
+
   const {
     selectedPath,
     sidebarTab,
@@ -126,6 +141,20 @@ const TechnologyTree = () => {
     handleAddLevel4,
     scenario: databaseScenario, // Get scenario from database tree data
   } = useTechnologyTree(databaseTreeData);
+
+  // Update last visible level when tree data changes
+  useEffect(() => {
+    updateLastVisibleLevel({
+      level4Items: Object.values(level4Items).flat(),
+      level5Items: Object.values(level5Items).flat(),
+      level6Items: Object.values(level6Items).flat(),
+      level7Items: Object.values(level7Items).flat(),
+      level8Items: Object.values(level8Items).flat(),
+      level9Items: Object.values(level9Items).flat(),
+      level10Items: Object.values(level10Items).flat(),
+    });
+  }, [level4Items, level5Items, level6Items, level7Items, level8Items, level9Items, level10Items, updateLastVisibleLevel]);
+
   // Initialize tree data with TED results if available
   useEffect(() => {
     const initializeTreeData = async () => {
@@ -309,6 +338,7 @@ const TechnologyTree = () => {
     handleEditNodeFromChat,
     handleRefineNode,
   } = useTechTreeSidebarActions(setChatMessages, addCustomNode, setSidebarTab);
+  
   const selectedNodeInfo = useNodeInfo(
     selectedPath,
     level1Items,
@@ -321,7 +351,9 @@ const TechnologyTree = () => {
     level8Items,
     level9Items,
     level10Items
-  ); // Dynamic level names based on tree mode
+  );
+
+  // Dynamic level names based on tree mode
   const treeMode =
     databaseTreeData?.mode || locationState?.treeData?.mode || "TED";
   const levelNames =
@@ -449,6 +481,13 @@ const TechnologyTree = () => {
                 searchMode={searchMode}
                 onGuidanceClick={handleGuidanceClick}
                 query={locationState?.query}
+                treeMode={treeMode}
+                onScrollToStart={handleScrollToStart}
+                onScrollToEnd={handleScrollToEnd}
+                canScrollLeft={canScrollLeft}
+                canScrollRight={canScrollRight}
+                lastVisibleLevel={lastVisibleLevel}
+                containerRef={containerRef}
               />
             </div>
           </TechTreeLayout>
