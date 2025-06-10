@@ -44,6 +44,7 @@ interface LevelColumnProps {
   };
   nextLevelItems?: Record<string, LevelItem[]>;
   isLastLevel?: boolean;
+  onGuidanceClick?: (type: string) => void;
 }
 
 export const LevelColumn: React.FC<LevelColumnProps> = ({
@@ -57,6 +58,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   selectedPath,
   nextLevelItems = {},
   isLastLevel = false,
+  onGuidanceClick,
 }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingNode, setEditingNode] = useState<LevelItem | null>(null);
@@ -279,6 +281,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
         onTitleChange={setAddTitle}
         onDescriptionChange={setAddDescription}
         onSave={handleAddSave}
+        onGuidanceClick={onGuidanceClick}
       />
     </div>
   );
