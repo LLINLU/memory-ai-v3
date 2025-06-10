@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -8,12 +9,14 @@ interface ScenarioSectionProps {
   scenario?: string;
   onEditScenario?: (newScenario: string) => void;
   conversationHistory?: any[];
+  query?: string;
 }
 
 export const ScenarioSection = ({
   scenario,
   onEditScenario,
   conversationHistory = [],
+  query,
 }: ScenarioSectionProps) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -27,36 +30,50 @@ export const ScenarioSection = ({
     return null;
   }
 
-  // If no scenario is provided, don't render the component
-  if (!scenario || scenario.trim() === "") {
-    return null;
-  }
-
   const handleEditScenario = () => {
     // Since research-context is removed, just show an alert for now
     alert("Research context editing is not available");
   };
 
   return (
-    <div className="bg-blue-50 rounded-lg p-6 mb-6">
-      <div className="flex justify-between items-start">
-        <div>
-          <h2 className="text-sm font-medium text-blue-600 mb-1">
-            研究シナリオ：
-          </h2>
-          <p className="text-gray-800 text-base mb-3">{scenario}</p>
+    <div className="space-y-4">
+      {/* Query Display Section */}
+      {query && query.trim() !== "" && (
+        <div className="bg-green-50 rounded-lg p-6">
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-sm font-medium text-green-600 mb-1">
+                検索クエリ：
+              </h2>
+              <p className="text-gray-800 text-base">{query}</p>
+            </div>
+          </div>
         </div>
-        <Button
-          onClick={handleEditScenario}
-          variant="outline"
-          size="sm"
-          title="シナリオを編集"
-          className="text-blue-600 border-blue-200 hover:bg-blue-100 h-8 w-8"
-        >
-          <Edit className="h-3.5 w-3.5" />
-          <span className="sr-only">シナリオを編集</span>
-        </Button>
-      </div>
+      )}
+
+      {/* Research Scenario Section */}
+      {scenario && scenario.trim() !== "" && (
+        <div className="bg-blue-50 rounded-lg p-6 mb-6">
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-sm font-medium text-blue-600 mb-1">
+                研究シナリオ：
+              </h2>
+              <p className="text-gray-800 text-base mb-3">{scenario}</p>
+            </div>
+            <Button
+              onClick={handleEditScenario}
+              variant="outline"
+              size="sm"
+              title="シナリオを編集"
+              className="text-blue-600 border-blue-200 hover:bg-blue-100 h-8 w-8"
+            >
+              <Edit className="h-3.5 w-3.5" />
+              <span className="sr-only">シナリオを編集</span>
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

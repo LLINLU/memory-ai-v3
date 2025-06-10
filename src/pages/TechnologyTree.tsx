@@ -448,6 +448,7 @@ const TechnologyTree = () => {
                 handleAddLevel4={handleAddLevel4}
                 searchMode={searchMode}
                 onGuidanceClick={handleGuidanceClick}
+                query={locationState?.query}
               />
             </div>
           </TechTreeLayout>

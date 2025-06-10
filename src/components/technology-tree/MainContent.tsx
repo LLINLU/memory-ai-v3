@@ -95,6 +95,7 @@ export const MainContent = ({
           scenario={scenario}
           onEditScenario={onEditScenario}
           conversationHistory={conversationHistory}
+          query={query}
         />
         <PathDisplay
           selectedPath={selectedPath}

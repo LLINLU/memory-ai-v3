@@ -51,6 +51,7 @@ interface TechTreeMainContentProps {
   handleAddLevel4?: () => void;
   searchMode?: string;
   onGuidanceClick?: (type: string) => void;
+  query?: string;
 }
 
 export const TechTreeMainContent = ({
@@ -77,6 +78,7 @@ export const TechTreeMainContent = ({
   handleAddLevel4,
   searchMode,
   onGuidanceClick,
+  query,
 }: TechTreeMainContentProps) => {
   return (
     <MainContent
@@ -103,6 +105,7 @@ export const TechTreeMainContent = ({
       onAddLevel4={handleAddLevel4}
       searchMode={searchMode}
       onGuidanceClick={onGuidanceClick}
+      query={query}
     />
   );
 };
