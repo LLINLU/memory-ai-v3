@@ -289,12 +289,23 @@ export const LevelSelection = ({
 
   const lastVisibleLevel = getLastVisibleLevel();
 
-  // Update scroll button states
+  // Update scroll button states with improved tolerance
   const updateScrollButtons = () => {
     if (containerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
-      setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+      
+      // Add debug logging to understand scroll values
+      console.log('Scroll debug:', { scrollLeft, scrollWidth, clientWidth, canScroll: scrollWidth > clientWidth });
+      
+      setCanScrollLeft(scrollLeft > 5); // Small tolerance for left scroll
+      
+      // Improved calculation for right scroll with smaller tolerance
+      const maxScrollLeft = scrollWidth - clientWidth;
+      const canScrollRightValue = scrollLeft < maxScrollLeft - 5; // Reduced tolerance from -10 to -5
+      
+      console.log('Right scroll debug:', { maxScrollLeft, currentScroll: scrollLeft, canScrollRight: canScrollRightValue });
+      
+      setCanScrollRight(canScrollRightValue);
     }
   };
 
@@ -318,19 +329,39 @@ export const LevelSelection = ({
     }
   };
 
-  // Listen for scroll events
+  // Listen for scroll events and panel resize events
   useEffect(() => {
     const container = containerRef.current;
     if (container) {
       updateScrollButtons();
       container.addEventListener("scroll", updateScrollButtons);
-      return () => container.removeEventListener("scroll", updateScrollButtons);
+      
+      // Listen for panel resize events
+      const handlePanelResize = () => {
+        setTimeout(updateScrollButtons, 100); // Small delay to ensure layout is updated
+      };
+      
+      document.addEventListener("panel-resize", handlePanelResize);
+      
+      return () => {
+        container.removeEventListener("scroll", updateScrollButtons);
+        document.removeEventListener("panel-resize", handlePanelResize);
+      };
     }
   }, [lastVisibleLevel]);
 
-  // Update scroll buttons when content changes
+  // Update scroll buttons when content changes and add window resize listener
   useEffect(() => {
+    const handleResize = () => {
+      setTimeout(updateScrollButtons, 100); // Delay to ensure layout is complete
+    };
+    
     updateScrollButtons();
+    window.addEventListener("resize", handleResize);
+    
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, [
     visibleLevel4Items,
     visibleLevel5Items,
