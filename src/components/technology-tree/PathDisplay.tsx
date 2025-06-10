@@ -332,5 +332,3 @@ export const PathDisplay = ({
 };
 
 export default PathDisplay;
-
-}
