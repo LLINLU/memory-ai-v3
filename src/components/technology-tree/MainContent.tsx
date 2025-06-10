@@ -1,4 +1,3 @@
-
 import React from "react";
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
@@ -222,6 +221,7 @@ export const MainContent = ({
           levelNames={levelNames}
           hideNavigationControls={true}
           containerRef={containerRef}
+          onGuidanceClick={onGuidanceClick}
         />
       </div>
     </div>
