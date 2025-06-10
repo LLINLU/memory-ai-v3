@@ -50,7 +50,7 @@ export const RecentGeneratedTrees = () => {
       <Card className="border-0 shadow-none">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-[18px]">
-            最近生成されたツリー
+            最近の検索
           </CardTitle>
           <CardDescription>
             過去に生成したテクノロジーツリーから再度アクセスできます
@@ -70,7 +70,7 @@ export const RecentGeneratedTrees = () => {
     <Card className="border-0 shadow-none">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-[18px]">
-          最近生成されたツリー
+          最近の検索
         </CardTitle>
         <CardDescription>
           過去に生成したテクノロジーツリーから再度アクセスできます
