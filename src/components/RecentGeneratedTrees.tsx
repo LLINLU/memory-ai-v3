@@ -9,8 +9,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { TreePine, Clock, ArrowRight, Loader2 } from "lucide-react";
+import { TreePine, Clock, ArrowRight, Loader2, ChevronDown } from "lucide-react";
 import { useTreeGeneration } from "@/hooks/useTreeGeneration";
+import { useState } from "react";
 
 interface SavedTree {
   id: string;
@@ -22,6 +23,7 @@ interface SavedTree {
 export const RecentGeneratedTrees = () => {
   const navigate = useNavigate();
   const { trees, treesLoading } = useTreeGeneration();
+  const [showAll, setShowAll] = useState(false);
 
   const handleViewTree = (tree: SavedTree) => {
     // Navigate to tree view with real database tree
@@ -44,6 +46,10 @@ export const RecentGeneratedTrees = () => {
       minute: "2-digit",
     });
   };
+
+  // Determine which trees to display
+  const displayedTrees = showAll ? trees : trees.slice(0, 10);
+  const hasMoreTrees = trees.length > 10;
 
   if (treesLoading) {
     return (
@@ -78,7 +84,7 @@ export const RecentGeneratedTrees = () => {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {trees.map((tree) => (
+          {displayedTrees.map((tree) => (
             <div
               key={tree.id}
               className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors"
@@ -103,6 +109,20 @@ export const RecentGeneratedTrees = () => {
             </div>
           ))}
         </div>
+        
+        {hasMoreTrees && !showAll && (
+          <div className="flex justify-center mt-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowAll(true)}
+              className="text-sm text-gray-600 hover:text-gray-900"
+            >
+              <ChevronDown className="h-4 w-4 mr-1" />
+              もっと見る
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
