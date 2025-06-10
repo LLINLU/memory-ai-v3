@@ -110,7 +110,7 @@ export const ChatConversationBox = ({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 bg-white relative" ref={scrollContainerRef}>
+    <div className="flex-1 overflow-y-auto p-4 bg-background relative" ref={scrollContainerRef}>
       {/* Only show welcome message if there are no substantive messages AND we have an onButtonClick handler */}
       {!hasSubstantiveMessages && onButtonClick && (
         <WelcomeMessage
@@ -129,15 +129,23 @@ export const ChatConversationBox = ({
         handleCheckResults={handleCheckResults}
       />
       
-      {/* Scroll to bottom button */}
+      {/* Fade gradient overlay at the bottom */}
       {!isAtBottom && (
-        <Button
-          onClick={scrollToBottom}
-          className="fixed bottom-20 right-8 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg p-3 h-12 w-12 z-40 transition-all duration-200"
-          size="icon"
-        >
-          <ArrowDown className="h-5 w-5 text-white" />
-        </Button>
+        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background to-transparent pointer-events-none z-10" />
+      )}
+      
+      {/* Subtle scroll to bottom button - centered above input area */}
+      {!isAtBottom && (
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
+          <Button
+            onClick={scrollToBottom}
+            className="h-8 w-8 rounded-full bg-muted hover:bg-muted/80 border border-border shadow-sm p-0 transition-all duration-200"
+            size="icon"
+            variant="ghost"
+          >
+            <ArrowDown className="h-4 w-4 text-muted-foreground" />
+          </Button>
+        </div>
       )}
       
       {/* Invisible div to scroll to */}
