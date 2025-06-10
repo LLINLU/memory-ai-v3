@@ -118,11 +118,40 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
 
   // Determine if we should show the "追加する" button
   const shouldShowAddButton = () => {
-    // Always show for level 1 (starting point)
-    if (levelNumber === 1) return true;
-    
-    // For other levels, only show if level 1 has been selected
-    return selectedPath.level1 !== "";
+    switch (levelNumber) {
+      case 1:
+        // Always show for level 1 (starting point)
+        return true;
+      case 2:
+        // Show only if level 1 is selected
+        return selectedPath.level1 !== "";
+      case 3:
+        // Show only if level 2 is selected
+        return selectedPath.level2 !== "";
+      case 4:
+        // Show only if level 3 is selected
+        return selectedPath.level3 !== "";
+      case 5:
+        // Show only if level 4 is selected
+        return selectedPath.level4 !== "";
+      case 6:
+        // Show only if level 5 is selected
+        return selectedPath.level5 !== "";
+      case 7:
+        // Show only if level 6 is selected
+        return selectedPath.level6 !== "";
+      case 8:
+        // Show only if level 7 is selected
+        return selectedPath.level7 !== "";
+      case 9:
+        // Show only if level 8 is selected
+        return selectedPath.level8 !== "";
+      case 10:
+        // Show only if level 9 is selected
+        return selectedPath.level9 !== "";
+      default:
+        return false;
+    }
   };
 
   // Define title color based on level
