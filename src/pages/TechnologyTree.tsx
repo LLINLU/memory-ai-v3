@@ -473,5 +473,3 @@ const TechnologyTree = () => {
 };
 
 export default TechnologyTree;
-
-}
