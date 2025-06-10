@@ -18,6 +18,7 @@ interface SavedTree {
   name: string;
   search_theme: string;
   created_at: string;
+  mode?: string;
 }
 
 export const RecentGeneratedTrees = () => {
@@ -45,6 +46,28 @@ export const RecentGeneratedTrees = () => {
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  const getModeLabel = (mode?: string) => {
+    switch (mode) {
+      case "FAST":
+        return "技術から";
+      case "TED":
+        return "ニーズから";
+      default:
+        return "ニーズから"; // Default fallback
+    }
+  };
+
+  const getModeVariant = (mode?: string) => {
+    switch (mode) {
+      case "FAST":
+        return "secondary";
+      case "TED":
+        return "default";
+      default:
+        return "default";
+    }
   };
 
   // Determine which trees to display
@@ -96,6 +119,12 @@ export const RecentGeneratedTrees = () => {
                     <Clock className="h-3 w-3" />
                     {formatDate(tree.created_at)}
                   </div>
+                  <Badge 
+                    variant={getModeVariant(tree.mode)}
+                    className="text-xs"
+                  >
+                    {getModeLabel(tree.mode)}
+                  </Badge>
                 </div>
               </div>
               <Button

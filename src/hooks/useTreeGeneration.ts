@@ -26,6 +26,7 @@ interface SavedTree {
   name: string;
   search_theme: string;
   created_at: string;
+  mode?: string;
 }
 
 export const useTreeGeneration = () => {
@@ -234,10 +235,10 @@ export const useTreeGeneration = () => {
       setTreesLoading(true);
       const userTeamId = userDetails?.team_id;
 
-      // Build query to filter by team
+      // Build query to filter by team and include mode
       let query = supabase
         .from("technology_trees")
-        .select("id, name, search_theme, created_at")
+        .select("id, name, search_theme, created_at, mode")
         .order("created_at", { ascending: false });
 
       // If user has a team, filter by that team or trees with no team restriction
