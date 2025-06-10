@@ -1,7 +1,9 @@
+
 import React from "react";
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
 import { ScenarioSection } from "./ScenarioSection";
+import { QueryDisplay } from "./QueryDisplay";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -103,6 +105,9 @@ export const MainContent = ({
   return (
     <div className="h-full flex flex-col overflow-hidden">
       <div className="container mx-auto px-4 py-6 flex-shrink-0">
+        {/* Query Display Section - appears first */}
+        <QueryDisplay query={query} />
+
         {/* Title and Guidance Section */}
         <div className="mb-0" style={{ paddingTop: "0rem" }}>
           <div className="flex justify-between items-center mb-1">
@@ -157,7 +162,6 @@ export const MainContent = ({
           scenario={scenario}
           onEditScenario={onEditScenario}
           conversationHistory={conversationHistory}
-          query={query}
         />
 
         {/* Path Display */}
