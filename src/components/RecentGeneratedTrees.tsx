@@ -77,8 +77,7 @@ export const RecentGeneratedTrees = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {" "}
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {trees.map((tree) => (
             <div
               key={tree.id}
