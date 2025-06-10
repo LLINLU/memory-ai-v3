@@ -4,6 +4,12 @@ import { NodeActions } from './node-components/NodeActions';
 import { NodeContent } from './node-components/NodeContent';
 import { getNodeStyle } from './node-utils/nodeStyles';
 import { TreeNode as TreeNodeType } from '@/types/tree';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface TreeNodeProps {
   item: TreeNodeType;
@@ -13,6 +19,8 @@ interface TreeNodeProps {
   onDeleteClick: (e: React.MouseEvent) => void;
   level?: number;
   showDescription?: boolean;
+  subNodeCount?: number;
+  isLastLevel?: boolean;
 }
 
 export const TreeNode: React.FC<TreeNodeProps> = ({
@@ -22,7 +30,9 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   onEditClick,
   onDeleteClick,
   level,
-  showDescription = false
+  showDescription = false,
+  subNodeCount = 0,
+  isLastLevel = false,
 }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
   const [nodeWidth, setNodeWidth] = useState(0);
@@ -46,7 +56,10 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   // Force white text for selected nodes to ensure visibility
   const descriptionTextColor = isSelected ? "text-gray-100" : "text-gray-600";
 
-  return (
+  // Determine if tooltip should be shown
+  const shouldShowTooltip = !isSelected && !isLastLevel && subNodeCount > 0;
+
+  const nodeContent = (
     <div
       ref={nodeRef}
       className={`
@@ -86,4 +99,22 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       </div>
     </div>
   );
+
+  // Wrap with tooltip if conditions are met
+  if (shouldShowTooltip) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            {nodeContent}
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>サブカテゴリが{subNodeCount}つあります。クリックで表示。</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  return nodeContent;
 };
