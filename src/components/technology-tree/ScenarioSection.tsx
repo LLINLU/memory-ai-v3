@@ -4,37 +4,15 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { Edit } from "lucide-react";
-
 interface ScenarioSectionProps {
   scenario?: string;
   onEditScenario?: (newScenario: string) => void;
   conversationHistory?: any[];
-  searchMode?: string;
-  onGuidanceClick?: (type: string) => void;
-  query?: string;
-  treeMode?: string;
-  onScrollToStart?: () => void;
-  onScrollToEnd?: () => void;
-  canScrollLeft?: boolean;
-  canScrollRight?: boolean;
-  lastVisibleLevel?: number;
-  triggerScrollUpdate?: () => void;
 }
-
 export const ScenarioSection = ({
   scenario,
   onEditScenario,
-  conversationHistory = [],
-  searchMode,
-  onGuidanceClick,
-  query,
-  treeMode,
-  onScrollToStart,
-  onScrollToEnd,
-  canScrollLeft,
-  canScrollRight,
-  lastVisibleLevel,
-  triggerScrollUpdate
+  conversationHistory = []
 }: ScenarioSectionProps) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -42,13 +20,11 @@ export const ScenarioSection = ({
   // Get searchMode from location state - if it's not defined or is "deep", show the section
   // 'quick' mode means user came directly from home page, hide the section
   // any other mode (e.g. "deep", undefined) means user came from research-context, show the section
-  const effectiveSearchMode = searchMode || location.state?.searchMode;
-  
+  const searchMode = location.state?.searchMode;
   // If searchMode is "quick", don't render the component
-  if (effectiveSearchMode === "quick") {
+  if (searchMode === "quick") {
     return null;
   }
-
   const handleEditScenario = () => {
     // Since research-context is removed, just show an alert for now
     alert("Research context editing is not available");
@@ -58,9 +34,7 @@ export const ScenarioSection = ({
   if (!scenario || scenario.trim() === "") {
     return null;
   }
-
-  return (
-    <div className="bg-blue-50 rounded-lg p-6 mb-6 py-[12px] px-[16px] mt-4">
+  return <div className="bg-blue-50 rounded-lg p-6 mb-6 py-[12px] px-[16px] mt-4">
       <div className="flex justify-between items-start">
         <div>
           <h2 className="text-sm font-medium text-blue-600 mb-1">
@@ -73,6 +47,5 @@ export const ScenarioSection = ({
           <span className="sr-only">シナリオを編集</span>
         </Button>
       </div>
-    </div>
-  );
+    </div>;
 };

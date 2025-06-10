@@ -1,4 +1,3 @@
-
 import { useChatState } from "./state/useChatState";
 import { useChatActions } from "./handlers/useChatActions";
 import { useMessageHandlers } from "./handlers/useMessageHandlers";
@@ -53,19 +52,6 @@ export const useTechTreeChat = () => {
           type: 'text'
         }
       );
-    } else if (type === 'node-creation-help') {
-      guidanceMessages.push(
-        {
-          content: "新しいノードの作成を手伝ってほしいです。",
-          isUser: true,
-          type: 'text'
-        },
-        {
-          content: "🙌 喜んでお手伝いします！どんなアイデアでも自然な言葉で教えてください。きちんと構造化されたノードに整理いたします！",
-          isUser: false,
-          type: 'text'
-        }
-      );
     }
     
     setChatMessages(guidanceMessages);
@@ -78,11 +64,6 @@ export const useTechTreeChat = () => {
     
     // Initialize with guidance messages
     initializeWithGuidanceMessages(type);
-  };
-
-  const handleNodeCreationHelp = () => {
-    // Open and expand the chat with node creation help
-    handleGuidanceClick('node-creation-help');
   };
 
   const toggleChatBoxOpen = () => {
@@ -109,7 +90,6 @@ export const useTechTreeChat = () => {
     setChatMessages,
     handleUseNode,
     handleGuidanceClick,
-    handleNodeCreationHelp,
     toggleChatBoxOpen,
     toggleChatBoxExpand
   };

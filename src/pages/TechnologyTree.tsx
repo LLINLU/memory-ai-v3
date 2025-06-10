@@ -339,7 +339,6 @@ const TechnologyTree = () => {
     handleButtonClick,
     setChatMessages,
     handleGuidanceClick,
-    handleNodeCreationHelp,
     toggleChatBoxOpen,
     toggleChatBoxExpand
   } = useTechTreeChat();
@@ -503,7 +502,6 @@ const TechnologyTree = () => {
                 lastVisibleLevel={lastVisibleLevel}
                 containerRef={containerRef}
                 triggerScrollUpdate={triggerScrollUpdate}
-                onNodeCreationHelp={handleNodeCreationHelp}
               />
             </div>
           </TechTreeLayout>
