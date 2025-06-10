@@ -185,6 +185,13 @@ export const PathDisplay = ({
     }
   };
 
+  // Component to render level number in a circle
+  const LevelCircle = ({ level }: { level: number }) => (
+    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-medium mr-1">
+      {level}
+    </span>
+  );
+
   return (
     <div className="mb-0" style={{ paddingTop: "0rem" }}>
       {/* First row: Navigation controls (left) + Toggle switch (right) */}
@@ -247,17 +254,76 @@ export const PathDisplay = ({
       {/* Second row: Breadcrumb path (conditional) */}
       {showPath && (
         <div className="mb-2">
-          <p className="text-gray-600" style={{ fontSize: "14px" }}>
-            {level1Name && level1Name}
-            {level2Name && ` → ${level2Name}`}
-            {level3Name && ` → ${level3Name}`}
-            {level4Name && ` → ${level4Name}`}
-            {level5Name && ` → ${level5Name}`}
-            {level6Name && ` → ${level6Name}`}
-            {level7Name && ` → ${level7Name}`}
-            {level8Name && ` → ${level8Name}`}
-            {level9Name && ` → ${level9Name}`}
-            {level10Name && ` → ${level10Name}`}
+          <p className="text-gray-600 flex items-center flex-wrap" style={{ fontSize: "14px" }}>
+            {level1Name && (
+              <span className="flex items-center">
+                <LevelCircle level={1} />
+                {level1Name}
+              </span>
+            )}
+            {level2Name && (
+              <span className="flex items-center">
+                <span className="mx-2">→</span>
+                <LevelCircle level={2} />
+                {level2Name}
+              </span>
+            )}
+            {level3Name && (
+              <span className="flex items-center">
+                <span className="mx-2">→</span>
+                <LevelCircle level={3} />
+                {level3Name}
+              </span>
+            )}
+            {level4Name && (
+              <span className="flex items-center">
+                <span className="mx-2">→</span>
+                <LevelCircle level={4} />
+                {level4Name}
+              </span>
+            )}
+            {level5Name && (
+              <span className="flex items-center">
+                <span className="mx-2">→</span>
+                <LevelCircle level={5} />
+                {level5Name}
+              </span>
+            )}
+            {level6Name && (
+              <span className="flex items-center">
+                <span className="mx-2">→</span>
+                <LevelCircle level={6} />
+                {level6Name}
+              </span>
+            )}
+            {level7Name && (
+              <span className="flex items-center">
+                <span className="mx-2">→</span>
+                <LevelCircle level={7} />
+                {level7Name}
+              </span>
+            )}
+            {level8Name && (
+              <span className="flex items-center">
+                <span className="mx-2">→</span>
+                <LevelCircle level={8} />
+                {level8Name}
+              </span>
+            )}
+            {level9Name && (
+              <span className="flex items-center">
+                <span className="mx-2">→</span>
+                <LevelCircle level={9} />
+                {level9Name}
+              </span>
+            )}
+            {level10Name && (
+              <span className="flex items-center">
+                <span className="mx-2">→</span>
+                <LevelCircle level={10} />
+                {level10Name}
+              </span>
+            )}
           </p>
         </div>
       )}
@@ -266,3 +332,5 @@ export const PathDisplay = ({
 };
 
 export default PathDisplay;
+
+}
