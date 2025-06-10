@@ -1,12 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Info } from "lucide-react";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,7 +32,6 @@ interface PathDisplayProps {
   level9Items?: Record<string, any[]>;
   level10Items?: Record<string, any[]>;
   showLevel4: boolean;
-  onAddLevel4?: () => void;
 }
 
 export const PathDisplay = ({
@@ -54,7 +47,6 @@ export const PathDisplay = ({
   level9Items = {},
   level10Items = {},
   showLevel4,
-  onAddLevel4,
 }: PathDisplayProps) => {
   // Find the selected items by ID to display their names
   const findItemName = (itemId: string, items: any[]) => {
@@ -165,15 +157,6 @@ export const PathDisplay = ({
         )
       : "";
 
-  // Check if Level 4 data exists for the current Level 3 selection
-  const hasLevel4Data =
-    selectedPath.level3 &&
-    level4Items[selectedPath.level3] &&
-    level4Items[selectedPath.level3].length > 0;
-
-  // Only show the "Add Level 4" button if Level 3 is selected but no Level 4 data exists
-  const showLevel4Button = selectedPath.level3 && level3Name && !hasLevel4Data;
-
   return (
     <div className="mb-6" style={{ paddingTop: "0rem" }}>
       <div className="flex justify-between items-center mb-1">
@@ -219,7 +202,6 @@ export const PathDisplay = ({
         </div>
       </div>
       <div className="flex items-center">
-        {" "}
         <p className="text-gray-600" style={{ fontSize: "14px" }}>
           {level1Name && level1Name}
           {level2Name && ` → ${level2Name}`}
@@ -232,32 +214,6 @@ export const PathDisplay = ({
           {level9Name && ` → ${level9Name}`}
           {level10Name && ` → ${level10Name}`}
         </p>
-        {showLevel4Button && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="ml-2 text-blue-600 hover:bg-blue-50 px-2 py-1 h-6 text-xs"
-                  onClick={onAddLevel4}
-                >
-                  <Plus className="h-3 w-3" />
-                  レベル４
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-[200px]">
-                <div className="whitespace-normal text-center">
-                  <p className="my-0.5">ボタンをクリックすると、</p>
-                  <p className="my-0.5">レベル4が生成され、</p>
-                  <p className="my-0.5">
-                    技術のより詳細な分野を学ぶことができます。
-                  </p>
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
       </div>
     </div>
   );

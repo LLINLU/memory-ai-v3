@@ -107,11 +107,9 @@ export const MainContent = ({
           level9Items={level9Items}
           level10Items={level10Items}
           showLevel4={showLevel4}
-          onAddLevel4={onAddLevel4}
         />
       </div>
       <div className="flex-1 overflow-hidden">
-        {" "}
         <LevelSelection
           selectedPath={selectedPath}
           level1Items={level1Items}
