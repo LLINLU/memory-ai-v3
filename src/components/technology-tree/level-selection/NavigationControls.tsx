@@ -27,7 +27,7 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
   return (
     <div className="flex items-center justify-between mb-4 px-4">
       <div className="flex items-center gap-2">
-        <TooltipProvider>
+        <TooltipProvider delayDuration={200} skipDelayDuration={100}>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -46,9 +46,7 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
               <p>レベル1に戻る</p>
             </TooltipContent>
           </Tooltip>
-        </TooltipProvider>
 
-        <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button

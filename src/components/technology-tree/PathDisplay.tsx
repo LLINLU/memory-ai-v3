@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -192,7 +191,7 @@ export const PathDisplay = ({
       <div className="flex items-center justify-between mb-2">
         {/* Left side: Navigation controls */}
         <div className="flex items-center gap-2">
-          <TooltipProvider>
+          <TooltipProvider delayDuration={200} skipDelayDuration={100}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -211,9 +210,7 @@ export const PathDisplay = ({
                 <p>レベル1に戻る</p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
 
-          <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button

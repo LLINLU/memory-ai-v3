@@ -16,7 +16,7 @@ interface CollapsedSidebarProps {
 export const CollapsedSidebar = ({ toggleSidebar }: CollapsedSidebarProps) => {
   return (
     <div className="fixed right-2 top-[72px] z-10">
-      <TooltipProvider>
+      <TooltipProvider delayDuration={200} skipDelayDuration={100}>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button 
