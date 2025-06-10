@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
@@ -174,7 +175,7 @@ export const PathDisplay = ({
         <Toggle
           pressed={showPath}
           onPressedChange={setShowPath}
-          variant="ghost"
+          variant="default"
           size="sm"
           className="h-6 px-2 text-xs text-gray-500 hover:text-gray-700 data-[state=on]:bg-gray-100 data-[state=on]:text-gray-700"
         >
