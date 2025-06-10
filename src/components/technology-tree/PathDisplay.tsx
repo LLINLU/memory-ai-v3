@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -176,7 +175,6 @@ export const PathDisplay = ({
           <Switch
             checked={showPath}
             onCheckedChange={setShowPath}
-            className="h-4 w-7"
           />
           <span className="text-xs text-gray-500">
             パンくずリストを{showPath ? '隠す' : '表示'}
