@@ -12,12 +12,21 @@ import { toast } from "@/hooks/use-toast";
 interface SuggestionProps {
   label: string;
   onClick: () => void;
+  mode?: string;
 }
 
-const SearchSuggestion = ({ label, onClick }: SuggestionProps) => {
+const SearchSuggestion = ({ label, onClick, mode }: SuggestionProps) => {
+  const getBackgroundColor = () => {
+    return mode === "FAST" ? "bg-[#fffbff]" : "bg-[#f6fbff]";
+  };
+
+  const getBorderColor = () => {
+    return mode === "FAST" ? "border-[#efdaf9]" : "border-[#c4d4f4]";
+  };
+
   return (
     <button 
-      className="bg-[#f6fbff] hover:bg-gray-50 rounded-md px-4 py-1 text-gray-700 transition-colors text-sm border border-[#c4d4f4]"
+      className={`${getBackgroundColor()} hover:bg-gray-50 rounded-md px-4 py-1 text-gray-700 transition-colors text-sm border ${getBorderColor()}`}
       onClick={onClick}
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="14" viewBox="0 0 12 14" fill="none" className="inline-block mr-1.5">
@@ -202,7 +211,8 @@ export const TreeGenerationSection = () => {
               <SearchSuggestion 
                 key={index} 
                 label={suggestion} 
-                onClick={() => handleSuggestionClick(suggestion)} 
+                onClick={() => handleSuggestionClick(suggestion)}
+                mode={selectedMode}
               />
             ))}
           </div>
