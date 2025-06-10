@@ -65,10 +65,6 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
           </Tooltip>
         </TooltipProvider>
       </div>
-
-      <div className="text-sm text-gray-500">
-        最大レベル{lastVisibleLevel}まで表示
-      </div>
     </div>
   );
 };
