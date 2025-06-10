@@ -35,9 +35,7 @@ export const AddNodeDialog: React.FC<AddNodeDialogProps> = ({
           </div>
         </div>
         <div className="mb-4">
-          <p className="underline text-sm text-blue-700">
-            新しいノードの作成を手伝ってほしいです📝
-          </p>
+          <p className="underline text-sm text-blue-700">新しいノードの作成を手伝ってほしいです💬</p>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>キャンセル</Button>
