@@ -1,3 +1,4 @@
+
 import React from "react";
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
@@ -99,6 +100,12 @@ export const MainContent = ({
           level2Items={level2Items}
           level3Items={level3Items}
           level4Items={level4Items}
+          level5Items={level5Items}
+          level6Items={level6Items}
+          level7Items={level7Items}
+          level8Items={level8Items}
+          level9Items={level9Items}
+          level10Items={level10Items}
           showLevel4={showLevel4}
           onAddLevel4={onAddLevel4}
         />
