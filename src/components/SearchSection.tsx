@@ -1,3 +1,4 @@
+
 import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -184,7 +185,7 @@ export const SearchSection = () => {
                       type="button"
                       onClick={() => handleSearchModeChange("quick")}
                       className={`inline-flex items-center rounded-full py-1 px-4 h-[28px] text-sm transition-colors ${
-                        searchMode === "quick" ? "bg-blue-100 text-blue-600" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
+                        searchMode === "quick" ? "bg-blue-50 text-blue-700" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
                       }`}
                       disabled={isGenerating}
                     >
@@ -204,7 +205,7 @@ export const SearchSection = () => {
                       type="button"
                       onClick={() => handleSearchModeChange("deep")}
                       className={`inline-flex items-center rounded-full py-1 px-4 h-[28px] text-sm transition-colors ${
-                        searchMode === "deep" ? "bg-blue-100 text-blue-600" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
+                        searchMode === "deep" ? "bg-purple-50 text-purple-700" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
                       }`}
                       disabled={isGenerating}
                     >

@@ -104,7 +104,7 @@ export const TreeGenerationSection = () => {
                         type="button"
                         onClick={() => handleModeChange("TED")}
                         className={`inline-flex items-center rounded-full py-1 px-4 h-[28px] text-sm transition-colors ${
-                          selectedMode === "TED" ? "bg-blue-100 text-blue-600" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
+                          selectedMode === "TED" ? "bg-blue-50 text-blue-700" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
                         }`}
                         disabled={isGenerating}
                       >
@@ -124,7 +124,7 @@ export const TreeGenerationSection = () => {
                         type="button"
                         onClick={() => handleModeChange("FAST")}
                         className={`inline-flex items-center rounded-full py-1 px-4 h-[28px] text-sm transition-colors ${
-                          selectedMode === "FAST" ? "bg-blue-100 text-blue-600" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
+                          selectedMode === "FAST" ? "bg-purple-50 text-purple-700" : "bg-gray-200 hover:bg-gray-300 text-[#9f9f9f]"
                         }`}
                         disabled={isGenerating}
                       >
