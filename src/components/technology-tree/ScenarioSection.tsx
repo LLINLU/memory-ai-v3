@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -33,7 +34,7 @@ export const ScenarioSection = ({
   if (!scenario || scenario.trim() === "") {
     return null;
   }
-  return <div className="bg-blue-50 rounded-lg p-6 mb-6 py-[12px] px-[16px]">
+  return <div className="bg-blue-50 rounded-lg p-6 mb-6 py-[12px] px-[16px] mt-4">
       <div className="flex justify-between items-start">
         <div>
           <h2 className="text-sm font-medium text-blue-600 mb-1">
