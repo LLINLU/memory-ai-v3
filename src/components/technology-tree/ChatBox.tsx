@@ -62,17 +62,17 @@ export const ChatBox = ({
   };
 
   return (
-    <div data-chatbox>
+    <div data-chatbox className="z-50">
       {!isOpen ? (
         <Button
           onClick={toggleOpen}
-          className="fixed bottom-6 right-6 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg p-4 h-14 w-14"
+          className="fixed bottom-6 right-6 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg p-4 h-14 w-14 z-50"
         >
           <MessageSquare className="h-6 w-6 text-white" />
         </Button>
       ) : (
         <div 
-          className={`fixed bottom-6 right-6 bg-white border border-gray-200 rounded-lg shadow-xl flex flex-col ${
+          className={`fixed bottom-6 right-6 bg-white border border-gray-200 rounded-lg shadow-xl flex flex-col z-50 ${
             isExpanded ? 'w-[500px] h-[600px]' : 'w-[350px] h-[500px]'
           } transition-all duration-200 overflow-hidden`}
         >
