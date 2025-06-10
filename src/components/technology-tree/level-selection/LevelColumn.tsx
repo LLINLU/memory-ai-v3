@@ -46,34 +46,20 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   const [editDescription, setEditDescription] = useState("");
   const [showDescriptions, setShowDescriptions] = useState(true);
 
-  // Determine level number based on title
-  const levelNumber =
-    title === "レベル1"
-      ? 1
-      : title === "レベル2"
-      ? 2
-      : title === "レベル3"
-      ? 3
-      : undefined;
+  // Extract level number from title (e.g., "レベル1" -> 1, "レベル10" -> 10)
+  const levelNumber = parseInt(title.replace('レベル', ''), 10) || 1;
 
   const handleCustomNodeClick = () => {
     // Scroll to the top of the page
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    // Extract the level number from the title (e.g., "レベル1" -> "1")
-    const levelNumber =
-      title === "レベル1"
-        ? "1"
-        : title === "レベル2"
-        ? "2"
-        : title === "レベル3"
-        ? "3"
-        : title.slice(-1);
+    // Use the extracted level number
+    const levelNumberString = levelNumber.toString();
 
     // Update sidebar tab to chat with level information only
     const customEvent = new CustomEvent("switch-to-chat", {
       detail: {
-        levelNumber: levelNumber,
+        levelNumber: levelNumberString,
       },
     });
     document.dispatchEvent(customEvent);
@@ -129,7 +115,9 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   const getTooltipText = () => {
     return showDescriptions
       ? "クリックすると、ツリーマップの簡潔なビューが表示されます。"
-      : "クリックすると、ツリーマップの詳細ビューが表示されます。";  };
+      : "クリックすると、ツリーマップの詳細ビューが表示されます。";
+  };
+
   return (
     <div className="min-w-36 max-w-56 flex-shrink-0 bg-white p-4 rounded-lg relative">
       <div className="flex items-center justify-between mb-4">
@@ -205,7 +193,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
 
         <CustomNodeButton onClick={handleCustomNodeClick} />
 
-        {items.length === 0 && <EmptyNodeList levelTitle={title} />}
+        {items.length === 0 && <EmptyNodeList level={levelNumber} />}
       </div>
 
       <EditNodeDialog
