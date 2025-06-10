@@ -72,11 +72,22 @@ export const TreeGenerationSection = () => {
     setSearchValue(suggestion);
   };
 
-  const suggestions = [
-    "心筋梗塞の新たな予防法は？",
+  // Dynamic suggestions based on selected mode
+  const tedSuggestions = [
     "量子コンピューティングの医療応用",
-    "持続可能な農業技術のトレンド"
+    "空中触覚技術",
+    "カーボンニュートラル"
   ];
+
+  const fastSuggestions = [
+    "空中触覚技術",
+    "レーザービーム制御技術", 
+    "リチウムイオン電池耐熱技術"
+  ];
+
+  const currentSuggestions = selectedMode === "TED" 
+    ? tedSuggestions 
+    : fastSuggestions;
 
   return (
     <Card className="border-0 shadow-none">
@@ -187,7 +198,7 @@ export const TreeGenerationSection = () => {
             <span className="text-gray-600 text-sm">試してみる：</span>
           </div>
           <div className="flex gap-2 flex-wrap">
-            {suggestions.map((suggestion, index) => (
+            {currentSuggestions.map((suggestion, index) => (
               <SearchSuggestion 
                 key={index} 
                 label={suggestion} 
