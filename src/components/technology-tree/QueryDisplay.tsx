@@ -97,6 +97,15 @@ export const QueryDisplay = ({ query, treeMode }: QueryDisplayProps) => {
     }
   };
 
+  // Dynamic styling based on selected mode to match homepage
+  const getModeStyles = () => {
+    if (selectedMode === "TED") {
+      return "bg-blue-50 text-blue-700";
+    } else {
+      return "bg-purple-50 text-purple-700";
+    }
+  };
+
   return (
     <div className="mb-4">
       <form onSubmit={handleSubmit}>
@@ -118,7 +127,7 @@ export const QueryDisplay = ({ query, treeMode }: QueryDisplayProps) => {
               onValueChange={(value: "TED" | "FAST") => setSelectedMode(value)}
               disabled={isGenerating}
             >
-              <SelectTrigger className="h-7 w-auto border-0 bg-muted rounded-full px-3 text-xs focus:ring-0 focus:ring-offset-0">
+              <SelectTrigger className={`h-7 w-auto border-0 rounded-full px-3 text-xs focus:ring-0 focus:ring-offset-0 ${getModeStyles()}`}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
