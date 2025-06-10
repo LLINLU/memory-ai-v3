@@ -64,6 +64,12 @@ interface MainContentProps {
   searchMode?: string;
   onGuidanceClick?: (type: string) => void;
   treeMode?: string;
+  // Navigation control props
+  onScrollToStart?: () => void;
+  onScrollToEnd?: () => void;
+  canScrollLeft?: boolean;
+  canScrollRight?: boolean;
+  lastVisibleLevel?: number;
 }
 
 export const MainContent = ({
@@ -97,6 +103,11 @@ export const MainContent = ({
   searchMode,
   onGuidanceClick,
   treeMode,
+  onScrollToStart,
+  onScrollToEnd,
+  canScrollLeft,
+  canScrollRight,
+  lastVisibleLevel,
 }: MainContentProps) => {
   const handleGuidanceItemClick = (type: string) => {
     if (onGuidanceClick) {
@@ -166,7 +177,7 @@ export const MainContent = ({
           conversationHistory={conversationHistory}
         />
 
-        {/* Path Display */}
+        {/* Path Display with Navigation Controls */}
         <PathDisplay
           selectedPath={selectedPath}
           level1Items={level1Items}
@@ -181,6 +192,11 @@ export const MainContent = ({
           level10Items={level10Items}
           showLevel4={showLevel4}
           onGuidanceClick={onGuidanceClick}
+          onScrollToStart={onScrollToStart}
+          onScrollToEnd={onScrollToEnd}
+          canScrollLeft={canScrollLeft}
+          canScrollRight={canScrollRight}
+          lastVisibleLevel={lastVisibleLevel}
         />
       </div>
       <div className="flex-1 overflow-hidden">
@@ -201,6 +217,7 @@ export const MainContent = ({
           onEditNode={onEditNode}
           onDeleteNode={onDeleteNode}
           levelNames={levelNames}
+          hideNavigationControls={true}
         />
       </div>
     </div>

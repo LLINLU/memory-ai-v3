@@ -54,6 +54,7 @@ interface LevelSelectionProps {
     level9?: string;
     level10?: string;
   };
+  hideNavigationControls?: boolean;
 }
 
 export const LevelSelection = ({
@@ -73,6 +74,7 @@ export const LevelSelection = ({
   onEditNode,
   onDeleteNode,
   levelNames,
+  hideNavigationControls = false,
 }: LevelSelectionProps) => {
   // Reorder items to ensure selected items appear first
   const reorderedLevel1Items = React.useMemo(() => {
@@ -420,14 +422,16 @@ export const LevelSelection = ({
   };
   return (
     <div className="h-full flex flex-col">
-      {/* Navigation Controls */}
-      <NavigationControls
-        onScrollToStart={handleScrollToStart}
-        onScrollToEnd={handleScrollToEnd}
-        canScrollLeft={canScrollLeft}
-        canScrollRight={canScrollRight}
-        lastVisibleLevel={lastVisibleLevel}
-      />
+      {/* Navigation Controls - conditionally rendered */}
+      {!hideNavigationControls && (
+        <NavigationControls
+          onScrollToStart={handleScrollToStart}
+          onScrollToEnd={handleScrollToEnd}
+          canScrollLeft={canScrollLeft}
+          canScrollRight={canScrollRight}
+          lastVisibleLevel={lastVisibleLevel}
+        />
+      )}
 
       {/* Horizontal scrollable container */}
       <div

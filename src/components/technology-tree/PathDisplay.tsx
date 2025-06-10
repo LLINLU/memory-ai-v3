@@ -1,13 +1,20 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Info, ChevronDown, ChevronRight } from "lucide-react";
+import { Info, ChevronDown, ChevronRight, ChevronLeft } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface PathDisplayProps {
   selectedPath: {
@@ -34,6 +41,12 @@ interface PathDisplayProps {
   level10Items?: Record<string, any[]>;
   showLevel4: boolean;
   onGuidanceClick?: (type: string) => void;
+  // Navigation control props
+  onScrollToStart?: () => void;
+  onScrollToEnd?: () => void;
+  canScrollLeft?: boolean;
+  canScrollRight?: boolean;
+  lastVisibleLevel?: number;
 }
 
 export const PathDisplay = ({
@@ -50,6 +63,11 @@ export const PathDisplay = ({
   level10Items = {},
   showLevel4,
   onGuidanceClick,
+  onScrollToStart,
+  onScrollToEnd,
+  canScrollLeft = false,
+  canScrollRight = false,
+  lastVisibleLevel = 3,
 }: PathDisplayProps) => {
   const [showPath, setShowPath] = useState(false);
 
@@ -170,7 +188,54 @@ export const PathDisplay = ({
 
   return (
     <div className="mb-0" style={{ paddingTop: "0rem" }}>
-      <div className="flex items-center">
+      {/* First row: Navigation controls (left) + Toggle switch (right) */}
+      <div className="flex items-center justify-between mb-2">
+        {/* Left side: Navigation controls */}
+        <div className="flex items-center gap-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onScrollToStart}
+                  disabled={!canScrollLeft}
+                  className={`h-8 w-8 p-0 border-[#4877e5] ${
+                    !canScrollLeft ? "opacity-50" : ""
+                  }`}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>レベル1に戻る</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onScrollToEnd}
+                  disabled={!canScrollRight}
+                  className={`h-8 w-8 p-0 border-[#4877e5] ${
+                    !canScrollRight ? "opacity-50" : ""
+                  }`}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>レベル{lastVisibleLevel}まで進む</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        
+        {/* Right side: Toggle switch */}
         <div className="flex items-center gap-2">
           <Switch
             checked={showPath}
@@ -180,9 +245,12 @@ export const PathDisplay = ({
             パンくずリストを{showPath ? '隠す' : '表示'}
           </span>
         </div>
-        
-        {showPath && (
-          <p className="text-gray-600 ml-4" style={{ fontSize: "14px" }}>
+      </div>
+
+      {/* Second row: Breadcrumb path (conditional) */}
+      {showPath && (
+        <div className="mb-2">
+          <p className="text-gray-600" style={{ fontSize: "14px" }}>
             {level1Name && level1Name}
             {level2Name && ` → ${level2Name}`}
             {level3Name && ` → ${level3Name}`}
@@ -194,8 +262,8 @@ export const PathDisplay = ({
             {level9Name && ` → ${level9Name}`}
             {level10Name && ` → ${level10Name}`}
           </p>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
