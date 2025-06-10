@@ -1,3 +1,4 @@
+
 import { Clock, Loader2 } from "lucide-react";
 import {
   SidebarMenu,
@@ -15,6 +16,7 @@ interface SavedTree {
   name: string;
   search_theme: string;
   created_at: string;
+  mode?: string; // Add mode field
 }
 
 interface SearchSectionProps {
@@ -22,6 +24,7 @@ interface SearchSectionProps {
   searches: {
     title: string;
     treeId: string;
+    mode?: string; // Add mode field
     isMock?: boolean;
   }[];
   onSearchClick: (treeId: string, searchTheme: string) => void;
@@ -35,6 +38,23 @@ function SearchSection({
   isLoading,
 }: SearchSectionProps) {
   const { state } = useSidebar();
+
+  const getModeColor = (mode?: string) => {
+    if (mode === "TED") return "bg-blue-500";
+    if (mode === "FAST") return "bg-purple-500";
+    return "bg-gray-400"; // fallback
+  };
+
+  const getModePrefix = (mode?: string) => {
+    if (mode === "TED") return "ニーズから";
+    if (mode === "FAST") return "技術から";
+    return "";
+  };
+
+  const getTooltipText = (search: { title: string; mode?: string }) => {
+    const prefix = getModePrefix(search.mode);
+    return prefix ? `${prefix} ${search.title}` : search.title;
+  };
 
   return (
     state === "expanded" && (
@@ -53,7 +73,7 @@ function SearchSection({
           ) : searches.length === 0 ? (
             <SidebarMenuItem>
               <SidebarMenuButton disabled>
-                <Clock className="text-gray-400" />
+                <div className="w-2 h-2 rounded-full bg-gray-400" />
                 <span className="text-gray-400 text-sm">履歴がありません</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -64,8 +84,8 @@ function SearchSection({
                   onClick={() => onSearchClick(search.treeId, search.title)}
                   className="hover:bg-gray-100 cursor-pointer"
                 >
-                  <Clock className="text-gray-500" />
-                  <span className="truncate" title={search.title}>
+                  <div className={`w-2 h-2 rounded-full ${getModeColor(search.mode)}`} />
+                  <span className="truncate" title={getTooltipText(search)}>
                     {search.title}
                   </span>
                 </SidebarMenuButton>
@@ -82,21 +102,22 @@ export function SidebarSearches() {
   const { trees, treesLoading } = useTreeGeneration();
 
   const [recentSearches, setRecentSearches] = useState<
-    { title: string; treeId: string; isMock?: boolean }[]
+    { title: string; treeId: string; mode?: string; isMock?: boolean }[]
   >([]);
   const [previousSearches, setPreviousSearches] = useState<
-    { title: string; treeId: string; isMock?: boolean }[]
+    { title: string; treeId: string; mode?: string; isMock?: boolean }[]
   >([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     // Process trees data when it changes
     if (trees && Array.isArray(trees)) {
-      // Convert trees to search format      // Convert trees to search format
+      // Convert trees to search format
       const searchData = trees.map((tree: SavedTree) => ({
         title: tree.search_theme,
         treeId: tree.id,
         createdAt: new Date(tree.created_at),
+        mode: tree.mode, // Include mode from database
         isMock: false,
       }));
 

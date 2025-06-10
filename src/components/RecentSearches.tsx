@@ -1,3 +1,4 @@
+
 import { SearchCard } from "./SearchCard";
 import { useTreeGeneration } from "@/hooks/useTreeGeneration";
 import { useState, useEffect } from "react";
@@ -8,6 +9,7 @@ interface SavedTree {
   name: string;
   search_theme: string;
   created_at: string;
+  mode?: string; // Add mode field
 }
 
 export const RecentSearches = () => {
@@ -22,9 +24,10 @@ export const RecentSearches = () => {
         title: tree.search_theme,
         paperCount: Math.floor(Math.random() * 40) + 10, // Random paper count for display
         implementationCount: Math.floor(Math.random() * 8) + 1, // Random implementation count
-        tags: generateTagsFromTheme(tree.search_theme),
+        tags: generateTagsFromTheme(tree.search_theme, tree.mode), // Pass mode to tag generation
         timeAgo: formatTimeAgo(tree.created_at),
         treeId: tree.id, // Store tree ID for navigation
+        mode: tree.mode, // Include mode for potential future use
       }));
 
       setRecentSearches(searchData);
@@ -33,9 +36,16 @@ export const RecentSearches = () => {
     }
   }, [trees]);
 
-  const generateTagsFromTheme = (theme: string) => {
+  const generateTagsFromTheme = (theme: string, mode?: string) => {
     const keywords = theme.toLowerCase();
     const tags: { label: string; variant: string }[] = [];
+
+    // Add mode-based tag first
+    if (mode === "TED") {
+      tags.push({ label: "ニーズから", variant: "blue" });
+    } else if (mode === "FAST") {
+      tags.push({ label: "技術から", variant: "yellow" });
+    }
 
     // Simple keyword-based tag generation
     if (
@@ -69,8 +79,8 @@ export const RecentSearches = () => {
       tags.push({ label: "工学", variant: "engineering" });
     }
 
-    // Default tag if no matches
-    if (tags.length === 0) {
+    // Default tag if no keyword matches (but mode tag might exist)
+    if (tags.length === 0 || (tags.length === 1 && mode)) {
       tags.push({ label: "技術", variant: "default" });
     }
 
@@ -89,6 +99,7 @@ export const RecentSearches = () => {
     if (diffDays < 30) return `${Math.floor(diffDays / 7)}週間前`;
     return `${Math.floor(diffDays / 30)}ヶ月前`;
   };
+  
   if (treesLoading) {
     return (
       <section className="mt-12">
