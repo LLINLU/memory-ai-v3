@@ -39,7 +39,7 @@ export const ScenarioSection = ({
           <h2 className="text-sm font-medium text-blue-600 mb-1">
             研究シナリオ：
           </h2>
-          <p className="text-gray-800 text-base mb-0">{scenario}</p>
+          <p className="text-gray-800 mb-0 text-sm">{scenario}</p>
         </div>
         <Button onClick={handleEditScenario} variant="outline" size="sm" title="シナリオを編集" className="text-blue-600 border-blue-200 hover:bg-blue-100 h-8 w-8">
           <Edit className="h-3.5 w-3.5" />
