@@ -54,6 +54,11 @@ export const AddNodeDialog: React.FC<AddNodeDialogProps> = ({
             />
           </div>
         </div>
+        <div className="mb-4">
+          <p className="text-primary underline text-sm">
+            新しいノードの作成を手伝ってほしいです📝
+          </p>
+        </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>キャンセル</Button>
           <Button onClick={onSave}>追加する</Button>
