@@ -119,7 +119,7 @@ export const MainContent = ({
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
-      <div className="container mx-auto px-4 py-6 flex-shrink-0">
+      <div className="container mx-auto px-4 pt-2 pb-4 flex-shrink-0">
         {/* Query Display Section - appears first */}
         <QueryDisplay query={query} treeMode={treeMode} />
 
