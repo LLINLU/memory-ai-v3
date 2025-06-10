@@ -1,4 +1,3 @@
-
 import { ArrowUp, Target, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -101,7 +100,19 @@ export const TreeGenerationSection = () => {
   return (
     <Card className="border-0 shadow-none">
       <CardHeader className="text-center">
-        <CardTitle className="text-4xl font-bold mb-4">研究情報を俯瞰する</CardTitle>
+        <CardTitle 
+          className="mb-4"
+          style={{
+            fontSize: '1.875rem',
+            fontWeight: 600,
+            background: '-webkit-linear-gradient(left, #0049ab 30%, #a855f7 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}
+        >
+          研究情報を俯瞰する
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="w-full mx-auto mb-8">
