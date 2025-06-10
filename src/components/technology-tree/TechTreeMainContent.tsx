@@ -52,6 +52,7 @@ interface TechTreeMainContentProps {
   searchMode?: string;
   onGuidanceClick?: (type: string) => void;
   query?: string;
+  treeMode?: string;
 }
 
 export const TechTreeMainContent = ({
@@ -79,6 +80,7 @@ export const TechTreeMainContent = ({
   searchMode,
   onGuidanceClick,
   query,
+  treeMode,
 }: TechTreeMainContentProps) => {
   return (
     <MainContent
@@ -106,6 +108,7 @@ export const TechTreeMainContent = ({
       searchMode={searchMode}
       onGuidanceClick={onGuidanceClick}
       query={query}
+      treeMode={treeMode}
     />
   );
 };

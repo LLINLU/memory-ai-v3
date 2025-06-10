@@ -63,6 +63,7 @@ interface MainContentProps {
   onAddLevel4?: () => void;
   searchMode?: string;
   onGuidanceClick?: (type: string) => void;
+  treeMode?: string;
 }
 
 export const MainContent = ({
@@ -95,6 +96,7 @@ export const MainContent = ({
   onAddLevel4,
   searchMode,
   onGuidanceClick,
+  treeMode,
 }: MainContentProps) => {
   const handleGuidanceItemClick = (type: string) => {
     if (onGuidanceClick) {
@@ -106,7 +108,7 @@ export const MainContent = ({
     <div className="h-full flex flex-col overflow-hidden">
       <div className="container mx-auto px-4 py-6 flex-shrink-0">
         {/* Query Display Section - appears first */}
-        <QueryDisplay query={query} />
+        <QueryDisplay query={query} treeMode={treeMode} />
 
         {/* Title and Guidance Section */}
         <div className="mb-0" style={{ paddingTop: "0rem" }}>
