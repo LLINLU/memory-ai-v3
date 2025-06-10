@@ -35,8 +35,8 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
                 size="sm"
                 onClick={onScrollToStart}
                 disabled={!canScrollLeft}
-                className={`h-8 w-8 p-0 ${
-                  canScrollLeft ? "border-[#4877e5]" : ""
+                className={`h-8 w-8 p-0 border-[#4877e5] ${
+                  !canScrollLeft ? "opacity-50" : ""
                 }`}
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -56,8 +56,8 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
                 size="sm"
                 onClick={onScrollToEnd}
                 disabled={!canScrollRight}
-                className={`h-8 w-8 p-0 ${
-                  canScrollRight ? "border-[#4877e5]" : ""
+                className={`h-8 w-8 p-0 border-[#4877e5] ${
+                  !canScrollRight ? "opacity-50" : ""
                 }`}
               >
                 <ChevronRight className="h-4 w-4" />
