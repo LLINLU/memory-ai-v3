@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Info } from "lucide-react";
+import { Toggle } from "@/components/ui/toggle";
+import { Info, ChevronDown, ChevronRight } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,6 +51,8 @@ export const PathDisplay = ({
   showLevel4,
   onGuidanceClick,
 }: PathDisplayProps) => {
+  const [showPath, setShowPath] = useState(false);
+
   // Find the selected items by ID to display their names
   const findItemName = (itemId: string, items: any[]) => {
     const item = items.find((item) => item.id === itemId);
@@ -168,18 +171,31 @@ export const PathDisplay = ({
   return (
     <div className="mb-0" style={{ paddingTop: "0rem" }}>
       <div className="flex items-center">
-        <p className="text-gray-600" style={{ fontSize: "14px" }}>
-          {level1Name && level1Name}
-          {level2Name && ` → ${level2Name}`}
-          {level3Name && ` → ${level3Name}`}
-          {level4Name && ` → ${level4Name}`}
-          {level5Name && ` → ${level5Name}`}
-          {level6Name && ` → ${level6Name}`}
-          {level7Name && ` → ${level7Name}`}
-          {level8Name && ` → ${level8Name}`}
-          {level9Name && ` → ${level9Name}`}
-          {level10Name && ` → ${level10Name}`}
-        </p>
+        <Toggle
+          pressed={showPath}
+          onPressedChange={setShowPath}
+          variant="ghost"
+          size="sm"
+          className="h-6 px-2 text-xs text-gray-500 hover:text-gray-700 data-[state=on]:bg-gray-100 data-[state=on]:text-gray-700"
+        >
+          {showPath ? <ChevronDown className="h-3 w-3 mr-1" /> : <ChevronRight className="h-3 w-3 mr-1" />}
+          パンくずリストを{showPath ? '隠す' : '表示'}
+        </Toggle>
+        
+        {showPath && (
+          <p className="text-gray-600 ml-2" style={{ fontSize: "14px" }}>
+            {level1Name && level1Name}
+            {level2Name && ` → ${level2Name}`}
+            {level3Name && ` → ${level3Name}`}
+            {level4Name && ` → ${level4Name}`}
+            {level5Name && ` → ${level5Name}`}
+            {level6Name && ` → ${level6Name}`}
+            {level7Name && ` → ${level7Name}`}
+            {level8Name && ` → ${level8Name}`}
+            {level9Name && ` → ${level9Name}`}
+            {level10Name && ` → ${level10Name}`}
+          </p>
+        )}
       </div>
     </div>
   );
