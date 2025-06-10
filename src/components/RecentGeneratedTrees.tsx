@@ -7,7 +7,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { TreePine, Clock, ArrowRight, Loader2, ChevronDown } from "lucide-react";
 import { useTreeGeneration } from "@/hooks/useTreeGeneration";
@@ -59,14 +58,14 @@ export const RecentGeneratedTrees = () => {
     }
   };
 
-  const getModeVariant = (mode?: string) => {
+  const getModeClasses = (mode?: string) => {
     switch (mode) {
       case "FAST":
-        return "secondary";
+        return "px-3 py-1 rounded-full text-[0.75rem] font-normal bg-purple-50 text-purple-700";
       case "TED":
-        return "default";
+        return "px-3 py-1 rounded-full text-[0.75rem] font-normal bg-blue-50 text-blue-700";
       default:
-        return "default";
+        return "px-3 py-1 rounded-full text-[0.75rem] font-normal bg-blue-50 text-blue-700"; // Default to TED styling
     }
   };
 
@@ -119,12 +118,9 @@ export const RecentGeneratedTrees = () => {
                     <Clock className="h-3 w-3" />
                     {formatDate(tree.created_at)}
                   </div>
-                  <Badge 
-                    variant={getModeVariant(tree.mode)}
-                    className="text-xs"
-                  >
+                  <span className={getModeClasses(tree.mode)}>
                     {getModeLabel(tree.mode)}
-                  </Badge>
+                  </span>
                 </div>
               </div>
               <Button
