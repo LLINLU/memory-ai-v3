@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { LevelColumn } from "./level-selection/LevelColumn";
 import { ConnectionLines } from "./level-selection/ConnectionLines";
@@ -287,7 +288,9 @@ export const LevelSelection = ({
     if (visibleLevel6Items.length > 0) return 6;
     if (visibleLevel5Items.length > 0) return 5;
     if (visibleLevel4Items.length > 0) return 4;
-    return 3;
+    if (visibleLevel3Items.length > 0) return 3;
+    if (visibleLevel2Items.length > 0) return 2;
+    return 1;
   };
 
   const lastVisibleLevel = getLastVisibleLevel();
