@@ -44,6 +44,7 @@ interface LevelColumnProps {
   };
   nextLevelItems?: Record<string, LevelItem[]>;
   isLastLevel?: boolean;
+  onNodeCreationHelp?: () => void;
 }
 
 export const LevelColumn: React.FC<LevelColumnProps> = ({
@@ -57,6 +58,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   selectedPath,
   nextLevelItems = {},
   isLastLevel = false,
+  onNodeCreationHelp,
 }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingNode, setEditingNode] = useState<LevelItem | null>(null);
@@ -77,6 +79,18 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
     setAddTitle("");
     setAddDescription("");
     setIsAddDialogOpen(true);
+  };
+
+  const handleNodeCreationHelp = () => {
+    // Close the add dialog
+    setIsAddDialogOpen(false);
+    // Clear the form
+    setAddTitle("");
+    setAddDescription("");
+    // Trigger the help callback
+    if (onNodeCreationHelp) {
+      onNodeCreationHelp();
+    }
   };
 
   const handleAddSave = () => {
@@ -279,6 +293,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
         onTitleChange={setAddTitle}
         onDescriptionChange={setAddDescription}
         onSave={handleAddSave}
+        onHelpClick={handleNodeCreationHelp}
       />
     </div>
   );
