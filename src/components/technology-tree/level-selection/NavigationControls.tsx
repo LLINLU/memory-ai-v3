@@ -1,0 +1,74 @@
+
+import React from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+interface NavigationControlsProps {
+  onScrollToStart: () => void;
+  onScrollToEnd: () => void;
+  canScrollLeft: boolean;
+  canScrollRight: boolean;
+  lastVisibleLevel: number;
+}
+
+export const NavigationControls: React.FC<NavigationControlsProps> = ({
+  onScrollToStart,
+  onScrollToEnd,
+  canScrollLeft,
+  canScrollRight,
+  lastVisibleLevel,
+}) => {
+  return (
+    <div className="flex items-center justify-between mb-4 px-4">
+      <div className="flex items-center gap-2">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onScrollToStart}
+                disabled={!canScrollLeft}
+                className="h-8 w-8 p-0"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>レベル1に戻る</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onScrollToEnd}
+                disabled={!canScrollRight}
+                className="h-8 w-8 p-0"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>レベル{lastVisibleLevel}まで進む</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+
+      <div className="text-sm text-gray-500">
+        最大レベル{lastVisibleLevel}まで表示
+      </div>
+    </div>
+  );
+};

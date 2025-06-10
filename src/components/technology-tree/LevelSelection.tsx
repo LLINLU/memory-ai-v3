@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { LevelColumn } from "./level-selection/LevelColumn";
 import { ConnectionLines } from "./level-selection/ConnectionLines";
+import { NavigationControls } from "./level-selection/NavigationControls";
 import { useConnectionLines } from "./level-selection/useConnectionLines";
 import { toast } from "@/hooks/use-toast";
 
@@ -257,6 +258,9 @@ export const LevelSelection = ({
   } | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
   useConnectionLines(
     containerRef,
     selectedPath,
@@ -270,6 +274,72 @@ export const LevelSelection = ({
     setLevel8to9Line,
     setLevel9to10Line
   );
+
+  // Calculate the last visible level
+  const getLastVisibleLevel = () => {
+    if (visibleLevel10Items.length > 0) return 10;
+    if (visibleLevel9Items.length > 0) return 9;
+    if (visibleLevel8Items.length > 0) return 8;
+    if (visibleLevel7Items.length > 0) return 7;
+    if (visibleLevel6Items.length > 0) return 6;
+    if (visibleLevel5Items.length > 0) return 5;
+    if (visibleLevel4Items.length > 0) return 4;
+    return 3;
+  };
+
+  const lastVisibleLevel = getLastVisibleLevel();
+
+  // Update scroll button states
+  const updateScrollButtons = () => {
+    if (containerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  };
+
+  // Handle scroll to start
+  const handleScrollToStart = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollTo({
+        left: 0,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  // Handle scroll to end
+  const handleScrollToEnd = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollTo({
+        left: containerRef.current.scrollWidth,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  // Listen for scroll events
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      updateScrollButtons();
+      container.addEventListener("scroll", updateScrollButtons);
+      return () => container.removeEventListener("scroll", updateScrollButtons);
+    }
+  }, [lastVisibleLevel]);
+
+  // Update scroll buttons when content changes
+  useEffect(() => {
+    updateScrollButtons();
+  }, [
+    visibleLevel4Items,
+    visibleLevel5Items,
+    visibleLevel6Items,
+    visibleLevel7Items,
+    visibleLevel8Items,
+    visibleLevel9Items,
+    visibleLevel10Items,
+  ]);
 
   const handleNodeSelection = (level: string, nodeId: string) => {
     if (selectedPath[level] !== nodeId) {
@@ -319,6 +389,15 @@ export const LevelSelection = ({
   };
   return (
     <div className="h-full flex flex-col">
+      {/* Navigation Controls */}
+      <NavigationControls
+        onScrollToStart={handleScrollToStart}
+        onScrollToEnd={handleScrollToEnd}
+        canScrollLeft={canScrollLeft}
+        canScrollRight={canScrollRight}
+        lastVisibleLevel={lastVisibleLevel}
+      />
+
       {/* Horizontal scrollable container */}
       <div
         className="flex flex-row gap-4 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pb-4 px-4"
