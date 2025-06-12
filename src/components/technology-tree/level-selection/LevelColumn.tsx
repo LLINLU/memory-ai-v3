@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { TreeNode } from "./TreeNode";
 import { EditNodeDialog } from "./EditNodeDialog";
-import { AddNodeDialog } from "./AddNodeDialog";
 import { CustomNodeButton } from "./CustomNodeButton";
 import { EmptyNodeList } from "./EmptyNodeList";
 import {
@@ -44,7 +43,6 @@ interface LevelColumnProps {
   };
   nextLevelItems?: Record<string, LevelItem[]>;
   isLastLevel?: boolean;
-  onGuidanceClick?: (type: string) => void;
 }
 
 export const LevelColumn: React.FC<LevelColumnProps> = ({
@@ -58,7 +56,6 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   selectedPath,
   nextLevelItems = {},
   isLastLevel = false,
-  onGuidanceClick,
 }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingNode, setEditingNode] = useState<LevelItem | null>(null);
@@ -66,40 +63,33 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   const [editDescription, setEditDescription] = useState("");
   const [showDescriptions, setShowDescriptions] = useState(true);
 
-  // Add dialog state
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [addTitle, setAddTitle] = useState("");
-  const [addDescription, setAddDescription] = useState("");
-
   // Extract level number from title (e.g., "レベル1" -> 1, "レベル10" -> 10)
   const levelNumber = parseInt(title.replace('レベル', ''), 10) || 1;
 
   const handleCustomNodeClick = () => {
-    // Open the add dialog instead of scrolling
-    setAddTitle("");
-    setAddDescription("");
-    setIsAddDialogOpen(true);
-  };
+    // Scroll to the top of the page
+    window.scrollTo({ top: 0, behavior: "smooth" });
 
-  const handleAddSave = () => {
-    if (addTitle.trim()) {
-      // Create custom event to add node with the level information
-      const addNodeEvent = new CustomEvent("add-node", {
-        detail: {
-          levelNumber: levelNumber.toString(),
-          title: addTitle,
-          description: addDescription,
-        },
-      });
-      document.dispatchEvent(addNodeEvent);
+    // Use the extracted level number
+    const levelNumberString = levelNumber.toString();
+
+    // Update sidebar tab to chat with level information only
+    const customEvent = new CustomEvent("switch-to-chat", {
+      detail: {
+        levelNumber: levelNumberString,
+      },
+    });
+    document.dispatchEvent(customEvent);
+
+    // Find and open the chatbox
+    const chatbox = document.querySelector("[data-chatbox]");
+    if (chatbox) {
+      chatbox.setAttribute("data-chatbox-open", "true");
     }
-    setIsAddDialogOpen(false);
-    setAddTitle("");
-    setAddDescription("");
   };
 
   const handleEditClick = (e: React.MouseEvent, item: LevelItem) => {
-    e.stopPropagation();
+    e.stopPropagation(); // Prevent triggering node selection
     setEditingNode(item);
     setEditTitle(item.name);
     setEditDescription(item.description || "");
@@ -107,7 +97,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   };
 
   const handleDeleteClick = (e: React.MouseEvent, nodeId: string) => {
-    e.stopPropagation();
+    e.stopPropagation(); // Prevent triggering node selection
     if (onDeleteNode) {
       onDeleteNode(nodeId);
     }
@@ -134,24 +124,34 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   const shouldShowAddButton = () => {
     switch (levelNumber) {
       case 1:
+        // Always show for level 1 (starting point)
         return true;
       case 2:
+        // Show only if level 1 is selected
         return selectedPath.level1 !== "";
       case 3:
+        // Show only if level 2 is selected
         return selectedPath.level2 !== "";
       case 4:
+        // Show only if level 3 is selected
         return selectedPath.level3 !== "";
       case 5:
+        // Show only if level 4 is selected
         return selectedPath.level4 !== "";
       case 6:
+        // Show only if level 5 is selected
         return selectedPath.level5 !== "";
       case 7:
+        // Show only if level 6 is selected
         return selectedPath.level6 !== "";
       case 8:
+        // Show only if level 7 is selected
         return selectedPath.level7 !== "";
       case 9:
+        // Show only if level 8 is selected
         return selectedPath.level8 !== "";
       case 10:
+        // Show only if level 9 is selected
         return selectedPath.level9 !== "";
       default:
         return false;
@@ -163,7 +163,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
     if (title === "レベル1") return "#3d5e80";
     if (title === "レベル2") return "#3774c2";
     if (title === "レベル3") return "#467efd";
-    return "text-blue-700";
+    return "text-blue-700"; // default color
   };
 
   // Dynamic tooltip text based on showDescriptions state
@@ -271,17 +271,6 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
         onTitleChange={setEditTitle}
         onDescriptionChange={setEditDescription}
         onSave={handleSaveEdit}
-      />
-
-      <AddNodeDialog
-        isOpen={isAddDialogOpen}
-        onOpenChange={setIsAddDialogOpen}
-        title={addTitle}
-        description={addDescription}
-        onTitleChange={setAddTitle}
-        onDescriptionChange={setAddDescription}
-        onSave={handleAddSave}
-        onGuidanceClick={onGuidanceClick}
       />
     </div>
   );

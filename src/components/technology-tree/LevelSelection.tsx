@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { LevelColumn } from "./level-selection/LevelColumn";
 import { ConnectionLines } from "./level-selection/ConnectionLines";
@@ -56,7 +57,6 @@ interface LevelSelectionProps {
   };
   hideNavigationControls?: boolean;
   containerRef?: React.RefObject<HTMLDivElement>;
-  onGuidanceClick?: (type: string) => void;
 }
 
 export const LevelSelection = ({
@@ -78,7 +78,6 @@ export const LevelSelection = ({
   levelNames,
   hideNavigationControls = false,
   containerRef,
-  onGuidanceClick,
 }: LevelSelectionProps) => {
   // Reorder items to ensure selected items appear first
   const reorderedLevel1Items = React.useMemo(() => {
@@ -367,7 +366,6 @@ export const LevelSelection = ({
           selectedPath={selectedPath}
           nextLevelItems={level2Items}
           isLastLevel={lastVisibleLevel === 1}
-          onGuidanceClick={onGuidanceClick}
         />
         <LevelColumn
           title="レベル2"
@@ -382,7 +380,6 @@ export const LevelSelection = ({
           selectedPath={selectedPath}
           nextLevelItems={level3Items}
           isLastLevel={lastVisibleLevel === 2}
-          onGuidanceClick={onGuidanceClick}
         />
         <LevelColumn
           title="レベル3"
@@ -397,7 +394,6 @@ export const LevelSelection = ({
           selectedPath={selectedPath}
           nextLevelItems={level4Items}
           isLastLevel={lastVisibleLevel === 3}
-          onGuidanceClick={onGuidanceClick}
         />
         {/* Always show level 4 if items exist, regardless of showLevel4 flag */}
         {visibleLevel4Items.length > 0 && (
@@ -414,7 +410,6 @@ export const LevelSelection = ({
             selectedPath={selectedPath}
             nextLevelItems={level5Items}
             isLastLevel={lastVisibleLevel === 4}
-            onGuidanceClick={onGuidanceClick}
           />
         )}
         {/* Level 5 and beyond */}
@@ -432,7 +427,6 @@ export const LevelSelection = ({
             selectedPath={selectedPath}
             nextLevelItems={level6Items}
             isLastLevel={lastVisibleLevel === 5}
-            onGuidanceClick={onGuidanceClick}
           />
         )}
         {visibleLevel6Items.length > 0 && (
@@ -449,7 +443,6 @@ export const LevelSelection = ({
             selectedPath={selectedPath}
             nextLevelItems={level7Items}
             isLastLevel={lastVisibleLevel === 6}
-            onGuidanceClick={onGuidanceClick}
           />
         )}
         {visibleLevel7Items.length > 0 && (
@@ -466,7 +459,6 @@ export const LevelSelection = ({
             selectedPath={selectedPath}
             nextLevelItems={level8Items}
             isLastLevel={lastVisibleLevel === 7}
-            onGuidanceClick={onGuidanceClick}
           />
         )}
         {visibleLevel8Items.length > 0 && (
@@ -483,7 +475,6 @@ export const LevelSelection = ({
             selectedPath={selectedPath}
             nextLevelItems={level9Items}
             isLastLevel={lastVisibleLevel === 8}
-            onGuidanceClick={onGuidanceClick}
           />
         )}
         {visibleLevel9Items.length > 0 && (
@@ -500,7 +491,6 @@ export const LevelSelection = ({
             selectedPath={selectedPath}
             nextLevelItems={level10Items}
             isLastLevel={lastVisibleLevel === 9}
-            onGuidanceClick={onGuidanceClick}
           />
         )}
         {visibleLevel10Items.length > 0 && (
@@ -516,7 +506,6 @@ export const LevelSelection = ({
             onDeleteNode={(nodeId) => handleDeleteNode("level10", nodeId)}
             selectedPath={selectedPath}
             isLastLevel={true}
-            onGuidanceClick={onGuidanceClick}
           />
         )}
         <ConnectionLines

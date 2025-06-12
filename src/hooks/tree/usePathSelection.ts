@@ -1,4 +1,3 @@
-
 import { NodeSuggestion } from "@/types/chat";
 import { PathLevel } from "@/types/tree";
 import { useNodeOperations } from "./useNodeOperations";
@@ -29,8 +28,7 @@ export const usePathSelection = (
     level8Items?: Record<string, any[]>;
     level9Items?: Record<string, any[]>;
     level10Items?: Record<string, any[]>;
-  },
-  isMindmapView = false
+  }
 ) => {
   const {
     selectedPath,
@@ -41,7 +39,7 @@ export const usePathSelection = (
     setShowLevel4,
     handleAddLevel4,
     updateTreeData,
-  } = usePathSelectionState(initialPath, isMindmapView);
+  } = usePathSelectionState(initialPath);
 
   // Update tree data for auto-selection
   useEffect(() => {
@@ -49,7 +47,6 @@ export const usePathSelection = (
       updateTreeData(treeData);
     }
   }, [treeData, updateTreeData]);
-  
   // Use only TED-generated data if available, otherwise use empty arrays
   const level1Data = treeData?.level1Items || [];
   const level2Data = treeData?.level2Items || {};
@@ -87,9 +84,7 @@ export const usePathSelection = (
     level8Data,
     level9Data,
     level10Data
-  ); 
-
-  // Update path when tree data changes to ensure valid selections
+  ); // Update path when tree data changes to ensure valid selections
   useEffect(() => {
     if (treeData?.level1Items && treeData.level1Items.length > 0) {
       const currentLevel1Exists = treeData.level1Items.find(
@@ -125,7 +120,6 @@ export const usePathSelection = (
   const deleteNode = (level: PathLevel, nodeId: string) => {
     removeNode(level, nodeId, selectedPath, setSelectedPath);
   };
-  
   return {
     selectedPath,
     hasUserMadeSelection,
