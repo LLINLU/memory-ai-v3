@@ -1,4 +1,3 @@
-
 import { TreeNode } from "@/types/tree";
 import * as d3 from 'd3';
 
@@ -160,9 +159,9 @@ const createD3Nodes = (hierarchicalData: any): MindMapNode[] => {
 
   const root = d3.hierarchy(hierarchicalData);
   
-  // Compact layout with reduced spacing for tighter clustering
+  // Compact layout with increased vertical spacing to prevent overlap
   const treeLayout = d3.tree()
-    .nodeSize([25, 400]) // Reduced from [80, 700] to [25, 400] for compact layout
+    .nodeSize([40, 400]) // Increased from [25, 400] to [40, 400] for better vertical spacing
     .separation((a, b) => a.parent === b.parent ? 0.8 : 1.5); // Reduced from 2.5:4 to 0.8:1.5 for tighter clustering
   
   treeLayout(root);
@@ -183,7 +182,7 @@ const createD3Nodes = (hierarchicalData: any): MindMapNode[] => {
     }));
 
   // Debug logging to verify coordinates
-  console.log('MindMap D3 Layout Debug (Compact):');
+  console.log('MindMap D3 Layout Debug (Compact with fixed spacing):');
   console.log('Root node position:', nodes.find(n => n.level === 0));
   console.log('Level 1 nodes:', nodes.filter(n => n.level === 1).map(n => ({ id: n.id, x: n.x, y: n.y })));
   console.log('Max X coordinate:', Math.max(...nodes.map(n => n.x)));
@@ -199,9 +198,9 @@ const createD3Connections = (hierarchicalData: any): MindMapConnection[] => {
 
   const root = d3.hierarchy(hierarchicalData);
   
-  // Compact layout with reduced spacing for tighter clustering (same as createD3Nodes)
+  // Compact layout with increased vertical spacing to prevent overlap (same as createD3Nodes)
   const treeLayout = d3.tree()
-    .nodeSize([25, 400]) // Reduced from [80, 700] to [25, 400] for compact layout
+    .nodeSize([40, 400]) // Increased from [25, 400] to [40, 400] for better vertical spacing
     .separation((a, b) => a.parent === b.parent ? 0.8 : 1.5); // Reduced from 2.5:4 to 0.8:1.5 for tighter clustering
   
   treeLayout(root);
