@@ -3,6 +3,8 @@ import React, { useMemo } from "react";
 import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
 import { MindMapConnections } from "./MindMapConnections";
+import { MindMapControls } from "./MindMapControls";
+import { usePanZoom } from "@/hooks/tree/usePanZoom";
 
 interface MindMapContainerProps {
   selectedPath: any;
@@ -80,41 +82,76 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   };
 
   // Calculate container dimensions based on nodes with proper padding
-  const containerWidth = Math.max(...nodes.map(n => n.x + 250), 1000); // Add more right padding
-  const containerHeight = Math.max(...nodes.map(n => n.y + 120), 800); // Add more bottom padding
+  const containerWidth = Math.max(...nodes.map(n => n.x + 250), 1000);
+  const containerHeight = Math.max(...nodes.map(n => n.y + 120), 800);
+
+  const {
+    zoom,
+    isDragging,
+    handleWheel,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
+    handleMouseLeave,
+    zoomIn,
+    zoomOut,
+    resetView,
+    getTransform,
+  } = usePanZoom(containerWidth, containerHeight);
 
   console.log(`MindMap: Container dimensions - ${containerWidth}x${containerHeight}`);
 
   return (
-    <div className="w-full h-full overflow-auto bg-gray-50 relative">
+    <div className="w-full h-full overflow-hidden bg-gray-50 relative">
       <div
-        className="relative"
+        className="w-full h-full relative"
+        onWheel={handleWheel}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
         style={{
-          width: containerWidth,
-          height: containerHeight,
-          minWidth: "100%",
-          minHeight: "100%",
+          cursor: isDragging ? 'grabbing' : 'grab',
+          userSelect: isDragging ? 'none' : 'auto',
         }}
       >
-        <MindMapConnections connections={connections} />
-        
-        {nodes.map((node) => (
-          <MindMapNodeComponent
-            key={node.id}
-            node={node}
-            onClick={handleNodeClick}
-            onEdit={onEditNode}
-            onDelete={onDeleteNode}
-          />
-        ))}
-        
-        {nodes.length === 0 && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-500">
-            <p className="text-lg">No data available for mindmap view</p>
-            <p className="text-sm mt-2">Please ensure your tree has been generated</p>
-          </div>
-        )}
+        <div
+          className="relative origin-top-left transition-transform duration-200 ease-out"
+          style={{
+            width: containerWidth,
+            height: containerHeight,
+            minWidth: "100%",
+            minHeight: "100%",
+            transform: getTransform(),
+          }}
+        >
+          <MindMapConnections connections={connections} />
+          
+          {nodes.map((node) => (
+            <MindMapNodeComponent
+              key={node.id}
+              node={node}
+              onClick={handleNodeClick}
+              onEdit={onEditNode}
+              onDelete={onDeleteNode}
+            />
+          ))}
+          
+          {nodes.length === 0 && (
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-500">
+              <p className="text-lg">No data available for mindmap view</p>
+              <p className="text-sm mt-2">Please ensure your tree has been generated</p>
+            </div>
+          )}
+        </div>
       </div>
+
+      <MindMapControls
+        zoom={zoom}
+        onZoomIn={zoomIn}
+        onZoomOut={zoomOut}
+        onResetView={resetView}
+      />
     </div>
   );
 };
