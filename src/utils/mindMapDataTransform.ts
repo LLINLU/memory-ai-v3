@@ -26,9 +26,29 @@ export interface MindMapConnection {
 
 const NODE_WIDTH = 200;
 const NODE_HEIGHT = 80;
-const LEVEL_SPACING = 300;
-const NODE_SPACING = 100;
-const GROUP_SPACING = 150; // Additional spacing between parent-child groups
+const LEVEL_SPACING = 250; // Horizontal spacing between levels
+const MIN_SIBLING_SPACING = 120; // Minimum vertical spacing between siblings
+
+// Tree node structure for layout algorithm
+interface TreeLayoutNode {
+  id: string;
+  name: string;
+  description: string;
+  level: number;
+  levelName: string;
+  parentId?: string;
+  isSelected?: boolean;
+  isCustom?: boolean;
+  children: TreeLayoutNode[];
+  x: number;
+  y: number;
+  mod: number; // Modifier for positioning
+  thread?: TreeLayoutNode;
+  ancestor: TreeLayoutNode;
+  change: number;
+  shift: number;
+  prelim: number;
+}
 
 export const transformToMindMapData = (
   level1Items: TreeNode[],
@@ -44,178 +64,233 @@ export const transformToMindMapData = (
   levelNames: Record<string, string>,
   selectedPath: any
 ) => {
-  const nodes: MindMapNode[] = [];
-  const connections: MindMapConnection[] = [];
-  
-  // Track Y positions for level 1 to avoid overlapping
-  let level1YPosition = 50;
-
-  // Helper function to create a node
-  const createNode = (
-    item: TreeNode,
-    level: number,
-    levelName: string,
-    x: number,
-    y: number,
-    parentId?: string
-  ): MindMapNode => {
-    return {
+  // Build hierarchical tree structure
+  const buildTreeStructure = (): TreeLayoutNode[] => {
+    const createTreeNode = (
+      item: TreeNode,
+      level: number,
+      levelName: string,
+      parentId?: string
+    ): TreeLayoutNode => ({
       id: item.id,
       name: item.name,
       description: item.description || "",
       level,
       levelName,
-      x,
-      y,
       parentId,
       isSelected: selectedPath[`level${level}`] === item.id,
       isCustom: item.isCustom || false,
+      children: [],
+      x: 0,
+      y: 0,
+      mod: 0,
+      ancestor: null as any, // Will be set later
+      change: 0,
+      shift: 0,
+      prelim: 0,
+    });
+
+    // Create level 1 nodes (roots)
+    const roots: TreeLayoutNode[] = level1Items.map(item => 
+      createTreeNode(item, 1, levelNames.level1 || "Level 1")
+    );
+
+    // Set ancestor reference for roots
+    roots.forEach(root => {
+      root.ancestor = root;
+    });
+
+    // Helper function to add children recursively
+    const addChildren = (
+      parent: TreeLayoutNode,
+      levelItems: Record<string, TreeNode[]>,
+      level: number,
+      levelName: string,
+      nextLevelItems?: Record<string, TreeNode[]>
+    ) => {
+      const children = levelItems[parent.id] || [];
+      parent.children = children.map(child => {
+        const childNode = createTreeNode(child, level, levelName, parent.id);
+        childNode.ancestor = childNode;
+        
+        // Recursively add children if next level exists
+        if (nextLevelItems && level < 10) {
+          addChildren(childNode, nextLevelItems, level + 1, levelNames[`level${level + 1}`] || `Level ${level + 1}`);
+        }
+        
+        return childNode;
+      });
     };
-  };
 
-  // Helper function to create a connection
-  const createConnection = (sourceNode: MindMapNode, targetNode: MindMapNode): MindMapConnection => {
-    return {
-      id: `${sourceNode.id}-${targetNode.id}`,
-      sourceId: sourceNode.id,
-      targetId: targetNode.id,
-      sourceX: sourceNode.x + NODE_WIDTH,
-      sourceY: sourceNode.y + NODE_HEIGHT / 2,
-      targetX: targetNode.x,
-      targetY: targetNode.y + NODE_HEIGHT / 2,
-    };
-  };
+    // Build the complete tree structure
+    const levelData = [
+      { items: level2Items, level: 2, name: levelNames.level2 || "Level 2", next: level3Items },
+      { items: level3Items, level: 3, name: levelNames.level3 || "Level 3", next: level4Items },
+      { items: level4Items, level: 4, name: levelNames.level4 || "Level 4", next: level5Items },
+      { items: level5Items, level: 5, name: levelNames.level5 || "Level 5", next: level6Items },
+      { items: level6Items, level: 6, name: levelNames.level6 || "Level 6", next: level7Items },
+      { items: level7Items, level: 7, name: levelNames.level7 || "Level 7", next: level8Items },
+      { items: level8Items, level: 8, name: levelNames.level8 || "Level 8", next: level9Items },
+      { items: level9Items, level: 9, name: levelNames.level9 || "Level 9", next: level10Items },
+      { items: level10Items, level: 10, name: levelNames.level10 || "Level 10" },
+    ];
 
-  // Process Level 1 nodes with sequential positioning
-  level1Items.forEach((item) => {
-    const x = 50; // Left padding
-    const y = level1YPosition;
-    const node = createNode(item, 1, levelNames.level1 || "Level 1", x, y);
-    nodes.push(node);
-    level1YPosition += NODE_HEIGHT + GROUP_SPACING; // Space for this node and its children
-  });
-
-  // Function to position children around a parent
-  const positionChildrenAroundParent = (
-    parentNode: MindMapNode,
-    children: TreeNode[],
-    level: number,
-    levelName: string
-  ) => {
-    if (children.length === 0) return;
-
-    const parentCenterY = parentNode.y + NODE_HEIGHT / 2;
-    const x = parentNode.x + LEVEL_SPACING;
-
-    children.forEach((child, index) => {
-      let y: number;
+    // Process each root and its descendants
+    roots.forEach(root => {
+      let currentNodes = [root];
       
-      if (index === 0) {
-        // First child above parent
-        y = parentCenterY - NODE_HEIGHT / 2 - NODE_SPACING;
-      } else {
-        // Subsequent children below parent
-        const belowOffset = index * (NODE_HEIGHT + NODE_SPACING);
-        y = parentCenterY + NODE_HEIGHT / 2 + belowOffset;
-      }
-
-      const childNode = createNode(child, level, levelName, x, y, parentNode.id);
-      nodes.push(childNode);
+      levelData.forEach(({ items, level, name, next }) => {
+        const nextNodes: TreeLayoutNode[] = [];
+        
+        currentNodes.forEach(node => {
+          addChildren(node, items, level, name, next);
+          nextNodes.push(...node.children);
+        });
+        
+        currentNodes = nextNodes;
+      });
     });
+
+    return roots;
   };
 
-  // Function to center parent between its children
-  const centerParentBetweenChildren = (parentNode: MindMapNode) => {
-    const children = nodes.filter(n => n.parentId === parentNode.id);
-    if (children.length === 0) return;
-
-    const minChildY = Math.min(...children.map(c => c.y));
-    const maxChildY = Math.max(...children.map(c => c.y + NODE_HEIGHT));
-    const centerY = (minChildY + maxChildY) / 2 - NODE_HEIGHT / 2;
+  // Buchheim tree layout algorithm (simplified version)
+  const layoutTree = (trees: TreeLayoutNode[]): void => {
+    let globalY = 50; // Starting Y position
     
-    parentNode.y = centerY;
+    trees.forEach((tree, treeIndex) => {
+      // First pass: calculate preliminary x positions
+      firstWalk(tree);
+      
+      // Second pass: calculate final positions
+      const minX = findMinX(tree, 0);
+      secondWalk(tree, -minX + 50, globalY); // 50px left margin
+      
+      // Update global Y for next tree
+      const treeHeight = getTreeHeight(tree);
+      globalY += treeHeight + (treeIndex < trees.length - 1 ? 200 : 0); // 200px spacing between trees
+    });
   };
 
-  // Process all levels using parent-relative positioning
-  const levelData = [
-    { items: level2Items, level: 2, name: levelNames.level2 || "Level 2" },
-    { items: level3Items, level: 3, name: levelNames.level3 || "Level 3" },
-    { items: level4Items, level: 4, name: levelNames.level4 || "Level 4" },
-    { items: level5Items, level: 5, name: levelNames.level5 || "Level 5" },
-    { items: level6Items, level: 6, name: levelNames.level6 || "Level 6" },
-    { items: level7Items, level: 7, name: levelNames.level7 || "Level 7" },
-    { items: level8Items, level: 8, name: levelNames.level8 || "Level 8" },
-    { items: level9Items, level: 9, name: levelNames.level9 || "Level 9" },
-    { items: level10Items, level: 10, name: levelNames.level10 || "Level 10" },
-  ];
+  const firstWalk = (node: TreeLayoutNode): void => {
+    if (node.children.length === 0) {
+      // Leaf node
+      node.prelim = 0;
+    } else {
+      // Internal node
+      node.children.forEach(child => firstWalk(child));
+      
+      const leftmost = node.children[0];
+      const rightmost = node.children[node.children.length - 1];
+      
+      // Position node at the center of its children
+      node.prelim = (leftmost.prelim + rightmost.prelim) / 2;
+      
+      // Separate children
+      separateChildren(node);
+    }
+  };
 
-  // Pass 1: Position all children around their parents
-  levelData.forEach(({ items, level, name }) => {
-    Object.entries(items).forEach(([parentId, nodeItems]) => {
-      const parentNode = nodes.find(n => n.id === parentId);
-      if (parentNode && nodeItems) {
-        positionChildrenAroundParent(parentNode, nodeItems, level, name);
+  const separateChildren = (node: TreeLayoutNode): void => {
+    for (let i = 1; i < node.children.length; i++) {
+      const left = node.children[i - 1];
+      const right = node.children[i];
+      
+      const separation = MIN_SIBLING_SPACING;
+      const distance = right.prelim - left.prelim;
+      
+      if (distance < separation) {
+        const adjustment = separation - distance;
+        right.prelim += adjustment;
+        right.mod += adjustment;
+        
+        // Shift all subsequent children
+        for (let j = i; j < node.children.length; j++) {
+          node.children[j].shift += adjustment;
+        }
       }
-    });
-  });
+    }
+  };
 
-  // Pass 2: Center all parents between their children
-  // Process in reverse level order to handle nested centering
-  for (let level = 1; level <= 10; level++) {
-    const levelNodes = nodes.filter(n => n.level === level);
-    levelNodes.forEach(centerParentBetweenChildren);
+  const secondWalk = (node: TreeLayoutNode, modSum: number, y: number): void => {
+    node.x = LEVEL_SPACING * (node.level - 1) + 50; // Horizontal position based on level
+    node.y = node.prelim + modSum + y; // Vertical position
+    
+    node.children.forEach(child => {
+      secondWalk(child, modSum + node.mod, y);
+    });
+  };
+
+  const findMinX = (node: TreeLayoutNode, currentMin: number): number => {
+    let min = Math.min(currentMin, node.prelim);
+    node.children.forEach(child => {
+      min = findMinX(child, min);
+    });
+    return min;
+  };
+
+  const getTreeHeight = (node: TreeLayoutNode): number => {
+    if (node.children.length === 0) {
+      return NODE_HEIGHT;
+    }
+    
+    const childHeights = node.children.map(child => getTreeHeight(child));
+    const totalChildHeight = childHeights.reduce((sum, height) => sum + height, 0);
+    const spacingHeight = (node.children.length - 1) * MIN_SIBLING_SPACING;
+    
+    return Math.max(NODE_HEIGHT, totalChildHeight + spacingHeight);
+  };
+
+  // Convert tree nodes to flat arrays
+  const flattenTree = (trees: TreeLayoutNode[]): { nodes: MindMapNode[], connections: MindMapConnection[] } => {
+    const nodes: MindMapNode[] = [];
+    const connections: MindMapConnection[] = [];
+
+    const traverse = (node: TreeLayoutNode) => {
+      // Add node
+      nodes.push({
+        id: node.id,
+        name: node.name,
+        description: node.description,
+        level: node.level,
+        levelName: node.levelName,
+        x: node.x,
+        y: node.y,
+        parentId: node.parentId,
+        isSelected: node.isSelected,
+        isCustom: node.isCustom,
+      });
+
+      // Add connections and traverse children
+      node.children.forEach(child => {
+        connections.push({
+          id: `${node.id}-${child.id}`,
+          sourceId: node.id,
+          targetId: child.id,
+          sourceX: node.x + NODE_WIDTH,
+          sourceY: node.y + NODE_HEIGHT / 2,
+          targetX: child.x,
+          targetY: child.y + NODE_HEIGHT / 2,
+        });
+
+        traverse(child);
+      });
+    };
+
+    trees.forEach(tree => traverse(tree));
+    return { nodes, connections };
+  };
+
+  // Main execution
+  const trees = buildTreeStructure();
+  
+  if (trees.length === 0) {
+    console.log('Mindmap: No tree data available');
+    return { nodes: [], connections: [] };
   }
 
-  // Pass 3: Create all connections using final node positions
-  nodes.forEach(node => {
-    if (node.parentId) {
-      const parentNode = nodes.find(n => n.id === node.parentId);
-      if (parentNode) {
-        connections.push(createConnection(parentNode, node));
-      }
-    }
-  });
-
-  // Adjust spacing between level 1 groups to prevent overlap
-  const level1Nodes = nodes.filter(n => n.level === 1).sort((a, b) => a.y - b.y);
-  let currentMaxY = 0;
-  
-  level1Nodes.forEach(level1Node => {
-    const allDescendants = nodes.filter(n => {
-      // Find all nodes that are descendants of this level1 node
-      let current = n;
-      while (current.parentId) {
-        current = nodes.find(node => node.id === current.parentId) || current;
-        if (current.id === level1Node.id) return true;
-        if (!current.parentId) break;
-      }
-      return false;
-    });
-    
-    const groupNodes = [level1Node, ...allDescendants];
-    const groupMinY = Math.min(...groupNodes.map(n => n.y));
-    const groupMaxY = Math.max(...groupNodes.map(n => n.y + NODE_HEIGHT));
-    
-    if (groupMinY < currentMaxY) {
-      const adjustment = currentMaxY - groupMinY + GROUP_SPACING;
-      groupNodes.forEach(node => {
-        node.y += adjustment;
-      });
-    }
-    
-    currentMaxY = Math.max(...groupNodes.map(n => n.y + NODE_HEIGHT));
-  });
-
-  // Update connections after final positioning
-  connections.length = 0;
-  nodes.forEach(node => {
-    if (node.parentId) {
-      const parentNode = nodes.find(n => n.id === node.parentId);
-      if (parentNode) {
-        connections.push(createConnection(parentNode, node));
-      }
-    }
-  });
+  layoutTree(trees);
+  const { nodes, connections } = flattenTree(trees);
 
   console.log(`Mindmap: Generated ${nodes.length} nodes and ${connections.length} connections`);
   console.log('Level breakdown:', {
