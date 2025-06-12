@@ -73,7 +73,7 @@ export const transformToMindMapData = (
   const nodes: MindMapNode[] = [];
   const connections: MindMapConnection[] = [];
 
-  // Helper function to create a connection
+  // Helper function to create a connection (will be used in second pass)
   const createConnection = (sourceNode: MindMapNode, targetNode: MindMapNode): MindMapConnection => {
     return {
       id: `${sourceNode.id}-${targetNode.id}`,
@@ -104,7 +104,7 @@ export const transformToMindMapData = (
     level1YPosition += NODE_HEIGHT + NODE_SPACING;
   });
 
-  // Helper function to process children with enhanced spacing calculations
+  // Helper function to process children with enhanced spacing calculations (POSITIONING ONLY)
   const processChildrenLevel = (
     childrenData: Record<string, TreeNode[]>,
     level: number,
@@ -143,7 +143,6 @@ export const transformToMindMapData = (
         
         // Update parent position to align with child
         parentNode.y = currentGroupYOffset;
-        connections.push(createConnection(parentNode, child));
         
         // Calculate spacing to next group
         if (nextGroupSize > 0) {
@@ -187,8 +186,6 @@ export const transformToMindMapData = (
         };
 
         nodes.push(firstChild, secondChild);
-        connections.push(createConnection(parentNode, firstChild));
-        connections.push(createConnection(parentNode, secondChild));
         
         // Update offset for next group with enhanced spacing
         if (nextGroupSize > 0) {
@@ -221,7 +218,6 @@ export const transformToMindMapData = (
             isCustom: childItem.isCustom || false,
           };
           nodes.push(child);
-          connections.push(createConnection(parentNode, child));
         });
         
         // Update offset for next group with enhanced spacing
@@ -232,7 +228,7 @@ export const transformToMindMapData = (
     });
   };
 
-  // Process all child levels with enhanced spacing
+  // Process all child levels with enhanced spacing (POSITIONING ONLY)
   processChildrenLevel(level2Items, 2, levelNames.level2 || "Level 2");
   processChildrenLevel(level3Items, 3, levelNames.level3 || "Level 3");
   processChildrenLevel(level4Items, 4, levelNames.level4 || "Level 4");
@@ -242,6 +238,21 @@ export const transformToMindMapData = (
   processChildrenLevel(level8Items, 8, levelNames.level8 || "Level 8");
   processChildrenLevel(level9Items, 9, levelNames.level9 || "Level 9");
   processChildrenLevel(level10Items, 10, levelNames.level10 || "Level 10");
+
+  // SECOND PASS: Create all connections using final node positions
+  const createAllConnections = () => {
+    nodes.forEach(node => {
+      if (node.parentId) {
+        const parentNode = nodes.find(n => n.id === node.parentId);
+        if (parentNode) {
+          connections.push(createConnection(parentNode, node));
+        }
+      }
+    });
+  };
+
+  // Execute second pass to create connections
+  createAllConnections();
 
   console.log(`Mindmap: Generated ${nodes.length} nodes and ${connections.length} connections`);
   console.log('Level breakdown:', {
