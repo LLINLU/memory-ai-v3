@@ -17,6 +17,7 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
 }) => {
   const getLevelColor = (level: number) => {
     const colors = [
+      "bg-slate-200 border-slate-400 text-slate-900", // Root node (level 0)
       "bg-blue-100 border-blue-300 text-blue-800", // Level 1
       "bg-green-100 border-green-300 text-green-800", // Level 2
       "bg-purple-100 border-purple-300 text-purple-800", // Level 3
@@ -28,23 +29,27 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
       "bg-teal-100 border-teal-300 text-teal-800", // Level 9
       "bg-gray-100 border-gray-300 text-gray-800", // Level 10
     ];
-    return colors[level - 1] || colors[colors.length - 1];
+    return colors[level] || colors[colors.length - 1];
   };
 
   const handleClick = () => {
     onClick(node.id, node.level);
   };
 
+  // Special styling for root node
+  const isRoot = node.level === 0;
+  const rootCursor = isRoot ? "cursor-default" : "cursor-pointer";
+
   return (
     <div
-      className={`absolute cursor-pointer transition-all duration-200 hover:shadow-lg ${
+      className={`absolute transition-all duration-200 hover:shadow-lg ${rootCursor} ${
         node.isSelected ? "ring-2 ring-blue-500 shadow-lg" : ""
       }`}
       style={{
         left: node.x,
         top: node.y,
-        width: 200,
-        height: 80,
+        width: isRoot ? 250 : 200, // Make root node wider
+        height: isRoot ? 100 : 80, // Make root node taller
       }}
       onClick={handleClick}
     >
@@ -54,7 +59,7 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
         <div className="text-xs font-semibold mb-1 opacity-70">
           {node.levelName}
         </div>
-        <div className="text-sm font-medium truncate" title={node.name}>
+        <div className={`${isRoot ? 'text-base' : 'text-sm'} font-medium truncate`} title={node.name}>
           {node.name}
         </div>
         {node.description && (

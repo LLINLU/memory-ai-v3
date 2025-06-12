@@ -41,15 +41,21 @@ const buildHierarchy = (
   level9Items: Record<string, TreeNode[]>,
   level10Items: Record<string, TreeNode[]>,
   levelNames: Record<string, string>,
-  selectedPath: any
+  selectedPath: any,
+  query: string
 ) => {
   const hierarchy: any = {
-    name: "Root",
+    id: "root",
+    name: query || "Research Query",
+    description: "Your research query",
     level: 0,
+    levelName: "Query",
+    isSelected: false,
+    isCustom: false,
     children: []
   };
 
-  // Add level 1 items
+  // Add level 1 items as direct children of root
   level1Items.forEach((item) => {
     const level1Node = {
       id: item.id,
@@ -152,9 +158,8 @@ const createD3Nodes = (hierarchicalData: any): MindMapNode[] => {
   
   treeLayout(root);
   
-  // Filter out the artificial root node and return only actual nodes
+  // Include ALL nodes including the root (depth 0)
   return root.descendants()
-    .filter(node => node.depth > 0) // Skip the artificial root
     .map(node => ({
       id: node.data.id,
       name: node.data.name,
@@ -163,7 +168,7 @@ const createD3Nodes = (hierarchicalData: any): MindMapNode[] => {
       levelName: node.data.levelName,
       x: node.y + 50, // Add margin
       y: node.x + 50, // Add margin
-      parentId: node.parent && node.parent.depth > 0 ? node.parent.data.id : undefined,
+      parentId: node.parent ? node.parent.data.id : undefined,
       isSelected: node.data.isSelected,
       isCustom: node.data.isCustom,
     }));
@@ -185,8 +190,8 @@ const createD3Connections = (hierarchicalData: any): MindMapConnection[] => {
 
   const connections: MindMapConnection[] = [];
   
+  // Include ALL connections including from root
   root.links()
-    .filter(link => link.source.depth > 0) // Skip connections from artificial root
     .forEach((link) => {
       const sourceX = link.source.y + 50 + NODE_WIDTH;
       const sourceY = link.source.x + 50 + NODE_HEIGHT / 2;
@@ -219,9 +224,10 @@ export const transformToMindMapData = (
   level9Items: Record<string, TreeNode[]>,
   level10Items: Record<string, TreeNode[]>,
   levelNames: Record<string, string>,
-  selectedPath: any
+  selectedPath: any,
+  query: string = "Research Query"
 ) => {
-  // Build hierarchical data structure
+  // Build hierarchical data structure with proper root
   const hierarchicalData = buildHierarchy(
     level1Items,
     level2Items,
@@ -234,15 +240,17 @@ export const transformToMindMapData = (
     level9Items,
     level10Items,
     levelNames,
-    selectedPath
+    selectedPath,
+    query
   );
 
   // Create nodes and connections using D3 tree layout
   const nodes = createD3Nodes(hierarchicalData);
   const connections = createD3Connections(hierarchicalData);
 
-  console.log(`Mindmap: Generated ${nodes.length} nodes and ${connections.length} connections using D3 tree layout`);
+  console.log(`Mindmap: Generated ${nodes.length} nodes and ${connections.length} connections with root node`);
   console.log('Level breakdown:', {
+    root: nodes.filter(n => n.level === 0).length,
     level1: nodes.filter(n => n.level === 1).length,
     level2: nodes.filter(n => n.level === 2).length,
     level3: nodes.filter(n => n.level === 3).length,

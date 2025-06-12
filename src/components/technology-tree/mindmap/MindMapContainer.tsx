@@ -1,4 +1,3 @@
-
 import React, { useMemo } from "react";
 import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
@@ -19,6 +18,7 @@ interface MindMapContainerProps {
   level9Items: Record<string, any[]>;
   level10Items: Record<string, any[]>;
   levelNames: Record<string, string>;
+  query?: string;
   onNodeClick: (level: string, nodeId: string) => void;
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
@@ -37,12 +37,14 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   level9Items,
   level10Items,
   levelNames,
+  query,
   onNodeClick,
   onEditNode,
   onDeleteNode,
 }) => {
   const { nodes, connections } = useMemo(() => {
-    console.log('MindMap: Processing data for D3 tree layout');
+    console.log('MindMap: Processing data for D3 tree layout with root node');
+    console.log('User query for root:', query);
     console.log('Level 1 items:', level1Items?.length || 0);
     console.log('Level 2 items:', Object.keys(level2Items || {}).length);
     console.log('Level 3 items:', Object.keys(level3Items || {}).length);
@@ -59,7 +61,8 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
       level9Items || {},
       level10Items || {},
       levelNames,
-      selectedPath
+      selectedPath,
+      query || "Research Query"
     );
   }, [
     level1Items,
@@ -74,10 +77,18 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     level10Items,
     levelNames,
     selectedPath,
+    query,
   ]);
 
   const handleNodeClick = (nodeId: string, level: number) => {
     console.log(`MindMap: Node clicked - Level ${level}, ID: ${nodeId}`);
+    
+    // Don't allow clicking on the root node (level 0)
+    if (level === 0) {
+      console.log('MindMap: Root node clicked, ignoring');
+      return;
+    }
+    
     onNodeClick(`level${level}`, nodeId);
   };
 
@@ -99,7 +110,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     getTransform,
   } = usePanZoom(containerWidth, containerHeight);
 
-  console.log(`MindMap: D3 layout - Container dimensions: ${containerWidth}x${containerHeight}, Nodes: ${nodes.length}`);
+  console.log(`MindMap: D3 layout with root - Container dimensions: ${containerWidth}x${containerHeight}, Nodes: ${nodes.length}`);
 
   return (
     <div className="w-full h-full overflow-hidden bg-white relative">

@@ -267,6 +267,7 @@ export const MainContent = ({
             level9Items={level9Items}
             level10Items={level10Items}
             levelNames={levelNames}
+            query={query}
             onNodeClick={onNodeClick}
             onEditNode={onEditNode}
             onDeleteNode={onDeleteNode}
