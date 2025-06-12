@@ -1,3 +1,4 @@
+
 import React, { useMemo } from "react";
 import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
@@ -41,7 +42,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   onDeleteNode,
 }) => {
   const { nodes, connections } = useMemo(() => {
-    console.log('MindMap: Processing data for mindmap view');
+    console.log('MindMap: Processing data for D3 tree layout');
     console.log('Level 1 items:', level1Items?.length || 0);
     console.log('Level 2 items:', Object.keys(level2Items || {}).length);
     console.log('Level 3 items:', Object.keys(level3Items || {}).length);
@@ -80,9 +81,9 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     onNodeClick(`level${level}`, nodeId);
   };
 
-  // Calculate container dimensions based on nodes with proper padding
-  const containerWidth = Math.max(...nodes.map(n => n.x + 250), 1000);
-  const containerHeight = Math.max(...nodes.map(n => n.y + 120), 800);
+  // Calculate container dimensions based on D3 layout with proper padding
+  const containerWidth = nodes.length > 0 ? Math.max(...nodes.map(n => n.x + 250), 1400) : 1400;
+  const containerHeight = nodes.length > 0 ? Math.max(...nodes.map(n => n.y + 120), 900) : 900;
 
   const {
     zoom,
@@ -98,7 +99,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     getTransform,
   } = usePanZoom(containerWidth, containerHeight);
 
-  console.log(`MindMap: Container dimensions - ${containerWidth}x${containerHeight}`);
+  console.log(`MindMap: D3 layout - Container dimensions: ${containerWidth}x${containerHeight}, Nodes: ${nodes.length}`);
 
   return (
     <div className="w-full h-full overflow-hidden bg-white relative">

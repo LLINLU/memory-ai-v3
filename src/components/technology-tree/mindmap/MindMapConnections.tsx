@@ -13,7 +13,8 @@ export const MindMapConnections: React.FC<MindMapConnectionsProps> = ({
     const { sourceX, sourceY, targetX, targetY } = connection;
     const midX = sourceX + (targetX - sourceX) / 2;
     
-    return `M ${sourceX} ${sourceY} Q ${midX} ${sourceY} ${targetX} ${targetY}`;
+    // Create a smooth bezier curve similar to D3 tree layouts
+    return `M ${sourceX} ${sourceY} C ${midX} ${sourceY} ${midX} ${targetY} ${targetX} ${targetY}`;
   };
 
   return (
@@ -50,6 +51,7 @@ export const MindMapConnections: React.FC<MindMapConnectionsProps> = ({
           fill="none"
           markerEnd="url(#arrowhead)"
           opacity="0.6"
+          className="transition-all duration-200"
         />
       ))}
     </svg>
