@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { TreeNode, PathLevel } from "@/types/tree";
 import { NodeSuggestion } from "@/types/chat";
@@ -33,31 +32,34 @@ export const useNodeOperations = (
   initialLevel9Items: Record<string, TreeNode[]> = {},
   initialLevel10Items: Record<string, TreeNode[]> = {}
 ) => {
-  // Initialize with safe defaults to prevent undefined access
-  const [level1Items, setLevel1Items] = useState(initialLevel1Items || []);
-  const [level2Items, setLevel2Items] = useState(initialLevel2Items || {});
-  const [level3Items, setLevel3Items] = useState(initialLevel3Items || {});
-  const [level4Items, setLevel4Items] = useState<Record<string, TreeNode[]>>(initialLevel4Items || {});
-  const [level5Items, setLevel5Items] = useState<Record<string, TreeNode[]>>(initialLevel5Items || {});
-  const [level6Items, setLevel6Items] = useState<Record<string, TreeNode[]>>(initialLevel6Items || {});
-  const [level7Items, setLevel7Items] = useState<Record<string, TreeNode[]>>(initialLevel7Items || {});
-  const [level8Items, setLevel8Items] = useState<Record<string, TreeNode[]>>(initialLevel8Items || {});
-  const [level9Items, setLevel9Items] = useState<Record<string, TreeNode[]>>(initialLevel9Items || {});
-  const [level10Items, setLevel10Items] = useState<Record<string, TreeNode[]>>(initialLevel10Items || {});
-
-  // Update state when initial data changes (e.g., when database data is loaded)
+  const [level1Items, setLevel1Items] = useState(initialLevel1Items);
+  const [level2Items, setLevel2Items] = useState(initialLevel2Items);
+  const [level3Items, setLevel3Items] = useState(initialLevel3Items);
+  const [level4Items, setLevel4Items] =
+    useState<Record<string, TreeNode[]>>(initialLevel4Items);
+  const [level5Items, setLevel5Items] =
+    useState<Record<string, TreeNode[]>>(initialLevel5Items);
+  const [level6Items, setLevel6Items] =
+    useState<Record<string, TreeNode[]>>(initialLevel6Items);
+  const [level7Items, setLevel7Items] =
+    useState<Record<string, TreeNode[]>>(initialLevel7Items);
+  const [level8Items, setLevel8Items] =
+    useState<Record<string, TreeNode[]>>(initialLevel8Items);
+  const [level9Items, setLevel9Items] =
+    useState<Record<string, TreeNode[]>>(initialLevel9Items);
+  const [level10Items, setLevel10Items] =
+    useState<Record<string, TreeNode[]>>(initialLevel10Items); // Update state when initial data changes (e.g., when database data is loaded)
   useEffect(() => {
-    console.log('Updating node operations state with new data');
-    setLevel1Items(initialLevel1Items || []);
-    setLevel2Items(initialLevel2Items || {});
-    setLevel3Items(initialLevel3Items || {});
-    setLevel4Items(initialLevel4Items || {});
-    setLevel5Items(initialLevel5Items || {});
-    setLevel6Items(initialLevel6Items || {});
-    setLevel7Items(initialLevel7Items || {});
-    setLevel8Items(initialLevel8Items || {});
-    setLevel9Items(initialLevel9Items || {});
-    setLevel10Items(initialLevel10Items || {});
+    setLevel1Items(initialLevel1Items);
+    setLevel2Items(initialLevel2Items);
+    setLevel3Items(initialLevel3Items);
+    setLevel4Items(initialLevel4Items);
+    setLevel5Items(initialLevel5Items);
+    setLevel6Items(initialLevel6Items);
+    setLevel7Items(initialLevel7Items);
+    setLevel8Items(initialLevel8Items);
+    setLevel9Items(initialLevel9Items);
+    setLevel10Items(initialLevel10Items);
   }, [
     initialLevel1Items,
     initialLevel2Items,
@@ -70,20 +72,18 @@ export const useNodeOperations = (
     initialLevel9Items,
     initialLevel10Items,
   ]);
-
   const addCustomNode = (
     level: PathLevel,
     node: NodeSuggestion,
     selectedPath: PathState,
     setSelectedPath: (updater: (prev: PathState) => PathState) => void
   ) => {
-    console.log('Adding custom node:', { level, node, selectedPath });
     const newNode = createNodeFromSuggestion(node);
     const nodeId = newNode.id;
 
     if (level === "level1") {
       newNode.level = 1;
-      setLevel1Items((prev) => [...(prev || []), newNode]);
+      setLevel1Items((prev) => [...prev, newNode]);
 
       const childNode = generateChildNode(node.title, 2);
       const childId = childNode.title.toLowerCase().replace(/\s+/g, "-");
@@ -176,11 +176,9 @@ export const useNodeOperations = (
     nodeId: string,
     updatedNode: { title: string; description: string }
   ) => {
-    console.log('Editing node:', { level, nodeId, updatedNode });
-    
     if (level === "level1") {
       setLevel1Items((prev) =>
-        (prev || []).map((item) =>
+        prev.map((item) =>
           item.id === nodeId
             ? {
                 ...item,
@@ -194,17 +192,15 @@ export const useNodeOperations = (
       setLevel2Items((prev) => {
         const updatedItems = { ...prev };
         Object.keys(updatedItems).forEach((key) => {
-          if (updatedItems[key]) {
-            updatedItems[key] = updatedItems[key].map((item) =>
-              item.id === nodeId
-                ? {
-                    ...item,
-                    name: updatedNode.title,
-                    description: updatedNode.description,
-                  }
-                : item
-            );
-          }
+          updatedItems[key] = updatedItems[key].map((item) =>
+            item.id === nodeId
+              ? {
+                  ...item,
+                  name: updatedNode.title,
+                  description: updatedNode.description,
+                }
+              : item
+          );
         });
         return updatedItems;
       });
@@ -212,17 +208,15 @@ export const useNodeOperations = (
       setLevel3Items((prev) => {
         const updatedItems = { ...prev };
         Object.keys(updatedItems).forEach((key) => {
-          if (updatedItems[key]) {
-            updatedItems[key] = updatedItems[key].map((item) =>
-              item.id === nodeId
-                ? {
-                    ...item,
-                    name: updatedNode.title,
-                    description: updatedNode.description,
-                  }
-                : item
-            );
-          }
+          updatedItems[key] = updatedItems[key].map((item) =>
+            item.id === nodeId
+              ? {
+                  ...item,
+                  name: updatedNode.title,
+                  description: updatedNode.description,
+                }
+              : item
+          );
         });
         return updatedItems;
       });
@@ -230,17 +224,15 @@ export const useNodeOperations = (
       setLevel4Items((prev) => {
         const updatedItems = { ...prev };
         Object.keys(updatedItems).forEach((key) => {
-          if (updatedItems[key]) {
-            updatedItems[key] = updatedItems[key].map((item) =>
-              item.id === nodeId
-                ? {
-                    ...item,
-                    name: updatedNode.title,
-                    description: updatedNode.description,
-                  }
-                : item
-            );
-          }
+          updatedItems[key] = updatedItems[key].map((item) =>
+            item.id === nodeId
+              ? {
+                  ...item,
+                  name: updatedNode.title,
+                  description: updatedNode.description,
+                }
+              : item
+          );
         });
         return updatedItems;
       });
@@ -259,8 +251,6 @@ export const useNodeOperations = (
     selectedPath: PathState,
     setSelectedPath: (updater: (prev: PathState) => PathState) => void
   ) => {
-    console.log('Deleting node:', { level, nodeId, selectedPath });
-    
     // Clear the selection if the deleted node is currently selected
     setSelectedPath((prev) => {
       if (level === "level1" && prev.level1 === nodeId) {
@@ -277,7 +267,7 @@ export const useNodeOperations = (
 
     // Remove the node from state
     if (level === "level1") {
-      setLevel1Items((prev) => (prev || []).filter((item) => item.id !== nodeId));
+      setLevel1Items((prev) => prev.filter((item) => item.id !== nodeId));
 
       // Also remove its children from level2Items
       setLevel2Items((prev) => {
@@ -289,11 +279,9 @@ export const useNodeOperations = (
       setLevel2Items((prev) => {
         const updatedItems = { ...prev };
         Object.keys(updatedItems).forEach((key) => {
-          if (updatedItems[key]) {
-            updatedItems[key] = updatedItems[key].filter(
-              (item) => item.id !== nodeId
-            );
-          }
+          updatedItems[key] = updatedItems[key].filter(
+            (item) => item.id !== nodeId
+          );
         });
         return updatedItems;
       });
@@ -308,11 +296,9 @@ export const useNodeOperations = (
       setLevel3Items((prev) => {
         const updatedItems = { ...prev };
         Object.keys(updatedItems).forEach((key) => {
-          if (updatedItems[key]) {
-            updatedItems[key] = updatedItems[key].filter(
-              (item) => item.id !== nodeId
-            );
-          }
+          updatedItems[key] = updatedItems[key].filter(
+            (item) => item.id !== nodeId
+          );
         });
         return updatedItems;
       });
@@ -327,28 +313,25 @@ export const useNodeOperations = (
       setLevel4Items((prev) => {
         const updatedItems = { ...prev };
         Object.keys(updatedItems).forEach((key) => {
-          if (updatedItems[key]) {
-            updatedItems[key] = updatedItems[key].filter(
-              (item) => item.id !== nodeId
-            );
-          }
+          updatedItems[key] = updatedItems[key].filter(
+            (item) => item.id !== nodeId
+          );
         });
         return updatedItems;
       });
     }
   };
-
   return {
-    level1Items: level1Items || [],
-    level2Items: level2Items || {},
-    level3Items: level3Items || {},
-    level4Items: level4Items || {},
-    level5Items: level5Items || {},
-    level6Items: level6Items || {},
-    level7Items: level7Items || {},
-    level8Items: level8Items || {},
-    level9Items: level9Items || {},
-    level10Items: level10Items || {},
+    level1Items,
+    level2Items,
+    level3Items,
+    level4Items,
+    level5Items,
+    level6Items,
+    level7Items,
+    level8Items,
+    level9Items,
+    level10Items,
     addCustomNode,
     editNode,
     deleteNode,

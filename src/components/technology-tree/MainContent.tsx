@@ -1,9 +1,9 @@
-
 import React from "react";
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
 import { ScenarioSection } from "./ScenarioSection";
 import { QueryDisplay } from "./QueryDisplay";
+import { MindMapContainer } from "./mindmap/MindMapContainer";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,6 +11,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useMindMapView } from "@/hooks/tree/useMindMapView";
+import { TreePine, Network } from "lucide-react";
 
 interface MainContentProps {
   selectedPath: {
@@ -111,6 +113,8 @@ export const MainContent = ({
   lastVisibleLevel,
   containerRef,
 }: MainContentProps) => {
+  const { viewMode, toggleView, isTreemapView, isMindmapView } = useMindMapView();
+
   const handleGuidanceItemClick = (type: string) => {
     if (onGuidanceClick) {
       onGuidanceClick(type);
@@ -133,6 +137,27 @@ export const MainContent = ({
               >
                 研究分野の階層表示
               </h3>
+              
+              {/* View Toggle Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleView}
+                className="flex items-center gap-1 text-blue-600 border-blue-200 hover:bg-blue-50 px-2 py-1 h-7 text-xs"
+              >
+                {isTreemapView ? (
+                  <>
+                    <Network className="h-3 w-3" />
+                    マインドマップ
+                  </>
+                ) : (
+                  <>
+                    <TreePine className="h-3 w-3" />
+                    ツリーマップ
+                  </>
+                )}
+              </Button>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -177,51 +202,76 @@ export const MainContent = ({
           scenario={scenario}
           onEditScenario={onEditScenario}
           conversationHistory={conversationHistory}
+          onGuidanceClick={onGuidanceClick}
         />
 
-        {/* Path Display with Navigation Controls */}
-        <PathDisplay
-          selectedPath={selectedPath}
-          level1Items={level1Items}
-          level2Items={level2Items}
-          level3Items={level3Items}
-          level4Items={level4Items}
-          level5Items={level5Items}
-          level6Items={level6Items}
-          level7Items={level7Items}
-          level8Items={level8Items}
-          level9Items={level9Items}
-          level10Items={level10Items}
-          showLevel4={showLevel4}
-          onGuidanceClick={onGuidanceClick}
-          onScrollToStart={onScrollToStart}
-          onScrollToEnd={onScrollToEnd}
-          canScrollLeft={canScrollLeft}
-          canScrollRight={canScrollRight}
-          lastVisibleLevel={lastVisibleLevel}
-        />
+        {/* Path Display with Navigation Controls - only show for treemap view */}
+        {isTreemapView && (
+          <PathDisplay
+            selectedPath={selectedPath}
+            level1Items={level1Items}
+            level2Items={level2Items}
+            level3Items={level3Items}
+            level4Items={level4Items}
+            level5Items={level5Items}
+            level6Items={level6Items}
+            level7Items={level7Items}
+            level8Items={level8Items}
+            level9Items={level9Items}
+            level10Items={level10Items}
+            showLevel4={showLevel4}
+            onGuidanceClick={onGuidanceClick}
+            onScrollToStart={onScrollToStart}
+            onScrollToEnd={onScrollToEnd}
+            canScrollLeft={canScrollLeft}
+            canScrollRight={canScrollRight}
+            lastVisibleLevel={lastVisibleLevel}
+          />
+        )}
       </div>
+      
       <div className="flex-1 overflow-hidden">
-        <LevelSelection
-          selectedPath={selectedPath}
-          level1Items={level1Items}
-          level2Items={level2Items}
-          level3Items={level3Items}
-          level4Items={level4Items}
-          level5Items={level5Items}
-          level6Items={level6Items}
-          level7Items={level7Items}
-          level8Items={level8Items}
-          level9Items={level9Items}
-          level10Items={level10Items}
-          showLevel4={showLevel4}
-          onNodeClick={onNodeClick}
-          onEditNode={onEditNode}
-          onDeleteNode={onDeleteNode}
-          levelNames={levelNames}
-          hideNavigationControls={true}
-          containerRef={containerRef}
-        />
+        {isTreemapView ? (
+          <LevelSelection
+            selectedPath={selectedPath}
+            level1Items={level1Items}
+            level2Items={level2Items}
+            level3Items={level3Items}
+            level4Items={level4Items}
+            level5Items={level5Items}
+            level6Items={level6Items}
+            level7Items={level7Items}
+            level8Items={level8Items}
+            level9Items={level9Items}
+            level10Items={level10Items}
+            showLevel4={showLevel4}
+            onNodeClick={onNodeClick}
+            onEditNode={onEditNode}
+            onDeleteNode={onDeleteNode}
+            levelNames={levelNames}
+            hideNavigationControls={true}
+            containerRef={containerRef}
+            onGuidanceClick={onGuidanceClick}
+          />
+        ) : (
+          <MindMapContainer
+            selectedPath={selectedPath}
+            level1Items={level1Items}
+            level2Items={level2Items}
+            level3Items={level3Items}
+            level4Items={level4Items}
+            level5Items={level5Items}
+            level6Items={level6Items}
+            level7Items={level7Items}
+            level8Items={level8Items}
+            level9Items={level9Items}
+            level10Items={level10Items}
+            levelNames={levelNames}
+            onNodeClick={onNodeClick}
+            onEditNode={onEditNode}
+            onDeleteNode={onDeleteNode}
+          />
+        )}
       </div>
     </div>
   );

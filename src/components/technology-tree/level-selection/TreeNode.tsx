@@ -103,7 +103,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   // Wrap with tooltip if conditions are met
   if (shouldShowTooltip) {
     return (
-      <TooltipProvider delayDuration={200} skipDelayDuration={100}>
+      <TooltipProvider delayDuration={50} skipDelayDuration={50}>
         <Tooltip>
           <TooltipTrigger asChild>
             {nodeContent}
