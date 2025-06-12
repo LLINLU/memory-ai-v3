@@ -1,3 +1,4 @@
+
 import { NodeSuggestion } from "@/types/chat";
 import { PathLevel } from "@/types/tree";
 import { useNodeOperations } from "./useNodeOperations";
@@ -44,10 +45,13 @@ export const usePathSelection = (
   // Update tree data for auto-selection
   useEffect(() => {
     if (treeData) {
+      console.log('Updating tree data in usePathSelection:', treeData);
       updateTreeData(treeData);
     }
   }, [treeData, updateTreeData]);
+
   // Use only TED-generated data if available, otherwise use empty arrays
+  // Add null checks to prevent undefined access
   const level1Data = treeData?.level1Items || [];
   const level2Data = treeData?.level2Items || {};
   const level3Data = treeData?.level3Items || {};
@@ -58,6 +62,13 @@ export const usePathSelection = (
   const level8Data = treeData?.level8Items || {};
   const level9Data = treeData?.level9Items || {};
   const level10Data = treeData?.level10Items || {};
+
+  console.log('Level data in usePathSelection:', {
+    level1Count: level1Data.length,
+    level2Keys: Object.keys(level2Data).length,
+    level3Keys: Object.keys(level3Data).length,
+    level4Keys: Object.keys(level4Data).length,
+  });
 
   const {
     level1Items,
@@ -84,13 +95,16 @@ export const usePathSelection = (
     level8Data,
     level9Data,
     level10Data
-  ); // Update path when tree data changes to ensure valid selections
+  );
+
+  // Update path when tree data changes to ensure valid selections
   useEffect(() => {
     if (treeData?.level1Items && treeData.level1Items.length > 0) {
       const currentLevel1Exists = treeData.level1Items.find(
         (item) => item.id === selectedPath.level1
       );
       if (!currentLevel1Exists) {
+        console.log('Auto-selecting first level1 item:', treeData.level1Items[0].id);
         setSelectedPath((prev) => ({
           ...prev,
           level1: treeData.level1Items[0].id,
@@ -106,20 +120,24 @@ export const usePathSelection = (
         }));
       }
     }
-  }, [treeData, setSelectedPath]);
+  }, [treeData, setSelectedPath, selectedPath.level1]);
 
   // Wrapper functions to maintain the same API
   const handleNodeClick = (level: PathLevel, nodeId: string) => {
+    console.log('Node clicked:', level, nodeId);
     handlePathNodeClick(level, nodeId);
   };
 
   const addCustomNode = (level: PathLevel, node: NodeSuggestion) => {
+    console.log('Adding custom node:', level, node);
     addNode(level, node, selectedPath, setSelectedPath);
   };
 
   const deleteNode = (level: PathLevel, nodeId: string) => {
+    console.log('Deleting node:', level, nodeId);
     removeNode(level, nodeId, selectedPath, setSelectedPath);
   };
+
   return {
     selectedPath,
     hasUserMadeSelection,
