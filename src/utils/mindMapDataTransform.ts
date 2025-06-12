@@ -224,7 +224,9 @@ export const transformToMindMapData = (
   // Create tree layout with proper size
   const treeWidth = 800;
   const treeHeight = 600;
-  const treeLayout = Tree<MindMapNode>().size([treeHeight, treeWidth]);
+  const treeLayout = Tree({
+    size: [treeHeight, treeWidth]
+  });
   
   // Apply the tree layout to get positioned nodes
   const treeWithLayout = treeLayout(root);
