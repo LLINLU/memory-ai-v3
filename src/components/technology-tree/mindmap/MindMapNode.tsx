@@ -1,0 +1,68 @@
+
+import React from "react";
+import { MindMapNode } from "@/utils/mindMapDataTransform";
+
+interface MindMapNodeProps {
+  node: MindMapNode;
+  onClick: (nodeId: string, level: number) => void;
+  onEdit?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
+  onDelete?: (level: string, nodeId: string) => void;
+}
+
+export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
+  node,
+  onClick,
+  onEdit,
+  onDelete,
+}) => {
+  const getLevelColor = (level: number) => {
+    const colors = [
+      "bg-blue-100 border-blue-300 text-blue-800", // Level 1
+      "bg-green-100 border-green-300 text-green-800", // Level 2
+      "bg-purple-100 border-purple-300 text-purple-800", // Level 3
+      "bg-orange-100 border-orange-300 text-orange-800", // Level 4
+      "bg-pink-100 border-pink-300 text-pink-800", // Level 5
+      "bg-indigo-100 border-indigo-300 text-indigo-800", // Level 6
+      "bg-yellow-100 border-yellow-300 text-yellow-800", // Level 7
+      "bg-red-100 border-red-300 text-red-800", // Level 8
+      "bg-teal-100 border-teal-300 text-teal-800", // Level 9
+      "bg-gray-100 border-gray-300 text-gray-800", // Level 10
+    ];
+    return colors[level - 1] || colors[colors.length - 1];
+  };
+
+  const handleClick = () => {
+    onClick(node.id, node.level);
+  };
+
+  return (
+    <div
+      className={`absolute cursor-pointer transition-all duration-200 hover:shadow-lg ${
+        node.isSelected ? "ring-2 ring-blue-500 shadow-lg" : ""
+      }`}
+      style={{
+        left: node.x,
+        top: node.y,
+        width: 200,
+        height: 80,
+      }}
+      onClick={handleClick}
+    >
+      <div
+        className={`w-full h-full rounded-lg border-2 p-3 ${getLevelColor(node.level)}`}
+      >
+        <div className="text-xs font-semibold mb-1 opacity-70">
+          {node.levelName}
+        </div>
+        <div className="text-sm font-medium truncate" title={node.name}>
+          {node.name}
+        </div>
+        {node.description && (
+          <div className="text-xs opacity-60 mt-1 line-clamp-2" title={node.description}>
+            {node.description}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
