@@ -1,4 +1,3 @@
-
 import { TreeNode } from "@/types/tree";
 import * as d3 from 'd3';
 
@@ -27,8 +26,8 @@ export interface MindMapConnection {
 
 const NODE_WIDTH = 220;
 const ROOT_NODE_WIDTH = 280;
-const NODE_HEIGHT = 100;
-const ROOT_NODE_HEIGHT = 120;
+const NODE_HEIGHT = 60; // Reduced from 100 to 60
+const ROOT_NODE_HEIGHT = 70; // Reduced from 120 to 70
 
 // Margin constants for better spacing
 const MARGIN_TOP = 50;
