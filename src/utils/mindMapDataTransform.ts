@@ -28,7 +28,33 @@ const NODE_WIDTH = 200;
 const NODE_HEIGHT = 80;
 const LEVEL_SPACING = 300;
 const NODE_SPACING = 100;
-const PARENT_GROUP_SPACING = 200; // Spacing between different parent-child groups
+const MIN_GROUP_SPACING = 400; // Increased minimum spacing between parent groups
+const CONNECTION_CLEARANCE = 50; // Additional buffer for connection line clearance
+
+// Helper function to calculate the vertical space required for a parent-child group
+const calculateGroupVerticalSpace = (childrenCount: number): number => {
+  if (childrenCount === 0) return NODE_HEIGHT;
+  if (childrenCount === 1) return NODE_HEIGHT;
+  if (childrenCount === 2) return NODE_HEIGHT + 2 * (NODE_HEIGHT + NODE_SPACING);
+  
+  // For multiple children, calculate total span
+  const totalChildrenHeight = childrenCount * NODE_HEIGHT;
+  const totalSpacing = (childrenCount - 1) * NODE_SPACING;
+  return totalChildrenHeight + totalSpacing + NODE_HEIGHT; // Include parent height
+};
+
+// Helper function to calculate dynamic spacing between groups
+const calculateDynamicSpacing = (
+  currentGroupSize: number, 
+  nextGroupSize: number
+): number => {
+  const currentSpace = calculateGroupVerticalSpace(currentGroupSize);
+  const nextSpace = calculateGroupVerticalSpace(nextGroupSize);
+  
+  // Use the larger of the two groups plus connection clearance
+  const requiredSpace = Math.max(currentSpace, nextSpace) / 2 + CONNECTION_CLEARANCE;
+  return Math.max(MIN_GROUP_SPACING, requiredSpace);
+};
 
 export const transformToMindMapData = (
   level1Items: TreeNode[],
@@ -46,19 +72,6 @@ export const transformToMindMapData = (
 ) => {
   const nodes: MindMapNode[] = [];
   const connections: MindMapConnection[] = [];
-  
-  // Track Y positions for parent groups at each level
-  let currentLevelYOffset: Record<number, number> = {};
-
-  // Helper function to get next Y position for a parent group
-  const getNextParentGroupY = (level: number): number => {
-    if (!currentLevelYOffset[level]) {
-      currentLevelYOffset[level] = 50; // Start with padding
-    } else {
-      currentLevelYOffset[level] += PARENT_GROUP_SPACING;
-    }
-    return currentLevelYOffset[level];
-  };
 
   // Helper function to create a connection
   const createConnection = (sourceNode: MindMapNode, targetNode: MindMapNode): MindMapConnection => {
@@ -91,20 +104,29 @@ export const transformToMindMapData = (
     level1YPosition += NODE_HEIGHT + NODE_SPACING;
   });
 
-  // Helper function to process children with parent-relative positioning
+  // Helper function to process children with enhanced spacing calculations
   const processChildrenLevel = (
     childrenData: Record<string, TreeNode[]>,
     level: number,
     levelName: string
   ) => {
-    Object.entries(childrenData).forEach(([parentId, children]) => {
+    const parentGroups = Object.entries(childrenData).filter(([_, children]) => children && children.length > 0);
+    let currentGroupYOffset = 50; // Start position for first group
+    
+    parentGroups.forEach(([parentId, children], groupIndex) => {
       const parentNode = nodes.find(n => n.id === parentId);
       if (!parentNode || !children || children.length === 0) return;
 
       const x = (level - 1) * LEVEL_SPACING + 50;
-
+      
+      // Calculate spacing for current and next group
+      const currentGroupSize = children.length;
+      const nextGroupSize = groupIndex < parentGroups.length - 1 
+        ? parentGroups[groupIndex + 1][1].length 
+        : 0;
+      
       if (children.length === 1) {
-        // Single child: place at same level as parent
+        // Single child: place at same level as parent, but adjust parent position
         const child: MindMapNode = {
           id: children[0].id,
           name: children[0].name,
@@ -112,17 +134,29 @@ export const transformToMindMapData = (
           level,
           levelName,
           x,
-          y: parentNode.y,
+          y: currentGroupYOffset,
           parentId,
           isSelected: selectedPath[`level${level}`] === children[0].id,
           isCustom: children[0].isCustom || false,
         };
         nodes.push(child);
+        
+        // Update parent position to align with child
+        parentNode.y = currentGroupYOffset;
         connections.push(createConnection(parentNode, child));
+        
+        // Calculate spacing to next group
+        if (nextGroupSize > 0) {
+          currentGroupYOffset += calculateDynamicSpacing(currentGroupSize, nextGroupSize);
+        }
 
       } else if (children.length === 2) {
         // Two children: one above, one below parent
         const spacing = NODE_HEIGHT + NODE_SPACING;
+        
+        // Position parent at the center of the group
+        const groupCenterY = currentGroupYOffset + spacing;
+        parentNode.y = groupCenterY;
         
         // First child above parent
         const firstChild: MindMapNode = {
@@ -132,7 +166,7 @@ export const transformToMindMapData = (
           level,
           levelName,
           x,
-          y: parentNode.y - spacing,
+          y: currentGroupYOffset,
           parentId,
           isSelected: selectedPath[`level${level}`] === children[0].id,
           isCustom: children[0].isCustom || false,
@@ -146,7 +180,7 @@ export const transformToMindMapData = (
           level,
           levelName,
           x,
-          y: parentNode.y + spacing,
+          y: currentGroupYOffset + 2 * spacing,
           parentId,
           isSelected: selectedPath[`level${level}`] === children[1].id,
           isCustom: children[1].isCustom || false,
@@ -155,12 +189,23 @@ export const transformToMindMapData = (
         nodes.push(firstChild, secondChild);
         connections.push(createConnection(parentNode, firstChild));
         connections.push(createConnection(parentNode, secondChild));
+        
+        // Update offset for next group with enhanced spacing
+        if (nextGroupSize > 0) {
+          currentGroupYOffset += 2 * spacing + calculateDynamicSpacing(currentGroupSize, nextGroupSize);
+        }
 
       } else {
-        // Multiple children: distribute around parent
+        // Multiple children: distribute around parent with enhanced spacing
         const spacing = NODE_HEIGHT + NODE_SPACING;
         const totalHeight = (children.length - 1) * spacing;
-        const startY = parentNode.y - totalHeight / 2;
+        
+        // Position parent at the center of all children
+        const groupCenterY = currentGroupYOffset + totalHeight / 2;
+        parentNode.y = groupCenterY;
+        
+        // Position children distributed around the group center
+        const startY = currentGroupYOffset;
 
         children.forEach((childItem, index) => {
           const child: MindMapNode = {
@@ -178,11 +223,16 @@ export const transformToMindMapData = (
           nodes.push(child);
           connections.push(createConnection(parentNode, child));
         });
+        
+        // Update offset for next group with enhanced spacing
+        if (nextGroupSize > 0) {
+          currentGroupYOffset += totalHeight + calculateDynamicSpacing(currentGroupSize, nextGroupSize);
+        }
       }
     });
   };
 
-  // Process all child levels
+  // Process all child levels with enhanced spacing
   processChildrenLevel(level2Items, 2, levelNames.level2 || "Level 2");
   processChildrenLevel(level3Items, 3, levelNames.level3 || "Level 3");
   processChildrenLevel(level4Items, 4, levelNames.level4 || "Level 4");
