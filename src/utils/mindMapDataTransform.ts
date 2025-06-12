@@ -1,6 +1,5 @@
-
 import { TreeNode } from "@/types/tree";
-import { hierarchy, Tree } from "@visx/hierarchy";
+import { hierarchy } from "@visx/hierarchy";
 import { HierarchyPointNode } from "@visx/hierarchy/lib/types";
 
 export interface MindMapNode {
@@ -221,21 +220,40 @@ export const transformToMindMapData = (
   // Create hierarchy from the data
   const root = hierarchy(hierarchicalData);
   
-  // Create tree layout with proper size
+  // Create tree layout with proper size using d3-tree layout algorithm
   const treeWidth = 800;
   const treeHeight = 600;
-  const treeLayout = Tree({
-    size: [treeHeight, treeWidth]
-  });
   
-  // Apply the tree layout to get positioned nodes
-  const treeWithLayout = treeLayout(root);
+  // Apply tree layout algorithm to position nodes
+  const treeWithLayout = root.copy();
+  
+  // Simple tree layout positioning - assign x, y coordinates
+  const assignCoordinates = (node: any, depth = 0, index = 0, siblings = 1) => {
+    // Horizontal positioning based on depth
+    node.x = depth * (treeHeight / 6); // Spread vertically
+    
+    // Vertical positioning based on sibling index
+    if (siblings === 1) {
+      node.y = treeWidth / 2;
+    } else {
+      node.y = (index + 1) * (treeWidth / (siblings + 1));
+    }
+    
+    // Recursively position children
+    if (node.children) {
+      node.children.forEach((child: any, i: number) => {
+        assignCoordinates(child, depth + 1, i, node.children.length);
+      });
+    }
+  };
+  
+  assignCoordinates(treeWithLayout);
 
   // Get all nodes and connections
-  const nodes = treeWithLayout.descendants();
+  const nodes = treeWithLayout.descendants() as HierarchyPointNode<MindMapNode>[];
   const connections = treeWithLayout.links().map(link => ({
-    source: link.source,
-    target: link.target,
+    source: link.source as HierarchyPointNode<MindMapNode>,
+    target: link.target as HierarchyPointNode<MindMapNode>,
   }));
 
   console.log(`Mindmap: Generated ${nodes.length} nodes and ${connections.length} connections`);
@@ -245,5 +263,5 @@ export const transformToMindMapData = (
     rootChildren: treeWithLayout.children?.length || 0,
   });
 
-  return { root: treeWithLayout, nodes, connections };
+  return { root: treeWithLayout as HierarchyPointNode<MindMapNode>, nodes, connections };
 };
