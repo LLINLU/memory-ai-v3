@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useRef } from 'react';
 
 interface PanZoomState {
@@ -47,7 +46,22 @@ export const usePanZoom = (
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     
-    const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
+    // Much gentler zoom factors - 3% base change instead of 10%
+    const baseFactor = 0.03;
+    
+    // Adjust zoom factor based on deltaY magnitude for better trackpad/mouse wheel handling
+    const deltaY = Math.abs(event.deltaY);
+    let adjustedFactor = baseFactor;
+    
+    // For larger deltas (mouse wheel), allow slightly more zoom
+    if (deltaY > 100) {
+      adjustedFactor = baseFactor * 1.5; // 4.5%
+    } else if (deltaY > 50) {
+      adjustedFactor = baseFactor * 1.2; // 3.6%
+    }
+    // For small deltas (trackpad), keep the gentle 3%
+    
+    const zoomFactor = event.deltaY > 0 ? (1 - adjustedFactor) : (1 + adjustedFactor);
     
     setState(prev => {
       const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, prev.zoom * zoomFactor));
