@@ -1,11 +1,6 @@
-import { useEffect, useState } from "react";
+
+import { useEffect } from "react";
 import { MainContent } from "./MainContent";
-import { ScenarioSection } from "./ScenarioSection";
-import { ViewToggle } from "./ViewToggle";
-import { NavigationControls } from "./level-selection/NavigationControls";
-import { LevelSelection } from "./LevelSelection";
-import { MindMapContainer } from "./mind-map/MindMapContainer";
-import { PathDisplay } from "./PathDisplay";
 
 interface TechTreeMainContentProps {
   selectedPath: {
@@ -69,18 +64,18 @@ interface TechTreeMainContentProps {
   triggerScrollUpdate?: () => void;
 }
 
-export const TechTreeMainContent: React.FC<TechTreeMainContentProps> = ({
+export const TechTreeMainContent = ({
   selectedPath,
   level1Items,
   level2Items,
   level3Items,
   level4Items,
-  level5Items,
-  level6Items,
-  level7Items,
-  level8Items,
-  level9Items,
-  level10Items,
+  level5Items = {},
+  level6Items = {},
+  level7Items = {},
+  level8Items = {},
+  level9Items = {},
+  level10Items = {},
   showLevel4,
   handleNodeClick,
   editNode,
@@ -102,122 +97,60 @@ export const TechTreeMainContent: React.FC<TechTreeMainContentProps> = ({
   lastVisibleLevel,
   containerRef,
   triggerScrollUpdate,
-}) => {
-  const [currentView, setCurrentView] = useState<"treemap" | "mindmap">("treemap");
-
-  // Debug logging for view changes
+}: TechTreeMainContentProps) => {
+  // Trigger scroll update when level data changes
   useEffect(() => {
-    console.log("🎨 View changed to:", currentView);
-    console.log("📊 Current data:", {
-      level1Count: level1Items?.length || 0,
-      level2Count: Object.keys(level2Items || {}).length,
-      level3Count: Object.keys(level3Items || {}).length,
-      level4Count: Object.keys(level4Items || {}).length,
-    });
-  }, [currentView, level1Items, level2Items, level3Items, level4Items]);
-
-  const handleViewChange = (view: "treemap" | "mindmap") => {
-    console.log("🔄 Switching view to:", view);
-    setCurrentView(view);
-  };
+    if (triggerScrollUpdate) {
+      console.log('Triggering scroll update due to level data change');
+      triggerScrollUpdate();
+    }
+  }, [
+    level1Items.length,
+    Object.keys(level2Items).length,
+    Object.keys(level3Items).length,
+    Object.keys(level4Items).length,
+    Object.keys(level5Items).length,
+    Object.keys(level6Items).length,
+    Object.keys(level7Items).length,
+    Object.keys(level8Items).length,
+    Object.keys(level9Items).length,
+    Object.keys(level10Items).length,
+    triggerScrollUpdate,
+  ]);
 
   return (
-    <div className="space-y-6">
-      {/* Scenario Section */}
-      {scenario && (
-        <div className="bg-white rounded-lg shadow-sm border">
-          <ScenarioSection 
-            scenario={scenario} 
-            onEditScenario={onEditScenario}
-            conversationHistory={conversationHistory}
-            onGuidanceClick={onGuidanceClick}
-          />
-        </div>
-      )}
-
-      {/* View Toggle */}
-      <div className="flex justify-between items-center">
-        <ViewToggle currentView={currentView} onViewChange={handleViewChange} />
-        
-        {currentView === "treemap" && (
-          <NavigationControls
-            onScrollToStart={onScrollToStart}
-            onScrollToEnd={onScrollToEnd}
-            canScrollLeft={canScrollLeft}
-            canScrollRight={canScrollRight}
-            lastVisibleLevel={lastVisibleLevel}
-          />
-        )}
-      </div>
-
-      {/* Conditional Rendering */}
-      {currentView === "treemap" ? (
-        <div className="bg-white rounded-lg shadow-sm border">
-          <LevelSelection
-            selectedPath={selectedPath}
-            level1Items={level1Items}
-            level2Items={level2Items}
-            level3Items={level3Items}
-            level4Items={level4Items}
-            level5Items={level5Items}
-            level6Items={level6Items}
-            level7Items={level7Items}
-            level8Items={level8Items}
-            level9Items={level9Items}
-            level10Items={level10Items}
-            showLevel4={showLevel4}
-            onNodeClick={handleNodeClick}
-            onEditNode={editNode}
-            onDeleteNode={deleteNode}
-            levelNames={levelNames}
-            containerRef={containerRef}
-            onGuidanceClick={onGuidanceClick}
-          />
-        </div>
-      ) : (
-        <div className="bg-white rounded-lg shadow-sm border h-[600px]">
-          <MindMapContainer
-            level1Items={level1Items}
-            level2Items={level2Items}
-            level3Items={level3Items}
-            level4Items={level4Items}
-            level5Items={level5Items}
-            level6Items={level6Items}
-            level7Items={level7Items}
-            level8Items={level8Items}
-            level9Items={level9Items}
-            level10Items={level10Items}
-            selectedPath={selectedPath}
-            onNodeClick={handleNodeClick}
-            onEditNode={editNode}
-            onDeleteNode={deleteNode}
-          />
-        </div>
-      )}
-
-      {/* Path Display Section */}
-      <div className="bg-white rounded-lg shadow-sm border">
-        <PathDisplay
-          selectedPath={selectedPath}
-          level1Items={level1Items}
-          level2Items={level2Items}
-          level3Items={level3Items}
-          level4Items={level4Items}
-          level5Items={level5Items}
-          level6Items={level6Items}
-          level7Items={level7Items}
-          level8Items={level8Items}
-          level9Items={level9Items}
-          level10Items={level10Items}
-          showLevel4={showLevel4}
-          onGuidanceClick={onGuidanceClick}
-          onScrollToStart={onScrollToStart}
-          onScrollToEnd={onScrollToEnd}
-          canScrollLeft={canScrollLeft}
-          canScrollRight={canScrollRight}
-          lastVisibleLevel={lastVisibleLevel}
-        />
-      </div>
-    </div>
+    <MainContent
+      selectedPath={selectedPath}
+      level1Items={level1Items}
+      level2Items={level2Items}
+      level3Items={level3Items}
+      level4Items={level4Items}
+      level5Items={level5Items}
+      level6Items={level6Items}
+      level7Items={level7Items}
+      level8Items={level8Items}
+      level9Items={level9Items}
+      level10Items={level10Items}
+      showLevel4={showLevel4}
+      onNodeClick={handleNodeClick}
+      onEditNode={editNode}
+      onDeleteNode={deleteNode}
+      levelNames={levelNames}
+      hasUserMadeSelection={hasUserMadeSelection}
+      scenario={scenario}
+      onEditScenario={onEditScenario}
+      conversationHistory={conversationHistory}
+      onAddLevel4={handleAddLevel4}
+      searchMode={searchMode}
+      onGuidanceClick={onGuidanceClick}
+      query={query}
+      treeMode={treeMode}
+      onScrollToStart={onScrollToStart}
+      onScrollToEnd={onScrollToEnd}
+      canScrollLeft={canScrollLeft}
+      canScrollRight={canScrollRight}
+      lastVisibleLevel={lastVisibleLevel}
+      containerRef={containerRef}
+    />
   );
 };
