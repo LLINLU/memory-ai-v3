@@ -28,6 +28,7 @@ const NODE_WIDTH = 200;
 const NODE_HEIGHT = 80;
 const LEVEL_SPACING = 300;
 const NODE_SPACING = 100;
+const MIN_SPACING = 20; // Minimum spacing to prevent overlap
 
 export const transformToMindMapData = (
   level1Items: TreeNode[],
@@ -96,6 +97,7 @@ export const transformToMindMapData = (
     };
   };
 
+  // FIRST PASS: Create all nodes with level-based positioning
   // Process Level 1 nodes - show ALL level 1 items
   level1Items.forEach((item) => {
     const node = createNode(item, 1, levelNames.level1 || "Level 1");
@@ -148,6 +150,66 @@ export const transformToMindMapData = (
         });
       }
     });
+  });
+
+  // SECOND PASS: Center parent nodes between their children
+  const centerParentNodes = () => {
+    // Group children by parent
+    const childrenByParent: Record<string, MindMapNode[]> = {};
+    nodes.forEach(node => {
+      if (node.parentId) {
+        if (!childrenByParent[node.parentId]) {
+          childrenByParent[node.parentId] = [];
+        }
+        childrenByParent[node.parentId].push(node);
+      }
+    });
+
+    // Adjust parent positions to center them between children
+    Object.entries(childrenByParent).forEach(([parentId, children]) => {
+      if (children.length < 2) return; // No centering needed for single child or no children
+
+      const parentNode = nodes.find(n => n.id === parentId);
+      if (!parentNode) return;
+
+      // Find the Y positions of children
+      const childrenYPositions = children.map(child => child.y).sort((a, b) => a - b);
+      const topChildY = childrenYPositions[0];
+      const bottomChildY = childrenYPositions[childrenYPositions.length - 1];
+      
+      // Calculate the center position
+      const centerY = topChildY + (bottomChildY - topChildY) / 2;
+      
+      // Check if centering would cause overlap with other nodes at the same level
+      const sameLevel = nodes.filter(n => n.level === parentNode.level && n.id !== parentNode.id);
+      const wouldOverlap = sameLevel.some(node => {
+        const distance = Math.abs(node.y - centerY);
+        return distance < (NODE_HEIGHT + MIN_SPACING);
+      });
+
+      // Only center if it doesn't cause overlap
+      if (!wouldOverlap) {
+        parentNode.y = centerY;
+        console.log(`Centered parent ${parentId} between children at Y: ${centerY}`);
+      } else {
+        console.log(`Skipped centering parent ${parentId} to avoid overlap`);
+      }
+    });
+  };
+
+  // Apply parent centering
+  centerParentNodes();
+
+  // Update connections after repositioning
+  connections.forEach(connection => {
+    const sourceNode = nodes.find(n => n.id === connection.sourceId);
+    const targetNode = nodes.find(n => n.id === connection.targetId);
+    if (sourceNode && targetNode) {
+      connection.sourceX = sourceNode.x + NODE_WIDTH;
+      connection.sourceY = sourceNode.y + NODE_HEIGHT / 2;
+      connection.targetX = targetNode.x;
+      connection.targetY = targetNode.y + NODE_HEIGHT / 2;
+    }
   });
 
   console.log(`Mindmap: Generated ${nodes.length} nodes and ${connections.length} connections`);
