@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { PathLevel } from "@/types/tree";
 
@@ -26,82 +27,92 @@ export const usePathSelectionState = (
     level8: "",
     level9: "",
     level10: "",
-  }
+  },
+  disableAutoSelection = false
 ) => {
   const [selectedPath, setSelectedPath] = useState<PathState>(initialPath);
   const [hasUserMadeSelection, setHasUserMadeSelection] = useState(false);
   const [showLevel4, setShowLevel4] = useState(false);
   const [treeData, setTreeData] = useState<any>(null);
+  
   // Store tree data for auto-selection
   const updateTreeData = (data: any) => {
     setTreeData(data);
-  }; // Auto-select first path through the entire tree when tree data is loaded
+  }; 
+
+  // Auto-select first path through the entire tree when tree data is loaded
+  // BUT only if auto-selection is not disabled (i.e., not in mindmap view)
   useEffect(() => {
     if (
-      treeData &&
-      !hasUserMadeSelection &&
-      treeData.level1Items &&
-      treeData.level1Items.length > 0
+      disableAutoSelection ||
+      !treeData ||
+      hasUserMadeSelection ||
+      !treeData.level1Items ||
+      treeData.level1Items.length === 0
     ) {
-      // Only auto-select if current path is empty or invalid
-      const firstLevel1 = treeData.level1Items[0];
-      const currentLevel1Exists = treeData.level1Items.find(
-        (item: any) => item.id === selectedPath.level1
-      );
-
-      // Trigger auto-selection if:
-      // 1. No level1 is selected, OR
-      // 2. Current level1 doesn't exist in tree data, OR
-      // 3. Level1 is selected but level2 is empty (need cascade)
-      if (
-        !selectedPath.level1 ||
-        !currentLevel1Exists ||
-        (selectedPath.level1 && !selectedPath.level2)
-      ) {
-        // Trigger the same logic as manual click to ensure cascade works
-        setSelectedPath((prev) => {
-          const newPath = { ...prev };
-          const levels: PathLevel[] = [
-            "level1",
-            "level2",
-            "level3",
-            "level4",
-            "level5",
-            "level6",
-            "level7",
-            "level8",
-            "level9",
-            "level10",
-          ];
-
-          // Clear all levels first
-          for (let i = 0; i < levels.length; i++) {
-            newPath[levels[i]] = "";
-          }
-
-          // Set level 1
-          newPath.level1 = firstLevel1.id;
-
-          // Auto-select children using the same logic as handleNodeClick
-          let currentParentId = firstLevel1.id;
-          for (let i = 1; i < levels.length; i++) {
-            const level = levels[i];
-            const levelKey = `${level}Items`;
-            const childItems = treeData[levelKey]?.[currentParentId];
-
-            if (childItems && childItems.length > 0) {
-              newPath[level] = childItems[0].id;
-              currentParentId = childItems[0].id;
-            } else {
-              break;
-            }
-          }
-
-          return newPath;
-        });
-      }
+      return;
     }
-  }, [treeData, hasUserMadeSelection]);
+
+    // Only auto-select if current path is empty or invalid
+    const firstLevel1 = treeData.level1Items[0];
+    const currentLevel1Exists = treeData.level1Items.find(
+      (item: any) => item.id === selectedPath.level1
+    );
+
+    // Trigger auto-selection if:
+    // 1. No level1 is selected, OR
+    // 2. Current level1 doesn't exist in tree data, OR
+    // 3. Level1 is selected but level2 is empty (need cascade)
+    if (
+      !selectedPath.level1 ||
+      !currentLevel1Exists ||
+      (selectedPath.level1 && !selectedPath.level2)
+    ) {
+      console.log('Auto-selecting first path for treemap view');
+      // Trigger the same logic as manual click to ensure cascade works
+      setSelectedPath((prev) => {
+        const newPath = { ...prev };
+        const levels: PathLevel[] = [
+          "level1",
+          "level2",
+          "level3",
+          "level4",
+          "level5",
+          "level6",
+          "level7",
+          "level8",
+          "level9",
+          "level10",
+        ];
+
+        // Clear all levels first
+        for (let i = 0; i < levels.length; i++) {
+          newPath[levels[i]] = "";
+        }
+
+        // Set level 1
+        newPath.level1 = firstLevel1.id;
+
+        // Auto-select children using the same logic as handleNodeClick
+        let currentParentId = firstLevel1.id;
+        for (let i = 1; i < levels.length; i++) {
+          const level = levels[i];
+          const levelKey = `${level}Items`;
+          const childItems = treeData[levelKey]?.[currentParentId];
+
+          if (childItems && childItems.length > 0) {
+            newPath[level] = childItems[0].id;
+            currentParentId = childItems[0].id;
+          } else {
+            break;
+          }
+        }
+
+        return newPath;
+      });
+    }
+  }, [treeData, hasUserMadeSelection, disableAutoSelection]);
+
   const handleNodeClick = (level: PathLevel, nodeId: string) => {
     setHasUserMadeSelection(true);
 
@@ -158,8 +169,8 @@ export const usePathSelectionState = (
       // Set the selected level
       newPath[level] = nodeId;
 
-      // Auto-select first child if available
-      if (treeData && currentIndex < levels.length - 1) {
+      // Auto-select first child if available (but only for treemap view)
+      if (!disableAutoSelection && treeData && currentIndex < levels.length - 1) {
         const nextLevel = levels[currentIndex + 1];
         const nextLevelKey = `${nextLevel}Items`;
         const childItems = treeData[nextLevelKey]?.[nodeId];

@@ -40,17 +40,22 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   onDeleteNode,
 }) => {
   const { nodes, connections } = useMemo(() => {
+    console.log('MindMap: Processing data for mindmap view');
+    console.log('Level 1 items:', level1Items?.length || 0);
+    console.log('Level 2 items:', Object.keys(level2Items || {}).length);
+    console.log('Level 3 items:', Object.keys(level3Items || {}).length);
+    
     return transformToMindMapData(
-      level1Items,
-      level2Items,
-      level3Items,
-      level4Items,
-      level5Items,
-      level6Items,
-      level7Items,
-      level8Items,
-      level9Items,
-      level10Items,
+      level1Items || [],
+      level2Items || {},
+      level3Items || {},
+      level4Items || {},
+      level5Items || {},
+      level6Items || {},
+      level7Items || {},
+      level8Items || {},
+      level9Items || {},
+      level10Items || {},
       levelNames,
       selectedPath
     );
@@ -70,12 +75,15 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   ]);
 
   const handleNodeClick = (nodeId: string, level: number) => {
+    console.log(`MindMap: Node clicked - Level ${level}, ID: ${nodeId}`);
     onNodeClick(`level${level}`, nodeId);
   };
 
-  // Calculate container dimensions based on nodes
-  const containerWidth = Math.max(...nodes.map(n => n.x + 220), 800);
-  const containerHeight = Math.max(...nodes.map(n => n.y + 100), 600);
+  // Calculate container dimensions based on nodes with proper padding
+  const containerWidth = Math.max(...nodes.map(n => n.x + 250), 1000); // Add more right padding
+  const containerHeight = Math.max(...nodes.map(n => n.y + 120), 800); // Add more bottom padding
+
+  console.log(`MindMap: Container dimensions - ${containerWidth}x${containerHeight}`);
 
   return (
     <div className="w-full h-full overflow-auto bg-gray-50 relative">
@@ -99,6 +107,13 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
             onDelete={onDeleteNode}
           />
         ))}
+        
+        {nodes.length === 0 && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-500">
+            <p className="text-lg">No data available for mindmap view</p>
+            <p className="text-sm mt-2">Please ensure your tree has been generated</p>
+          </div>
+        )}
       </div>
     </div>
   );

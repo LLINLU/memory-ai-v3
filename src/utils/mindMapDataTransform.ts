@@ -46,17 +46,17 @@ export const transformToMindMapData = (
   const nodes: MindMapNode[] = [];
   const connections: MindMapConnection[] = [];
   
-  // Track positions for each level
-  const levelPositions: Record<number, number> = {};
+  // Track positions for each level to avoid overlapping
+  const levelYPositions: Record<number, number> = {};
 
   // Helper function to get next Y position for a level
   const getNextYPosition = (level: number): number => {
-    if (!levelPositions[level]) {
-      levelPositions[level] = 0;
+    if (!levelYPositions[level]) {
+      levelYPositions[level] = 50; // Start with some padding
     } else {
-      levelPositions[level] += NODE_HEIGHT + NODE_SPACING;
+      levelYPositions[level] += NODE_HEIGHT + NODE_SPACING;
     }
-    return levelPositions[level];
+    return levelYPositions[level];
   };
 
   // Helper function to create a node
@@ -66,7 +66,7 @@ export const transformToMindMapData = (
     levelName: string,
     parentId?: string
   ): MindMapNode => {
-    const x = (level - 1) * LEVEL_SPACING;
+    const x = (level - 1) * LEVEL_SPACING + 50; // Add left padding
     const y = getNextYPosition(level);
     
     return {
@@ -96,16 +96,16 @@ export const transformToMindMapData = (
     };
   };
 
-  // Process Level 1 nodes
+  // Process Level 1 nodes - show ALL level 1 items
   level1Items.forEach((item) => {
     const node = createNode(item, 1, levelNames.level1 || "Level 1");
     nodes.push(node);
   });
 
-  // Process Level 2 nodes
+  // Process Level 2 nodes - show ALL level 2 items
   Object.entries(level2Items).forEach(([parentId, items]) => {
     const parentNode = nodes.find(n => n.id === parentId);
-    if (parentNode) {
+    if (parentNode && items) {
       items.forEach((item) => {
         const node = createNode(item, 2, levelNames.level2 || "Level 2", parentId);
         nodes.push(node);
@@ -114,10 +114,10 @@ export const transformToMindMapData = (
     }
   });
 
-  // Process Level 3 nodes
+  // Process Level 3 nodes - show ALL level 3 items
   Object.entries(level3Items).forEach(([parentId, items]) => {
     const parentNode = nodes.find(n => n.id === parentId);
-    if (parentNode) {
+    if (parentNode && items) {
       items.forEach((item) => {
         const node = createNode(item, 3, levelNames.level3 || "Level 3", parentId);
         nodes.push(node);
@@ -126,20 +126,9 @@ export const transformToMindMapData = (
     }
   });
 
-  // Process Level 4 nodes
-  Object.entries(level4Items).forEach(([parentId, items]) => {
-    const parentNode = nodes.find(n => n.id === parentId);
-    if (parentNode) {
-      items.forEach((item) => {
-        const node = createNode(item, 4, levelNames.level4 || "Level 4", parentId);
-        nodes.push(node);
-        connections.push(createConnection(parentNode, node));
-      });
-    }
-  });
-
-  // Process Level 5-10 nodes (similar pattern)
+  // Process Level 4-10 nodes - show ALL items for each level
   const levelData = [
+    { items: level4Items, level: 4, name: levelNames.level4 || "Level 4" },
     { items: level5Items, level: 5, name: levelNames.level5 || "Level 5" },
     { items: level6Items, level: 6, name: levelNames.level6 || "Level 6" },
     { items: level7Items, level: 7, name: levelNames.level7 || "Level 7" },
@@ -159,6 +148,14 @@ export const transformToMindMapData = (
         });
       }
     });
+  });
+
+  console.log(`Mindmap: Generated ${nodes.length} nodes and ${connections.length} connections`);
+  console.log('Level breakdown:', {
+    level1: nodes.filter(n => n.level === 1).length,
+    level2: nodes.filter(n => n.level === 2).length,
+    level3: nodes.filter(n => n.level === 3).length,
+    level4: nodes.filter(n => n.level === 4).length,
   });
 
   return { nodes, connections };
