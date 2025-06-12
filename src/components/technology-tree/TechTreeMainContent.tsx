@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
 import { MainContent } from "./MainContent";
+import { ScenarioSection } from "./ScenarioSection";
+import { ViewToggle } from "./ViewToggle";
+import { NavigationControls } from "./level-selection/NavigationControls";
+import { LevelSelection } from "./LevelSelection";
+import { MindMapContainer } from "./mind-map/MindMapContainer";
+import { PathDisplay } from "./PathDisplay";
 
 interface TechTreeMainContentProps {
   selectedPath: {
@@ -120,7 +126,12 @@ export const TechTreeMainContent: React.FC<TechTreeMainContentProps> = ({
       {/* Scenario Section */}
       {scenario && (
         <div className="bg-white rounded-lg shadow-sm border">
-          <ScenarioDisplay scenario={scenario} onEditScenario={onEditScenario} />
+          <ScenarioSection 
+            scenario={scenario} 
+            onEditScenario={onEditScenario}
+            conversationHistory={conversationHistory}
+            onGuidanceClick={onGuidanceClick}
+          />
         </div>
       )}
 
