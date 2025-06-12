@@ -1,3 +1,4 @@
+
 import React, { useMemo } from "react";
 import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
@@ -41,7 +42,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   onDeleteNode,
 }) => {
   const { nodes, connections } = useMemo(() => {
-    console.log('MindMap: Processing data for mindmap view');
+    console.log('MindMap: Processing data for organic mindmap view');
     console.log('Level 1 items:', level1Items?.length || 0);
     console.log('Level 2 items:', Object.keys(level2Items || {}).length);
     console.log('Level 3 items:', Object.keys(level3Items || {}).length);
@@ -80,9 +81,9 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     onNodeClick(`level${level}`, nodeId);
   };
 
-  // Calculate container dimensions based on nodes with proper padding
-  const containerWidth = Math.max(...nodes.map(n => n.x + 250), 1000);
-  const containerHeight = Math.max(...nodes.map(n => n.y + 120), 800);
+  // Calculate container dimensions for organic layout (larger area needed)
+  const containerWidth = Math.max(...nodes.map(n => n.x + 300), 1600);
+  const containerHeight = Math.max(...nodes.map(n => n.y + 150), 1200);
 
   const {
     zoom,
@@ -98,10 +99,10 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     getTransform,
   } = usePanZoom(containerWidth, containerHeight);
 
-  console.log(`MindMap: Container dimensions - ${containerWidth}x${containerHeight}`);
+  console.log(`MindMap: Organic container dimensions - ${containerWidth}x${containerHeight}`);
 
   return (
-    <div className="w-full h-full overflow-hidden bg-white relative">
+    <div className="w-full h-full overflow-hidden bg-gradient-to-br from-slate-50 to-purple-50 relative">
       <div
         className="w-full h-full relative"
         onWheel={handleWheel}
@@ -138,7 +139,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
           
           {nodes.length === 0 && (
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-500">
-              <p className="text-lg">No data available for mindmap view</p>
+              <p className="text-lg">No data available for organic mindmap view</p>
               <p className="text-sm mt-2">Please ensure your tree has been generated</p>
             </div>
           )}

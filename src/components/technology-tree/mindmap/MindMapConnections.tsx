@@ -9,11 +9,11 @@ interface MindMapConnectionsProps {
 export const MindMapConnections: React.FC<MindMapConnectionsProps> = ({
   connections,
 }) => {
-  const createCurvedPath = (connection: MindMapConnection): string => {
-    const { sourceX, sourceY, targetX, targetY } = connection;
-    const midX = sourceX + (targetX - sourceX) / 2;
+  const createOrganicPath = (connection: MindMapConnection): string => {
+    const { sourceX, sourceY, targetX, targetY, controlPoint1X, controlPoint1Y, controlPoint2X, controlPoint2Y } = connection;
     
-    return `M ${sourceX} ${sourceY} Q ${midX} ${sourceY} ${targetX} ${targetY}`;
+    // Create smooth cubic bezier curve for organic flow
+    return `M ${sourceX} ${sourceY} C ${controlPoint1X} ${controlPoint1Y}, ${controlPoint2X} ${controlPoint2Y}, ${targetX} ${targetY}`;
   };
 
   return (
@@ -26,32 +26,40 @@ export const MindMapConnections: React.FC<MindMapConnectionsProps> = ({
       }}
     >
       <defs>
-        <marker
-          id="arrowhead"
-          markerWidth="10"
-          markerHeight="7"
-          refX="9"
-          refY="3.5"
-          orient="auto"
-        >
-          <polygon
-            points="0 0, 10 3.5, 0 7"
-            fill="#64748b"
-          />
-        </marker>
+        {/* Gradient for organic tree-like appearance */}
+        <linearGradient id="organicGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.8" />
+          <stop offset="50%" stopColor="#a78bfa" stopOpacity="0.6" />
+          <stop offset="100%" stopColor="#c4b5fd" stopOpacity="0.4" />
+        </linearGradient>
+        
+        {/* Drop shadow for depth */}
+        <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="1" dy="1" stdDeviation="1" floodColor="#000" floodOpacity="0.1"/>
+        </filter>
       </defs>
       
-      {connections.map((connection) => (
-        <path
-          key={connection.id}
-          d={createCurvedPath(connection)}
-          stroke="#64748b"
-          strokeWidth="2"
-          fill="none"
-          markerEnd="url(#arrowhead)"
-          opacity="0.6"
-        />
-      ))}
+      {connections.map((connection, index) => {
+        // Calculate line thickness based on tree depth (thicker at root, thinner at leaves)
+        const sourceLevel = connections.filter(c => c.targetId === connection.sourceId).length;
+        const thickness = Math.max(1.5, 4 - sourceLevel * 0.3);
+        
+        return (
+          <path
+            key={connection.id}
+            d={createOrganicPath(connection)}
+            stroke="url(#organicGradient)"
+            strokeWidth={thickness}
+            fill="none"
+            opacity="0.7"
+            filter="url(#dropShadow)"
+            style={{
+              // Smooth animation for organic feel
+              transition: "all 0.3s ease-out",
+            }}
+          />
+        );
+      })}
     </svg>
   );
 };
