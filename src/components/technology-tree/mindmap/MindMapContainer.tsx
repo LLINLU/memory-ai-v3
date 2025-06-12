@@ -1,4 +1,3 @@
-
 import React, { useMemo } from "react";
 import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
@@ -102,7 +101,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   console.log(`MindMap: Container dimensions - ${containerWidth}x${containerHeight}`);
 
   return (
-    <div className="w-full h-full overflow-hidden bg-gray-50 relative">
+    <div className="w-full h-full overflow-hidden bg-white relative">
       <div
         className="w-full h-full relative"
         onWheel={handleWheel}
