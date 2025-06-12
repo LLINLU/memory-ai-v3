@@ -15,54 +15,74 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const getLevelColor = (level: number) => {
-    const colors = [
-      "bg-blue-100 border-blue-300 text-blue-800", // Level 1
-      "bg-green-100 border-green-300 text-green-800", // Level 2
-      "bg-purple-100 border-purple-300 text-purple-800", // Level 3
-      "bg-orange-100 border-orange-300 text-orange-800", // Level 4
-      "bg-pink-100 border-pink-300 text-pink-800", // Level 5
-      "bg-indigo-100 border-indigo-300 text-indigo-800", // Level 6
-      "bg-yellow-100 border-yellow-300 text-yellow-800", // Level 7
-      "bg-red-100 border-red-300 text-red-800", // Level 8
-      "bg-teal-100 border-teal-300 text-teal-800", // Level 9
-      "bg-gray-100 border-gray-300 text-gray-800", // Level 10
-    ];
-    return colors[level - 1] || colors[colors.length - 1];
+  const getNodeStyle = (node: MindMapNode) => {
+    const isRoot = node.depth === 1; // First level after root
+    const isSelected = node.isSelected;
+    
+    if (isRoot) {
+      return {
+        element: 'circle' as const,
+        size: 40,
+        className: `bg-red-500 border-2 ${isSelected ? 'border-gray-800' : 'border-transparent'} text-white`,
+        textSize: 'text-sm font-semibold'
+      };
+    }
+    
+    // Check if it's a leaf node (no children in the tree)
+    const isLeaf = !node.children || node.children.length === 0;
+    
+    return {
+      element: 'rect' as const,
+      width: isLeaf ? 180 : 160,
+      height: isLeaf ? 70 : 65,
+      className: `bg-transparent border-2 border-blue-500 ${
+        isSelected ? 'border-blue-700 shadow-lg' : ''
+      } ${isLeaf ? 'border-dashed' : ''} text-blue-600`,
+      textSize: 'text-xs font-medium',
+      borderRadius: isLeaf ? 'rounded-full' : 'rounded-lg'
+    };
   };
 
   const handleClick = () => {
     onClick(node.id, node.level);
   };
 
+  const style = getNodeStyle(node);
+
   return (
     <div
-      className={`absolute cursor-pointer transition-all duration-200 hover:shadow-lg ${
-        node.isSelected ? "ring-2 ring-blue-500 shadow-lg" : ""
-      }`}
+      className="absolute cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105"
       style={{
-        left: node.x,
-        top: node.y,
-        width: 200,
-        height: 80,
+        left: style.element === 'circle' ? node.x - style.size/2 : node.x - style.width/2,
+        top: style.element === 'circle' ? node.y - style.size/2 : node.y - style.height/2,
+        width: style.element === 'circle' ? style.size : style.width,
+        height: style.element === 'circle' ? style.size : style.height,
       }}
       onClick={handleClick}
     >
-      <div
-        className={`w-full h-full rounded-lg border-2 p-3 ${getLevelColor(node.level)}`}
-      >
-        <div className="text-xs font-semibold mb-1 opacity-70">
-          {node.levelName}
+      {style.element === 'circle' ? (
+        <div
+          className={`w-full h-full rounded-full flex items-center justify-center ${style.className}`}
+        >
+          <span className={style.textSize}>{node.name}</span>
         </div>
-        <div className="text-sm font-medium truncate" title={node.name}>
-          {node.name}
-        </div>
-        {node.description && (
-          <div className="text-xs opacity-60 mt-1 line-clamp-2" title={node.description}>
-            {node.description}
+      ) : (
+        <div
+          className={`w-full h-full ${style.borderRadius} p-3 flex flex-col justify-center ${style.className}`}
+        >
+          <div className="text-xs font-semibold mb-1 opacity-70">
+            {node.levelName}
           </div>
-        )}
-      </div>
+          <div className={`${style.textSize} truncate`} title={node.name}>
+            {node.name}
+          </div>
+          {node.description && (
+            <div className="text-xs opacity-60 mt-1 line-clamp-2" title={node.description}>
+              {node.description}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

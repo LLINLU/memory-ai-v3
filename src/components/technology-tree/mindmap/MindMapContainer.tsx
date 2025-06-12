@@ -1,3 +1,4 @@
+
 import React, { useMemo } from "react";
 import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
@@ -41,7 +42,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   onDeleteNode,
 }) => {
   const { nodes, connections } = useMemo(() => {
-    console.log('MindMap: Processing data for mindmap view');
+    console.log('MindMap: Processing data for D3-based mindmap view');
     console.log('Level 1 items:', level1Items?.length || 0);
     console.log('Level 2 items:', Object.keys(level2Items || {}).length);
     console.log('Level 3 items:', Object.keys(level3Items || {}).length);
@@ -80,9 +81,9 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     onNodeClick(`level${level}`, nodeId);
   };
 
-  // Calculate container dimensions based on nodes with proper padding
-  const containerWidth = Math.max(...nodes.map(n => n.x + 250), 1000);
-  const containerHeight = Math.max(...nodes.map(n => n.y + 120), 800);
+  // Use D3-optimized container dimensions
+  const containerWidth = 1400;
+  const containerHeight = 800;
 
   const {
     zoom,
@@ -98,10 +99,10 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     getTransform,
   } = usePanZoom(containerWidth, containerHeight);
 
-  console.log(`MindMap: Container dimensions - ${containerWidth}x${containerHeight}`);
+  console.log(`MindMap: D3 container dimensions - ${containerWidth}x${containerHeight}`);
 
   return (
-    <div className="w-full h-full overflow-hidden bg-white relative">
+    <div className="w-full h-full overflow-hidden bg-gray-50 relative">
       <div
         className="w-full h-full relative"
         onWheel={handleWheel}
@@ -115,7 +116,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
         }}
       >
         <div
-          className="relative origin-top-left transition-transform duration-200 ease-out"
+          className="relative origin-top-left transition-transform duration-200 ease-out bg-white rounded-lg shadow-sm"
           style={{
             width: containerWidth,
             height: containerHeight,
@@ -151,6 +152,24 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
         onZoomOut={zoomOut}
         onResetView={resetView}
       />
+
+      {/* Legend */}
+      <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg border z-10">
+        <div className="flex items-center gap-4 text-sm text-gray-600">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+            <span>Root Node</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 border-2 border-blue-500 rounded"></div>
+            <span>Branch Node</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-3 border-2 border-blue-500 border-dashed rounded-full"></div>
+            <span>Leaf Node</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
