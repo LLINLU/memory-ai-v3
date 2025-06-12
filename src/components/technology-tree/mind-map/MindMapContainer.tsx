@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from "react";
 import { MindMapNode } from "./MindMapNode";
 import { MindMapConnections } from "./MindMapConnections";
@@ -61,7 +60,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     expandedNodes,
     toggleNodeExpansion,
     isNodeExpanded,
-    expandRootNode,
+    expandNode,
   } = useMindMapState();
 
   // Debug data
@@ -76,14 +75,17 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     });
   }, [level1Items, level2Items, level3Items, level4Items, expandedNodes]);
 
-  // Initialize with root node expanded
+  // Initialize with all root nodes expanded
   useEffect(() => {
     if (level1Items && level1Items.length > 0 && !isInitialized) {
-      console.log("🌱 Initializing mindmap with root node:", level1Items[0].id);
-      expandRootNode(level1Items[0].id);
+      console.log("🌱 Auto-expanding all root nodes for better visibility");
+      level1Items.forEach(item => {
+        console.log(`🌱 Expanding root node: ${item.name} (${item.id})`);
+        expandNode(item.id);
+      });
       setIsInitialized(true);
     }
-  }, [level1Items, expandRootNode, isInitialized]);
+  }, [level1Items, expandNode, isInitialized]);
 
   // Update container size on mount and resize
   useEffect(() => {
@@ -116,7 +118,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     expandedNodes
   );
 
-  // Calculate positions
+  // Calculate positions for ALL nodes
   const positionedNodes = calculateNodePositions(mindMapData, containerSize.width, containerSize.height);
 
   const handleNodeClick = (nodeId: string) => {
@@ -217,7 +219,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
 
       {/* Debug info */}
       <div className="absolute top-4 left-4 z-10 bg-white/80 p-2 rounded text-xs">
-        <div>Nodes: {positionedNodes.length}</div>
+        <div>Root Nodes: {positionedNodes.length}</div>
         <div>Expanded: {expandedNodes.size}</div>
         <div>Zoom: {zoom.toFixed(1)}x</div>
       </div>

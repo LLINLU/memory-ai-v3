@@ -66,6 +66,7 @@ export const transformToMindMapData = (
     return buildNode(item, level, () => children);
   };
 
+  // Process ALL level 1 items as separate root nodes
   const result = level1Items.map(item => buildNodeRecursively(item, 1));
   console.log("🎯 Mindmap Transform Result:", {
     nodeCount: result.length,
@@ -82,6 +83,11 @@ export const calculateNodePositions = (
 ): MindMapNode[] => {
   console.log("📐 Calculating positions for container:", { containerWidth, containerHeight, nodeCount: nodes.length });
   
+  if (nodes.length === 0) {
+    console.warn("⚠️ No nodes to position");
+    return [];
+  }
+
   const centerX = containerWidth / 2;
   const centerY = containerHeight / 2;
   
@@ -117,14 +123,32 @@ export const calculateNodePositions = (
     return positionedNode;
   };
 
-  if (nodes.length === 0) {
-    console.warn("⚠️ No nodes to position");
-    return [];
-  }
+  // Handle multiple root nodes
+  if (nodes.length === 1) {
+    // Single root node - place at center
+    const rootNode = positionNode(nodes[0], centerX, centerY);
+    console.log("✅ Positioned single root node:", { x: rootNode.x, y: rootNode.y, expanded: rootNode.isExpanded });
+    return [rootNode];
+  } else {
+    // Multiple root nodes - arrange in a circle around center
+    const rootRadius = Math.min(containerWidth, containerHeight) * 0.25;
+    const angleStep = (Math.PI * 2) / nodes.length;
+    
+    const positionedNodes = nodes.map((node, index) => {
+      const angle = index * angleStep;
+      const x = centerX + Math.cos(angle) * rootRadius;
+      const y = centerY + Math.sin(angle) * rootRadius;
+      
+      const positioned = positionNode(node, x, y, angle, 120);
+      console.log(`✅ Positioned root node ${index + 1}/${nodes.length}:`, { 
+        name: node.name, 
+        x: positioned.x, 
+        y: positioned.y, 
+        expanded: positioned.isExpanded 
+      });
+      return positioned;
+    });
 
-  // Position root node at center
-  const rootNode = positionNode(nodes[0], centerX, centerY);
-  console.log("✅ Positioned root node:", { x: rootNode.x, y: rootNode.y, expanded: rootNode.isExpanded });
-  
-  return [rootNode];
+    return positionedNodes;
+  }
 };
