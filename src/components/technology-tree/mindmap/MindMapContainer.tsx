@@ -45,7 +45,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   onDeleteNode,
 }) => {
   const { nodes, connections } = useMemo(() => {
-    console.log('MindMap: Processing data for D3 tree layout with root node');
+    console.log('MindMap: Processing data for compact D3 tree layout with root node');
     console.log('User query for root:', query);
     console.log('Level 1 items:', level1Items?.length || 0);
     console.log('Level 2 items:', Object.keys(level2Items || {}).length);
@@ -94,10 +94,10 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     onNodeClick(`level${level}`, nodeId);
   };
 
-  // Calculate container dimensions based on D3 layout with proper padding
-  // Account for increased horizontal spacing (700px nodeSize) and left margin (250px)
-  const containerWidth = nodes.length > 0 ? Math.max(...nodes.map(n => n.x + 500), 2000) : 2000;
-  const containerHeight = nodes.length > 0 ? Math.max(...nodes.map(n => n.y + 120), 900) : 900;
+  // Calculate container dimensions based on compact D3 layout with proper padding
+  // Account for reduced horizontal spacing (400px nodeSize) and left margin (250px)
+  const containerWidth = nodes.length > 0 ? Math.max(...nodes.map(n => n.x + 400), 1400) : 1400;
+  const containerHeight = nodes.length > 0 ? Math.max(...nodes.map(n => n.y + 120), 600) : 600;
 
   const {
     zoom,
@@ -113,7 +113,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     getTransform,
   } = usePanZoom(containerWidth, containerHeight);
 
-  console.log(`MindMap: D3 layout with increased spacing - Container dimensions: ${containerWidth}x${containerHeight}, Nodes: ${nodes.length}`);
+  console.log(`MindMap: Compact D3 layout - Container dimensions: ${containerWidth}x${containerHeight}, Nodes: ${nodes.length}`);
 
   return (
     <TooltipProvider delayDuration={300} skipDelayDuration={100}>

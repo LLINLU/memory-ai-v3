@@ -160,10 +160,10 @@ const createD3Nodes = (hierarchicalData: any): MindMapNode[] => {
 
   const root = d3.hierarchy(hierarchicalData);
   
-  // Increased horizontal spacing from 420 to 700 for more space between levels
+  // Compact layout with reduced spacing for tighter clustering
   const treeLayout = d3.tree()
-    .nodeSize([80, 700])
-    .separation((a, b) => a.parent === b.parent ? 2.5 : 4); // Increased separation values
+    .nodeSize([25, 400]) // Reduced from [80, 700] to [25, 400] for compact layout
+    .separation((a, b) => a.parent === b.parent ? 0.8 : 1.5); // Reduced from 2.5:4 to 0.8:1.5 for tighter clustering
   
   treeLayout(root);
   
@@ -183,7 +183,7 @@ const createD3Nodes = (hierarchicalData: any): MindMapNode[] => {
     }));
 
   // Debug logging to verify coordinates
-  console.log('MindMap D3 Layout Debug:');
+  console.log('MindMap D3 Layout Debug (Compact):');
   console.log('Root node position:', nodes.find(n => n.level === 0));
   console.log('Level 1 nodes:', nodes.filter(n => n.level === 1).map(n => ({ id: n.id, x: n.x, y: n.y })));
   console.log('Max X coordinate:', Math.max(...nodes.map(n => n.x)));
@@ -199,10 +199,10 @@ const createD3Connections = (hierarchicalData: any): MindMapConnection[] => {
 
   const root = d3.hierarchy(hierarchicalData);
   
-  // Increased horizontal spacing from 420 to 700 for more space between levels
+  // Compact layout with reduced spacing for tighter clustering (same as createD3Nodes)
   const treeLayout = d3.tree()
-    .nodeSize([80, 700])
-    .separation((a, b) => a.parent === b.parent ? 2.5 : 4); // Increased separation values
+    .nodeSize([25, 400]) // Reduced from [80, 700] to [25, 400] for compact layout
+    .separation((a, b) => a.parent === b.parent ? 0.8 : 1.5); // Reduced from 2.5:4 to 0.8:1.5 for tighter clustering
   
   treeLayout(root);
 
@@ -271,7 +271,7 @@ export const transformToMindMapData = (
   const nodes = createD3Nodes(hierarchicalData);
   const connections = createD3Connections(hierarchicalData);
 
-  console.log(`Mindmap: Generated ${nodes.length} nodes and ${connections.length} connections with root node`);
+  console.log(`Mindmap: Generated ${nodes.length} nodes and ${connections.length} connections with compact layout`);
   console.log('Level breakdown:', {
     root: nodes.filter(n => n.level === 0).length,
     level1: nodes.filter(n => n.level === 1).length,
