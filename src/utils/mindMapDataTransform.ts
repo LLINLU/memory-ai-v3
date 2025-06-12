@@ -1,3 +1,4 @@
+
 import { TreeNode } from "@/types/tree";
 import * as d3 from 'd3';
 
@@ -159,14 +160,15 @@ const createD3Nodes = (hierarchicalData: any): MindMapNode[] => {
 
   const root = d3.hierarchy(hierarchicalData);
   
+  // Increased horizontal spacing from 420 to 700 for more space between levels
   const treeLayout = d3.tree()
-    .nodeSize([80, 420])
-    .separation((a, b) => a.parent === b.parent ? 1.8 : 3);
+    .nodeSize([80, 700])
+    .separation((a, b) => a.parent === b.parent ? 2.5 : 4); // Increased separation values
   
   treeLayout(root);
   
   // Include ALL nodes including the root (depth 0)
-  return root.descendants()
+  const nodes = root.descendants()
     .map(node => ({
       id: node.data.id,
       name: node.data.name,
@@ -179,6 +181,14 @@ const createD3Nodes = (hierarchicalData: any): MindMapNode[] => {
       isSelected: node.data.isSelected,
       isCustom: node.data.isCustom,
     }));
+
+  // Debug logging to verify coordinates
+  console.log('MindMap D3 Layout Debug:');
+  console.log('Root node position:', nodes.find(n => n.level === 0));
+  console.log('Level 1 nodes:', nodes.filter(n => n.level === 1).map(n => ({ id: n.id, x: n.x, y: n.y })));
+  console.log('Max X coordinate:', Math.max(...nodes.map(n => n.x)));
+  
+  return nodes;
 };
 
 // Helper function to create connections from D3 hierarchy
@@ -189,9 +199,10 @@ const createD3Connections = (hierarchicalData: any): MindMapConnection[] => {
 
   const root = d3.hierarchy(hierarchicalData);
   
+  // Increased horizontal spacing from 420 to 700 for more space between levels
   const treeLayout = d3.tree()
-    .nodeSize([80, 420])
-    .separation((a, b) => a.parent === b.parent ? 1.8 : 3);
+    .nodeSize([80, 700])
+    .separation((a, b) => a.parent === b.parent ? 2.5 : 4); // Increased separation values
   
   treeLayout(root);
 

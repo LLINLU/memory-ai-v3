@@ -1,3 +1,4 @@
+
 import React, { useMemo } from "react";
 import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
@@ -94,8 +95,8 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   };
 
   // Calculate container dimensions based on D3 layout with proper padding
-  // Account for increased left margin (250px) plus additional padding
-  const containerWidth = nodes.length > 0 ? Math.max(...nodes.map(n => n.x + 350), 1600) : 1600;
+  // Account for increased horizontal spacing (700px nodeSize) and left margin (250px)
+  const containerWidth = nodes.length > 0 ? Math.max(...nodes.map(n => n.x + 500), 2000) : 2000;
   const containerHeight = nodes.length > 0 ? Math.max(...nodes.map(n => n.y + 120), 900) : 900;
 
   const {
@@ -112,7 +113,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     getTransform,
   } = usePanZoom(containerWidth, containerHeight);
 
-  console.log(`MindMap: D3 layout with root - Container dimensions: ${containerWidth}x${containerHeight}, Nodes: ${nodes.length}`);
+  console.log(`MindMap: D3 layout with increased spacing - Container dimensions: ${containerWidth}x${containerHeight}, Nodes: ${nodes.length}`);
 
   return (
     <TooltipProvider delayDuration={300} skipDelayDuration={100}>
