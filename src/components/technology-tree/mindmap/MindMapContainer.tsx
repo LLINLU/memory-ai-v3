@@ -6,6 +6,7 @@ import { MindMapConnections } from "./MindMapConnections";
 import { MindMapControls } from "./MindMapControls";
 import { usePanZoom } from "@/hooks/tree/usePanZoom";
 import { Group } from "@visx/group";
+import { Tree } from "@visx/hierarchy";
 
 interface MindMapContainerProps {
   selectedPath: any;
@@ -82,10 +83,12 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     onNodeClick(`level${level}`, nodeId);
   };
 
-  // Calculate SVG dimensions based on tree layout
-  const margin = { top: 50, left: 100, right: 100, bottom: 50 };
+  // Container dimensions with margins like Airbnb example
+  const margin = { top: 50, left: 50, right: 50, bottom: 50 };
   const containerWidth = 1200;
   const containerHeight = 800;
+  const innerWidth = containerWidth - margin.left - margin.right;
+  const innerHeight = containerHeight - margin.top - margin.bottom;
 
   const {
     zoom,
@@ -104,7 +107,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   console.log(`MindMap: Container dimensions - ${containerWidth}x${containerHeight}`);
 
   return (
-    <div className="w-full h-full overflow-hidden bg-white relative">
+    <div className="w-full h-full overflow-hidden bg-background relative">
       <div
         className="w-full h-full relative"
         onWheel={handleWheel}
@@ -127,21 +130,30 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
           }}
         >
           <Group top={margin.top} left={margin.left}>
-            <MindMapConnections connections={connections} />
-            
-            {nodes.map((node, i) => (
-              <MindMapNodeComponent
-                key={`node-${node.data.id}-${i}`}
-                node={node}
-                onClick={handleNodeClick}
-                onEdit={onEditNode}
-                onDelete={onDeleteNode}
-              />
-            ))}
+            {/* Use visx Tree component pattern */}
+            <Tree root={root} size={[innerHeight, innerWidth]}>
+              {(tree) => (
+                <Group>
+                  {/* Render connections */}
+                  <MindMapConnections connections={connections} />
+                  
+                  {/* Render nodes */}
+                  {tree.descendants().map((node, i) => (
+                    <MindMapNodeComponent
+                      key={`node-${node.data.id}-${i}`}
+                      node={node}
+                      onClick={handleNodeClick}
+                      onEdit={onEditNode}
+                      onDelete={onDeleteNode}
+                    />
+                  ))}
+                </Group>
+              )}
+            </Tree>
           </Group>
           
           {nodes.length === 0 && (
-            <text x={containerWidth / 2} y={containerHeight / 2} textAnchor="middle" className="fill-gray-500">
+            <text x={containerWidth / 2} y={containerHeight / 2} textAnchor="middle" className="fill-muted-foreground">
               <tspan x={containerWidth / 2} dy="0" className="text-lg">No data available for mindmap view</tspan>
               <tspan x={containerWidth / 2} dy="1.5em" className="text-sm">Please ensure your tree has been generated</tspan>
             </text>

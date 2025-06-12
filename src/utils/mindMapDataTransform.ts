@@ -1,5 +1,7 @@
+
 import { TreeNode } from "@/types/tree";
 import { hierarchy } from "@visx/hierarchy";
+import { Tree } from "@visx/hierarchy";
 import { HierarchyPointNode } from "@visx/hierarchy/lib/types";
 
 export interface MindMapNode {
@@ -13,18 +15,17 @@ export interface MindMapNode {
   children?: MindMapNode[];
 }
 
-export interface MindMapConnection {
-  source: HierarchyPointNode<MindMapNode>;
-  target: HierarchyPointNode<MindMapNode>;
-}
-
 export interface MindMapData {
   root: HierarchyPointNode<MindMapNode>;
   nodes: HierarchyPointNode<MindMapNode>[];
-  connections: MindMapConnection[];
+  connections: Array<{
+    source: HierarchyPointNode<MindMapNode>;
+    target: HierarchyPointNode<MindMapNode>;
+  }>;
 }
 
-const buildHierarchicalTree = (
+// Convert complex level-based data to simple hierarchical tree
+const buildSimpleHierarchy = (
   level1Items: TreeNode[],
   level2Items: Record<string, TreeNode[]>,
   level3Items: Record<string, TreeNode[]>,
@@ -38,11 +39,11 @@ const buildHierarchicalTree = (
   levelNames: Record<string, string>,
   selectedPath: any
 ): MindMapNode => {
-  // Create a virtual root if we have multiple level 1 items
-  if (level1Items.length === 0) {
+  // Handle empty data
+  if (!level1Items || level1Items.length === 0) {
     return {
       id: "empty",
-      name: "No data",
+      name: "No data available",
       description: "",
       level: 0,
       levelName: "Root",
@@ -50,11 +51,10 @@ const buildHierarchicalTree = (
     };
   }
 
-  // If only one level 1 item, use it as root
+  // Single root case
   if (level1Items.length === 1) {
-    const rootItem = level1Items[0];
-    return buildNodeWithChildren(
-      rootItem,
+    return buildNodeRecursively(
+      level1Items[0],
       1,
       levelNames.level1 || "Level 1",
       selectedPath,
@@ -73,16 +73,16 @@ const buildHierarchicalTree = (
     );
   }
 
-  // Multiple level 1 items - create virtual root
+  // Multiple roots - create virtual root
   return {
     id: "root",
-    name: "技術ツリー",
-    description: "Technology Tree Root",
+    name: "Technology Tree",
+    description: "Root of technology tree",
     level: 0,
     levelName: "Root",
     isSelected: false,
     children: level1Items.map((item) =>
-      buildNodeWithChildren(
+      buildNodeRecursively(
         item,
         1,
         levelNames.level1 || "Level 1",
@@ -104,7 +104,7 @@ const buildHierarchicalTree = (
   };
 };
 
-const buildNodeWithChildren = (
+const buildNodeRecursively = (
   item: TreeNode,
   level: number,
   levelName: string,
@@ -122,6 +122,14 @@ const buildNodeWithChildren = (
   },
   levelNames: Record<string, string>
 ): MindMapNode => {
+  // Get children for current level
+  let childItems: TreeNode[] = [];
+  const levelKey = `level${level + 1}Items` as keyof typeof allLevelItems;
+  
+  if (level < 10 && allLevelItems[levelKey]) {
+    childItems = allLevelItems[levelKey][item.id] || [];
+  }
+
   const node: MindMapNode = {
     id: item.id,
     name: item.name,
@@ -130,59 +138,17 @@ const buildNodeWithChildren = (
     levelName,
     isSelected: selectedPath[`level${level}`] === item.id,
     isCustom: item.isCustom || false,
-    children: [],
-  };
-
-  // Get children for this node based on level
-  let childItems: TreeNode[] = [];
-  let nextLevel = level + 1;
-  let nextLevelName = levelNames[`level${nextLevel}`] || `Level ${nextLevel}`;
-
-  switch (level) {
-    case 1:
-      childItems = allLevelItems.level2Items[item.id] || [];
-      break;
-    case 2:
-      childItems = allLevelItems.level3Items[item.id] || [];
-      break;
-    case 3:
-      childItems = allLevelItems.level4Items[item.id] || [];
-      break;
-    case 4:
-      childItems = allLevelItems.level5Items[item.id] || [];
-      break;
-    case 5:
-      childItems = allLevelItems.level6Items[item.id] || [];
-      break;
-    case 6:
-      childItems = allLevelItems.level7Items[item.id] || [];
-      break;
-    case 7:
-      childItems = allLevelItems.level8Items[item.id] || [];
-      break;
-    case 8:
-      childItems = allLevelItems.level9Items[item.id] || [];
-      break;
-    case 9:
-      childItems = allLevelItems.level10Items[item.id] || [];
-      break;
-    default:
-      childItems = [];
-  }
-
-  // Recursively build children
-  if (childItems.length > 0 && level < 10) {
-    node.children = childItems.map((childItem) =>
-      buildNodeWithChildren(
-        childItem,
-        nextLevel,
-        nextLevelName,
+    children: childItems.map((child) =>
+      buildNodeRecursively(
+        child,
+        level + 1,
+        levelNames[`level${level + 1}`] || `Level ${level + 1}`,
         selectedPath,
         allLevelItems,
         levelNames
       )
-    );
-  }
+    ),
+  };
 
   return node;
 };
@@ -201,8 +167,8 @@ export const transformToMindMapData = (
   levelNames: Record<string, string>,
   selectedPath: any
 ): MindMapData => {
-  // Build hierarchical tree structure
-  const hierarchicalData = buildHierarchicalTree(
+  // Build simple hierarchical structure
+  const treeData = buildSimpleHierarchy(
     level1Items,
     level2Items,
     level3Items,
@@ -217,51 +183,28 @@ export const transformToMindMapData = (
     selectedPath
   );
 
-  // Create hierarchy from the data
-  const root = hierarchy(hierarchicalData);
-  
-  // Create tree layout with proper size using d3-tree layout algorithm
-  const treeWidth = 800;
-  const treeHeight = 600;
-  
-  // Apply tree layout algorithm to position nodes
-  const treeWithLayout = root.copy();
-  
-  // Simple tree layout positioning - assign x, y coordinates
-  const assignCoordinates = (node: any, depth = 0, index = 0, siblings = 1) => {
-    // Horizontal positioning based on depth
-    node.x = depth * (treeHeight / 6); // Spread vertically
-    
-    // Vertical positioning based on sibling index
-    if (siblings === 1) {
-      node.y = treeWidth / 2;
-    } else {
-      node.y = (index + 1) * (treeWidth / (siblings + 1));
-    }
-    
-    // Recursively position children
-    if (node.children) {
-      node.children.forEach((child: any, i: number) => {
-        assignCoordinates(child, depth + 1, i, node.children.length);
-      });
-    }
-  };
-  
-  assignCoordinates(treeWithLayout);
-
-  // Get all nodes and connections
-  const nodes = treeWithLayout.descendants() as HierarchyPointNode<MindMapNode>[];
-  const connections = treeWithLayout.links().map(link => ({
-    source: link.source as HierarchyPointNode<MindMapNode>,
-    target: link.target as HierarchyPointNode<MindMapNode>,
-  }));
-
-  console.log(`Mindmap: Generated ${nodes.length} nodes and ${connections.length} connections`);
-  console.log('Tree structure:', {
-    totalNodes: nodes.length,
-    maxDepth: Math.max(...nodes.map(n => n.depth)),
-    rootChildren: treeWithLayout.children?.length || 0,
+  // Create hierarchy and apply visx Tree layout
+  const root = hierarchy(treeData);
+  const treeLayout = Tree<MindMapNode>({
+    size: [800, 600], // [width, height]
+    separation: (a, b) => (a.parent === b.parent ? 1 : 2) / a.depth,
   });
 
-  return { root: treeWithLayout as HierarchyPointNode<MindMapNode>, nodes, connections };
+  // Apply layout to get positioned nodes
+  const layoutRoot = treeLayout(root);
+
+  // Get all nodes and links
+  const nodes = layoutRoot.descendants();
+  const connections = layoutRoot.links().map((link) => ({
+    source: link.source,
+    target: link.target,
+  }));
+
+  console.log(`Mindmap: Generated ${nodes.length} nodes and ${connections.length} connections using visx Tree layout`);
+
+  return {
+    root: layoutRoot,
+    nodes,
+    connections,
+  };
 };

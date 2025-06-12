@@ -18,25 +18,22 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
   onDelete,
 }) => {
   const getLevelColor = (level: number) => {
+    // Use design system colors instead of hardcoded ones
     const colors = [
-      "#fd9b93", // Level 0 (root) - peach
-      "#03c0dc", // Level 1 - blue
-      "#26deb0", // Level 2 - green
-      "#fe6e9e", // Level 3 - pink
-      "#71248e", // Level 4 - plum
-      "#374469", // Level 5 - light purple
-      "#fd9b93", // Level 6 - peach (repeat)
-      "#03c0dc", // Level 7 - blue (repeat)
-      "#26deb0", // Level 8 - green (repeat)
-      "#fe6e9e", // Level 9 - pink (repeat)
+      "hsl(var(--primary))", // Root
+      "hsl(var(--secondary))", // Level 1
+      "hsl(var(--accent))", // Level 2
+      "hsl(var(--muted))", // Level 3
+      "hsl(var(--destructive))", // Level 4
+      "hsl(var(--primary) / 0.8)", // Level 5+
     ];
-    return colors[level % colors.length];
+    return colors[Math.min(level, colors.length - 1)];
   };
 
-  const getNodeDimensions = (level: number) => {
-    if (level === 0) return { width: 60, height: 60, isCircle: true }; // Root node
-    if (node.children && node.children.length > 0) return { width: 120, height: 40, isCircle: false }; // Parent nodes
-    return { width: 100, height: 30, isCircle: false }; // Leaf nodes
+  const getNodeSize = (level: number, hasChildren: boolean) => {
+    if (level === 0) return { width: 80, height: 80, rx: 40 }; // Root - circle
+    if (hasChildren) return { width: 120, height: 40, rx: 8 }; // Parent nodes
+    return { width: 100, height: 32, rx: 16 }; // Leaf nodes
   };
 
   const handleClick = () => {
@@ -45,62 +42,53 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
     }
   };
 
-  const { width, height, isCircle } = getNodeDimensions(node.data.level);
+  const { width, height, rx } = getNodeSize(node.data.level, !!node.children?.length);
   const centerX = -width / 2;
   const centerY = -height / 2;
   const fillColor = getLevelColor(node.data.level);
-  const strokeColor = node.data.isSelected ? "#2563eb" : fillColor;
+  const strokeColor = node.data.isSelected ? "hsl(var(--ring))" : fillColor;
   const strokeWidth = node.data.isSelected ? 3 : 1;
+  const textColor = node.data.level === 0 ? "hsl(var(--primary-foreground))" : "hsl(var(--primary-foreground))";
 
   return (
     <Group top={node.x} left={node.y}>
-      {isCircle ? (
-        <circle
-          r={width / 2}
-          fill={fillColor}
-          stroke={strokeColor}
-          strokeWidth={strokeWidth}
-          onClick={handleClick}
-          style={{ cursor: 'pointer' }}
-        />
-      ) : (
-        <rect
-          height={height}
-          width={width}
-          y={centerY}
-          x={centerX}
-          fill={fillColor}
-          stroke={strokeColor}
-          strokeWidth={strokeWidth}
-          rx={node.children ? 5 : 15} // More rounded for leaf nodes
-          onClick={handleClick}
-          style={{ cursor: 'pointer' }}
-        />
-      )}
+      <rect
+        height={height}
+        width={width}
+        y={centerY}
+        x={centerX}
+        fill={fillColor}
+        stroke={strokeColor}
+        strokeWidth={strokeWidth}
+        rx={rx}
+        onClick={handleClick}
+        style={{ cursor: node.data.level > 0 ? 'pointer' : 'default' }}
+        className="transition-all duration-200 hover:opacity-80"
+      />
       
       <text
         dy=".33em"
-        fontSize={node.data.level === 0 ? 12 : 10}
-        fontFamily="Arial"
+        fontSize={node.data.level === 0 ? 14 : 12}
+        fontFamily="inherit"
         textAnchor="middle"
         style={{ pointerEvents: 'none' }}
-        fill={node.data.level === 0 ? "#71248e" : "#ffffff"}
-        fontWeight={node.data.level === 0 ? "bold" : "normal"}
+        fill={textColor}
+        fontWeight={node.data.level === 0 ? "600" : "500"}
       >
-        {node.data.name.length > 12 ? `${node.data.name.slice(0, 12)}...` : node.data.name}
+        {node.data.name.length > 15 ? `${node.data.name.slice(0, 15)}...` : node.data.name}
       </text>
       
-      {node.data.description && node.data.level > 0 && (
+      {node.data.description && node.data.level > 0 && height > 32 && (
         <text
-          dy="1.5em"
-          fontSize={8}
-          fontFamily="Arial"
+          dy="1.8em"
+          fontSize={10}
+          fontFamily="inherit"
           textAnchor="middle"
           style={{ pointerEvents: 'none' }}
-          fill="#ffffff"
+          fill={textColor}
           opacity={0.8}
         >
-          {node.data.description.length > 15 ? `${node.data.description.slice(0, 15)}...` : node.data.description}
+          {node.data.description.length > 20 ? `${node.data.description.slice(0, 20)}...` : node.data.description}
         </text>
       )}
     </Group>
