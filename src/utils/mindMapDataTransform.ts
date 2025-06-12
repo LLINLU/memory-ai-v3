@@ -218,16 +218,20 @@ export const transformToMindMapData = (
     selectedPath
   );
 
-  // Create hierarchy and apply tree layout
+  // Create hierarchy from the data
   const root = hierarchy(hierarchicalData);
-  const treeLayout = Tree<MindMapNode>();
   
-  // Apply the tree layout
-  treeLayout(root);
+  // Create tree layout with proper size
+  const treeWidth = 800;
+  const treeHeight = 600;
+  const treeLayout = Tree<MindMapNode>().size([treeHeight, treeWidth]);
+  
+  // Apply the tree layout to get positioned nodes
+  const treeWithLayout = treeLayout(root);
 
   // Get all nodes and connections
-  const nodes = root.descendants();
-  const connections = root.links().map(link => ({
+  const nodes = treeWithLayout.descendants();
+  const connections = treeWithLayout.links().map(link => ({
     source: link.source,
     target: link.target,
   }));
@@ -236,8 +240,8 @@ export const transformToMindMapData = (
   console.log('Tree structure:', {
     totalNodes: nodes.length,
     maxDepth: Math.max(...nodes.map(n => n.depth)),
-    rootChildren: root.children?.length || 0,
+    rootChildren: treeWithLayout.children?.length || 0,
   });
 
-  return { root, nodes, connections };
+  return { root: treeWithLayout, nodes, connections };
 };
