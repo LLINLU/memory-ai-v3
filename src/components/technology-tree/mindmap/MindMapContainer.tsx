@@ -86,19 +86,6 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   const margin = { top: 50, left: 100, right: 100, bottom: 50 };
   const containerWidth = 1200;
   const containerHeight = 800;
-  const treeWidth = containerWidth - margin.left - margin.right;
-  const treeHeight = containerHeight - margin.top - margin.bottom;
-
-  // Apply size to tree layout
-  const treeLayout = React.useMemo(() => {
-    if (root) {
-      // Create a new tree layout with proper sizing
-      const tree = require("@visx/hierarchy").Tree;
-      const layout = tree().size([treeHeight, treeWidth]);
-      return layout(root);
-    }
-    return root;
-  }, [root, treeWidth, treeHeight]);
 
   const {
     zoom,
