@@ -1,3 +1,4 @@
+
 import { TreeNode } from "@/types/tree";
 import * as d3 from 'd3';
 
@@ -210,15 +211,29 @@ const createD3Connections = (hierarchicalData: any): MindMapConnection[] => {
   // Include ALL connections including from root
   root.links()
     .forEach((link) => {
-      // Check if source is root node (level 0) to use correct width
+      // Check if source is root node (level 0) to use correct width and height
       const isRootSource = link.source.data.level === 0;
       const sourceNodeWidth = isRootSource ? ROOT_NODE_WIDTH : NODE_WIDTH;
       const sourceNodeHeight = isRootSource ? ROOT_NODE_HEIGHT : NODE_HEIGHT;
       
+      // Calculate connection points with proper centering
       const sourceX = link.source.y + MARGIN_LEFT + sourceNodeWidth; // Use new left margin
-      const sourceY = link.source.x + MARGIN_TOP + sourceNodeHeight / 2; // Use top margin
+      const sourceY = link.source.x + MARGIN_TOP + sourceNodeHeight / 2; // Use correct height for centering
       const targetX = link.target.y + MARGIN_LEFT; // Use new left margin
       const targetY = link.target.x + MARGIN_TOP + NODE_HEIGHT / 2; // Use top margin
+
+      // Debug logging for root node connections
+      if (isRootSource) {
+        console.log('Root connection debug:', {
+          sourceId: link.source.data.id,
+          targetId: link.target.data.id,
+          sourceHeight: sourceNodeHeight,
+          calculatedY: sourceY,
+          rawY: link.source.x,
+          marginTop: MARGIN_TOP,
+          heightCenter: sourceNodeHeight / 2
+        });
+      }
 
       connections.push({
         id: `${link.source.data.id}-${link.target.data.id}`,
