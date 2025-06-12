@@ -166,9 +166,9 @@ export const TechTreeMainContent: React.FC<TechTreeMainContentProps> = ({
             level9Items={level9Items}
             level10Items={level10Items}
             showLevel4={showLevel4}
-            handleNodeClick={handleNodeClick}
-            editNode={editNode}
-            deleteNode={deleteNode}
+            onNodeClick={handleNodeClick}
+            onEditNode={editNode}
+            onDeleteNode={deleteNode}
             levelNames={levelNames}
             hasUserMadeSelection={hasUserMadeSelection}
             handleAddLevel4={handleAddLevel4}
@@ -216,18 +216,12 @@ export const TechTreeMainContent: React.FC<TechTreeMainContentProps> = ({
           level9Items={level9Items}
           level10Items={level10Items}
           showLevel4={showLevel4}
-          handleNodeClick={handleNodeClick}
-          editNode={editNode}
-          deleteNode={deleteNode}
-          levelNames={levelNames}
-          hasUserMadeSelection={hasUserMadeSelection}
-          conversationHistory={conversationHistory}
-          onAddLevel4={handleAddLevel4}
-          searchMode={searchMode}
           onGuidanceClick={onGuidanceClick}
-          query={query}
-          treeMode={treeMode}
-          containerRef={containerRef}
+          onScrollToStart={onScrollToStart}
+          onScrollToEnd={onScrollToEnd}
+          canScrollLeft={canScrollLeft}
+          canScrollRight={canScrollRight}
+          lastVisibleLevel={lastVisibleLevel}
         />
       </div>
     </div>
