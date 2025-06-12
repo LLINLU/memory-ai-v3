@@ -1,6 +1,12 @@
 
 import React from "react";
 import { MindMapNode } from "@/utils/mindMapDataTransform";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface MindMapNodeProps {
   node: MindMapNode;
@@ -40,7 +46,7 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
   const isRoot = node.level === 0;
   const rootCursor = isRoot ? "cursor-default" : "cursor-pointer";
 
-  return (
+  const nodeContent = (
     <div
       className={`absolute transition-all duration-200 hover:shadow-lg ${rootCursor} ${
         node.isSelected ? "ring-2 ring-blue-500 shadow-lg" : ""
@@ -62,12 +68,23 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
         <div className={`${isRoot ? 'text-base' : 'text-sm'} font-medium truncate`} title={node.name}>
           {node.name}
         </div>
-        {node.description && (
-          <div className="text-xs opacity-60 mt-1 line-clamp-2" title={node.description}>
-            {node.description}
-          </div>
-        )}
       </div>
     </div>
   );
+
+  // Only wrap with tooltip if node has a description
+  if (node.description && node.description.trim()) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          {nodeContent}
+        </TooltipTrigger>
+        <TooltipContent>
+          <p className="max-w-xs">{node.description}</p>
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return nodeContent;
 };
