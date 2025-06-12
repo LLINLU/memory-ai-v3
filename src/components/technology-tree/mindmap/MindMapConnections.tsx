@@ -9,13 +9,11 @@ interface MindMapConnectionsProps {
 export const MindMapConnections: React.FC<MindMapConnectionsProps> = ({
   connections,
 }) => {
-  const createBezierPath = (connection: MindMapConnection): string => {
+  const createCurvedPath = (connection: MindMapConnection): string => {
     const { sourceX, sourceY, targetX, targetY } = connection;
+    const midX = sourceX + (targetX - sourceX) / 2;
     
-    // Create smooth bezier curve similar to D3 tree layout
-    const midX = (sourceX + targetX) / 2;
-    
-    return `M${sourceX},${sourceY} C${midX},${sourceY} ${midX},${targetY} ${targetX},${targetY}`;
+    return `M ${sourceX} ${sourceY} Q ${midX} ${sourceY} ${targetX} ${targetY}`;
   };
 
   return (
@@ -38,7 +36,7 @@ export const MindMapConnections: React.FC<MindMapConnectionsProps> = ({
         >
           <polygon
             points="0 0, 10 3.5, 0 7"
-            fill="#e2e8f0"
+            fill="#64748b"
           />
         </marker>
       </defs>
@@ -46,12 +44,12 @@ export const MindMapConnections: React.FC<MindMapConnectionsProps> = ({
       {connections.map((connection) => (
         <path
           key={connection.id}
-          d={createBezierPath(connection)}
-          stroke="#e2e8f0"
+          d={createCurvedPath(connection)}
+          stroke="#64748b"
           strokeWidth="2"
           fill="none"
           markerEnd="url(#arrowhead)"
-          className="transition-all duration-200"
+          opacity="0.6"
         />
       ))}
     </svg>
