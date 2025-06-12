@@ -1,9 +1,11 @@
+
 import React, { useMemo } from "react";
 import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
 import { MindMapConnections } from "./MindMapConnections";
 import { MindMapControls } from "./MindMapControls";
 import { usePanZoom } from "@/hooks/tree/usePanZoom";
+import { Group } from "@visx/group";
 
 interface MindMapContainerProps {
   selectedPath: any;
@@ -40,7 +42,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   onEditNode,
   onDeleteNode,
 }) => {
-  const { nodes, connections } = useMemo(() => {
+  const { root, nodes, connections } = useMemo(() => {
     console.log('MindMap: Processing data for mindmap view');
     console.log('Level 1 items:', level1Items?.length || 0);
     console.log('Level 2 items:', Object.keys(level2Items || {}).length);
@@ -80,9 +82,23 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     onNodeClick(`level${level}`, nodeId);
   };
 
-  // Calculate container dimensions based on nodes with proper padding
-  const containerWidth = Math.max(...nodes.map(n => n.x + 250), 1000);
-  const containerHeight = Math.max(...nodes.map(n => n.y + 120), 800);
+  // Calculate SVG dimensions based on tree layout
+  const margin = { top: 50, left: 100, right: 100, bottom: 50 };
+  const containerWidth = 1200;
+  const containerHeight = 800;
+  const treeWidth = containerWidth - margin.left - margin.right;
+  const treeHeight = containerHeight - margin.top - margin.bottom;
+
+  // Apply size to tree layout
+  const treeLayout = React.useMemo(() => {
+    if (root) {
+      // Create a new tree layout with proper sizing
+      const tree = require("@visx/hierarchy").Tree;
+      const layout = tree().size([treeHeight, treeWidth]);
+      return layout(root);
+    }
+    return root;
+  }, [root, treeWidth, treeHeight]);
 
   const {
     zoom,
@@ -114,35 +130,36 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
           userSelect: isDragging ? 'none' : 'auto',
         }}
       >
-        <div
-          className="relative origin-top-left transition-transform duration-200 ease-out"
+        <svg
+          width={containerWidth}
+          height={containerHeight}
           style={{
-            width: containerWidth,
-            height: containerHeight,
-            minWidth: "100%",
-            minHeight: "100%",
             transform: getTransform(),
+            transformOrigin: 'top left',
+            transition: isDragging ? 'none' : 'transform 0.2s ease-out',
           }}
         >
-          <MindMapConnections connections={connections} />
-          
-          {nodes.map((node) => (
-            <MindMapNodeComponent
-              key={node.id}
-              node={node}
-              onClick={handleNodeClick}
-              onEdit={onEditNode}
-              onDelete={onDeleteNode}
-            />
-          ))}
+          <Group top={margin.top} left={margin.left}>
+            <MindMapConnections connections={connections} />
+            
+            {nodes.map((node, i) => (
+              <MindMapNodeComponent
+                key={`node-${node.data.id}-${i}`}
+                node={node}
+                onClick={handleNodeClick}
+                onEdit={onEditNode}
+                onDelete={onDeleteNode}
+              />
+            ))}
+          </Group>
           
           {nodes.length === 0 && (
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-500">
-              <p className="text-lg">No data available for mindmap view</p>
-              <p className="text-sm mt-2">Please ensure your tree has been generated</p>
-            </div>
+            <text x={containerWidth / 2} y={containerHeight / 2} textAnchor="middle" className="fill-gray-500">
+              <tspan x={containerWidth / 2} dy="0" className="text-lg">No data available for mindmap view</tspan>
+              <tspan x={containerWidth / 2} dy="1.5em" className="text-sm">Please ensure your tree has been generated</tspan>
+            </text>
           )}
-        </div>
+        </svg>
       </div>
 
       <MindMapControls

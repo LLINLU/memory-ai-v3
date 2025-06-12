@@ -1,9 +1,11 @@
 
 import React from "react";
+import { Group } from "@visx/group";
+import { HierarchyPointNode } from "@visx/hierarchy/lib/types";
 import { MindMapNode } from "@/utils/mindMapDataTransform";
 
 interface MindMapNodeProps {
-  node: MindMapNode;
+  node: HierarchyPointNode<MindMapNode>;
   onClick: (nodeId: string, level: number) => void;
   onEdit?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDelete?: (level: string, nodeId: string) => void;
@@ -17,52 +19,90 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
 }) => {
   const getLevelColor = (level: number) => {
     const colors = [
-      "bg-blue-100 border-blue-300 text-blue-800", // Level 1
-      "bg-green-100 border-green-300 text-green-800", // Level 2
-      "bg-purple-100 border-purple-300 text-purple-800", // Level 3
-      "bg-orange-100 border-orange-300 text-orange-800", // Level 4
-      "bg-pink-100 border-pink-300 text-pink-800", // Level 5
-      "bg-indigo-100 border-indigo-300 text-indigo-800", // Level 6
-      "bg-yellow-100 border-yellow-300 text-yellow-800", // Level 7
-      "bg-red-100 border-red-300 text-red-800", // Level 8
-      "bg-teal-100 border-teal-300 text-teal-800", // Level 9
-      "bg-gray-100 border-gray-300 text-gray-800", // Level 10
+      "#fd9b93", // Level 0 (root) - peach
+      "#03c0dc", // Level 1 - blue
+      "#26deb0", // Level 2 - green
+      "#fe6e9e", // Level 3 - pink
+      "#71248e", // Level 4 - plum
+      "#374469", // Level 5 - light purple
+      "#fd9b93", // Level 6 - peach (repeat)
+      "#03c0dc", // Level 7 - blue (repeat)
+      "#26deb0", // Level 8 - green (repeat)
+      "#fe6e9e", // Level 9 - pink (repeat)
     ];
-    return colors[level - 1] || colors[colors.length - 1];
+    return colors[level % colors.length];
+  };
+
+  const getNodeDimensions = (level: number) => {
+    if (level === 0) return { width: 60, height: 60, isCircle: true }; // Root node
+    if (node.children && node.children.length > 0) return { width: 120, height: 40, isCircle: false }; // Parent nodes
+    return { width: 100, height: 30, isCircle: false }; // Leaf nodes
   };
 
   const handleClick = () => {
-    onClick(node.id, node.level);
+    if (node.data.level > 0) { // Don't handle clicks on virtual root
+      onClick(node.data.id, node.data.level);
+    }
   };
 
+  const { width, height, isCircle } = getNodeDimensions(node.data.level);
+  const centerX = -width / 2;
+  const centerY = -height / 2;
+  const fillColor = getLevelColor(node.data.level);
+  const strokeColor = node.data.isSelected ? "#2563eb" : fillColor;
+  const strokeWidth = node.data.isSelected ? 3 : 1;
+
   return (
-    <div
-      className={`absolute cursor-pointer transition-all duration-200 hover:shadow-lg ${
-        node.isSelected ? "ring-2 ring-blue-500 shadow-lg" : ""
-      }`}
-      style={{
-        left: node.x,
-        top: node.y,
-        width: 200,
-        height: 80,
-      }}
-      onClick={handleClick}
-    >
-      <div
-        className={`w-full h-full rounded-lg border-2 p-3 ${getLevelColor(node.level)}`}
+    <Group top={node.x} left={node.y}>
+      {isCircle ? (
+        <circle
+          r={width / 2}
+          fill={fillColor}
+          stroke={strokeColor}
+          strokeWidth={strokeWidth}
+          onClick={handleClick}
+          style={{ cursor: 'pointer' }}
+        />
+      ) : (
+        <rect
+          height={height}
+          width={width}
+          y={centerY}
+          x={centerX}
+          fill={fillColor}
+          stroke={strokeColor}
+          strokeWidth={strokeWidth}
+          rx={node.children ? 5 : 15} // More rounded for leaf nodes
+          onClick={handleClick}
+          style={{ cursor: 'pointer' }}
+        />
+      )}
+      
+      <text
+        dy=".33em"
+        fontSize={node.data.level === 0 ? 12 : 10}
+        fontFamily="Arial"
+        textAnchor="middle"
+        style={{ pointerEvents: 'none' }}
+        fill={node.data.level === 0 ? "#71248e" : "#ffffff"}
+        fontWeight={node.data.level === 0 ? "bold" : "normal"}
       >
-        <div className="text-xs font-semibold mb-1 opacity-70">
-          {node.levelName}
-        </div>
-        <div className="text-sm font-medium truncate" title={node.name}>
-          {node.name}
-        </div>
-        {node.description && (
-          <div className="text-xs opacity-60 mt-1 line-clamp-2" title={node.description}>
-            {node.description}
-          </div>
-        )}
-      </div>
-    </div>
+        {node.data.name.length > 12 ? `${node.data.name.slice(0, 12)}...` : node.data.name}
+      </text>
+      
+      {node.data.description && node.data.level > 0 && (
+        <text
+          dy="1.5em"
+          fontSize={8}
+          fontFamily="Arial"
+          textAnchor="middle"
+          style={{ pointerEvents: 'none' }}
+          fill="#ffffff"
+          opacity={0.8}
+        >
+          {node.data.description.length > 15 ? `${node.data.description.slice(0, 15)}...` : node.data.description}
+        </text>
+      )}
+    </Group>
   );
 };
