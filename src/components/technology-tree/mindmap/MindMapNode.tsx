@@ -55,7 +55,7 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
         left: node.x,
         top: node.y,
         width: isRoot ? 280 : 220, // Increased width to accommodate longer text
-        minHeight: isRoot ? 120 : 100, // Increased minimum height for multi-line text
+        height: isRoot ? 120 : 100, // Fixed height instead of minHeight
       }}
       onClick={handleClick}
     >
