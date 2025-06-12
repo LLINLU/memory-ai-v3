@@ -28,7 +28,7 @@ const NODE_WIDTH = 200;
 const NODE_HEIGHT = 80;
 const LEVEL_SPACING = 300;
 const NODE_SPACING = 100;
-const MIN_SPACING = 20; // Minimum spacing to prevent overlap
+const PARENT_GROUP_SPACING = 200; // Spacing between different parent-child groups
 
 export const transformToMindMapData = (
   level1Items: TreeNode[],
@@ -47,41 +47,17 @@ export const transformToMindMapData = (
   const nodes: MindMapNode[] = [];
   const connections: MindMapConnection[] = [];
   
-  // Track positions for each level to avoid overlapping
-  const levelYPositions: Record<number, number> = {};
+  // Track Y positions for parent groups at each level
+  let currentLevelYOffset: Record<number, number> = {};
 
-  // Helper function to get next Y position for a level
-  const getNextYPosition = (level: number): number => {
-    if (!levelYPositions[level]) {
-      levelYPositions[level] = 50; // Start with some padding
+  // Helper function to get next Y position for a parent group
+  const getNextParentGroupY = (level: number): number => {
+    if (!currentLevelYOffset[level]) {
+      currentLevelYOffset[level] = 50; // Start with padding
     } else {
-      levelYPositions[level] += NODE_HEIGHT + NODE_SPACING;
+      currentLevelYOffset[level] += PARENT_GROUP_SPACING;
     }
-    return levelYPositions[level];
-  };
-
-  // Helper function to create a node
-  const createNode = (
-    item: TreeNode,
-    level: number,
-    levelName: string,
-    parentId?: string
-  ): MindMapNode => {
-    const x = (level - 1) * LEVEL_SPACING + 50; // Add left padding
-    const y = getNextYPosition(level);
-    
-    return {
-      id: item.id,
-      name: item.name,
-      description: item.description || "",
-      level,
-      levelName,
-      x,
-      y,
-      parentId,
-      isSelected: selectedPath[`level${level}`] === item.id,
-      isCustom: item.isCustom || false,
-    };
+    return currentLevelYOffset[level];
   };
 
   // Helper function to create a connection
@@ -97,120 +73,125 @@ export const transformToMindMapData = (
     };
   };
 
-  // FIRST PASS: Create all nodes with level-based positioning
-  // Process Level 1 nodes - show ALL level 1 items
+  // FIRST PASS: Create Level 1 nodes (no parents)
+  let level1YPosition = 50;
   level1Items.forEach((item) => {
-    const node = createNode(item, 1, levelNames.level1 || "Level 1");
+    const node: MindMapNode = {
+      id: item.id,
+      name: item.name,
+      description: item.description || "",
+      level: 1,
+      levelName: levelNames.level1 || "Level 1",
+      x: 50,
+      y: level1YPosition,
+      isSelected: selectedPath.level1 === item.id,
+      isCustom: item.isCustom || false,
+    };
     nodes.push(node);
+    level1YPosition += NODE_HEIGHT + NODE_SPACING;
   });
 
-  // Process Level 2 nodes - show ALL level 2 items
-  Object.entries(level2Items).forEach(([parentId, items]) => {
-    const parentNode = nodes.find(n => n.id === parentId);
-    if (parentNode && items) {
-      items.forEach((item) => {
-        const node = createNode(item, 2, levelNames.level2 || "Level 2", parentId);
-        nodes.push(node);
-        connections.push(createConnection(parentNode, node));
-      });
-    }
-  });
-
-  // Process Level 3 nodes - show ALL level 3 items
-  Object.entries(level3Items).forEach(([parentId, items]) => {
-    const parentNode = nodes.find(n => n.id === parentId);
-    if (parentNode && items) {
-      items.forEach((item) => {
-        const node = createNode(item, 3, levelNames.level3 || "Level 3", parentId);
-        nodes.push(node);
-        connections.push(createConnection(parentNode, node));
-      });
-    }
-  });
-
-  // Process Level 4-10 nodes - show ALL items for each level
-  const levelData = [
-    { items: level4Items, level: 4, name: levelNames.level4 || "Level 4" },
-    { items: level5Items, level: 5, name: levelNames.level5 || "Level 5" },
-    { items: level6Items, level: 6, name: levelNames.level6 || "Level 6" },
-    { items: level7Items, level: 7, name: levelNames.level7 || "Level 7" },
-    { items: level8Items, level: 8, name: levelNames.level8 || "Level 8" },
-    { items: level9Items, level: 9, name: levelNames.level9 || "Level 9" },
-    { items: level10Items, level: 10, name: levelNames.level10 || "Level 10" },
-  ];
-
-  levelData.forEach(({ items, level, name }) => {
-    Object.entries(items).forEach(([parentId, nodeItems]) => {
+  // Helper function to process children with parent-relative positioning
+  const processChildrenLevel = (
+    childrenData: Record<string, TreeNode[]>,
+    level: number,
+    levelName: string
+  ) => {
+    Object.entries(childrenData).forEach(([parentId, children]) => {
       const parentNode = nodes.find(n => n.id === parentId);
-      if (parentNode && nodeItems) {
-        nodeItems.forEach((item) => {
-          const node = createNode(item, level, name, parentId);
-          nodes.push(node);
-          connections.push(createConnection(parentNode, node));
-        });
-      }
-    });
-  });
+      if (!parentNode || !children || children.length === 0) return;
 
-  // SECOND PASS: Center parent nodes between their children
-  const centerParentNodes = () => {
-    // Group children by parent
-    const childrenByParent: Record<string, MindMapNode[]> = {};
-    nodes.forEach(node => {
-      if (node.parentId) {
-        if (!childrenByParent[node.parentId]) {
-          childrenByParent[node.parentId] = [];
-        }
-        childrenByParent[node.parentId].push(node);
-      }
-    });
+      const x = (level - 1) * LEVEL_SPACING + 50;
 
-    // Adjust parent positions to center them between children
-    Object.entries(childrenByParent).forEach(([parentId, children]) => {
-      if (children.length < 2) return; // No centering needed for single child or no children
+      if (children.length === 1) {
+        // Single child: place at same level as parent
+        const child: MindMapNode = {
+          id: children[0].id,
+          name: children[0].name,
+          description: children[0].description || "",
+          level,
+          levelName,
+          x,
+          y: parentNode.y,
+          parentId,
+          isSelected: selectedPath[`level${level}`] === children[0].id,
+          isCustom: children[0].isCustom || false,
+        };
+        nodes.push(child);
+        connections.push(createConnection(parentNode, child));
 
-      const parentNode = nodes.find(n => n.id === parentId);
-      if (!parentNode) return;
+      } else if (children.length === 2) {
+        // Two children: one above, one below parent
+        const spacing = NODE_HEIGHT + NODE_SPACING;
+        
+        // First child above parent
+        const firstChild: MindMapNode = {
+          id: children[0].id,
+          name: children[0].name,
+          description: children[0].description || "",
+          level,
+          levelName,
+          x,
+          y: parentNode.y - spacing,
+          parentId,
+          isSelected: selectedPath[`level${level}`] === children[0].id,
+          isCustom: children[0].isCustom || false,
+        };
+        
+        // Second child below parent
+        const secondChild: MindMapNode = {
+          id: children[1].id,
+          name: children[1].name,
+          description: children[1].description || "",
+          level,
+          levelName,
+          x,
+          y: parentNode.y + spacing,
+          parentId,
+          isSelected: selectedPath[`level${level}`] === children[1].id,
+          isCustom: children[1].isCustom || false,
+        };
 
-      // Find the Y positions of children
-      const childrenYPositions = children.map(child => child.y).sort((a, b) => a - b);
-      const topChildY = childrenYPositions[0];
-      const bottomChildY = childrenYPositions[childrenYPositions.length - 1];
-      
-      // Calculate the center position
-      const centerY = topChildY + (bottomChildY - topChildY) / 2;
-      
-      // Check if centering would cause overlap with other nodes at the same level
-      const sameLevel = nodes.filter(n => n.level === parentNode.level && n.id !== parentNode.id);
-      const wouldOverlap = sameLevel.some(node => {
-        const distance = Math.abs(node.y - centerY);
-        return distance < (NODE_HEIGHT + MIN_SPACING);
-      });
+        nodes.push(firstChild, secondChild);
+        connections.push(createConnection(parentNode, firstChild));
+        connections.push(createConnection(parentNode, secondChild));
 
-      // Only center if it doesn't cause overlap
-      if (!wouldOverlap) {
-        parentNode.y = centerY;
-        console.log(`Centered parent ${parentId} between children at Y: ${centerY}`);
       } else {
-        console.log(`Skipped centering parent ${parentId} to avoid overlap`);
+        // Multiple children: distribute around parent
+        const spacing = NODE_HEIGHT + NODE_SPACING;
+        const totalHeight = (children.length - 1) * spacing;
+        const startY = parentNode.y - totalHeight / 2;
+
+        children.forEach((childItem, index) => {
+          const child: MindMapNode = {
+            id: childItem.id,
+            name: childItem.name,
+            description: childItem.description || "",
+            level,
+            levelName,
+            x,
+            y: startY + (index * spacing),
+            parentId,
+            isSelected: selectedPath[`level${level}`] === childItem.id,
+            isCustom: childItem.isCustom || false,
+          };
+          nodes.push(child);
+          connections.push(createConnection(parentNode, child));
+        });
       }
     });
   };
 
-  // Apply parent centering
-  centerParentNodes();
-
-  // Update connections after repositioning
-  connections.forEach(connection => {
-    const sourceNode = nodes.find(n => n.id === connection.sourceId);
-    const targetNode = nodes.find(n => n.id === connection.targetId);
-    if (sourceNode && targetNode) {
-      connection.sourceX = sourceNode.x + NODE_WIDTH;
-      connection.sourceY = sourceNode.y + NODE_HEIGHT / 2;
-      connection.targetX = targetNode.x;
-      connection.targetY = targetNode.y + NODE_HEIGHT / 2;
-    }
-  });
+  // Process all child levels
+  processChildrenLevel(level2Items, 2, levelNames.level2 || "Level 2");
+  processChildrenLevel(level3Items, 3, levelNames.level3 || "Level 3");
+  processChildrenLevel(level4Items, 4, levelNames.level4 || "Level 4");
+  processChildrenLevel(level5Items, 5, levelNames.level5 || "Level 5");
+  processChildrenLevel(level6Items, 6, levelNames.level6 || "Level 6");
+  processChildrenLevel(level7Items, 7, levelNames.level7 || "Level 7");
+  processChildrenLevel(level8Items, 8, levelNames.level8 || "Level 8");
+  processChildrenLevel(level9Items, 9, levelNames.level9 || "Level 9");
+  processChildrenLevel(level10Items, 10, levelNames.level10 || "Level 10");
 
   console.log(`Mindmap: Generated ${nodes.length} nodes and ${connections.length} connections`);
   console.log('Level breakdown:', {
