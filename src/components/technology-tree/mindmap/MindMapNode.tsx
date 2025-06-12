@@ -54,18 +54,21 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
       style={{
         left: node.x,
         top: node.y,
-        width: isRoot ? 250 : 200, // Make root node wider
-        height: isRoot ? 100 : 80, // Make root node taller
+        width: isRoot ? 280 : 220, // Increased width to accommodate longer text
+        minHeight: isRoot ? 120 : 100, // Increased minimum height for multi-line text
       }}
       onClick={handleClick}
     >
       <div
-        className={`w-full h-full rounded-lg border-2 p-3 ${getLevelColor(node.level)}`}
+        className={`w-full h-full rounded-lg border-2 p-3 flex flex-col ${getLevelColor(node.level)}`}
       >
         <div className="text-xs font-semibold mb-1 opacity-70">
           {node.levelName}
         </div>
-        <div className={`${isRoot ? 'text-base' : 'text-sm'} font-medium truncate`} title={node.name}>
+        <div 
+          className={`${isRoot ? 'text-base' : 'text-sm'} font-medium break-words leading-tight flex-1 flex items-center`} 
+          title={node.name}
+        >
           {node.name}
         </div>
       </div>

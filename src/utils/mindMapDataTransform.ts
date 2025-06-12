@@ -24,10 +24,10 @@ export interface MindMapConnection {
   targetY: number;
 }
 
-const NODE_WIDTH = 200;
-const ROOT_NODE_WIDTH = 250;
-const NODE_HEIGHT = 80;
-const ROOT_NODE_HEIGHT = 100;
+const NODE_WIDTH = 220;
+const ROOT_NODE_WIDTH = 280;
+const NODE_HEIGHT = 100;
+const ROOT_NODE_HEIGHT = 120;
 
 // Helper function to build hierarchical data structure from flat level data
 const buildHierarchy = (
@@ -154,8 +154,8 @@ const createD3Nodes = (hierarchicalData: any): MindMapNode[] => {
   const root = d3.hierarchy(hierarchicalData);
   
   const treeLayout = d3.tree()
-    .nodeSize([60, 400])
-    .separation((a, b) => a.parent === b.parent ? 1.5 : 2.5);
+    .nodeSize([80, 420])
+    .separation((a, b) => a.parent === b.parent ? 1.8 : 3);
   
   treeLayout(root);
   
@@ -167,8 +167,8 @@ const createD3Nodes = (hierarchicalData: any): MindMapNode[] => {
       description: node.data.description,
       level: node.data.level,
       levelName: node.data.levelName,
-      x: node.y + 50, // Add margin
-      y: node.x + 50, // Add margin
+      x: node.y + 50,
+      y: node.x + 50,
       parentId: node.parent ? node.parent.data.id : undefined,
       isSelected: node.data.isSelected,
       isCustom: node.data.isCustom,
@@ -184,8 +184,8 @@ const createD3Connections = (hierarchicalData: any): MindMapConnection[] => {
   const root = d3.hierarchy(hierarchicalData);
   
   const treeLayout = d3.tree()
-    .nodeSize([60, 400])
-    .separation((a, b) => a.parent === b.parent ? 1.5 : 2.5);
+    .nodeSize([80, 420])
+    .separation((a, b) => a.parent === b.parent ? 1.8 : 3);
   
   treeLayout(root);
 
@@ -199,10 +199,10 @@ const createD3Connections = (hierarchicalData: any): MindMapConnection[] => {
       const sourceNodeWidth = isRootSource ? ROOT_NODE_WIDTH : NODE_WIDTH;
       const sourceNodeHeight = isRootSource ? ROOT_NODE_HEIGHT : NODE_HEIGHT;
       
-      const sourceX = link.source.y + 50 + sourceNodeWidth; // Right edge of source node
-      const sourceY = link.source.x + 50 + sourceNodeHeight / 2; // Center height of source node
-      const targetX = link.target.y + 50; // Left edge of target node
-      const targetY = link.target.x + 50 + NODE_HEIGHT / 2; // Center height of target node
+      const sourceX = link.source.y + 50 + sourceNodeWidth;
+      const sourceY = link.source.x + 50 + sourceNodeHeight / 2;
+      const targetX = link.target.y + 50;
+      const targetY = link.target.x + 50 + NODE_HEIGHT / 2;
 
       connections.push({
         id: `${link.source.data.id}-${link.target.data.id}`,
