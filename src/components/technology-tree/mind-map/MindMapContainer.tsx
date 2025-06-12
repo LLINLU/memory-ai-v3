@@ -55,26 +55,44 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   const [containerSize, setContainerSize] = useState({ width: 1200, height: 800 });
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isInitialized, setIsInitialized] = useState(false);
   
   const {
     expandedNodes,
     toggleNodeExpansion,
     isNodeExpanded,
+    expandRootNode,
   } = useMindMapState();
+
+  // Debug data
+  useEffect(() => {
+    console.log("🗺️ MindMapContainer received data:", {
+      level1Count: level1Items?.length || 0,
+      level2Count: Object.keys(level2Items || {}).length,
+      level3Count: Object.keys(level3Items || {}).length,
+      level4Count: Object.keys(level4Items || {}).length,
+      selectedPath,
+      expandedNodes: Array.from(expandedNodes),
+    });
+  }, [level1Items, level2Items, level3Items, level4Items, expandedNodes]);
 
   // Initialize with root node expanded
   useEffect(() => {
-    if (level1Items.length > 0) {
-      toggleNodeExpansion(level1Items[0].id);
+    if (level1Items && level1Items.length > 0 && !isInitialized) {
+      console.log("🌱 Initializing mindmap with root node:", level1Items[0].id);
+      expandRootNode(level1Items[0].id);
+      setIsInitialized(true);
     }
-  }, [level1Items]);
+  }, [level1Items, expandRootNode, isInitialized]);
 
   // Update container size on mount and resize
   useEffect(() => {
     const updateSize = () => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        setContainerSize({ width: rect.width, height: rect.height });
+        const newSize = { width: Math.max(rect.width, 800), height: Math.max(rect.height, 600) };
+        console.log("📏 Container size updated:", newSize);
+        setContainerSize(newSize);
       }
     };
 
@@ -83,23 +101,26 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     return () => window.removeEventListener('resize', updateSize);
   }, []);
 
+  // Transform data
   const mindMapData = transformToMindMapData(
-    level1Items,
-    level2Items,
-    level3Items,
-    level4Items,
-    level5Items,
-    level6Items,
-    level7Items,
-    level8Items,
-    level9Items,
-    level10Items,
+    level1Items || [],
+    level2Items || {},
+    level3Items || {},
+    level4Items || {},
+    level5Items || {},
+    level6Items || {},
+    level7Items || {},
+    level8Items || {},
+    level9Items || {},
+    level10Items || {},
     expandedNodes
   );
 
+  // Calculate positions
   const positionedNodes = calculateNodePositions(mindMapData, containerSize.width, containerSize.height);
 
   const handleNodeClick = (nodeId: string) => {
+    console.log("🎯 Node clicked:", nodeId);
     // Find the node level based on the path structure
     if (selectedPath.level1 === nodeId) {
       onNodeClick("level1", nodeId);
@@ -113,7 +134,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   };
 
   const handleEditClick = (nodeId: string) => {
-    // Similar logic for edit
+    console.log("✏️ Edit clicked:", nodeId);
     if (onEditNode) {
       const level = getNodeLevel(nodeId);
       if (level) {
@@ -123,6 +144,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   };
 
   const handleDeleteClick = (nodeId: string) => {
+    console.log("🗑️ Delete clicked:", nodeId);
     if (onDeleteNode) {
       const level = getNodeLevel(nodeId);
       if (level) {
@@ -132,10 +154,10 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   };
 
   const getNodeLevel = (nodeId: string): string | null => {
-    if (level1Items.find(item => item.id === nodeId)) return "level1";
-    if (Object.values(level2Items).flat().find(item => item.id === nodeId)) return "level2";
-    if (Object.values(level3Items).flat().find(item => item.id === nodeId)) return "level3";
-    if (Object.values(level4Items).flat().find(item => item.id === nodeId)) return "level4";
+    if (level1Items?.find(item => item.id === nodeId)) return "level1";
+    if (Object.values(level2Items || {}).flat().find(item => item.id === nodeId)) return "level2";
+    if (Object.values(level3Items || {}).flat().find(item => item.id === nodeId)) return "level3";
+    if (Object.values(level4Items || {}).flat().find(item => item.id === nodeId)) return "level4";
     return null;
   };
 
@@ -150,6 +172,34 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     setPan({ x: 0, y: 0 });
   };
 
+  // Loading and error states
+  if (!level1Items || level1Items.length === 0) {
+    return (
+      <div className="relative w-full h-full overflow-hidden bg-gray-50 flex items-center justify-center" ref={containerRef}>
+        <div className="text-center p-8">
+          <h3 className="text-lg font-medium text-gray-900 mb-2">マインドマップデータなし</h3>
+          <p className="text-gray-600">技術ツリーデータが読み込まれていません。</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (positionedNodes.length === 0) {
+    return (
+      <div className="relative w-full h-full overflow-hidden bg-gray-50 flex items-center justify-center" ref={containerRef}>
+        <div className="text-center p-8">
+          <h3 className="text-lg font-medium text-gray-900 mb-2">ノードが見つかりません</h3>
+          <p className="text-gray-600">表示可能なノードがありません。データを確認してください。</p>
+          <div className="mt-4 text-sm text-gray-500">
+            <p>Debug Info:</p>
+            <p>Level 1 Items: {level1Items?.length || 0}</p>
+            <p>Expanded Nodes: {expandedNodes.size}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full h-full overflow-hidden bg-gray-50" ref={containerRef}>
       {/* Controls */}
@@ -163,6 +213,13 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
         <Button variant="outline" size="sm" onClick={handleReset}>
           <RotateCcw className="h-4 w-4" />
         </Button>
+      </div>
+
+      {/* Debug info */}
+      <div className="absolute top-4 left-4 z-10 bg-white/80 p-2 rounded text-xs">
+        <div>Nodes: {positionedNodes.length}</div>
+        <div>Expanded: {expandedNodes.size}</div>
+        <div>Zoom: {zoom.toFixed(1)}x</div>
       </div>
 
       {/* Mind Map Content */}

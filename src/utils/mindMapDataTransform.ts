@@ -14,9 +14,24 @@ export const transformToMindMapData = (
   level10Items: Record<string, any[]> = {},
   expandedNodes: Set<string>
 ): MindMapNode[] => {
+  console.log("🗺️ Mindmap Transform Input:", {
+    level1Count: level1Items?.length || 0,
+    level2Count: Object.keys(level2Items || {}).length,
+    level3Count: Object.keys(level3Items || {}).length,
+    level4Count: Object.keys(level4Items || {}).length,
+    expandedNodes: Array.from(expandedNodes),
+    level1Items: level1Items?.slice(0, 2), // First 2 items for debugging
+  });
+
+  // Validate input data
+  if (!level1Items || level1Items.length === 0) {
+    console.warn("⚠️ No level1Items provided to mindmap transform");
+    return [];
+  }
+
   const buildNode = (item: any, level: number, getChildren: () => any[]): MindMapNode => {
     const children = getChildren();
-    return {
+    const node = {
       id: item.id,
       name: item.name,
       description: item.description,
@@ -26,20 +41,23 @@ export const transformToMindMapData = (
       children: children.map(child => buildNodeRecursively(child, level + 1)),
       isExpanded: expandedNodes.has(item.id),
     };
+    
+    console.log(`📊 Built node ${item.name} (${item.id}) - Level: ${level}, Children: ${children.length}, Expanded: ${node.isExpanded}`);
+    return node;
   };
 
   const buildNodeRecursively = (item: any, level: number): MindMapNode => {
     const itemsMap = [
       {},
-      level2Items,
-      level3Items,
-      level4Items,
-      level5Items,
-      level6Items,
-      level7Items,
-      level8Items,
-      level9Items,
-      level10Items,
+      level2Items || {},
+      level3Items || {},
+      level4Items || {},
+      level5Items || {},
+      level6Items || {},
+      level7Items || {},
+      level8Items || {},
+      level9Items || {},
+      level10Items || {},
     ];
 
     const currentLevelItems = itemsMap[level] || {};
@@ -48,7 +66,13 @@ export const transformToMindMapData = (
     return buildNode(item, level, () => children);
   };
 
-  return level1Items.map(item => buildNodeRecursively(item, 1));
+  const result = level1Items.map(item => buildNodeRecursively(item, 1));
+  console.log("🎯 Mindmap Transform Result:", {
+    nodeCount: result.length,
+    nodes: result.map(n => ({ id: n.id, name: n.name, expanded: n.isExpanded, childCount: n.children.length }))
+  });
+  
+  return result;
 };
 
 export const calculateNodePositions = (
@@ -56,6 +80,8 @@ export const calculateNodePositions = (
   containerWidth: number = 1200,
   containerHeight: number = 800
 ): MindMapNode[] => {
+  console.log("📐 Calculating positions for container:", { containerWidth, containerHeight, nodeCount: nodes.length });
+  
   const centerX = containerWidth / 2;
   const centerY = containerHeight / 2;
   
@@ -73,6 +99,8 @@ export const calculateNodePositions = (
       children: [],
     };
 
+    console.log(`📍 Positioning node ${node.name} at (${x}, ${y})`);
+
     if (node.isExpanded && node.children.length > 0) {
       const angleStep = (Math.PI * 2) / Math.max(node.children.length, 3);
       const childRadius = radius * 0.8;
@@ -89,10 +117,14 @@ export const calculateNodePositions = (
     return positionedNode;
   };
 
-  if (nodes.length === 0) return [];
+  if (nodes.length === 0) {
+    console.warn("⚠️ No nodes to position");
+    return [];
+  }
 
   // Position root node at center
   const rootNode = positionNode(nodes[0], centerX, centerY);
+  console.log("✅ Positioned root node:", { x: rootNode.x, y: rootNode.y, expanded: rootNode.isExpanded });
   
   return [rootNode];
 };
