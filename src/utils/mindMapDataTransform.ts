@@ -147,7 +147,7 @@ const createD3Nodes = (hierarchicalData: any): MindMapNode[] => {
   const root = d3.hierarchy(hierarchicalData);
   
   const treeLayout = d3.tree()
-    .nodeSize([120, 300])
+    .nodeSize([80, 300])
     .separation((a, b) => a.parent === b.parent ? 1.5 : 2.5);
   
   treeLayout(root);
@@ -178,7 +178,7 @@ const createD3Connections = (hierarchicalData: any): MindMapConnection[] => {
   const root = d3.hierarchy(hierarchicalData);
   
   const treeLayout = d3.tree()
-    .nodeSize([120, 300])
+    .nodeSize([80, 300])
     .separation((a, b) => a.parent === b.parent ? 1.5 : 2.5);
   
   treeLayout(root);
