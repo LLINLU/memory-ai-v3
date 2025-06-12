@@ -170,14 +170,8 @@ export const TechTreeMainContent: React.FC<TechTreeMainContentProps> = ({
             onEditNode={editNode}
             onDeleteNode={deleteNode}
             levelNames={levelNames}
-            hasUserMadeSelection={hasUserMadeSelection}
-            handleAddLevel4={handleAddLevel4}
-            searchMode={searchMode}
-            onGuidanceClick={onGuidanceClick}
-            query={query}
-            treeMode={treeMode}
             containerRef={containerRef}
-            triggerScrollUpdate={triggerScrollUpdate}
+            onGuidanceClick={onGuidanceClick}
           />
         </div>
       ) : (
