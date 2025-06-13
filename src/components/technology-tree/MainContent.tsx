@@ -1,4 +1,3 @@
-
 import React from "react";
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
@@ -164,6 +163,7 @@ export const MainContent = ({
                 )}
               </Button>
 
+              {/* DropdownMenu for guidance */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -211,29 +211,27 @@ export const MainContent = ({
           onGuidanceClick={onGuidanceClick}
         />
 
-        {/* Path Display with Navigation Controls - only show for treemap view */}
-        {isTreemapView && (
-          <PathDisplay
-            selectedPath={selectedPath}
-            level1Items={level1Items}
-            level2Items={level2Items}
-            level3Items={level3Items}
-            level4Items={level4Items}
-            level5Items={level5Items}
-            level6Items={level6Items}
-            level7Items={level7Items}
-            level8Items={level8Items}
-            level9Items={level9Items}
-            level10Items={level10Items}
-            showLevel4={showLevel4}
-            onGuidanceClick={onGuidanceClick}
-            onScrollToStart={onScrollToStart}
-            onScrollToEnd={onScrollToEnd}
-            canScrollLeft={canScrollLeft}
-            canScrollRight={canScrollRight}
-            lastVisibleLevel={lastVisibleLevel}
-          />
-        )}
+        {/* Path Display - now shows for both treemap and mindmap views */}
+        <PathDisplay
+          selectedPath={selectedPath}
+          level1Items={level1Items}
+          level2Items={level2Items}
+          level3Items={level3Items}
+          level4Items={level4Items}
+          level5Items={level5Items}
+          level6Items={level6Items}
+          level7Items={level7Items}
+          level8Items={level8Items}
+          level9Items={level9Items}
+          level10Items={level10Items}
+          showLevel4={showLevel4}
+          onGuidanceClick={onGuidanceClick}
+          onScrollToStart={onScrollToStart}
+          onScrollToEnd={onScrollToEnd}
+          canScrollLeft={canScrollLeft}
+          canScrollRight={canScrollRight}
+          lastVisibleLevel={lastVisibleLevel}
+        />
       </div>
       
       <div className="flex-1 overflow-hidden">

@@ -40,7 +40,8 @@ const TechnologyTree = () => {
   } | null;
 
   // Get the current view mode - single source of truth
-  const { viewMode, toggleView } = useMindMapView();
+  const viewModeHook = useMindMapView();
+  const { viewMode, toggleView } = viewModeHook;
 
   // Store the conversation history from the research context
   const [savedConversationHistory, setSavedConversationHistory] = useState<
@@ -148,7 +149,7 @@ const TechnologyTree = () => {
     showLevel4,
     handleAddLevel4,
     scenario: databaseScenario, // Get scenario from database tree data
-  } = useTechnologyTree(databaseTreeData, viewMode); // Pass viewMode here
+  } = useTechnologyTree(databaseTreeData, viewModeHook); // Pass viewModeHook here
 
   // Update last visible level when tree data changes and trigger scroll update
   useEffect(() => {

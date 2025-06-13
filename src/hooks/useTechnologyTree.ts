@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { usePathSelection } from "./tree/usePathSelection";
 import { useSidebar } from "./tree/useSidebar";
@@ -28,7 +29,7 @@ export interface TechnologyTreeState {
   searchMode?: string;
 }
 
-export const useTechnologyTree = (databaseTreeData?: any, viewMode?: "treemap" | "mindmap") => {
+export const useTechnologyTree = (databaseTreeData?: any, viewModeHook?: any) => {
   const location = useLocation();
   const locationState = location.state as {
     query?: string;
@@ -48,14 +49,18 @@ export const useTechnologyTree = (databaseTreeData?: any, viewMode?: "treemap" |
   const searchMode = locationState?.searchMode || "quick";
   const [selectedView, setSelectedView] = useState("tree");
   
-  // Pass isMindmapView to usePathSelection to control auto-selection behavior
+  // Use view mode hook if provided
+  const viewMode = viewModeHook?.viewMode || "mindmap";
   const isMindmapView = viewMode === "mindmap";
   
   // Debug logging
   console.log('useTechnologyTree:', { viewMode, isMindmapView });
   
-  // Determine initial path based on view mode and TED data availability
-  let initialPath = {
+  // Determine which tree data to use: database data takes priority, then location state data
+  const treeDataToUse = databaseTreeData || locationState?.treeData;
+
+  // Get the current path from the view mode hook or use default
+  const getCurrentPath = viewModeHook?.getCurrentPath || (() => ({
     level1: "",
     level2: "",
     level3: "",
@@ -66,40 +71,20 @@ export const useTechnologyTree = (databaseTreeData?: any, viewMode?: "treemap" |
     level8: "",
     level9: "",
     level10: "",
-  };
-  
-  // Determine which tree data to use: database data takes priority, then location state data
-  const treeDataToUse = databaseTreeData || locationState?.treeData;
+  }));
 
-  // FIXED: Only auto-populate initial path in treemap mode, not mindmap mode
-  if (!isMindmapView && treeDataToUse?.level1Items?.[0]) {
-    console.log('Treemap mode: Setting up initial auto-selected path');
-    const firstLevel1 = treeDataToUse.level1Items[0];
-    const firstLevel2 = treeDataToUse.level2Items?.[firstLevel1.id]?.[0];
-    const firstLevel3 = firstLevel2
-      ? treeDataToUse.level3Items?.[firstLevel2.id]?.[0]
-      : null;
-    initialPath = {
-      level1: firstLevel1.id,
-      level2: firstLevel2?.id || "",
-      level3: firstLevel3?.id || "",
-      level4: "",
-      level5: "",
-      level6: "",
-      level7: "",
-      level8: "",
-      level9: "",
-      level10: "",
-    };
-  } else if (isMindmapView) {
-    console.log('Mindmap mode: Keeping initial path empty (no auto-selection)');
-    // Keep initialPath empty for mindmap - no auto-selection
+  const initialPath = getCurrentPath();
+  
+  // Initialize treemap path with auto-selection if this is treemap view and we have data
+  if (!isMindmapView && treeDataToUse?.level1Items?.[0] && viewModeHook?.initializeTreemapPath) {
+    console.log('Treemap mode: Initializing auto-selected path');
+    viewModeHook.initializeTreemapPath(treeDataToUse);
   }
   
   const {
     selectedPath,
     hasUserMadeSelection,
-    handleNodeClick,
+    handleNodeClick: originalHandleNodeClick,
     addCustomNode,
     editNode,
     deleteNode,
@@ -116,6 +101,21 @@ export const useTechnologyTree = (databaseTreeData?: any, viewMode?: "treemap" |
     showLevel4,
     handleAddLevel4,
   } = usePathSelection(initialPath, treeDataToUse, isMindmapView);
+
+  // Wrap the handleNodeClick to update the view-specific path
+  const handleNodeClick = (level: string, nodeId: string) => {
+    originalHandleNodeClick(level, nodeId);
+    
+    // If we have the view mode hook, update the current view's path
+    if (viewModeHook?.setCurrentPath) {
+      // Get the updated path after the click
+      setTimeout(() => {
+        // This will be called after the path state has been updated
+        const updatedPath = getCurrentPath();
+        viewModeHook.setCurrentPath(updatedPath);
+      }, 0);
+    }
+  };
 
   const {
     sidebarTab,
