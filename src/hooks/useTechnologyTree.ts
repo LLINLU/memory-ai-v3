@@ -49,6 +49,12 @@ export const useTechnologyTree = (databaseTreeData?: any, viewMode?: "treemap" |
   const searchMode = locationState?.searchMode || "quick";
   const [selectedView, setSelectedView] = useState("tree");
   
+  // Pass isMindmapView to usePathSelection to control auto-selection behavior
+  const isMindmapView = viewMode === "mindmap";
+  
+  // Debug logging
+  console.log('useTechnologyTree:', { viewMode, isMindmapView });
+  
   // Determine initial path based on TED data availability
   let initialPath = {
     level1: "",
@@ -86,9 +92,6 @@ export const useTechnologyTree = (databaseTreeData?: any, viewMode?: "treemap" |
       level10: "",
     };
   }
-  
-  // Pass isMindmapView to usePathSelection to control auto-selection behavior
-  const isMindmapView = viewMode === "mindmap";
   
   const {
     selectedPath,

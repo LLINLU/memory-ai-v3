@@ -35,6 +35,9 @@ export const usePathSelectionState = (
   const [showLevel4, setShowLevel4] = useState(false);
   const [treeData, setTreeData] = useState<any>(null);
   
+  // Debug logging
+  console.log('usePathSelectionState: disableAutoSelection =', disableAutoSelection);
+  
   // Store tree data for auto-selection
   const updateTreeData = (data: any) => {
     setTreeData(data);
@@ -43,6 +46,13 @@ export const usePathSelectionState = (
   // Auto-select first path through the entire tree when tree data is loaded
   // BUT only if auto-selection is not disabled (i.e., not in mindmap view)
   useEffect(() => {
+    console.log('Auto-selection effect triggered:', {
+      disableAutoSelection,
+      hasTreeData: !!treeData,
+      hasUserMadeSelection,
+      hasLevel1Items: !!(treeData?.level1Items?.length)
+    });
+
     if (
       disableAutoSelection ||
       !treeData ||
@@ -50,6 +60,7 @@ export const usePathSelectionState = (
       !treeData.level1Items ||
       treeData.level1Items.length === 0
     ) {
+      console.log('Skipping auto-selection due to conditions');
       return;
     }
 
@@ -114,6 +125,7 @@ export const usePathSelectionState = (
   }, [treeData, hasUserMadeSelection, disableAutoSelection]);
 
   const handleNodeClick = (level: PathLevel, nodeId: string) => {
+    console.log('Node clicked:', { level, nodeId, disableAutoSelection });
     setHasUserMadeSelection(true);
 
     // Scroll to top of the page when a node is selected
@@ -145,7 +157,37 @@ export const usePathSelectionState = (
         return clearedPath;
       }
 
-      // Set the selected level and clear all subsequent levels
+      // MINDMAP MODE: Simple selection - only select the clicked node
+      if (disableAutoSelection) {
+        console.log('Mindmap mode: Simple selection for', level, nodeId);
+        const newPath = { ...prev };
+        const levels: PathLevel[] = [
+          "level1",
+          "level2", 
+          "level3",
+          "level4",
+          "level5",
+          "level6",
+          "level7",
+          "level8",
+          "level9",
+          "level10",
+        ];
+        const currentIndex = levels.indexOf(level);
+
+        // Clear current and all subsequent levels
+        for (let i = currentIndex; i < levels.length; i++) {
+          newPath[levels[i]] = "";
+        }
+
+        // Set ONLY the selected level - NO AUTO-SELECTION
+        newPath[level] = nodeId;
+        
+        return newPath;
+      }
+
+      // TREEMAP MODE: Auto-selection enabled
+      console.log('Treemap mode: Auto-selection enabled for', level, nodeId);
       const newPath = { ...prev };
       const levels: PathLevel[] = [
         "level1",
@@ -169,8 +211,8 @@ export const usePathSelectionState = (
       // Set the selected level
       newPath[level] = nodeId;
 
-      // Only auto-select children if auto-selection is NOT disabled (i.e., in treemap view)
-      if (!disableAutoSelection && treeData && currentIndex < levels.length - 1) {
+      // Auto-select children for treemap view
+      if (treeData && currentIndex < levels.length - 1) {
         const nextLevel = levels[currentIndex + 1];
         const nextLevelKey = `${nextLevel}Items`;
         const childItems = treeData[nextLevelKey]?.[nodeId];
