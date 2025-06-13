@@ -111,7 +111,7 @@ serve(async (req) => {
     return new Response("ok", { status: 200, headers: CORS });
 
   try {
-    const { searchTheme, teamId } = await req.json();
+    const { searchTheme, team_id } = await req.json();
     if (!searchTheme)
       return new Response(
         JSON.stringify({ error: "searchTheme is required" }),
@@ -219,7 +219,7 @@ serve(async (req) => {
           when: null,
         },
         mode: "FAST", // Add mode indicator for FAST trees
-        teamId: teamId || null, // Add teamId parameter
+        team_id: team_id || null, // Add team_id parameter
       })
       .select("id")
       .single();
@@ -237,7 +237,7 @@ serve(async (req) => {
       level: 0,
       node_order: 0,
       children_count: treeRoot.children.length,
-      teamId: teamId || null, // Add teamId parameter
+      team_id: team_id || null, // Add team_id parameter
       // path will be automatically set by the database trigger
     });
     if (rootError)
@@ -266,7 +266,7 @@ serve(async (req) => {
         level: lvl,
         node_order: idx,
         children_count: node.children.length,
-        teamId: teamId || null, // Add teamId parameter
+        team_id: team_id || null, // Add team_id parameter
         // path will be automatically set by the database trigger
       });
       if (error) throw new Error(`DB error (node): ${error.message}`);

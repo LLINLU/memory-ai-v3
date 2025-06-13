@@ -75,12 +75,12 @@ export const useTreeGeneration = () => {
       const functionName =
         mode === "FAST" ? "generate-tree-fast" : "generate-tree";
 
-      // Get teamId from user details
-      const teamId = userDetails?.team_id;
+      // Get team_id from user details
+      const team_id = userDetails?.team_id;
 
       // Supabase is available, use the edge function
       const { data, error } = await supabase.functions.invoke(functionName, {
-        body: { searchTheme, teamId },
+        body: { searchTheme, team_id },
       });
 
       if (error) {
@@ -158,7 +158,7 @@ export const useTreeGeneration = () => {
 
       // Check if user has access to this tree (same team or no team restriction)
       const userTeamId = userDetails?.team_id;
-      if (treeData.teamId && userTeamId && treeData.teamId !== userTeamId) {
+      if (treeData.team_id && userTeamId && treeData.team_id !== userTeamId) {
         toast({
           title: "アクセス権限エラー",
           description: "このツリーにアクセスする権限がありません。",
@@ -227,7 +227,7 @@ export const useTreeGeneration = () => {
     if(trees.length > 0) {
       return trees;
     }
-    if (userDetails === undefined|| userDetails.team_id === null) {
+    if (userDetails === undefined|| userDetails?.team_id === null) {
       return trees;
     }
     
@@ -243,10 +243,10 @@ export const useTreeGeneration = () => {
 
       // If user has a team, filter by that team or trees with no team restriction
       if (userTeamId) {
-        query = query.or(`teamId.eq.${userTeamId},teamId.is.null`);
+        query = query.or(`team_id.eq.${userTeamId},team_id.is.null`);
       } else {
         // If user has no team, only show trees with no team restriction
-        query = query.is("teamId", null);
+        query = query.is("team_id", null);
       }
 
       const { data, error } = await query;
