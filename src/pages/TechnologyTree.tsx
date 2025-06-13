@@ -10,6 +10,7 @@ import { useNodeInfo } from "@/hooks/tree/useNodeInfo";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { useScrollNavigation } from "@/hooks/tree/useScrollNavigation";
+import { useMindMapView } from "@/hooks/tree/useMindMapView";
 
 import { ChatBox } from "@/components/technology-tree/ChatBox";
 import { TechTreeMainContent } from "@/components/technology-tree/TechTreeMainContent";
@@ -37,6 +38,9 @@ const TechnologyTree = () => {
     fromPreset?: boolean;
     isDemo?: boolean;
   } | null;
+
+  // Get the current view mode
+  const { viewMode } = useMindMapView();
 
   // Store the conversation history from the research context
   const [savedConversationHistory, setSavedConversationHistory] = useState<
@@ -141,7 +145,7 @@ const TechnologyTree = () => {
     showLevel4,
     handleAddLevel4,
     scenario: databaseScenario, // Get scenario from database tree data
-  } = useTechnologyTree(databaseTreeData);
+  } = useTechnologyTree(databaseTreeData, viewMode); // Pass viewMode here
 
   // Update last visible level when tree data changes and trigger scroll update
   useEffect(() => {

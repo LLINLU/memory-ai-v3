@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { usePathSelection } from "./tree/usePathSelection";
 import { useSidebar } from "./tree/useSidebar";
@@ -28,7 +29,7 @@ export interface TechnologyTreeState {
   searchMode?: string;
 }
 
-export const useTechnologyTree = (databaseTreeData?: any) => {
+export const useTechnologyTree = (databaseTreeData?: any, viewMode?: "treemap" | "mindmap") => {
   const location = useLocation();
   const locationState = location.state as {
     query?: string;
@@ -46,7 +47,9 @@ export const useTechnologyTree = (databaseTreeData?: any) => {
 
   // Get searchMode from location state - default to "quick" if not provided
   const searchMode = locationState?.searchMode || "quick";
-  const [selectedView, setSelectedView] = useState("tree"); // Determine initial path based on TED data availability
+  const [selectedView, setSelectedView] = useState("tree");
+  
+  // Determine initial path based on TED data availability
   let initialPath = {
     level1: "",
     level2: "",
@@ -58,7 +61,9 @@ export const useTechnologyTree = (databaseTreeData?: any) => {
     level8: "",
     level9: "",
     level10: "",
-  }; // Determine which tree data to use: database data takes priority, then location state data
+  };
+  
+  // Determine which tree data to use: database data takes priority, then location state data
   const treeDataToUse = databaseTreeData || locationState?.treeData;
 
   // If we have TED-generated data or database data, use the first nodes as initial selection
@@ -81,6 +86,10 @@ export const useTechnologyTree = (databaseTreeData?: any) => {
       level10: "",
     };
   }
+  
+  // Pass isMindmapView to usePathSelection to control auto-selection behavior
+  const isMindmapView = viewMode === "mindmap";
+  
   const {
     selectedPath,
     hasUserMadeSelection,
@@ -100,7 +109,7 @@ export const useTechnologyTree = (databaseTreeData?: any) => {
     level10Items,
     showLevel4,
     handleAddLevel4,
-  } = usePathSelection(initialPath, treeDataToUse);
+  } = usePathSelection(initialPath, treeDataToUse, isMindmapView);
 
   const {
     sidebarTab,
@@ -120,6 +129,7 @@ export const useTechnologyTree = (databaseTreeData?: any) => {
     setChatMessages,
     setInputValue,
   } = useInputQuery(sidebarTab);
+  
   return {
     selectedPath,
     selectedView,
