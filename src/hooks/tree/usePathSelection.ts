@@ -1,4 +1,3 @@
-
 import { NodeSuggestion } from "@/types/chat";
 import { PathLevel } from "@/types/tree";
 import { useNodeOperations } from "./useNodeOperations";
@@ -89,13 +88,27 @@ export const usePathSelection = (
     level10Data
   ); 
 
-  // Update path when tree data changes to ensure valid selections
+  // FIXED: Only update path in treemap mode, skip auto-selection in mindmap mode
   useEffect(() => {
+    console.log('Path update effect triggered:', {
+      isMindmapView,
+      hasTreeData: !!treeData?.level1Items,
+      currentLevel1: selectedPath.level1
+    });
+
+    // Skip auto-selection entirely in mindmap mode
+    if (isMindmapView) {
+      console.log('Mindmap mode: Skipping auto-selection path update');
+      return;
+    }
+
+    // Only run auto-selection logic in treemap mode
     if (treeData?.level1Items && treeData.level1Items.length > 0) {
       const currentLevel1Exists = treeData.level1Items.find(
         (item) => item.id === selectedPath.level1
       );
       if (!currentLevel1Exists) {
+        console.log('Treemap mode: Auto-selecting first level1 item');
         setSelectedPath((prev) => ({
           ...prev,
           level1: treeData.level1Items[0].id,
@@ -111,7 +124,7 @@ export const usePathSelection = (
         }));
       }
     }
-  }, [treeData, setSelectedPath]);
+  }, [treeData, setSelectedPath, isMindmapView, selectedPath.level1]);
 
   // Wrapper functions to maintain the same API
   const handleNodeClick = (level: PathLevel, nodeId: string) => {

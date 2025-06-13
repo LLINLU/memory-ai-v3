@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { usePathSelection } from "./tree/usePathSelection";
 import { useSidebar } from "./tree/useSidebar";
@@ -55,7 +54,7 @@ export const useTechnologyTree = (databaseTreeData?: any, viewMode?: "treemap" |
   // Debug logging
   console.log('useTechnologyTree:', { viewMode, isMindmapView });
   
-  // Determine initial path based on TED data availability
+  // Determine initial path based on view mode and TED data availability
   let initialPath = {
     level1: "",
     level2: "",
@@ -72,8 +71,9 @@ export const useTechnologyTree = (databaseTreeData?: any, viewMode?: "treemap" |
   // Determine which tree data to use: database data takes priority, then location state data
   const treeDataToUse = databaseTreeData || locationState?.treeData;
 
-  // If we have TED-generated data or database data, use the first nodes as initial selection
-  if (treeDataToUse?.level1Items?.[0]) {
+  // FIXED: Only auto-populate initial path in treemap mode, not mindmap mode
+  if (!isMindmapView && treeDataToUse?.level1Items?.[0]) {
+    console.log('Treemap mode: Setting up initial auto-selected path');
     const firstLevel1 = treeDataToUse.level1Items[0];
     const firstLevel2 = treeDataToUse.level2Items?.[firstLevel1.id]?.[0];
     const firstLevel3 = firstLevel2
@@ -91,6 +91,9 @@ export const useTechnologyTree = (databaseTreeData?: any, viewMode?: "treemap" |
       level9: "",
       level10: "",
     };
+  } else if (isMindmapView) {
+    console.log('Mindmap mode: Keeping initial path empty (no auto-selection)');
+    // Keep initialPath empty for mindmap - no auto-selection
   }
   
   const {
