@@ -159,10 +159,21 @@ const createD3Nodes = (hierarchicalData: any): MindMapNode[] => {
 
   const root = d3.hierarchy(hierarchicalData);
   
-  // Uniform separation for even spacing with optimized nodeSize to prevent overlap
+  // Depth-based separation with progressive spacing to prevent overlap
   const treeLayout = d3.tree()
-    .nodeSize([50, 400]) // Increased from [40, 400] to [50, 400] for better spacing without overlap
-    .separation(() => 1.0); // Uniform separation for equal vertical spacing between ALL nodes
+    .nodeSize([50, 400]) // Keep current nodeSize for good horizontal spacing
+    .separation((a, b) => {
+      // Keep tight spacing for level 1 nodes (children of root)
+      if (a.parent && a.parent.depth === 0 && b.parent && b.parent.depth === 0) {
+        return 1.0;  // Keep current tight spacing for level1
+      }
+      
+      // Progressive spacing for deeper levels
+      const maxDepth = Math.max(a.depth, b.depth);
+      if (maxDepth <= 2) return 1.2;  // Level2 gets slightly more space
+      if (maxDepth <= 3) return 1.5;  // Level3 gets more space
+      return 1.8;  // Level4+ gets maximum space
+    });
   
   treeLayout(root);
   
@@ -181,10 +192,11 @@ const createD3Nodes = (hierarchicalData: any): MindMapNode[] => {
       isCustom: node.data.isCustom,
     }));
 
-  // Debug logging to verify uniform spacing
-  console.log('MindMap D3 Layout Debug (Uniform spacing with nodeSize [50, 400]):');
+  // Debug logging to verify progressive spacing
+  console.log('MindMap D3 Layout Debug (Progressive depth-based spacing):');
   console.log('Root node position:', nodes.find(n => n.level === 0));
   console.log('Level 1 nodes:', nodes.filter(n => n.level === 1).map(n => ({ id: n.id, x: n.x, y: n.y })));
+  console.log('Level 2 nodes:', nodes.filter(n => n.level === 2).map(n => ({ id: n.id, x: n.x, y: n.y })));
   console.log('Max X coordinate:', Math.max(...nodes.map(n => n.x)));
   
   return nodes;
@@ -198,10 +210,21 @@ const createD3Connections = (hierarchicalData: any): MindMapConnection[] => {
 
   const root = d3.hierarchy(hierarchicalData);
   
-  // Uniform separation for even spacing with optimized nodeSize (same as createD3Nodes)
+  // Use the same depth-based separation as createD3Nodes
   const treeLayout = d3.tree()
-    .nodeSize([50, 400]) // Increased from [40, 400] to [50, 400] for better spacing without overlap
-    .separation(() => 1.0); // Uniform separation for equal vertical spacing between ALL nodes
+    .nodeSize([50, 400]) // Keep current nodeSize for good horizontal spacing
+    .separation((a, b) => {
+      // Keep tight spacing for level 1 nodes (children of root)
+      if (a.parent && a.parent.depth === 0 && b.parent && b.parent.depth === 0) {
+        return 1.0;  // Keep current tight spacing for level1
+      }
+      
+      // Progressive spacing for deeper levels
+      const maxDepth = Math.max(a.depth, b.depth);
+      if (maxDepth <= 2) return 1.2;  // Level2 gets slightly more space
+      if (maxDepth <= 3) return 1.5;  // Level3 gets more space
+      return 1.8;  // Level4+ gets maximum space
+    });
   
   treeLayout(root);
 
@@ -221,9 +244,9 @@ const createD3Connections = (hierarchicalData: any): MindMapConnection[] => {
       const targetX = link.target.y + MARGIN_LEFT; // Use new left margin
       const targetY = link.target.x + MARGIN_TOP + NODE_HEIGHT / 2; // Use top margin
 
-      // Debug logging for uniform spacing verification
+      // Debug logging for progressive spacing verification
       if (isRootSource) {
-        console.log('Root connection debug (uniform spacing):', {
+        console.log('Root connection debug (progressive spacing):', {
           sourceId: link.source.data.id,
           targetId: link.target.data.id,
           sourceHeight: sourceNodeHeight,
