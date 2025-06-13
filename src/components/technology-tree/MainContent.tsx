@@ -1,3 +1,4 @@
+
 import React from "react";
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
@@ -11,6 +12,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@/components/ui/toggle-group";
 import { TreePine, Network } from "lucide-react";
 
 interface MainContentProps {
@@ -126,6 +131,12 @@ export const MainContent = ({
     }
   };
 
+  const handleViewModeChange = (value: string) => {
+    if (value && value !== viewMode) {
+      onToggleView();
+    }
+  };
+
   return (
     <div className="h-full flex flex-col overflow-hidden">
       <div className="container mx-auto px-4 pt-2 pb-4 flex-shrink-0">
@@ -143,25 +154,32 @@ export const MainContent = ({
                 研究分野の階層表示
               </h3>
               
-              {/* View Toggle Button */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onToggleView}
-                className="flex items-center gap-1 text-blue-600 border-blue-200 hover:bg-blue-50 px-2 py-1 h-7 text-xs"
+              {/* View Toggle Button Group */}
+              <ToggleGroup
+                type="single"
+                value={viewMode}
+                onValueChange={handleViewModeChange}
+                className="border border-blue-200 rounded-md"
               >
-                {isTreemapView ? (
-                  <>
-                    <Network className="h-3 w-3" />
-                    マインドマップ
-                  </>
-                ) : (
-                  <>
-                    <TreePine className="h-3 w-3" />
-                    ツリーマップ
-                  </>
-                )}
-              </Button>
+                <ToggleGroupItem
+                  value="mindmap"
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-1 text-blue-600 hover:bg-blue-50 px-2 py-1 h-7 text-xs data-[state=on]:bg-blue-100 data-[state=on]:text-blue-700"
+                >
+                  <Network className="h-3 w-3" />
+                  マインドマップ
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="treemap"
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-1 text-blue-600 hover:bg-blue-50 px-2 py-1 h-7 text-xs data-[state=on]:bg-blue-100 data-[state=on]:text-blue-700"
+                >
+                  <TreePine className="h-3 w-3" />
+                  ツリーマップ
+                </ToggleGroupItem>
+              </ToggleGroup>
 
               {/* DropdownMenu for guidance */}
               <DropdownMenu>
