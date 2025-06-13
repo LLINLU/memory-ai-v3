@@ -35,6 +35,22 @@ const MARGIN_LEFT = 50; // Reduced from 300 to 50 to move root node to the LEFT 
 const MARGIN_RIGHT = 100;
 const MARGIN_BOTTOM = 50;
 
+// Helper function to find the last selected node ID and level
+const findLastSelectedNode = (selectedPath: any) => {
+  // Check from highest level down to find the last non-empty selection
+  if (selectedPath.level10) return { id: selectedPath.level10, level: 10 };
+  if (selectedPath.level9) return { id: selectedPath.level9, level: 9 };
+  if (selectedPath.level8) return { id: selectedPath.level8, level: 8 };
+  if (selectedPath.level7) return { id: selectedPath.level7, level: 7 };
+  if (selectedPath.level6) return { id: selectedPath.level6, level: 6 };
+  if (selectedPath.level5) return { id: selectedPath.level5, level: 5 };
+  if (selectedPath.level4) return { id: selectedPath.level4, level: 4 };
+  if (selectedPath.level3) return { id: selectedPath.level3, level: 3 };
+  if (selectedPath.level2) return { id: selectedPath.level2, level: 2 };
+  if (selectedPath.level1) return { id: selectedPath.level1, level: 1 };
+  return null;
+};
+
 // Helper function to build hierarchical data structure from flat level data
 const buildHierarchy = (
   level1Items: TreeNode[],
@@ -51,13 +67,17 @@ const buildHierarchy = (
   selectedPath: any,
   query: string
 ) => {
+  // Find the single node that should be selected
+  const lastSelectedNode = findLastSelectedNode(selectedPath);
+  console.log('MindMap Selection: Last selected node:', lastSelectedNode);
+
   const hierarchy: any = {
     id: "root",
     name: query || "Research Query",
     description: "Your research query",
     level: 0,
     levelName: "Query",
-    isSelected: false,
+    isSelected: false, // Root is never selected
     isCustom: false,
     children: []
   };
@@ -70,7 +90,7 @@ const buildHierarchy = (
       description: item.description || "",
       level: 1,
       levelName: levelNames.level1 || "Level 1",
-      isSelected: selectedPath.level1 === item.id,
+      isSelected: lastSelectedNode?.id === item.id && lastSelectedNode?.level === 1,
       isCustom: item.isCustom || false,
       children: []
     };
@@ -84,7 +104,7 @@ const buildHierarchy = (
         description: level2Item.description || "",
         level: 2,
         levelName: levelNames.level2 || "Level 2",
-        isSelected: selectedPath.level2 === level2Item.id,
+        isSelected: lastSelectedNode?.id === level2Item.id && lastSelectedNode?.level === 2,
         isCustom: level2Item.isCustom || false,
         children: []
       };
@@ -98,7 +118,7 @@ const buildHierarchy = (
           description: level3Item.description || "",
           level: 3,
           levelName: levelNames.level3 || "Level 3",
-          isSelected: selectedPath.level3 === level3Item.id,
+          isSelected: lastSelectedNode?.id === level3Item.id && lastSelectedNode?.level === 3,
           isCustom: level3Item.isCustom || false,
           children: []
         };
@@ -107,7 +127,7 @@ const buildHierarchy = (
         addChildrenRecursively(level3Node, level3Item.id, 4, [
           level4Items, level5Items, level6Items, level7Items, 
           level8Items, level9Items, level10Items
-        ], levelNames, selectedPath);
+        ], levelNames, lastSelectedNode);
 
         level2Node.children.push(level3Node);
       });
@@ -128,7 +148,7 @@ const addChildrenRecursively = (
   currentLevel: number,
   levelItemsArray: Record<string, TreeNode[]>[],
   levelNames: Record<string, string>,
-  selectedPath: any
+  lastSelectedNode: { id: string; level: number } | null
 ) => {
   if (currentLevel > 10 || currentLevel - 4 >= levelItemsArray.length) return;
 
@@ -140,13 +160,13 @@ const addChildrenRecursively = (
       description: item.description || "",
       level: currentLevel,
       levelName: levelNames[`level${currentLevel}`] || `Level ${currentLevel}`,
-      isSelected: selectedPath[`level${currentLevel}`] === item.id,
+      isSelected: lastSelectedNode?.id === item.id && lastSelectedNode?.level === currentLevel,
       isCustom: item.isCustom || false,
       children: []
     };
 
     // Recursively add children for the next level
-    addChildrenRecursively(childNode, item.id, currentLevel + 1, levelItemsArray, levelNames, selectedPath);
+    addChildrenRecursively(childNode, item.id, currentLevel + 1, levelItemsArray, levelNames, lastSelectedNode);
     parentNode.children.push(childNode);
   });
 };
@@ -196,12 +216,10 @@ const createD3Nodes = (hierarchicalData: any): MindMapNode[] => {
       isCustom: node.data.isCustom,
     }));
 
-  // Debug logging to verify progressive spacing
-  console.log('MindMap D3 Layout Debug (Progressive depth-based spacing with Level2 adjustment):');
-  console.log('Root node position:', nodes.find(n => n.level === 0));
-  console.log('Level 1 nodes:', nodes.filter(n => n.level === 1).map(n => ({ id: n.id, x: n.x, y: n.y })));
-  console.log('Level 2 nodes:', nodes.filter(n => n.level === 2).map(n => ({ id: n.id, x: n.x, y: n.y })));
-  console.log('Max X coordinate:', Math.max(...nodes.map(n => n.x)));
+  // Debug logging to verify single node selection
+  const selectedNodes = nodes.filter(n => n.isSelected);
+  console.log('MindMap Selection: Selected nodes count:', selectedNodes.length);
+  console.log('MindMap Selection: Selected nodes:', selectedNodes);
   
   return nodes;
 };
@@ -251,19 +269,6 @@ const createD3Connections = (hierarchicalData: any): MindMapConnection[] => {
       const sourceY = link.source.x + MARGIN_TOP + sourceNodeHeight / 2; // Use correct height for centering
       const targetX = link.target.y + MARGIN_LEFT; // Use new left margin
       const targetY = link.target.x + MARGIN_TOP + NODE_HEIGHT / 2; // Use top margin
-
-      // Debug logging for progressive spacing verification
-      if (isRootSource) {
-        console.log('Root connection debug (progressive spacing with Level2 adjustment):', {
-          sourceId: link.source.data.id,
-          targetId: link.target.data.id,
-          sourceHeight: sourceNodeHeight,
-          calculatedY: sourceY,
-          rawY: link.source.x,
-          marginTop: MARGIN_TOP,
-          heightCenter: sourceNodeHeight / 2
-        });
-      }
 
       connections.push({
         id: `${link.source.data.id}-${link.target.data.id}`,
@@ -315,7 +320,7 @@ export const transformToMindMapData = (
   const nodes = createD3Nodes(hierarchicalData);
   const connections = createD3Connections(hierarchicalData);
 
-  console.log(`Mindmap: Generated ${nodes.length} nodes and ${connections.length} connections with compact layout`);
+  console.log(`Mindmap: Generated ${nodes.length} nodes and ${connections.length} connections with single selection`);
   console.log('Level breakdown:', {
     root: nodes.filter(n => n.level === 0).length,
     level1: nodes.filter(n => n.level === 1).length,
