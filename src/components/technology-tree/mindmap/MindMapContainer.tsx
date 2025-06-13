@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   forceSimulation,
@@ -7,9 +8,10 @@ import {
   Simulation,
 } from "d3-force";
 import { zoomIdentity, zoom, ZoomTransform } from "d3-zoom";
+import * as d3 from "d3";
 import { MindMapNodeComponent } from "./MindMapNode";
 import { MindMapConnections } from "./MindMapConnections";
-import { transformMindMapData, MindMapNode } from "@/utils/mindMapDataTransform";
+import { transformToMindMapData, MindMapNode } from "@/utils/mindMapDataTransform";
 import { MindMapControls } from "./MindMapControls";
 
 interface MindMapContainerProps {
@@ -76,6 +78,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   onDeleteNode,
 }) => {
   const [nodes, setNodes] = useState<MindMapNode[]>([]);
+  const [connections, setConnections] = useState<any[]>([]);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const svgRef = useRef<SVGSVGElement>(null);
@@ -84,8 +87,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
 
   // Transform data into a format suitable for the mind map
   useEffect(() => {
-    const transformedData = transformMindMapData(
-      selectedPath,
+    const { nodes: transformedNodes, connections: transformedConnections } = transformToMindMapData(
       level1Items,
       level2Items,
       level3Items,
@@ -96,10 +98,17 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
       level8Items,
       level9Items,
       level10Items,
-      levelNames,
-      query
+      levelNames || {
+        level1: "Level 1",
+        level2: "Level 2", 
+        level3: "Level 3",
+        level4: "Level 4"
+      },
+      selectedPath,
+      query || "Research Query"
     );
-    setNodes(transformedData);
+    setNodes(transformedNodes);
+    setConnections(transformedConnections);
   }, [
     selectedPath,
     level1Items,
@@ -203,7 +212,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     if (svgRef.current) {
       const svg = d3.select(svgRef.current);
       svg.transition().duration(750).call(
-        zoom().transform,
+        zoom<SVGSVGElement, any>().transform,
         zoomIdentity
       );
       setZoom(1);
@@ -242,7 +251,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     const translateY = height / 2 - scale * (minY + contentHeight / 2);
 
     svg.transition().duration(750).call(
-      zoom().transform,
+      zoom<SVGSVGElement, any>().transform,
       zoomIdentity.translate(translateX, translateY).scale(scale)
     );
 
@@ -254,7 +263,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     if (svgRef.current) {
       const svg = d3.select(svgRef.current);
       svg.transition().duration(750).call(
-        zoom().scaleBy, 1.2
+        zoom<SVGSVGElement, any>().scaleBy, 1.2
       );
     }
   };
@@ -263,7 +272,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     if (svgRef.current) {
       const svg = d3.select(svgRef.current);
       svg.transition().duration(750).call(
-        zoom().scaleBy, 1 / 1.2
+        zoom<SVGSVGElement, any>().scaleBy, 1 / 1.2
       );
     }
   };
@@ -283,6 +292,11 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     // Optional: Show toast notification
   };
 
+  // Fix the onClick handler to match the expected signature
+  const handleNodeClick = (nodeId: string, level: number) => {
+    onNodeClick(`level${level}`, nodeId);
+  };
+
   return (
     <div className="relative h-full w-full overflow-hidden bg-gray-50">
       {/* Controls */}
@@ -290,7 +304,6 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
         <MindMapControls
           onZoomIn={handleZoomIn}
           onZoomOut={handleZoomOut}
-          onReset={handleReset}
           onFitToScreen={handleFitToScreen}
         />
       </div>
@@ -307,7 +320,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
       >
         <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
           {/* Connections */}
-          <MindMapConnections nodes={nodes} />
+          <MindMapConnections connections={connections} />
         </g>
       </svg>
 
@@ -324,7 +337,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
             <MindMapNodeComponent
               key={node.id}
               node={node}
-              onClick={onNodeClick}
+              onClick={handleNodeClick}
               onEdit={onEditNode}
               onDelete={onDeleteNode}
               onAiAssistant={handleAiAssistant}
