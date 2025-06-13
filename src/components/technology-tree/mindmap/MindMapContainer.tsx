@@ -1,4 +1,5 @@
 
+
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   forceSimulation,
@@ -79,7 +80,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
 }) => {
   const [nodes, setNodes] = useState<MindMapNode[]>([]);
   const [connections, setConnections] = useState<any[]>([]);
-  const [zoom, setZoom] = useState(1);
+  const [zoomLevel, setZoomLevel] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const svgRef = useRef<SVGSVGElement>(null);
   const zoomRef = useRef<ZoomTransform>(zoomIdentity);
@@ -150,7 +151,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   const handleZoom = useCallback(
     (transform: ZoomTransform) => {
       zoomRef.current = transform;
-      setZoom(transform.k);
+      setZoomLevel(transform.k);
       setPan({ x: transform.x, y: transform.y });
     },
     []
@@ -204,18 +205,18 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   const handleWheel = useCallback((event: React.WheelEvent) => {
     event.preventDefault();
     const scaleFactor = event.deltaY > 0 ? 0.9 : 1.1;
-    setZoom((prevZoom) => Math.max(0.1, Math.min(4, prevZoom * scaleFactor)));
+    setZoomLevel((prevZoom) => Math.max(0.1, Math.min(4, prevZoom * scaleFactor)));
   }, []);
 
   // Reset view
-  const handleReset = () => {
+  const handleResetView = () => {
     if (svgRef.current) {
       const svg = d3.select(svgRef.current);
       svg.transition().duration(750).call(
         zoom<SVGSVGElement, any>().transform,
         zoomIdentity
       );
-      setZoom(1);
+      setZoomLevel(1);
       setPan({ x: 0, y: 0 });
     }
   };
@@ -255,7 +256,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
       zoomIdentity.translate(translateX, translateY).scale(scale)
     );
 
-    setZoom(scale);
+    setZoomLevel(scale);
     setPan({ x: translateX, y: translateY });
   };
 
@@ -302,9 +303,10 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
       {/* Controls */}
       <div className="absolute top-4 right-4 z-10">
         <MindMapControls
+          zoom={zoomLevel}
           onZoomIn={handleZoomIn}
           onZoomOut={handleZoomOut}
-          onFitToScreen={handleFitToScreen}
+          onResetView={handleResetView}
         />
       </div>
 
@@ -318,7 +320,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
         onMouseLeave={handleMouseUp}
         onWheel={handleWheel}
       >
-        <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
+        <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoomLevel})`}>
           {/* Connections */}
           <MindMapConnections connections={connections} />
         </g>
@@ -328,7 +330,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
       <div
         className="absolute top-0 left-0 w-full h-full pointer-events-none"
         style={{
-          transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+          transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoomLevel})`,
           transformOrigin: "0 0",
         }}
       >
@@ -350,3 +352,4 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     </div>
   );
 };
+
