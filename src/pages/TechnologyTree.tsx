@@ -85,7 +85,10 @@ const TechnologyTree = () => {
   // Don't render the tree if we're still initializing or no data is available
   if (
     isInitializing ||
-    (!databaseTreeData && !locationState?.fromDatabase && !hasLoadedDatabase)
+    (!databaseTreeData &&
+      !locationState?.treeData &&
+      !locationState?.fromDatabase &&
+      !hasLoadedDatabase)
   ) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -158,16 +161,26 @@ const TechnologyTree = () => {
       level9Items: Object.values(level9Items).flat(),
       level10Items: Object.values(level10Items).flat(),
     });
-    
+
     // Trigger scroll update after level data changes
-    console.log('Tree data updated, triggering scroll update');
+    console.log("Tree data updated, triggering scroll update");
     triggerScrollUpdate();
-  }, [level4Items, level5Items, level6Items, level7Items, level8Items, level9Items, level10Items, updateLastVisibleLevel, triggerScrollUpdate]);
+  }, [
+    level4Items,
+    level5Items,
+    level6Items,
+    level7Items,
+    level8Items,
+    level9Items,
+    level10Items,
+    updateLastVisibleLevel,
+    triggerScrollUpdate,
+  ]);
 
   // Trigger scroll update when database tree data is loaded
   useEffect(() => {
     if (databaseTreeData) {
-      console.log('Database tree data loaded, triggering scroll update');
+      console.log("Database tree data loaded, triggering scroll update");
       triggerScrollUpdate();
     }
   }, [databaseTreeData, triggerScrollUpdate]);
@@ -344,7 +357,7 @@ const TechnologyTree = () => {
     setChatMessages,
     handleGuidanceClick,
     toggleChatBoxOpen,
-    toggleChatBoxExpand
+    toggleChatBoxExpand,
   } = useTechTreeChat();
 
   const {
@@ -355,7 +368,7 @@ const TechnologyTree = () => {
     handleEditNodeFromChat,
     handleRefineNode,
   } = useTechTreeSidebarActions(setChatMessages, addCustomNode, setSidebarTab);
-  
+
   const selectedNodeInfo = useNodeInfo(
     selectedPath,
     level1Items,
