@@ -43,6 +43,87 @@ export const usePathSelectionState = (
     setTreeData(data);
   }; 
 
+  // Helper function to find the complete path for a node in mindmap mode
+  const findCompletePath = (targetLevel: PathLevel, targetNodeId: string): PathState => {
+    if (!treeData) return initialPath;
+
+    const newPath: PathState = {
+      level1: "",
+      level2: "",
+      level3: "",
+      level4: "",
+      level5: "",
+      level6: "",
+      level7: "",
+      level8: "",
+      level9: "",
+      level10: "",
+    };
+
+    const levels: PathLevel[] = [
+      "level1", "level2", "level3", "level4", "level5",
+      "level6", "level7", "level8", "level9", "level10"
+    ];
+    
+    const targetLevelIndex = levels.indexOf(targetLevel);
+    
+    if (targetLevelIndex === 0) {
+      // Level 1 node - just set it directly
+      newPath.level1 = targetNodeId;
+      return newPath;
+    }
+
+    // For level 2+ nodes, we need to traverse up to find parents
+    let currentNodeId = targetNodeId;
+    let currentLevelIndex = targetLevelIndex;
+
+    // Set the target level first
+    newPath[targetLevel] = targetNodeId;
+
+    // Work backwards to find parent nodes
+    while (currentLevelIndex > 0) {
+      const currentLevel = levels[currentLevelIndex];
+      const parentLevel = levels[currentLevelIndex - 1];
+      const parentLevelKey = `${parentLevel}Items`;
+
+      // Find the parent of the current node
+      let parentNodeId = "";
+      
+      if (currentLevelIndex === 1) {
+        // For level 2 nodes, find which level 1 node contains this level 2 node
+        const level1Items = treeData.level1Items || [];
+        for (const level1Item of level1Items) {
+          const level2Children = treeData.level2Items?.[level1Item.id] || [];
+          if (level2Children.find((child: any) => child.id === currentNodeId)) {
+            parentNodeId = level1Item.id;
+            break;
+          }
+        }
+      } else {
+        // For level 3+ nodes, find which parent level contains this node
+        const parentLevelItems = treeData[parentLevelKey] || {};
+        for (const [parentId, children] of Object.entries(parentLevelItems)) {
+          if (Array.isArray(children) && children.find((child: any) => child.id === currentNodeId)) {
+            parentNodeId = parentId;
+            break;
+          }
+        }
+      }
+
+      if (parentNodeId) {
+        newPath[parentLevel] = parentNodeId;
+        currentNodeId = parentNodeId;
+        currentLevelIndex--;
+      } else {
+        console.warn(`Could not find parent for ${currentLevel} node ${currentNodeId}`);
+        break;
+      }
+    }
+
+    console.log('Mindmap: Built complete path:', newPath);
+    return newPath;
+  };
+
   // Auto-select first path through the entire tree when tree data is loaded
   // BUT only if auto-selection is not disabled (i.e., not in mindmap view)
   useEffect(() => {
@@ -157,33 +238,10 @@ export const usePathSelectionState = (
         return clearedPath;
       }
 
-      // MINDMAP MODE: Simple selection - only select the clicked node
+      // MINDMAP MODE: Build complete path by traversing up the tree
       if (disableAutoSelection) {
-        console.log('Mindmap mode: Simple selection for', level, nodeId);
-        const newPath = { ...prev };
-        const levels: PathLevel[] = [
-          "level1",
-          "level2", 
-          "level3",
-          "level4",
-          "level5",
-          "level6",
-          "level7",
-          "level8",
-          "level9",
-          "level10",
-        ];
-        const currentIndex = levels.indexOf(level);
-
-        // Clear current and all subsequent levels
-        for (let i = currentIndex; i < levels.length; i++) {
-          newPath[levels[i]] = "";
-        }
-
-        // Set ONLY the selected level - NO AUTO-SELECTION
-        newPath[level] = nodeId;
-        
-        return newPath;
+        console.log('Mindmap mode: Building complete path for', level, nodeId);
+        return findCompletePath(level, nodeId);
       }
 
       // TREEMAP MODE: Auto-selection enabled
