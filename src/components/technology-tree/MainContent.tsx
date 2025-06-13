@@ -1,3 +1,4 @@
+
 import React from "react";
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
@@ -11,7 +12,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useMindMapView } from "@/hooks/tree/useMindMapView";
 import { TreePine, Network } from "lucide-react";
 
 interface MainContentProps {
@@ -73,6 +73,9 @@ interface MainContentProps {
   canScrollRight?: boolean;
   lastVisibleLevel?: number;
   containerRef?: React.RefObject<HTMLDivElement>;
+  // View mode props - passed from parent
+  viewMode: "treemap" | "mindmap";
+  onToggleView: () => void;
 }
 
 export const MainContent = ({
@@ -112,8 +115,11 @@ export const MainContent = ({
   canScrollRight,
   lastVisibleLevel,
   containerRef,
+  viewMode,
+  onToggleView,
 }: MainContentProps) => {
-  const { viewMode, toggleView, isTreemapView, isMindmapView } = useMindMapView();
+  const isTreemapView = viewMode === "treemap";
+  const isMindmapView = viewMode === "mindmap";
 
   const handleGuidanceItemClick = (type: string) => {
     if (onGuidanceClick) {
@@ -142,7 +148,7 @@ export const MainContent = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={toggleView}
+                onClick={onToggleView}
                 className="flex items-center gap-1 text-blue-600 border-blue-200 hover:bg-blue-50 px-2 py-1 h-7 text-xs"
               >
                 {isTreemapView ? (

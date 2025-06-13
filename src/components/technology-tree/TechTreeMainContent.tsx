@@ -62,6 +62,9 @@ interface TechTreeMainContentProps {
   lastVisibleLevel?: number;
   containerRef?: React.RefObject<HTMLDivElement>;
   triggerScrollUpdate?: () => void;
+  // View mode props
+  viewMode: "treemap" | "mindmap";
+  onToggleView: () => void;
 }
 
 export const TechTreeMainContent = ({
@@ -97,6 +100,8 @@ export const TechTreeMainContent = ({
   lastVisibleLevel,
   containerRef,
   triggerScrollUpdate,
+  viewMode,
+  onToggleView,
 }: TechTreeMainContentProps) => {
   // Trigger scroll update when level data changes
   useEffect(() => {
@@ -151,6 +156,8 @@ export const TechTreeMainContent = ({
       canScrollRight={canScrollRight}
       lastVisibleLevel={lastVisibleLevel}
       containerRef={containerRef}
+      viewMode={viewMode}
+      onToggleView={onToggleView}
     />
   );
 };

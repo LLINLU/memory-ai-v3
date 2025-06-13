@@ -39,8 +39,8 @@ const TechnologyTree = () => {
     isDemo?: boolean;
   } | null;
 
-  // Get the current view mode
-  const { viewMode } = useMindMapView();
+  // Get the current view mode - single source of truth
+  const { viewMode, toggleView } = useMindMapView();
 
   // Store the conversation history from the research context
   const [savedConversationHistory, setSavedConversationHistory] = useState<
@@ -506,6 +506,8 @@ const TechnologyTree = () => {
                 lastVisibleLevel={lastVisibleLevel}
                 containerRef={containerRef}
                 triggerScrollUpdate={triggerScrollUpdate}
+                viewMode={viewMode}
+                onToggleView={toggleView}
               />
             </div>
           </TechTreeLayout>
