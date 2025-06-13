@@ -84,7 +84,6 @@ const TechnologyTree = () => {
     updateLastVisibleLevel,
     triggerScrollUpdate,
   } = useScrollNavigation();
-
   // Don't render the tree if we're still initializing or no data is available
   if (
     isInitializing ||
