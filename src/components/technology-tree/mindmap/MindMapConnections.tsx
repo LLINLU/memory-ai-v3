@@ -26,22 +26,6 @@ export const MindMapConnections: React.FC<MindMapConnectionsProps> = ({
         overflow: "visible"
       }}
     >
-      <defs>
-        <marker
-          id="arrowhead"
-          markerWidth="10"
-          markerHeight="7"
-          refX="9"
-          refY="3.5"
-          orient="auto"
-        >
-          <polygon
-            points="0 0, 10 3.5, 0 7"
-            fill="#64748b"
-          />
-        </marker>
-      </defs>
-      
       {connections.map((connection) => (
         <path
           key={connection.id}
@@ -49,7 +33,6 @@ export const MindMapConnections: React.FC<MindMapConnectionsProps> = ({
           stroke="#64748b"
           strokeWidth="2"
           fill="none"
-          markerEnd="url(#arrowhead)"
           opacity="0.6"
           className="transition-all duration-200"
         />
