@@ -7,12 +7,16 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { MindMapNodeActionTooltip } from "./MindMapNodeActionTooltip";
 
 interface MindMapNodeProps {
   node: MindMapNode;
   onClick: (nodeId: string, level: number) => void;
   onEdit?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDelete?: (level: string, nodeId: string) => void;
+  onAiAssistant?: (nodeId: string, level: number) => void;
+  onAddNode?: (nodeId: string, level: number) => void;
+  onCopyTitle?: (nodeId: string, nodeName: string) => void;
 }
 
 export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
@@ -20,6 +24,9 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
   onClick,
   onEdit,
   onDelete,
+  onAiAssistant,
+  onAddNode,
+  onCopyTitle,
 }) => {
   const getLevelColor = (level: number) => {
     const colors = [
@@ -79,19 +86,67 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
     </div>
   );
 
-  // Only wrap with tooltip if node has a description
-  if (node.description && node.description.trim()) {
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          {nodeContent}
-        </TooltipTrigger>
-        <TooltipContent>
-          <p className="max-w-xs">{node.description}</p>
-        </TooltipContent>
-      </Tooltip>
-    );
+  // For root nodes, only show description tooltip if available
+  if (isRoot) {
+    if (node.description && node.description.trim()) {
+      return (
+        <TooltipProvider delayDuration={300} skipDelayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              {nodeContent}
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="max-w-xs">{node.description}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+    return nodeContent;
   }
 
-  return nodeContent;
+  // For non-root nodes, show both description tooltip (top) and action tooltip (bottom)
+  return (
+    <TooltipProvider delayDuration={300} skipDelayDuration={100}>
+      {/* Description tooltip on top */}
+      {node.description && node.description.trim() ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            {/* Action tooltip on bottom */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                {nodeContent}
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="p-0">
+                <MindMapNodeActionTooltip
+                  nodeName={node.name}
+                  onAiAssistant={() => onAiAssistant?.(node.id, node.level)}
+                  onAddNode={() => onAddNode?.(node.id, node.level)}
+                  onCopyTitle={() => onCopyTitle?.(node.id, node.name)}
+                />
+              </TooltipContent>
+            </Tooltip>
+          </TooltipTrigger>
+          <TooltipContent side="top">
+            <p className="max-w-xs">{node.description}</p>
+          </TooltipContent>
+        </Tooltip>
+      ) : (
+        // Only action tooltip if no description
+        <Tooltip>
+          <TooltipTrigger asChild>
+            {nodeContent}
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="p-0">
+            <MindMapNodeActionTooltip
+              nodeName={node.name}
+              onAiAssistant={() => onAiAssistant?.(node.id, node.level)}
+              onAddNode={() => onAddNode?.(node.id, node.level)}
+              onCopyTitle={() => onCopyTitle?.(node.id, node.name)}
+            />
+          </TooltipContent>
+        </Tooltip>
+      )}
+    </TooltipProvider>
+  );
 };
