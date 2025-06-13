@@ -29,7 +29,7 @@ export const usePanZoom = (
   const [state, setState] = useState<PanZoomState>({
     zoom: 1,
     panX: 0,
-    panY: 0,
+    panY: 50, // Add initial downward offset for better root node positioning
   });
   
   const [isDragging, setIsDragging] = useState(false);
@@ -128,7 +128,7 @@ export const usePanZoom = (
     setState({
       zoom: 1,
       panX: 0,
-      panY: 0,
+      panY: 50, // Keep the improved initial Y offset when resetting
     });
   }, []);
 

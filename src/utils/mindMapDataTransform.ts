@@ -1,3 +1,4 @@
+
 import { TreeNode } from "@/types/tree";
 import * as d3 from 'd3';
 
@@ -30,7 +31,7 @@ const NODE_HEIGHT = 60; // Reduced from 100 to 60
 const ROOT_NODE_HEIGHT = 70; // Reduced from 120 to 70
 
 // Margin constants for better spacing
-const MARGIN_TOP = 50;
+const MARGIN_TOP = 200; // Increased from 50 to 200 to position root node lower
 const MARGIN_LEFT = 250; // Increased from 50 to 250 for better root positioning
 const MARGIN_RIGHT = 100;
 const MARGIN_BOTTOM = 50;
