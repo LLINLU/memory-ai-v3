@@ -234,6 +234,9 @@ export const useTreeGeneration = () => {
     try {
       setTreesLoading(true);
       const userTeamId = userDetails?.team_id;
+      if(userTeamId === null || userTeamId === undefined) {
+        return trees;
+      }
 
       // Build query to filter by team and include mode
       let query = supabase
@@ -241,13 +244,8 @@ export const useTreeGeneration = () => {
         .select("id, name, search_theme, created_at, mode")
         .order("created_at", { ascending: false });
 
-      // // If user has a team, filter by that team or trees with no team restriction
-      // if (userTeamId) {
-      //   query = query.or(`team_id.eq.${userTeamId},team_id.is.null`);
-      // } else {
-      //   // If user has no team, only show trees with no team restriction
-      //   query = query.is("team_id", null);
-      // }
+      // If user has a team, filter by that team or trees with no team restriction
+      query = query.eq("team_id", userTeamId);
 
       const { data, error } = await query;
 
