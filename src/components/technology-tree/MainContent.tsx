@@ -1,3 +1,4 @@
+
 import React from "react";
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
@@ -211,7 +212,7 @@ export const MainContent = ({
           onGuidanceClick={onGuidanceClick}
         />
 
-        {/* Path Display - now shows for both treemap and mindmap views */}
+        {/* Path Display - now shows for both treemap and mindmap views with viewMode prop */}
         <PathDisplay
           selectedPath={selectedPath}
           level1Items={level1Items}
@@ -231,6 +232,7 @@ export const MainContent = ({
           canScrollLeft={canScrollLeft}
           canScrollRight={canScrollRight}
           lastVisibleLevel={lastVisibleLevel}
+          viewMode={viewMode}
         />
       </div>
       

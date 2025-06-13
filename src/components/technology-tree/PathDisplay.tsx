@@ -1,9 +1,11 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Info, ChevronDown, ChevronRight, ChevronLeft } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 interface PathDisplayProps {
   selectedPath: {
     level1: string;
@@ -35,7 +37,10 @@ interface PathDisplayProps {
   canScrollLeft?: boolean;
   canScrollRight?: boolean;
   lastVisibleLevel?: number;
+  // View mode prop
+  viewMode: "treemap" | "mindmap";
 }
+
 export const PathDisplay = ({
   selectedPath,
   level1Items,
@@ -54,9 +59,14 @@ export const PathDisplay = ({
   onScrollToEnd,
   canScrollLeft = false,
   canScrollRight = false,
-  lastVisibleLevel = 3
+  lastVisibleLevel = 3,
+  viewMode,
 }: PathDisplayProps) => {
   const [showPath, setShowPath] = useState(false);
+
+  // For mindmap view, always show the path
+  const shouldShowPath = viewMode === "mindmap" || showPath;
+  const isTreemapView = viewMode === "treemap";
 
   // Find the selected items by ID to display their names
   const findItemName = (itemId: string, items: any[]) => {
@@ -74,6 +84,7 @@ export const PathDisplay = ({
     // If no English part found, return the original name
     return name;
   };
+
   const level1Name = selectedPath.level1 ? getJapaneseName(findItemName(selectedPath.level1, level1Items)) : "";
   const level2Name = selectedPath.level2 && selectedPath.level1 ? getJapaneseName(findItemName(selectedPath.level2, level2Items[selectedPath.level1] || [])) : "";
   const level3Name = selectedPath.level3 && selectedPath.level2 ? getJapaneseName(findItemName(selectedPath.level3, level3Items[selectedPath.level2] || [])) : "";
@@ -84,6 +95,7 @@ export const PathDisplay = ({
   const level8Name = selectedPath.level8 && selectedPath.level7 ? getJapaneseName(findItemName(selectedPath.level8, level8Items[selectedPath.level7] || [])) : "";
   const level9Name = selectedPath.level9 && selectedPath.level8 ? getJapaneseName(findItemName(selectedPath.level9, level9Items[selectedPath.level8] || [])) : "";
   const level10Name = selectedPath.level10 && selectedPath.level9 ? getJapaneseName(findItemName(selectedPath.level10, level10Items[selectedPath.level9] || [])) : "";
+
   const handleGuidanceItemClick = (type: string) => {
     if (onGuidanceClick) {
       onGuidanceClick(type);
@@ -91,110 +103,144 @@ export const PathDisplay = ({
   };
 
   // Component to render level number in a circle
-  const LevelCircle = ({
-    level
-  }: {
-    level: number;
-  }) => <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-level-circle text-white font-medium mr-1 text-xs">
+  const LevelCircle = ({ level }: { level: number }) => (
+    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-level-circle text-white font-medium mr-1 text-xs">
       {level}
-    </span>;
-  return <div className="mb-0" style={{
-    paddingTop: "0rem"
-  }}>
-      {/* First row: Navigation controls (left) + Toggle switch (right) */}
-      <div className="flex items-center justify-between mb-2">
-        {/* Left side: Navigation controls */}
-        <div className="flex items-center gap-2">
-          <TooltipProvider delayDuration={200} skipDelayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" onClick={onScrollToStart} disabled={!canScrollLeft} className={`h-8 w-8 p-0 border-[#4877e5] ${!canScrollLeft ? "opacity-50" : ""}`}>
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>レベル1に戻る</p>
-              </TooltipContent>
-            </Tooltip>
+    </span>
+  );
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" onClick={onScrollToEnd} disabled={!canScrollRight} className={`h-8 w-8 p-0 border-[#4877e5] ${!canScrollRight ? "opacity-50" : ""}`}>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>レベル{lastVisibleLevel}まで進む</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        
-        {/* Right side: Toggle switch */}
-        <div className="flex items-center gap-2">
-          <Switch checked={showPath} onCheckedChange={setShowPath} />
-          <span className="text-xs text-gray-500">
-            パンくずリストを{showPath ? '隠す' : '表示'}
-          </span>
-        </div>
-      </div>
+  return (
+    <div className="mb-0" style={{ paddingTop: "0rem" }}>
+      {/* Only show navigation controls and toggle for treemap view */}
+      {isTreemapView && (
+        <div className="flex items-center justify-between mb-2">
+          {/* Left side: Navigation controls */}
+          <div className="flex items-center gap-2">
+            <TooltipProvider delayDuration={200} skipDelayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onScrollToStart}
+                    disabled={!canScrollLeft}
+                    className={`h-8 w-8 p-0 border-[#4877e5] ${!canScrollLeft ? "opacity-50" : ""}`}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>レベル1に戻る</p>
+                </TooltipContent>
+              </Tooltip>
 
-      {/* Second row: Breadcrumb path (conditional) */}
-      {showPath && <div className="mb-2">
-          <p className="text-gray-600 flex items-center flex-wrap" style={{
-        fontSize: "14px"
-      }}>
-            {level1Name && <span className="flex items-center">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onScrollToEnd}
+                    disabled={!canScrollRight}
+                    className={`h-8 w-8 p-0 border-[#4877e5] ${!canScrollRight ? "opacity-50" : ""}`}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>レベル{lastVisibleLevel}まで進む</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          
+          {/* Right side: Toggle switch */}
+          <div className="flex items-center gap-2">
+            <Switch checked={showPath} onCheckedChange={setShowPath} />
+            <span className="text-xs text-gray-500">
+              パンくずリストを{showPath ? '隠す' : '表示'}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Breadcrumb path - always visible in mindmap, conditional in treemap */}
+      {shouldShowPath && (
+        <div className="mb-2">
+          <p className="text-gray-600 flex items-center flex-wrap" style={{ fontSize: "14px" }}>
+            {level1Name && (
+              <span className="flex items-center">
                 <LevelCircle level={1} />
                 {level1Name}
-              </span>}
-            {level2Name && <span className="flex items-center">
+              </span>
+            )}
+            {level2Name && (
+              <span className="flex items-center">
                 <span className="mx-2">→</span>
                 <LevelCircle level={2} />
                 {level2Name}
-              </span>}
-            {level3Name && <span className="flex items-center">
+              </span>
+            )}
+            {level3Name && (
+              <span className="flex items-center">
                 <span className="mx-2">→</span>
                 <LevelCircle level={3} />
                 {level3Name}
-              </span>}
-            {level4Name && <span className="flex items-center">
+              </span>
+            )}
+            {level4Name && (
+              <span className="flex items-center">
                 <span className="mx-2">→</span>
                 <LevelCircle level={4} />
                 {level4Name}
-              </span>}
-            {level5Name && <span className="flex items-center">
+              </span>
+            )}
+            {level5Name && (
+              <span className="flex items-center">
                 <span className="mx-2">→</span>
                 <LevelCircle level={5} />
                 {level5Name}
-              </span>}
-            {level6Name && <span className="flex items-center">
+              </span>
+            )}
+            {level6Name && (
+              <span className="flex items-center">
                 <span className="mx-2">→</span>
                 <LevelCircle level={6} />
                 {level6Name}
-              </span>}
-            {level7Name && <span className="flex items-center">
+              </span>
+            )}
+            {level7Name && (
+              <span className="flex items-center">
                 <span className="mx-2">→</span>
                 <LevelCircle level={7} />
                 {level7Name}
-              </span>}
-            {level8Name && <span className="flex items-center">
+              </span>
+            )}
+            {level8Name && (
+              <span className="flex items-center">
                 <span className="mx-2">→</span>
                 <LevelCircle level={8} />
                 {level8Name}
-              </span>}
-            {level9Name && <span className="flex items-center">
+              </span>
+            )}
+            {level9Name && (
+              <span className="flex items-center">
                 <span className="mx-2">→</span>
                 <LevelCircle level={9} />
                 {level9Name}
-              </span>}
-            {level10Name && <span className="flex items-center">
+              </span>
+            )}
+            {level10Name && (
+              <span className="flex items-center">
                 <span className="mx-2">→</span>
                 <LevelCircle level={10} />
                 {level10Name}
-              </span>}
+              </span>
+            )}
           </p>
-        </div>}
-    </div>;
+        </div>
+      )}
+    </div>
+  );
 };
+
 export default PathDisplay;
