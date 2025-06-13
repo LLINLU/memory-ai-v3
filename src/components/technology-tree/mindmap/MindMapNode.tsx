@@ -7,12 +7,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { MessageSquare, Plus, Copy } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface MindMapNodeProps {
   node: MindMapNode;
   onClick: (nodeId: string, level: number) => void;
   onEdit?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDelete?: (level: string, nodeId: string) => void;
+  onAiAssist?: (nodeId: string, level: number) => void;
+  onAddNode?: (nodeId: string, level: number) => void;
 }
 
 export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
@@ -20,7 +25,11 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
   onClick,
   onEdit,
   onDelete,
+  onAiAssist,
+  onAddNode,
 }) => {
+  const { toast } = useToast();
+
   const getLevelColor = (level: number) => {
     const colors = [
       "bg-slate-200 border-slate-400 text-slate-900", // Root node (level 0)
@@ -51,6 +60,38 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
     onClick(node.id, node.level);
   };
 
+  const handleCopyTitle = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(node.name);
+      toast({
+        title: "Title copied to clipboard",
+        description: node.name,
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to copy title",
+        description: "Please try again",
+      });
+    }
+  };
+
+  const handleAiAssist = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log('AI Assist clicked for node:', node.id, 'level:', node.level);
+    if (onAiAssist) {
+      onAiAssist(node.id, node.level);
+    }
+  };
+
+  const handleAddNode = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log('Add Node clicked for node:', node.id, 'level:', node.level);
+    if (onAddNode) {
+      onAddNode(node.id, node.level);
+    }
+  };
+
   // Special styling for root node
   const isRoot = node.level === 0;
   const rootCursor = isRoot ? "cursor-default" : "cursor-pointer";
@@ -79,15 +120,44 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
     </div>
   );
 
-  // Only wrap with tooltip if node has a description
-  if (node.description && node.description.trim()) {
+  // Only wrap with tooltip if node has a description and is not root
+  if (node.description && node.description.trim() && !isRoot) {
     return (
       <Tooltip>
         <TooltipTrigger asChild>
           {nodeContent}
         </TooltipTrigger>
-        <TooltipContent>
-          <p className="max-w-xs">{node.description}</p>
+        <TooltipContent className="max-w-xs">
+          <p className="mb-3">{node.description}</p>
+          <div className="flex items-center justify-center gap-1 pt-2 border-t border-gray-200">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleAiAssist}
+              className="h-7 w-7 p-0"
+              title="AI Assistant"
+            >
+              <MessageSquare className="h-3 w-3" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleAddNode}
+              className="h-7 w-7 p-0"
+              title="Add Node"
+            >
+              <Plus className="h-3 w-3" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleCopyTitle}
+              className="h-7 w-7 p-0"
+              title="Copy Title"
+            >
+              <Copy className="h-3 w-3" />
+            </Button>
+          </div>
         </TooltipContent>
       </Tooltip>
     );
