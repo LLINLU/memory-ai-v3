@@ -196,7 +196,7 @@ export const MainContent = ({
                     Treemapの使い方
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer">
-                    研究シナリオを生成について
+                    Mindmapの使い方
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
