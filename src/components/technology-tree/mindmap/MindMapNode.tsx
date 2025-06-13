@@ -38,6 +38,15 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
     return colors[level] || colors[colors.length - 1];
   };
 
+  const getNodeStyling = () => {
+    if (node.isSelected) {
+      // Selected nodes get the custom blue background with white text
+      return "bg-[#2563eb] border-[#2563eb] text-white";
+    }
+    // Non-selected nodes use the existing level colors
+    return getLevelColor(node.level);
+  };
+
   const handleClick = () => {
     onClick(node.id, node.level);
   };
@@ -48,9 +57,7 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
 
   const nodeContent = (
     <div
-      className={`absolute transition-all duration-200 hover:shadow-lg ${rootCursor} ${
-        node.isSelected ? "ring-2 ring-blue-500 shadow-lg" : ""
-      }`}
+      className={`absolute transition-all duration-200 hover:shadow-lg ${rootCursor}`}
       style={{
         left: node.x,
         top: node.y,
@@ -60,7 +67,7 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
       onClick={handleClick}
     >
       <div
-        className={`w-full h-full rounded-lg border-2 p-2 flex items-center justify-center ${getLevelColor(node.level)}`}
+        className={`w-full h-full rounded-lg border-2 p-2 flex items-center justify-center ${getNodeStyling()}`}
       >
         <div 
           className={`${isRoot ? 'text-base' : 'text-sm'} font-medium break-words leading-tight text-center`} 
