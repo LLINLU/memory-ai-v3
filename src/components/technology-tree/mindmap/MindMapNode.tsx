@@ -7,16 +7,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { MindMapNodeActionTooltip } from "./MindMapNodeActionTooltip";
 
 interface MindMapNodeProps {
   node: MindMapNode;
   onClick: (nodeId: string, level: number) => void;
   onEdit?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDelete?: (level: string, nodeId: string) => void;
-  onAiAssistant?: (nodeId: string, title: string) => void;
-  onAddNode?: (nodeId: string, level: number) => void;
-  onCopyTitle?: (title: string) => void;
 }
 
 export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
@@ -24,9 +20,6 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
   onClick,
   onEdit,
   onDelete,
-  onAiAssistant,
-  onAddNode,
-  onCopyTitle,
 }) => {
   const getLevelColor = (level: number) => {
     const colors = [
@@ -62,24 +55,6 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
   const isRoot = node.level === 0;
   const rootCursor = isRoot ? "cursor-default" : "cursor-pointer";
 
-  const handleAiAssistant = () => {
-    if (onAiAssistant) {
-      onAiAssistant(node.id, node.name);
-    }
-  };
-
-  const handleAddNode = () => {
-    if (onAddNode) {
-      onAddNode(node.id, node.level);
-    }
-  };
-
-  const handleCopyTitle = () => {
-    if (onCopyTitle) {
-      onCopyTitle(node.name);
-    }
-  };
-
   const nodeContent = (
     <div
       className={`absolute transition-all duration-200 hover:shadow-lg ${rootCursor}`}
@@ -104,33 +79,19 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
     </div>
   );
 
-  // Wrap with action tooltip for non-root nodes
-  const nodeWithActionTooltip = !isRoot ? (
-    <MindMapNodeActionTooltip
-      nodeTitle={node.name}
-      onAiAssistant={handleAiAssistant}
-      onAddNode={handleAddNode}
-      onCopyTitle={handleCopyTitle}
-    >
-      {nodeContent}
-    </MindMapNodeActionTooltip>
-  ) : nodeContent;
-
-  // Only wrap with description tooltip if node has a description
+  // Only wrap with tooltip if node has a description
   if (node.description && node.description.trim()) {
     return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            {nodeWithActionTooltip}
-          </TooltipTrigger>
-          <TooltipContent side="top">
-            <p className="max-w-xs">{node.description}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          {nodeContent}
+        </TooltipTrigger>
+        <TooltipContent>
+          <p className="max-w-xs">{node.description}</p>
+        </TooltipContent>
+      </Tooltip>
     );
   }
 
-  return nodeWithActionTooltip;
+  return nodeContent;
 };
