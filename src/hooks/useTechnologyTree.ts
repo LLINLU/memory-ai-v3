@@ -1,9 +1,9 @@
-
 import { useState } from "react";
 import { usePathSelection } from "./tree/usePathSelection";
 import { useSidebar } from "./tree/useSidebar";
 import { useInputQuery } from "./tree/useInputQuery";
 import { useLocation } from "react-router-dom";
+import { PathLevel } from "@/types/tree";
 
 export interface TechnologyTreeState {
   selectedPath: {
@@ -104,7 +104,7 @@ export const useTechnologyTree = (databaseTreeData?: any, viewModeHook?: any) =>
 
   // Wrap the handleNodeClick to update the view-specific path
   const handleNodeClick = (level: string, nodeId: string) => {
-    originalHandleNodeClick(level, nodeId);
+    originalHandleNodeClick(level as PathLevel, nodeId);
     
     // If we have the view mode hook, update the current view's path
     if (viewModeHook?.setCurrentPath) {
