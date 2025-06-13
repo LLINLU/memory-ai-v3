@@ -1,4 +1,3 @@
-
 import React from "react";
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
@@ -181,7 +180,7 @@ export const MainContent = ({
                 </ToggleGroupItem>
               </ToggleGroup>
 
-              {/* DropdownMenu for guidance */}
+              {/* DropdownMenu for guidance - icon only */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -202,7 +201,6 @@ export const MainContent = ({
                         fill="#3862D7"
                       />
                     </svg>
-                    ガイダンス
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-white">
