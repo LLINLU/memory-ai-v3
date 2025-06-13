@@ -1,3 +1,4 @@
+
 import React from "react";
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
@@ -184,9 +185,9 @@ export const MainContent = ({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
-                    className="flex items-center gap-1 text-blue-600 border-blue-200 hover:bg-blue-50 px-2 py-1 h-7 text-xs"
+                    className="p-1 h-7 w-7 hover:bg-transparent"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
