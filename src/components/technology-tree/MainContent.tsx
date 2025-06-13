@@ -1,4 +1,3 @@
-
 import React from "react";
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
@@ -205,7 +204,10 @@ export const MainContent = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-white">
-                  <DropdownMenuItem className="cursor-pointer">
+                  <DropdownMenuItem 
+                    className="cursor-pointer"
+                    onClick={() => handleGuidanceItemClick('mindmap-usage')}
+                  >
                     Mindmapの使い方
                   </DropdownMenuItem>
                   <DropdownMenuItem 

@@ -32,7 +32,24 @@ export const useTechTreeChat = () => {
   const initializeWithGuidanceMessages = (type: string) => {
     const guidanceMessages = [];
     
-    if (type === 'treemap-usage') {
+    if (type === 'mindmap-usage') {
+      guidanceMessages.push(
+        {
+          content: "Mindmapの使用方法を教えてください。",
+          isUser: true,
+          type: 'text'
+        },
+        {
+          content: `インタラクティブなマインドマップを閲覧して、さまざまなテクノロジーを発見してください。使い方は以下の通りです：
+
+1️⃣ テクノロジーノードをクリックすると、右パネルに関連する研究論文実際の使用例が表示されます。
+
+2️⃣ もっと見たいですか？ お客様の興味に基づいて、追加のテクノロジーノードを生成することができます。`,
+          isUser: false,
+          type: 'text'
+        }
+      );
+    } else if (type === 'treemap-usage') {
       guidanceMessages.push(
         {
           content: "ツリーマップの使用方法を教えてください。",
