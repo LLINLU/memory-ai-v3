@@ -145,7 +145,7 @@ export const usePathSelectionState = (
         return clearedPath;
       }
 
-      // Set the selected level and clear all subsequent levels, then auto-select first child
+      // Set the selected level and clear all subsequent levels
       const newPath = { ...prev };
       const levels: PathLevel[] = [
         "level1",
@@ -169,7 +169,7 @@ export const usePathSelectionState = (
       // Set the selected level
       newPath[level] = nodeId;
 
-      // Auto-select first child if available (but only for treemap view)
+      // Only auto-select children if auto-selection is NOT disabled (i.e., in treemap view)
       if (!disableAutoSelection && treeData && currentIndex < levels.length - 1) {
         const nextLevel = levels[currentIndex + 1];
         const nextLevelKey = `${nextLevel}Items`;

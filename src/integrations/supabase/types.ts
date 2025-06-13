@@ -76,7 +76,7 @@ export type Database = {
           reasoning: string | null
           scenario_inputs: Json | null
           search_theme: string
-          teamId: string | null
+          team_id: string | null
           updated_at: string
         }
         Insert: {
@@ -89,7 +89,7 @@ export type Database = {
           reasoning?: string | null
           scenario_inputs?: Json | null
           search_theme: string
-          teamId?: string | null
+          team_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -102,13 +102,13 @@ export type Database = {
           reasoning?: string | null
           scenario_inputs?: Json | null
           search_theme?: string
-          teamId?: string | null
+          team_id?: string | null
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "technology_trees_teamId_fkey"
-            columns: ["teamId"]
+            foreignKeyName: "technology_trees_team_id_fkey"
+            columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"
             referencedColumns: ["id"]
@@ -127,7 +127,7 @@ export type Database = {
           node_order: number | null
           parent_id: string | null
           path: string | null
-          teamId: string | null
+          team_id: string | null
           tree_id: string | null
           updated_at: string
         }
@@ -142,7 +142,7 @@ export type Database = {
           node_order?: number | null
           parent_id?: string | null
           path?: string | null
-          teamId?: string | null
+          team_id?: string | null
           tree_id?: string | null
           updated_at?: string
         }
@@ -157,7 +157,7 @@ export type Database = {
           node_order?: number | null
           parent_id?: string | null
           path?: string | null
-          teamId?: string | null
+          team_id?: string | null
           tree_id?: string | null
           updated_at?: string
         }
@@ -170,8 +170,8 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "tree_nodes_teamId_fkey"
-            columns: ["teamId"]
+            foreignKeyName: "tree_nodes_team_id_fkey"
+            columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"
             referencedColumns: ["id"]
