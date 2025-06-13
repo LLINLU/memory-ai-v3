@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Plus, Copy } from "lucide-react";
+import { MessageSquare, CirclePlus, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface MindMapNodeProps {
@@ -146,7 +146,7 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
               className="h-7 w-7 p-0"
               title="Add Node"
             >
-              <Plus className="h-3 w-3" />
+              <CirclePlus className="h-3 w-3" />
             </Button>
             <Button
               variant="ghost"
