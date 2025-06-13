@@ -168,9 +168,13 @@ const createD3Nodes = (hierarchicalData: any): MindMapNode[] => {
         return 1.0;  // Keep current tight spacing for level1
       }
       
+      // Specific spacing for level 2 nodes to prevent crowding
+      if (a.depth === 2 && b.depth === 2) {
+        return 1.3;  // Increased spacing specifically for level2 green nodes
+      }
+      
       // Progressive spacing for deeper levels
       const maxDepth = Math.max(a.depth, b.depth);
-      if (maxDepth <= 2) return 1.2;  // Level2 gets slightly more space
       if (maxDepth <= 3) return 1.5;  // Level3 gets more space
       return 1.8;  // Level4+ gets maximum space
     });
@@ -193,7 +197,7 @@ const createD3Nodes = (hierarchicalData: any): MindMapNode[] => {
     }));
 
   // Debug logging to verify progressive spacing
-  console.log('MindMap D3 Layout Debug (Progressive depth-based spacing):');
+  console.log('MindMap D3 Layout Debug (Progressive depth-based spacing with Level2 adjustment):');
   console.log('Root node position:', nodes.find(n => n.level === 0));
   console.log('Level 1 nodes:', nodes.filter(n => n.level === 1).map(n => ({ id: n.id, x: n.x, y: n.y })));
   console.log('Level 2 nodes:', nodes.filter(n => n.level === 2).map(n => ({ id: n.id, x: n.x, y: n.y })));
@@ -219,9 +223,13 @@ const createD3Connections = (hierarchicalData: any): MindMapConnection[] => {
         return 1.0;  // Keep current tight spacing for level1
       }
       
+      // Specific spacing for level 2 nodes to prevent crowding
+      if (a.depth === 2 && b.depth === 2) {
+        return 1.3;  // Increased spacing specifically for level2 green nodes
+      }
+      
       // Progressive spacing for deeper levels
       const maxDepth = Math.max(a.depth, b.depth);
-      if (maxDepth <= 2) return 1.2;  // Level2 gets slightly more space
       if (maxDepth <= 3) return 1.5;  // Level3 gets more space
       return 1.8;  // Level4+ gets maximum space
     });
@@ -246,7 +254,7 @@ const createD3Connections = (hierarchicalData: any): MindMapConnection[] => {
 
       // Debug logging for progressive spacing verification
       if (isRootSource) {
-        console.log('Root connection debug (progressive spacing):', {
+        console.log('Root connection debug (progressive spacing with Level2 adjustment):', {
           sourceId: link.source.data.id,
           targetId: link.target.data.id,
           sourceHeight: sourceNodeHeight,
