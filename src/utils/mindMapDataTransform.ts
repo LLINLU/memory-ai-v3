@@ -1,4 +1,3 @@
-
 import { TreeNode } from "@/types/tree";
 import * as d3 from 'd3';
 
@@ -25,7 +24,7 @@ export interface MindMapConnection {
   targetY: number;
 }
 
-const NODE_WIDTH = 220;
+const NODE_WIDTH = 280; // Changed from 220 to 280 to match root width
 const ROOT_NODE_WIDTH = 280;
 const NODE_HEIGHT = 60; // Reduced from 100 to 60
 const ROOT_NODE_HEIGHT = 70; // Reduced from 120 to 70
@@ -213,7 +212,7 @@ const createD3Connections = (hierarchicalData: any): MindMapConnection[] => {
     .forEach((link) => {
       // Check if source is root node (level 0) to use correct width and height
       const isRootSource = link.source.data.level === 0;
-      const sourceNodeWidth = isRootSource ? ROOT_NODE_WIDTH : NODE_WIDTH;
+      const sourceNodeWidth = isRootSource ? ROOT_NODE_WIDTH : NODE_WIDTH; // Now both are 280
       const sourceNodeHeight = isRootSource ? ROOT_NODE_HEIGHT : NODE_HEIGHT;
       
       // Calculate connection points with proper centering

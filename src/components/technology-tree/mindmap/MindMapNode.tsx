@@ -54,7 +54,7 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
       style={{
         left: node.x,
         top: node.y,
-        width: isRoot ? 280 : 220,
+        width: 280, // All nodes now use the same width (280px)
         height: isRoot ? 70 : 60, // Updated to use new shorter heights
       }}
       onClick={handleClick}
