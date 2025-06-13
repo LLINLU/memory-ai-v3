@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { usePathSelection } from "./tree/usePathSelection";
 import { useSidebar } from "./tree/useSidebar";
 import { useInputQuery } from "./tree/useInputQuery";
@@ -75,11 +76,25 @@ export const useTechnologyTree = (databaseTreeData?: any, viewModeHook?: any) =>
 
   const initialPath = getCurrentPath();
   
-  // Initialize treemap path with auto-selection if this is treemap view and we have data
-  if (!isMindmapView && treeDataToUse?.level1Items?.[0] && viewModeHook?.initializeTreemapPath) {
-    console.log('Treemap mode: Initializing auto-selected path');
-    viewModeHook.initializeTreemapPath(treeDataToUse);
-  }
+  // Track if treemap initialization has been done to prevent infinite loops
+  const [treemapInitialized, setTreemapInitialized] = useState(false);
+  
+  // Initialize treemap path only once when switching to treemap view and we have data
+  useEffect(() => {
+    if (!isMindmapView && 
+        treeDataToUse?.level1Items?.[0] && 
+        viewModeHook?.initializeTreemapPath &&
+        !treemapInitialized) {
+      console.log('Treemap mode: Initializing auto-selected path');
+      viewModeHook.initializeTreemapPath(treeDataToUse);
+      setTreemapInitialized(true);
+    }
+    
+    // Reset initialization flag when switching to mindmap
+    if (isMindmapView && treemapInitialized) {
+      setTreemapInitialized(false);
+    }
+  }, [isMindmapView, treeDataToUse, viewModeHook, treemapInitialized]);
   
   const {
     selectedPath,
