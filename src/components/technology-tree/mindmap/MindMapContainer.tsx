@@ -94,22 +94,6 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     onNodeClick(`level${level}`, nodeId);
   };
 
-  // Placeholder handlers for action buttons
-  const handleAiAssistant = (nodeId: string, level: number) => {
-    console.log(`AI Assistant clicked for node ${nodeId} at level ${level}`);
-    // TODO: Implement AI assistant functionality
-  };
-
-  const handleAddNode = (nodeId: string, level: number) => {
-    console.log(`Add Node clicked for parent ${nodeId} at level ${level}`);
-    // TODO: Implement add node functionality
-  };
-
-  const handleCopyTitle = (nodeId: string, nodeName: string) => {
-    console.log(`Copy Title clicked for node ${nodeId}: "${nodeName}"`);
-    // The actual copy functionality is handled in the MindMapNodeActionTooltip component
-  };
-
   // Calculate container dimensions based on compact D3 layout with proper padding
   // Account for reduced horizontal spacing (400px nodeSize) and left margin (250px)
   const containerWidth = nodes.length > 0 ? Math.max(...nodes.map(n => n.x + 400), 1400) : 1400;
@@ -165,9 +149,6 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
                 onClick={handleNodeClick}
                 onEdit={onEditNode}
                 onDelete={onDeleteNode}
-                onAiAssistant={handleAiAssistant}
-                onAddNode={handleAddNode}
-                onCopyTitle={handleCopyTitle}
               />
             ))}
             
