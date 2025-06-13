@@ -27,9 +27,9 @@ export const usePanZoom = (
   containerHeight: number
 ): UsePanZoomReturn => {
   const [state, setState] = useState<PanZoomState>({
-    zoom: 1,
-    panX: 0,
-    panY: 50, // Add initial downward offset for better root node positioning
+    zoom: 0.6, // Set default zoom to 60%
+    panX: 100, // Move view right to show root node more to the left
+    panY: 50, // Keep initial downward offset for better root node positioning
   });
   
   const [isDragging, setIsDragging] = useState(false);
@@ -126,8 +126,8 @@ export const usePanZoom = (
 
   const resetView = useCallback(() => {
     setState({
-      zoom: 1,
-      panX: 0,
+      zoom: 0.6, // Reset to 60% zoom instead of 100%
+      panX: 100, // Reset to adjusted pan position
       panY: 50, // Keep the improved initial Y offset when resetting
     });
   }, []);
