@@ -146,7 +146,7 @@ export function SidebarSearches() {
     navigate("/technology-tree", {
       state: {
         treeId,
-        searchTheme,
+        query: searchTheme, // Pass the searchTheme as query
         fromDatabase: true, // This is crucial for loading from database
         fromSidebar: true,
       },

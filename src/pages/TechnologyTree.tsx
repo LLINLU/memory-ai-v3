@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
@@ -51,6 +52,7 @@ const TechnologyTree = () => {
   const [databaseTreeData, setDatabaseTreeData] = useState<any>(null);
   const [hasLoadedDatabase, setHasLoadedDatabase] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
+  const [currentQuery, setCurrentQuery] = useState<string>("");
   const { loadTreeFromDatabase } = useTreeGeneration();
 
   // Extract conversation history from location state if available
@@ -231,6 +233,8 @@ const TechnologyTree = () => {
             );
             if (convertedData) {
               setDatabaseTreeData(convertedData);
+              // Set the query from the database tree data
+              setCurrentQuery(result.treeData?.search_theme || locationState?.query || "");
               toast({
                 title: "データベースツリーを読み込みました",
                 description: "保存されたツリー構造を表示しています。",
@@ -262,6 +266,9 @@ const TechnologyTree = () => {
           "Initializing with TED-generated tree data:",
           locationState.treeData
         );
+        
+        // Set query from location state
+        setCurrentQuery(locationState?.query || "");
 
         // Check if any fallback data was used
         const tedResults = locationState.tedResults;
@@ -319,6 +326,11 @@ const TechnologyTree = () => {
       console.log(
         "No specific initialization required, completing initialization"
       );
+      
+      // Set query from location state if available
+      if (locationState?.query) {
+        setCurrentQuery(locationState.query);
+      }
     };
     //console.log("Starting tree data initialization...");
     initializeTreeData().finally(() => {
@@ -341,6 +353,7 @@ const TechnologyTree = () => {
     locationState?.fromDatabase,
     locationState?.fromPreset,
     locationState?.treeId,
+    locationState?.query,
     hasLoadedDatabase, // Add this to prevent infinite loops
   ]);
 
@@ -511,7 +524,7 @@ const TechnologyTree = () => {
                 handleAddLevel4={handleAddLevel4}
                 searchMode={searchMode}
                 onGuidanceClick={handleGuidanceClick}
-                query={locationState?.query}
+                query={currentQuery || locationState?.query}
                 treeMode={treeMode}
                 onScrollToStart={handleScrollToStart}
                 onScrollToEnd={handleScrollToEnd}

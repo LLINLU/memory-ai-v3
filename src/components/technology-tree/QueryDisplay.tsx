@@ -30,6 +30,7 @@ export const QueryDisplay = ({ query, treeMode }: QueryDisplayProps) => {
   
   // Get searchMode from location state - if it's "quick", hide the component
   const searchMode = location.state?.searchMode;
+  const fromDatabase = location.state?.fromDatabase;
   
   // Initialize the mode based on tree data or location state
   useEffect(() => {
@@ -53,8 +54,12 @@ export const QueryDisplay = ({ query, treeMode }: QueryDisplayProps) => {
     return null;
   }
 
-  // Only render if query exists and is not empty
-  if (!query || query.trim() === "") {
+  // Show the search bar if:
+  // 1. Query exists and is not empty, OR
+  // 2. This is a database-loaded tree (from sidebar or direct navigation)
+  const shouldShowSearchBar = (query && query.trim() !== "") || fromDatabase;
+  
+  if (!shouldShowSearchBar) {
     return null;
   }
 
