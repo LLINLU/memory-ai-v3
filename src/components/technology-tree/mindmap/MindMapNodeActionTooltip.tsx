@@ -35,7 +35,6 @@ export const MindMapNodeActionTooltip: React.FC<MindMapNodeActionTooltipProps> =
       toast({
         title: "Copy failed",
         description: "Unable to copy to clipboard. Please try again.",
-        variant: "destructive",
       });
     }
   };
