@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useRef } from 'react';
 
 interface PanZoomState {
@@ -28,7 +29,7 @@ export const usePanZoom = (
 ): UsePanZoomReturn => {
   const [state, setState] = useState<PanZoomState>({
     zoom: 0.6, // Set default zoom to 60%
-    panX: 100, // Move view right to show root node more to the left
+    panX: 200, // Increased from 100 to 200 to move view further right, showing more left space around root
     panY: 50, // Keep initial downward offset for better root node positioning
   });
   
@@ -127,7 +128,7 @@ export const usePanZoom = (
   const resetView = useCallback(() => {
     setState({
       zoom: 0.6, // Reset to 60% zoom instead of 100%
-      panX: 100, // Reset to adjusted pan position
+      panX: 200, // Reset to new adjusted pan position for better left margin
       panY: 50, // Keep the improved initial Y offset when resetting
     });
   }, []);
