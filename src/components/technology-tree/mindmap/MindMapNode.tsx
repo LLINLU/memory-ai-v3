@@ -1,4 +1,3 @@
-
 import React from "react";
 import { MindMapNode } from "@/utils/mindMapDataTransform";
 import {
@@ -10,11 +9,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { MessageSquare, CirclePlus, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { NodeLoadingIndicator } from "../level-selection/node-components/NodeLoadingIndicator";
 
 interface MindMapNodeProps {
   node: MindMapNode;
   onClick: (nodeId: string, level: number) => void;
-  onEdit?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
+  onEdit?: (
+    level: string,
+    nodeId: string,
+    updatedNode: { title: string; description: string }
+  ) => void;
   onDelete?: (level: string, nodeId: string) => void;
   onAiAssist?: (nodeId: string, level: number) => void;
   onAddNode?: (nodeId: string, level: number) => void;
@@ -78,7 +82,7 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
 
   const handleAiAssist = (e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log('AI Assist clicked for node:', node.id, 'level:', node.level);
+    console.log("AI Assist clicked for node:", node.id, "level:", node.level);
     if (onAiAssist) {
       onAiAssist(node.id, node.level);
     }
@@ -86,15 +90,18 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
 
   const handleAddNode = (e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log('Add Node clicked for node:', node.id, 'level:', node.level);
+    console.log("Add Node clicked for node:", node.id, "level:", node.level);
     if (onAddNode) {
       onAddNode(node.id, node.level);
     }
   };
-
   // Special styling for root node
   const isRoot = node.level === 0;
   const rootCursor = isRoot ? "cursor-default" : "cursor-pointer";
+
+  // Check if this node is being generated (children_count = 0 for TED scenario nodes)
+  const isGenerating =
+    typeof node.children_count === "number" && node.children_count === 0;
 
   const nodeContent = (
     <div
@@ -108,14 +115,25 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
       onClick={handleClick}
     >
       <div
-        className={`w-full h-full rounded-lg border-2 p-2 flex items-center justify-center ${getNodeStyling()}`}
+        className={`w-full h-full rounded-lg border-2 p-2 flex ${
+          isGenerating ? "flex-col" : "items-center"
+        } justify-center ${getNodeStyling()}`}
       >
-        <div 
-          className={`${isRoot ? 'text-base' : 'text-sm'} font-medium break-words leading-tight text-center`} 
+        <div
+          className={`${
+            isRoot ? "text-base" : "text-sm"
+          } font-medium break-words leading-tight text-center ${
+            isGenerating ? "mb-1" : ""
+          }`}
           title={node.name}
         >
           {node.name}
-        </div>
+        </div>{" "}
+        {isGenerating && (
+          <div className="mt-1">
+            <NodeLoadingIndicator size="sm" />
+          </div>
+        )}
       </div>
     </div>
   );
@@ -124,9 +142,7 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
   if (node.description && node.description.trim() && !isRoot) {
     return (
       <Tooltip>
-        <TooltipTrigger asChild>
-          {nodeContent}
-        </TooltipTrigger>
+        <TooltipTrigger asChild>{nodeContent}</TooltipTrigger>
         <TooltipContent className="max-w-xs">
           <p className="mb-3">{node.description}</p>
           <div className="flex items-center justify-center gap-1 pt-2 border-t border-gray-200">

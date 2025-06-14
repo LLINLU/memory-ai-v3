@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
@@ -53,7 +52,12 @@ const TechnologyTree = () => {
   const [hasLoadedDatabase, setHasLoadedDatabase] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
   const [currentQuery, setCurrentQuery] = useState<string>("");
-  const { loadTreeFromDatabase } = useTreeGeneration();
+  const {
+    loadTreeFromDatabase,
+    checkScenarioCompletion,
+    pollingTreeId,
+    setPollingTreeId,
+  } = useTreeGeneration();
 
   // Extract conversation history from location state if available
   useEffect(() => {
@@ -233,7 +237,9 @@ const TechnologyTree = () => {
             if (convertedData) {
               setDatabaseTreeData(convertedData);
               // Set the query from the database tree data
-              setCurrentQuery(result.treeData?.search_theme || locationState?.query || "");
+              setCurrentQuery(
+                result.treeData?.search_theme || locationState?.query || ""
+              );
               toast({
                 title: "データベースツリーを読み込みました",
                 description: "保存されたツリー構造を表示しています。",
@@ -265,7 +271,7 @@ const TechnologyTree = () => {
           "Initializing with TED-generated tree data:",
           locationState.treeData
         );
-        
+
         // Set query from location state
         setCurrentQuery(locationState?.query || "");
 
@@ -325,7 +331,7 @@ const TechnologyTree = () => {
       console.log(
         "No specific initialization required, completing initialization"
       );
-      
+
       // Set query from location state if available
       if (locationState?.query) {
         setCurrentQuery(locationState.query);
@@ -458,7 +464,6 @@ const TechnologyTree = () => {
   useEffect(() => {
     document.title = "研究背景を整理します | Technology Tree";
   }, []);
-
   const sidebarContent = (
     <TechTreeSidebar
       sidebarTab={sidebarTab}
@@ -477,8 +482,95 @@ const TechnologyTree = () => {
       onResize={handlePanelResize}
       selectedNodeTitle={selectedNodeInfo.title}
       selectedNodeDescription={selectedNodeInfo.description}
+      selectedNodeId={selectedNodeInfo.nodeId}
+      selectedPath={selectedPath}
     />
-  );
+  ); // Polling effect for TED v2 scenario completion with progressive display
+  useEffect(() => {
+    if (!pollingTreeId) return;
+
+    console.log("Starting progressive polling for tree:", pollingTreeId);
+    let lastCompletedCount = 0;
+
+    // Show initial polling notification
+    toast({
+      title: "シナリオ生成開始",
+      description:
+        "詳細シナリオを生成中です。完了したものから順次表示されます。",
+      duration: 4000,
+    });
+
+    const pollInterval = setInterval(async () => {
+      try {
+        const result = await checkScenarioCompletion(pollingTreeId);
+        console.log("Progressive polling result:", result);
+
+        // Check if any NEW scenario has completed since last check
+        if (result.completedScenarios > lastCompletedCount) {
+          const newlyCompleted = result.completedScenarios - lastCompletedCount;
+          console.log(
+            `Progressive display: ${newlyCompleted} new scenarios completed (${result.completedScenarios}/${result.totalScenarios} total)`
+          );
+
+          // Always reload the tree data to get the latest completed subtrees
+          const updatedTree = await loadTreeFromDatabase(pollingTreeId);
+          if (updatedTree?.treeStructure) {
+            const convertedData = convertDatabaseTreeToAppFormat(
+              updatedTree.treeStructure,
+              {
+                description: updatedTree.treeData?.description,
+                search_theme: updatedTree.treeData?.search_theme,
+                name: updatedTree.treeData?.name,
+                mode: (updatedTree.treeData as any)?.mode,
+              }
+            );
+            if (convertedData) {
+              setDatabaseTreeData(convertedData);
+              lastCompletedCount = result.completedScenarios;
+
+              // Show appropriate toast based on completion status
+              if (result.completed) {
+                console.log(
+                  "Progressive display: All scenarios completed, stopping polling"
+                );
+                setPollingTreeId(null);
+                toast({
+                  title: "ツリー生成完了",
+                  description: "すべてのシナリオの詳細が生成されました。",
+                  duration: 5000,
+                });
+              } else {
+                // Show progress toast for partial completion with celebratory message
+                const progressPercent = Math.round(
+                  (result.completedScenarios / result.totalScenarios) * 100
+                );
+                toast({
+                  title: "新しいシナリオが完成しました",
+                  description: `${result.completedScenarios}/${result.totalScenarios} のシナリオが完了 (${progressPercent}%)`,
+                  duration: 3000,
+                });
+              }
+            }
+          }
+        } else if (
+          result.totalScenarios > 0 &&
+          result.completedScenarios === 0
+        ) {
+          console.log(
+            `Progressive display: Waiting for first scenario completion (0/${result.totalScenarios})`
+          );
+        }
+      } catch (error) {
+        console.error("Error during progressive polling:", error);
+        // Continue polling even if there's an error
+      }
+    }, 3000); // Poll every 3 seconds for responsive progressive updates
+
+    // Cleanup on unmount or when polling stops
+    return () => {
+      clearInterval(pollInterval);
+    };
+  }, [pollingTreeId, checkScenarioCompletion, loadTreeFromDatabase]);
 
   return (
     <SidebarProvider defaultOpen={false}>

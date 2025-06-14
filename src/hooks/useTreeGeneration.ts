@@ -33,6 +33,7 @@ export const useTreeGeneration = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [trees, setTrees] = useState<SavedTree[]>([]);
   const [treesLoading, setTreesLoading] = useState(false);
+  const [pollingTreeId, setPollingTreeId] = useState<string | null>(null);
   const { userDetails } = useUserDetail();
 
   const generateTree = async (
@@ -73,14 +74,20 @@ export const useTreeGeneration = () => {
         return null;
       } // Choose the appropriate edge function based on mode
       const functionName =
-        mode === "FAST" ? "generate-tree-fast" : "generate-tree";
+        mode === "FAST" ? "generate-tree-fast" : "generate-tree-v2";
 
       // Get team_id from user details
       const team_id = userDetails?.team_id;
 
+      // For TED mode (v2), call Step 1 only - Step 2 happens asynchronously
+      const requestBody =
+        mode === "TED"
+          ? { searchTheme, team_id, step: 1 }
+          : { searchTheme, team_id };
+
       // Supabase is available, use the edge function
       const { data, error } = await supabase.functions.invoke(functionName, {
-        body: { searchTheme, team_id },
+        body: requestBody,
       });
 
       if (error) {
@@ -94,11 +101,21 @@ export const useTreeGeneration = () => {
         throw new Error("No data returned from Edge Function");
       }
 
+      // For TED v2, start polling for subtree completion
+      if (mode === "TED" && data.treeId) {
+        setPollingTreeId(data.treeId);
+      }
+
       const modeLabel =
         mode === "FAST" ? "FAST（シーズ深掘り）" : "TED（ニーズ深掘り）";
+      const completionMessage =
+        mode === "TED"
+          ? `「${searchTheme}」の${modeLabel}ツリーが生成開始されました。シナリオの詳細を生成中...`
+          : `「${searchTheme}」の${modeLabel}ツリーが生成されました`;
+
       toast({
-        title: "ツリー生成完了",
-        description: `「${searchTheme}」の${modeLabel}ツリーが生成されました`,
+        title: mode === "TED" ? "ツリー生成開始" : "ツリー生成完了",
+        description: completionMessage,
       });
 
       return { ...data, mode } as TreeGenerationResult & { mode: string };
@@ -117,6 +134,35 @@ export const useTreeGeneration = () => {
       return null;
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  // Function to check if all scenarios have completed subtree generation
+  const checkScenarioCompletion = async (treeId: string) => {
+    try {
+      const { data: scenarios, error } = await supabase
+        .from("tree_nodes")
+        .select("id, children_count, name")
+        .eq("tree_id", treeId)
+        .eq("level", 1);
+
+      if (error) {
+        console.error("Error checking scenario completion:", error);
+        return { completed: false, scenarios: [] };
+      }
+
+      const allCompleted =
+        scenarios?.every((s) => s.children_count > 0) || false;
+      return {
+        completed: allCompleted,
+        scenarios: scenarios || [],
+        totalScenarios: scenarios?.length || 0,
+        completedScenarios:
+          scenarios?.filter((s) => s.children_count > 0).length || 0,
+      };
+    } catch (error) {
+      console.error("Error in checkScenarioCompletion:", error);
+      return { completed: false, scenarios: [] };
     }
   };
 
@@ -224,17 +270,17 @@ export const useTreeGeneration = () => {
     if (treesLoading) {
       return trees;
     }
-    if(trees.length > 0) {
+    if (trees.length > 0) {
       return trees;
     }
-    if (userDetails === undefined|| userDetails?.team_id === null) {
+    if (userDetails === undefined || userDetails?.team_id === null) {
       return trees;
     }
-    
+
     try {
       setTreesLoading(true);
       const userTeamId = userDetails?.team_id;
-      if(userTeamId === null || userTeamId === undefined) {
+      if (userTeamId === null || userTeamId === undefined) {
         return trees;
       }
 
@@ -281,17 +327,24 @@ export const useTreeGeneration = () => {
   }, [userDetails]);
 
   useEffect(() => {
-    if (userDetails !== undefined && treesLoading === false && trees.length === 0) {
+    if (
+      userDetails !== undefined &&
+      treesLoading === false &&
+      trees.length === 0
+    ) {
       listSavedTrees();
     }
   }, [userDetails, treesLoading, trees.length]); // Remove listSavedTrees from dependencies
 
-      return {
-      generateTree,
-      loadTreeFromDatabase,
-      listSavedTrees,
-      isGenerating,
-      trees,
-      treesLoading,
-    };
+  return {
+    generateTree,
+    loadTreeFromDatabase,
+    listSavedTrees,
+    checkScenarioCompletion,
+    isGenerating,
+    trees,
+    treesLoading,
+    pollingTreeId,
+    setPollingTreeId,
+  };
 };

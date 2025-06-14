@@ -5,6 +5,7 @@ export interface TreeNode {
   description?: string;
   isCustom?: boolean;
   level?: number;
+  children_count?: number; // Number of children nodes, 0 indicates generation in progress
 }
 
 // Define path levels for better type safety

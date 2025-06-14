@@ -1,10 +1,10 @@
-
 import { useEffect, useState } from "react";
 import { TreeNode } from "@/types/tree";
 
 interface SelectedNodeInfo {
   title: string;
   description: string;
+  nodeId: string;
 }
 
 export const useNodeInfo = (
@@ -34,18 +34,18 @@ export const useNodeInfo = (
   const [selectedNodeInfo, setSelectedNodeInfo] = useState<SelectedNodeInfo>({
     title: "",
     description: "",
+    nodeId: "",
   });
-
   // Function to find the selected node's info
   const getSelectedNodeInfo = () => {
     if (!level1Items || !level2Items || !level3Items || !level4Items) {
-      return { title: "", description: "" };
+      return { title: "", description: "", nodeId: "" };
     }
 
-    console.log('useNodeInfo: selectedPath =', selectedPath);
-
+    console.log("useNodeInfo: selectedPath =", selectedPath);
     let title = "";
     let description = "";
+    let nodeId = "";
 
     // Find the highest level that has a selection (last selected level)
     let targetLevel = 1;
@@ -90,51 +90,55 @@ export const useNodeInfo = (
       parentId = selectedPath.level1;
     }
 
-    console.log(`useNodeInfo: Found target level ${targetLevel}, id: ${targetId}, parentId: ${parentId}`);
+    console.log(
+      `useNodeInfo: Found target level ${targetLevel}, id: ${targetId}, parentId: ${parentId}`
+    );
 
     // Now find the node info for the target level
     let selectedNode: TreeNode | undefined;
 
     if (targetLevel === 1) {
-      selectedNode = level1Items.find(item => item.id === targetId);
+      selectedNode = level1Items.find((item) => item.id === targetId);
     } else if (targetLevel === 2) {
       const level2NodeItems = level2Items[parentId] || [];
-      selectedNode = level2NodeItems.find(item => item.id === targetId);
+      selectedNode = level2NodeItems.find((item) => item.id === targetId);
     } else if (targetLevel === 3) {
       const level3NodeItems = level3Items[parentId] || [];
-      selectedNode = level3NodeItems.find(item => item.id === targetId);
+      selectedNode = level3NodeItems.find((item) => item.id === targetId);
     } else if (targetLevel === 4) {
       const level4NodeItems = level4Items[parentId] || [];
-      selectedNode = level4NodeItems.find(item => item.id === targetId);
+      selectedNode = level4NodeItems.find((item) => item.id === targetId);
     } else if (targetLevel === 5 && level5Items) {
       const level5NodeItems = level5Items[parentId] || [];
-      selectedNode = level5NodeItems.find(item => item.id === targetId);
+      selectedNode = level5NodeItems.find((item) => item.id === targetId);
     } else if (targetLevel === 6 && level6Items) {
       const level6NodeItems = level6Items[parentId] || [];
-      selectedNode = level6NodeItems.find(item => item.id === targetId);
+      selectedNode = level6NodeItems.find((item) => item.id === targetId);
     } else if (targetLevel === 7 && level7Items) {
       const level7NodeItems = level7Items[parentId] || [];
-      selectedNode = level7NodeItems.find(item => item.id === targetId);
+      selectedNode = level7NodeItems.find((item) => item.id === targetId);
     } else if (targetLevel === 8 && level8Items) {
       const level8NodeItems = level8Items[parentId] || [];
-      selectedNode = level8NodeItems.find(item => item.id === targetId);
+      selectedNode = level8NodeItems.find((item) => item.id === targetId);
     } else if (targetLevel === 9 && level9Items) {
       const level9NodeItems = level9Items[parentId] || [];
-      selectedNode = level9NodeItems.find(item => item.id === targetId);
+      selectedNode = level9NodeItems.find((item) => item.id === targetId);
     } else if (targetLevel === 10 && level10Items) {
       const level10NodeItems = level10Items[parentId] || [];
-      selectedNode = level10NodeItems.find(item => item.id === targetId);
+      selectedNode = level10NodeItems.find((item) => item.id === targetId);
     }
-
     if (selectedNode) {
       title = selectedNode.name;
       description = selectedNode.description || "";
-      console.log(`useNodeInfo: Found node - title: ${title}, description: ${description}`);
+      nodeId = targetId;
+      console.log(
+        `useNodeInfo: Found node - title: ${title}, description: ${description}, nodeId: ${nodeId}`
+      );
     } else {
-      console.log('useNodeInfo: No node found for the target level and ID');
+      console.log("useNodeInfo: No node found for the target level and ID");
     }
 
-    return { title, description };
+    return { title, description, nodeId };
   };
 
   // Update selected node info when path changes or level items change
@@ -142,7 +146,7 @@ export const useNodeInfo = (
     if (level1Items && level2Items && level3Items && level4Items) {
       const nodeInfo = getSelectedNodeInfo();
       setSelectedNodeInfo(nodeInfo);
-      console.log('useNodeInfo: Updated selectedNodeInfo =', nodeInfo);
+      console.log("useNodeInfo: Updated selectedNodeInfo =", nodeInfo);
     }
   }, [
     selectedPath,

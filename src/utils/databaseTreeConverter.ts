@@ -4,6 +4,7 @@ interface TreeNodeFromDB {
   id: string;
   name: string;
   description: string | null;
+  children_count: number; // Number of children, 0 indicates generation in progress
   axis:
     | "Scenario"
     | "Purpose"
@@ -54,7 +55,6 @@ const convertFastTreeToAppFormat = (
   // For FAST trees: Root IS the Technology (level 0)
   // Level 1 items are How1 nodes - children of Technology root
   const level1Nodes = treeStructure.root.children || [];
-
   const level1Items = level1Nodes
     .filter((node) => node.axis === "How1")
     .map((node, index) => {
@@ -66,6 +66,7 @@ const convertFastTreeToAppFormat = (
         }事例`,
         description: node.description || "",
         color: `hsl(${200 + index * 30}, 70%, 50%)`,
+        children_count: node.children_count,
       };
     });
   // Extract level 2 items (How2 nodes - children of How1 nodes)
@@ -85,6 +86,7 @@ const convertFastTreeToAppFormat = (
             }事例`,
             description: node.description || "",
             color: `hsl(${220 + index * 25}, 65%, 55%)`,
+            children_count: node.children_count,
           };
         });
       }
@@ -112,6 +114,7 @@ const convertFastTreeToAppFormat = (
               }事例`,
               description: node.description || "",
               color: `hsl(${240 + index * 20}, 60%, 60%)`,
+              children_count: node.children_count,
             };
           });
         }
@@ -142,6 +145,7 @@ const convertFastTreeToAppFormat = (
                   }事例`,
                   description: node.description || "",
                   color: `hsl(${260 + index * 15}, 55%, 65%)`,
+                  children_count: node.children_count,
                 };
               });
             }
@@ -150,7 +154,6 @@ const convertFastTreeToAppFormat = (
       }
     });
   });
-
   // Helper function to extract children with specific axis types for FAST
   const extractFastChildrenByAxis = (
     parentNodes: TreeNodeFromDB[],
@@ -172,6 +175,7 @@ const convertFastTreeToAppFormat = (
             }事例`,
             description: node.description || "",
             color: `hsl(${260 + index * 15}, 55%, 65%)`,
+            children_count: node.children_count,
           }));
         }
       }
@@ -279,7 +283,6 @@ const convertTedTreeToAppFormat = (
 
   // Extract level 1 items (Scenario nodes - children of root)
   const level1Nodes = treeStructure.root.children || [];
-
   const level1Items = level1Nodes
     .filter((node) => node.axis === "Scenario")
     .map((node, index) => {
@@ -291,6 +294,7 @@ const convertTedTreeToAppFormat = (
         }事例`,
         description: node.description || "",
         color: `hsl(${200 + index * 30}, 70%, 50%)`,
+        children_count: node.children_count,
       };
     });
 
@@ -315,6 +319,7 @@ const convertTedTreeToAppFormat = (
             }事例`,
             description: node.description || "",
             color: `hsl(${220 + index * 25}, 65%, 55%)`,
+            children_count: node.children_count,
           };
         });
       }
@@ -348,6 +353,7 @@ const convertTedTreeToAppFormat = (
               }事例`,
               description: node.description || "",
               color: `hsl(${240 + index * 20}, 60%, 60%)`,
+              children_count: node.children_count,
             };
           });
         }
@@ -387,6 +393,7 @@ const convertTedTreeToAppFormat = (
                   }事例`,
                   description: node.description || "",
                   color: `hsl(${260 + index * 15}, 55%, 65%)`,
+                  children_count: node.children_count,
                 };
               });
             }
@@ -395,7 +402,6 @@ const convertTedTreeToAppFormat = (
       }
     });
   });
-
   // Helper function to extract children with specific axis types
   const extractChildrenByAxis = (
     parentNodes: TreeNodeFromDB[],
@@ -417,6 +423,7 @@ const convertTedTreeToAppFormat = (
             }事例`,
             description: node.description || "",
             color: `hsl(${260 + index * 15}, 55%, 65%)`,
+            children_count: node.children_count,
           }));
         }
       }
