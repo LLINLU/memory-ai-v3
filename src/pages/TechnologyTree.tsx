@@ -133,9 +133,9 @@ const TechnologyTree = () => {
       </div>
     );
   }
-
   const {
     selectedPath,
+    userClickedNode,
     sidebarTab,
     showSidebar,
     collapsedSidebar,
@@ -233,11 +233,10 @@ const TechnologyTree = () => {
 
         console.log("Loading tree from database, ID:", locationState.treeId);
         setHasLoadedDatabase(true); // Prevent re-loading
-
         try {
           const result = await loadTreeFromDatabase(locationState.treeId);
           if (result?.treeStructure) {
-            const convertedData = convertDatabaseTreeToAppFormat(
+            const convertedData = await convertDatabaseTreeToAppFormat(
               result.treeStructure,
               {
                 description: result.treeData?.description,
@@ -442,9 +441,9 @@ const TechnologyTree = () => {
     handleEditNodeFromChat,
     handleRefineNode,
   } = useTechTreeSidebarActions(setChatMessages, addCustomNode, setSidebarTab);
-
   const selectedNodeInfo = useNodeInfo(
     selectedPath,
+    userClickedNode,
     level1Items,
     level2Items,
     level3Items,

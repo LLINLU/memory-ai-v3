@@ -109,7 +109,6 @@ export const useTechnologyTree = (
       setTreemapInitialized(false);
     }
   }, [isMindmapView, treeDataToUse, viewModeHook, treemapInitialized]);
-
   const {
     selectedPath,
     hasUserMadeSelection,
@@ -129,6 +128,7 @@ export const useTechnologyTree = (
     level10Items,
     showLevel4,
     handleAddLevel4,
+    userClickedNode, // NEW: Get the user's actual clicked node
   } = usePathSelection(initialPath, treeDataToUse, isMindmapView);
 
   // Wrap the handleNodeClick to update the view-specific path
@@ -177,8 +177,7 @@ export const useTechnologyTree = (
     hasUserMadeSelection,
     showLevel4,
     searchMode,
-    scenario: treeDataToUse?.scenario, // Add scenario from database tree data
-    setSelectedView,
+    scenario: treeDataToUse?.scenario, // Add scenario from database tree data    setSelectedView,
     setSidebarTab,
     setShowSidebar,
     handleNodeClick,
@@ -201,5 +200,6 @@ export const useTechnologyTree = (
     level9Items,
     level10Items,
     handleAddLevel4,
+    userClickedNode, // NEW: Expose the user's actual clicked node
   };
 };

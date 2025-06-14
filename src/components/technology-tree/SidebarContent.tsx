@@ -64,33 +64,13 @@ export const SidebarContent = ({
         />
       </div>
     );
-  }
-  // For result tab, show enriched data if a node is selected, otherwise show SearchResults
-  if (selectedNodeId && selectedNodeId.trim() && selectedPath) {
-    return (
-      <div className="h-full flex flex-col">
-        <div className="p-4 border-b">
-          <h3 className="font-medium text-sm text-gray-900">
-            {selectedNodeTitle}
-          </h3>
-          {selectedNodeDescription && (
-            <p className="text-xs text-gray-600 mt-1">
-              {selectedNodeDescription}
-            </p>
-          )}
-        </div>
-        <div className="flex-1 overflow-auto">
-          <EnrichedDataDisplay nodeId={selectedNodeId} />
-        </div>
-      </div>
-    );
-  }
-
+  } // Always show SearchResults, but pass real data when a node is selected
   return (
     <div className="h-full flex flex-col">
       <SearchResults
         selectedNodeTitle={selectedNodeTitle}
         selectedNodeDescription={selectedNodeDescription}
+        selectedNodeId={selectedNodeId}
       />
     </div>
   );

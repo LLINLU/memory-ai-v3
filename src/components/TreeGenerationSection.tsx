@@ -116,7 +116,7 @@ export const TreeGenerationSection = () => {
       </CardHeader>
       <CardContent>
         <div className="w-full mx-auto mb-8">
-          <div className="bg-gray-50 rounded-2xl p-4 border border-[#ebf0f7] border-[1px]">
+          <div className="bg-gray-50 rounded-2xl p-4 border border-[#ebf0f7]">
             <Input 
               type="text" 
               placeholder={getPlaceholderText()}
