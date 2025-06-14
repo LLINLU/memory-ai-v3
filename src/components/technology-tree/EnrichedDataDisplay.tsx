@@ -47,7 +47,7 @@ export const EnrichedDataDisplay: React.FC<EnrichedDataDisplayProps> = ({
   if (papers.length === 0 && useCases.length === 0) {
     return (
       <div className="p-4 text-center text-gray-500">
-        このノードには追加データがありません
+        追加データを生成しています。しばらくお待ちください。
       </div>
     );
   }

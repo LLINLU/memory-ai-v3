@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { usePathSelection } from "./tree/usePathSelection";
 import { useSidebar } from "./tree/useSidebar";
@@ -30,7 +29,10 @@ export interface TechnologyTreeState {
   searchMode?: string;
 }
 
-export const useTechnologyTree = (databaseTreeData?: any, viewModeHook?: any) => {
+export const useTechnologyTree = (
+  databaseTreeData?: any,
+  viewModeHook?: any
+) => {
   const location = useLocation();
   const locationState = location.state as {
     query?: string;
@@ -49,53 +51,65 @@ export const useTechnologyTree = (databaseTreeData?: any, viewModeHook?: any) =>
   // Get searchMode from location state - default to "quick" if not provided
   const searchMode = locationState?.searchMode || "quick";
   const [selectedView, setSelectedView] = useState("tree");
-  
+
   // Use view mode hook if provided
   const viewMode = viewModeHook?.viewMode || "mindmap";
   const isMindmapView = viewMode === "mindmap";
-  
-  // Debug logging
-  console.log('useTechnologyTree:', { viewMode, isMindmapView });
-  
+
   // Determine which tree data to use: database data takes priority, then location state data
   const treeDataToUse = databaseTreeData || locationState?.treeData;
 
+  // Debug: Log when tree data changes
+  useEffect(() => {
+    if (databaseTreeData) {
+      console.log("useTechnologyTree: databaseTreeData updated", {
+        level1Count: databaseTreeData.level1Items?.length || 0,
+        level2Keys: Object.keys(databaseTreeData.level2Items || {}),
+        timestamp: databaseTreeData._timestamp,
+      });
+    }
+  }, [databaseTreeData]);
+
   // Get the current path from the view mode hook or use default
-  const getCurrentPath = viewModeHook?.getCurrentPath || (() => ({
-    level1: "",
-    level2: "",
-    level3: "",
-    level4: "",
-    level5: "",
-    level6: "",
-    level7: "",
-    level8: "",
-    level9: "",
-    level10: "",
-  }));
+  const getCurrentPath =
+    viewModeHook?.getCurrentPath ||
+    (() => ({
+      level1: "",
+      level2: "",
+      level3: "",
+      level4: "",
+      level5: "",
+      level6: "",
+      level7: "",
+      level8: "",
+      level9: "",
+      level10: "",
+    }));
 
   const initialPath = getCurrentPath();
-  
+
   // Track if treemap initialization has been done to prevent infinite loops
   const [treemapInitialized, setTreemapInitialized] = useState(false);
-  
+
   // Initialize treemap path only once when switching to treemap view and we have data
   useEffect(() => {
-    if (!isMindmapView && 
-        treeDataToUse?.level1Items?.[0] && 
-        viewModeHook?.initializeTreemapPath &&
-        !treemapInitialized) {
-      console.log('Treemap mode: Initializing auto-selected path');
+    if (
+      !isMindmapView &&
+      treeDataToUse?.level1Items?.[0] &&
+      viewModeHook?.initializeTreemapPath &&
+      !treemapInitialized
+    ) {
+      //console.log('Treemap mode: Initializing auto-selected path');
       viewModeHook.initializeTreemapPath(treeDataToUse);
       setTreemapInitialized(true);
     }
-    
+
     // Reset initialization flag when switching to mindmap
     if (isMindmapView && treemapInitialized) {
       setTreemapInitialized(false);
     }
   }, [isMindmapView, treeDataToUse, viewModeHook, treemapInitialized]);
-  
+
   const {
     selectedPath,
     hasUserMadeSelection,
@@ -120,7 +134,7 @@ export const useTechnologyTree = (databaseTreeData?: any, viewModeHook?: any) =>
   // Wrap the handleNodeClick to update the view-specific path
   const handleNodeClick = (level: string, nodeId: string) => {
     originalHandleNodeClick(level as PathLevel, nodeId);
-    
+
     // If we have the view mode hook, update the current view's path
     if (viewModeHook?.setCurrentPath) {
       // Get the updated path after the click
@@ -150,7 +164,7 @@ export const useTechnologyTree = (databaseTreeData?: any, viewModeHook?: any) =>
     setChatMessages,
     setInputValue,
   } = useInputQuery(sidebarTab);
-  
+
   return {
     selectedPath,
     selectedView,

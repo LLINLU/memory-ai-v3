@@ -36,7 +36,7 @@ export const usePathSelectionState = (
   const [treeData, setTreeData] = useState<any>(null);
   
   // Debug logging
-  console.log('usePathSelectionState: disableAutoSelection =', disableAutoSelection);
+  //console.log('usePathSelectionState: disableAutoSelection =', disableAutoSelection);
   
   // Store tree data for auto-selection
   const updateTreeData = (data: any) => {
@@ -120,19 +120,19 @@ export const usePathSelectionState = (
       }
     }
 
-    console.log('Mindmap: Built complete path:', newPath);
+    //console.log('Mindmap: Built complete path:', newPath);
     return newPath;
   };
 
   // Auto-select first path through the entire tree when tree data is loaded
   // BUT only if auto-selection is not disabled (i.e., not in mindmap view)
   useEffect(() => {
-    console.log('Auto-selection effect triggered:', {
-      disableAutoSelection,
-      hasTreeData: !!treeData,
-      hasUserMadeSelection,
-      hasLevel1Items: !!(treeData?.level1Items?.length)
-    });
+    // console.log('Auto-selection effect triggered:', {
+    //   disableAutoSelection,
+    //   hasTreeData: !!treeData,
+    //   hasUserMadeSelection,
+    //   hasLevel1Items: !!(treeData?.level1Items?.length)
+    // });
 
     if (
       disableAutoSelection ||
@@ -160,7 +160,7 @@ export const usePathSelectionState = (
       !currentLevel1Exists ||
       (selectedPath.level1 && !selectedPath.level2)
     ) {
-      console.log('Auto-selecting first path for treemap view');
+      //console.log('Auto-selecting first path for treemap view');
       // Trigger the same logic as manual click to ensure cascade works
       setSelectedPath((prev) => {
         const newPath = { ...prev };

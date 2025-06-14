@@ -70,7 +70,7 @@ const buildHierarchy = (
 ) => {
   // Find the single node that should be selected
   const lastSelectedNode = findLastSelectedNode(selectedPath);
-  console.log("MindMap Selection: Last selected node:", lastSelectedNode);
+  //console.log("MindMap Selection: Last selected node:", lastSelectedNode);
 
   const hierarchy: any = {
     id: "root",
@@ -252,9 +252,7 @@ const createD3Nodes = (hierarchicalData: any): MindMapNode[] => {
 
   // Debug logging to verify single node selection
   const selectedNodes = nodes.filter((n) => n.isSelected);
-  console.log("MindMap Selection: Selected nodes count:", selectedNodes.length);
-  console.log("MindMap Selection: Selected nodes:", selectedNodes);
-
+ 
   return nodes;
 };
 
@@ -359,16 +357,13 @@ export const transformToMindMapData = (
   const nodes = createD3Nodes(hierarchicalData);
   const connections = createD3Connections(hierarchicalData);
 
-  console.log(
-    `Mindmap: Generated ${nodes.length} nodes and ${connections.length} connections with single selection`
-  );
-  console.log("Level breakdown:", {
-    root: nodes.filter((n) => n.level === 0).length,
-    level1: nodes.filter((n) => n.level === 1).length,
-    level2: nodes.filter((n) => n.level === 2).length,
-    level3: nodes.filter((n) => n.level === 3).length,
-    level4: nodes.filter((n) => n.level === 4).length,
-  });
+  // console.log("Level breakdown:", {
+  //   root: nodes.filter((n) => n.level === 0).length,
+  //   level1: nodes.filter((n) => n.level === 1).length,
+  //   level2: nodes.filter((n) => n.level === 2).length,
+  //   level3: nodes.filter((n) => n.level === 3).length,
+  //   level4: nodes.filter((n) => n.level === 4).length,
+  // });
 
   return { nodes, connections };
 };

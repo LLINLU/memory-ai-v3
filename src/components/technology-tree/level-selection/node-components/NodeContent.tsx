@@ -29,12 +29,14 @@ export const NodeContent: React.FC<NodeContentProps> = ({
     // If no English part found, return the original name
     return name;
   };
-
   const japaneseTitle = getJapaneseTitle(item.name);
-
-  // Check if this node is being generated (children_count = 0 for TED scenario nodes)
+  // Check if this node is being generated (children_count = 0 for TED scenario nodes only)
+  // Only Level 1 nodes (scenarios) should show generating status when children_count = 0
+  // Level 4+ nodes naturally have children_count = 0 as leaf nodes
   const isGenerating =
-    typeof item.children_count === "number" && item.children_count === 0;
+    typeof item.children_count === "number" && 
+    item.children_count === 0 && 
+    level === 1; // Only show generating for Level 1 (scenario) nodes
 
   return (
     <div className="flex flex-col w-full">

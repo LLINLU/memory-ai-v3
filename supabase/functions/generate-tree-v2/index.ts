@@ -63,6 +63,313 @@ interface UseCase {
 }
 
 // =============================================================================
+// STEP 2 INTERNAL PROCESSING FUNCTION
+// =============================================================================
+
+interface Step2Params {
+  searchTheme: string;
+  scenarioId: string;
+  scenarioName: string;
+  scenarioDescription: string;
+  treeId: string;
+  team_id: string | null;
+  supabaseClient: any;
+  openaiApiKey: string;
+}
+
+async function processStep2Internal(params: Step2Params): Promise<any> {
+  const {
+    searchTheme,
+    scenarioId,
+    scenarioName,
+    scenarioDescription,
+    treeId,
+    team_id,
+    supabaseClient: sb,
+    openaiApiKey,
+  } = params;
+
+  console.log(
+    `=== STEP 2 INTERNAL: Generating subtree for scenario: ${scenarioName} ===`
+  );
+
+  /*──────── OpenAI for Step 2 ────────*/
+  const oa = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${openaiApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "gpt-4.1",
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a structured, concise assistant specialized in detailed technology subtree generation.",
+        },
+        {
+          role: "user",
+          content: makeStepTwoPrompt(
+            searchTheme,
+            scenarioName,
+            scenarioDescription
+          ),
+        },
+      ],
+    }),
+  });
+  if (!oa.ok) throw new Error(`OpenAI ${oa.status}: ${await oa.text()}`);
+  const gpt = await oa.json();
+  let parsedResponse;
+  try {
+    parsedResponse = JSON.parse(gpt.choices[0].message.content);
+  } catch (parseError) {
+    console.error(
+      `[STEP 2 INTERNAL] Failed to parse OpenAI response:`,
+      parseError
+    );
+    throw new Error(`Failed to parse OpenAI response: ${parseError.message}`);
+  }
+
+  // Handle children array format (no scenario wrapper needed)
+  let purposeNodes: BareNode[];
+  if (parsedResponse.children && Array.isArray(parsedResponse.children)) {
+    purposeNodes = parsedResponse.children;
+  } else if (parsedResponse.subtree && parsedResponse.subtree.children) {
+    // Fallback: if model still returns subtree format, extract children
+    purposeNodes = parsedResponse.subtree.children;
+    console.log(
+      `[STEP 2 INTERNAL] Using subtree.children, found ${purposeNodes.length} purpose nodes`
+    );
+  } else if (parsedResponse.name && parsedResponse.children) {
+    // Fallback: if model returns scenario node, extract children
+    purposeNodes = parsedResponse.children;
+    console.log(
+      `[STEP 2 INTERNAL] Using scenario.children, found ${purposeNodes.length} purpose nodes`
+    );
+  } else {
+    console.error(
+      `[STEP 2 INTERNAL] Invalid subtree structure for ${scenarioName}. Available keys:`,
+      Object.keys(parsedResponse)
+    );
+    console.error(`[STEP 2 INTERNAL] Full response:`, parsedResponse);
+    throw new Error("Model returned malformed subtree");
+  }
+
+  /*──────── Python API Enrichment ────────*/
+  console.log(`=== Calling Python API for enrichment: ${scenarioName} ===`);
+
+  // Prepare subtree data for Python API
+  const subtreeWithIds = assignIdsToSubtree(purposeNodes);
+  // console.log(`[STEP 2 INTERNAL] Assigned IDs, building scenario tree input`);
+
+  const scenarioTreeInput = {
+    treeId,
+    scenarioNode: {
+      id: scenarioId,
+      title: scenarioName,
+      description: scenarioDescription,
+      level: 1,
+      children: subtreeWithIds,
+    },
+  };
+
+  // Call Python API for enrichment (mock for now)
+  console.log(`[STEP 2 INTERNAL] Calling enrichment API...`);
+  const enrichedResponse = await callPythonEnrichmentAPI(scenarioTreeInput);
+  console.log(`=== Enrichment completed for: ${scenarioName} ===`);
+
+  /*──────── Save Enriched Data to Supabase ────────*/
+
+  // Save subtree nodes with enriched data
+  const saveSubtreeWithEnrichment = async (
+    bareNode: BareNode,
+    enrichedNode: any,
+    parentId: string,
+    lvl: number,
+    idx: number
+  ) => {
+    const id = enrichedNode.id || crypto.randomUUID();
+    const axisForLevel = detectAxis(lvl);
+
+    console.log(`[SAVE] Saving node at level ${lvl}:`, {
+      id,
+      name: bareNode.name,
+      parentId,
+      axis: axisForLevel,
+      level: lvl,
+      order: idx,
+      childrenCount: bareNode.children.length,
+    });
+
+    // Validate axis value exists in enum
+    const validAxisValues = [
+      "Root",
+      "Scenario", //level 1
+      "Purpose", //level 2
+      "Function", //level 3
+      "Measure",
+      "Measure2",
+      "Measure3",
+      "Measure4",
+      "Measure5",
+      "Measure6",
+      "Measure7",
+    ];
+
+    if (!validAxisValues.includes(axisForLevel)) {
+      console.error(
+        `[SAVE] Invalid axis value: ${axisForLevel} for level ${lvl}`
+      );
+      throw new Error(`Invalid axis value: ${axisForLevel} for level ${lvl}`);
+    }
+
+    // Save tree node
+    try {
+      const { error } = await sb.from("tree_nodes").insert({
+        id,
+        tree_id: treeId,
+        parent_id: parentId,
+        name: bareNode.name,
+        description: bareNode.description ?? "",
+        axis: axisForLevel as any,
+        level: lvl,
+        node_order: idx,
+        children_count: bareNode.children.length,
+        team_id: team_id || null,
+      });
+
+      if (error) {
+        console.error(`[SAVE] Database error saving node ${id}:`, error);
+        throw new Error(`DB error (node ${id}): ${error.message}`);
+      }
+
+      console.log(`[SAVE] Successfully saved node ${id} at level ${lvl}`);
+    } catch (dbError) {
+      console.error(`[SAVE] Failed to save node ${id}:`, dbError);
+      throw dbError;
+    }
+
+    // Save enriched data for this node (papers and use cases)
+    try {
+      if (enrichedNode.papers && enrichedNode.papers.length > 0) {
+        await saveNodePapers(sb, id, treeId, enrichedNode.papers, team_id);
+      }
+      if (enrichedNode.useCases && enrichedNode.useCases.length > 0) {
+        await saveNodeUseCases(sb, id, treeId, enrichedNode.useCases, team_id);
+      }
+    } catch (enrichError) {
+      console.error(
+        `[SAVE] Failed to save enriched data for node ${id}:`,
+        enrichError
+      );
+    }
+
+    // Recursively save children
+    console.log(
+      `[SAVE] Processing ${bareNode.children.length} children for node ${id}`
+    );
+    for (let i = 0; i < bareNode.children.length; i++) {
+      const correspondingEnrichedChild = enrichedNode.children?.[i];
+      if (correspondingEnrichedChild) {
+        await saveSubtreeWithEnrichment(
+          bareNode.children[i],
+          correspondingEnrichedChild,
+          id,
+          lvl + 1,
+          i
+        );
+      } else {
+        console.warn(
+          `[SAVE] No enriched data found for child ${i} of node ${id}`
+        );
+      }
+    }
+
+    console.log(`[SAVE] Completed saving node ${id} and all its children`);
+  };
+
+  // Save enriched data for the scenario node itself
+  try {
+    if (
+      enrichedResponse.scenarioNode.papers &&
+      enrichedResponse.scenarioNode.papers.length > 0
+    ) {
+      await saveNodePapers(
+        sb,
+        scenarioId,
+        treeId,
+        enrichedResponse.scenarioNode.papers,
+        team_id
+      );
+    }
+    if (
+      enrichedResponse.scenarioNode.useCases &&
+      enrichedResponse.scenarioNode.useCases.length > 0
+    ) {
+      await saveNodeUseCases(
+        sb,
+        scenarioId,
+        treeId,
+        enrichedResponse.scenarioNode.useCases,
+        team_id
+      );
+    }
+  } catch (scenarioEnrichError) {
+    console.error(
+      `[STEP 2 INTERNAL] Failed to save enriched data for scenario node ${scenarioId}:`,
+      scenarioEnrichError
+    );
+  }
+  // Save purpose nodes (level 2) and their subtrees
+  for (let i = 0; i < purposeNodes.length; i++) {
+    const correspondingEnrichedNode =
+      enrichedResponse.scenarioNode.children?.[i];
+    if (correspondingEnrichedNode) {
+      await saveSubtreeWithEnrichment(
+        purposeNodes[i],
+        correspondingEnrichedNode,
+        scenarioId,
+        2, // Purpose level
+        i
+      );
+    } else {
+      console.warn(
+        `[STEP 2 INTERNAL] No enriched data found for purpose node ${i} of scenario ${scenarioId}`
+      );
+    }
+  }
+
+  // IMPORTANT: Update scenario node children_count ONLY AFTER all subtree nodes are completely saved
+  // This prevents the frontend polling from triggering too early when only partial data is available
+  const { error: updateError } = await sb
+    .from("tree_nodes")
+    .update({ children_count: purposeNodes.length })
+    .eq("id", scenarioId);
+
+  if (updateError) {
+    console.error(
+      `[STEP 2 INTERNAL] Failed to update children_count for scenario ${scenarioId}:`,
+      updateError
+    );
+  }
+
+  console.log(
+    `[STEP 2 INTERNAL] Successfully completed subtree generation for scenario: ${scenarioName}`
+  );
+
+  return {
+    success: true,
+    scenarioId,
+    scenarioName,
+    purposeNodesCount: purposeNodes.length,
+    enrichedDataSaved: true,
+  };
+}
+
+// =============================================================================
 // HELPER FUNCTIONS
 // =============================================================================
 
@@ -168,10 +475,6 @@ async function saveNodeUseCases(
 async function callPythonEnrichmentAPI(
   scenarioTree: ScenarioTreeInput
 ): Promise<EnrichedScenarioResponse> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  console.log(`[MOCK API] Processing tree: ${scenarioTree.treeId}`);
   console.log(`[MOCK API] Scenario: ${scenarioTree.scenarioNode.title}`);
 
   const enrichedNode = enrichNodeWithMockData(scenarioTree.scenarioNode);
@@ -306,15 +609,9 @@ function generateRandomDate(): string {
 
 // Helper function to assign unique IDs to subtree nodes for API consistency
 function assignIdsToSubtree(nodes: BareNode[], startLevel: number = 2): any[] {
-  console.log(
-    `[ASSIGN_IDS] Processing ${nodes.length} nodes at level ${startLevel}`
-  );
 
   return nodes.map((node, index) => {
     const id = crypto.randomUUID();
-    console.log(
-      `[ASSIGN_IDS] Assigning ID ${id} to node "${node.name}" at level ${startLevel}`
-    );
 
     const result = {
       id,
@@ -323,10 +620,6 @@ function assignIdsToSubtree(nodes: BareNode[], startLevel: number = 2): any[] {
       level: startLevel,
       children: assignIdsToSubtree(node.children, startLevel + 1),
     };
-
-    console.log(
-      `[ASSIGN_IDS] Node "${node.name}" has ${node.children.length} children`
-    );
     return result;
   });
 }
@@ -340,11 +633,11 @@ interface BareNode {
 
 // Function to determine axis based on level
 function detectAxis(level: number): string {
-  const axisMap = ["Scenario", "Purpose", "Function", "Measure"];
+  const axisMap = ["Root", "Scenario", "Purpose", "Function", "Measure"];
   if (level < axisMap.length) {
     return axisMap[level];
   } else {
-    return `Measure${level - axisMap.length + 2}`; // e.g., level 4 => Measure2, 5 => Measure3
+    return `Measure${level - axisMap.length + 2}`; // e.g., level 5 => Measure2, 6 => Measure3
   }
 }
 
@@ -469,13 +762,11 @@ serve(async (req) => {
     const requestBody = await req.json();
     console.log(`[MAIN] Received request:`, {
       method: req.method,
-      step: requestBody.step,
       hasSearchTheme: !!requestBody.searchTheme,
-      hasScenarioId: !!requestBody.scenarioId,
       hasTeamId: !!requestBody.team_id,
     });
 
-    const { searchTheme, team_id, step, scenarioId } = requestBody;
+    const { searchTheme, team_id } = requestBody;
 
     if (!searchTheme)
       return new Response(
@@ -493,690 +784,223 @@ serve(async (req) => {
       throw new Error("Server mis-config (env vars)");
 
     const sb = createClient(SUPABASE_URL, SUPABASE_ROLE_KEY);
+    console.log("=== GENERATING COMPLETE TECHNOLOGY TREE ===");
 
-    // ===============================
-    // STEP 1: Generate Root + Scenarios
-    // ===============================
-    if (step === 1 || !step) {
-      console.log("=== STEP 1: Generating Root + Scenarios ===");
-
-      /*──────── OpenAI for Step 1 ────────*/
-      const oa = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "gpt-4.1",
-          response_format: { type: "json_object" },
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are a structured, concise assistant specialized in technology tree generation.",
-            },
-            { role: "user", content: makeStepOnePrompt(searchTheme) },
-          ],
-        }),
-      });
-      if (!oa.ok) throw new Error(`OpenAI ${oa.status}: ${await oa.text()}`);
-      const gpt = await oa.json();
-
-      console.log(
-        "Raw OpenAI response (Step 1):",
-        JSON.stringify(gpt.choices[0].message.content, null, 2)
-      );
-      const parsedResponse = JSON.parse(gpt.choices[0].message.content);
-
-      // Handle both formats: direct tree structure or wrapped in root
-      let treeRoot: BareNode;
-      if (parsedResponse.root && parsedResponse.root.children) {
-        treeRoot = parsedResponse.root;
-      } else if (parsedResponse.name && parsedResponse.children) {
-        treeRoot = parsedResponse;
-      } else {
-        console.error(
-          "Invalid tree structure. Expected root.children or direct tree, got:",
-          parsedResponse
-        );
-        throw new Error("Model returned malformed tree");
-      }
-
-      // 🔒 PROGRAMMATICALLY ENSURE SCENARIO CHILDREN ARE EMPTY
-      // This guarantees no misalignment regardless of AI output
-      if (treeRoot.children) {
-        treeRoot.children.forEach((scenario) => {
-          scenario.children = []; // Force empty children for all scenarios
-        });
-      }
-
-      // Generate basic layer config for TED approach (will be updated later)
-      const dynamicLayerConfig = ["Scenario", "Purpose", "Function", "Measure"];
-
-      /*──────── Supabase Step 1 ────────*/
-      // 1️⃣ technology_trees - Save root metadata
-      const { data: tt, error: ttErr } = await sb
-        .from("technology_trees")
-        .insert({
-          name: treeRoot.name,
-          description: treeRoot.description ?? "",
-          search_theme: searchTheme,
-          reasoning:
-            parsedResponse.reasoning ??
-            `Generated TED tree (Step 1) for: ${searchTheme}`,
-          layer_config: dynamicLayerConfig,
-          scenario_inputs: parsedResponse.scenario_inputs ?? {
-            what: null,
-            who: null,
-            where: null,
-            when: null,
+    /*──────── OpenAI for Step 1 ────────*/
+    const oa = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-4.1",
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are a structured, concise assistant specialized in technology tree generation.",
           },
-          mode: "TED", // TED mode indicator
-          team_id: team_id || null,
-        })
-        .select("id")
-        .single();
-      if (ttErr) throw new Error(`DB error (tree): ${ttErr.message}`);
+          { role: "user", content: makeStepOnePrompt(searchTheme) },
+        ],
+      }),
+    });
+    if (!oa.ok) throw new Error(`OpenAI ${oa.status}: ${await oa.text()}`);
+    const gpt = await oa.json();
 
-      // 2️⃣ Insert root node at level 0
-      const rootNodeId = crypto.randomUUID();
-      const { error: rootError } = await sb.from("tree_nodes").insert({
-        id: rootNodeId,
-        tree_id: tt.id,
-        parent_id: null,
+    const parsedResponse = JSON.parse(gpt.choices[0].message.content);
+
+    // Handle both formats: direct tree structure or wrapped in root
+    let treeRoot: BareNode;
+    if (parsedResponse.root && parsedResponse.root.children) {
+      treeRoot = parsedResponse.root;
+    } else if (parsedResponse.name && parsedResponse.children) {
+      treeRoot = parsedResponse;
+    } else {
+      console.error(
+        "Invalid tree structure. Expected root.children or direct tree, got:",
+        parsedResponse
+      );
+      throw new Error("Model returned malformed tree");
+    }
+
+    // 🔒 PROGRAMMATICALLY ENSURE SCENARIO CHILDREN ARE EMPTY
+    // This guarantees no misalignment regardless of AI output
+    if (treeRoot.children) {
+      treeRoot.children.forEach((scenario) => {
+        scenario.children = []; // Force empty children for all scenarios
+      });
+    }
+
+    // Generate basic layer config for TED approach (will be updated later)
+    const dynamicLayerConfig = ["Scenario", "Purpose", "Function", "Measure"];
+
+    /*──────── Supabase Step 1 ────────*/
+    // 1️⃣ technology_trees - Save root metadata
+    const { data: tt, error: ttErr } = await sb
+      .from("technology_trees")
+      .insert({
         name: treeRoot.name,
         description: treeRoot.description ?? "",
-        axis: "Root" as any,
-        level: 0,
-        node_order: 0,
-        children_count: treeRoot.children.length,
+        search_theme: searchTheme,
+        reasoning:
+          parsedResponse.reasoning ?? `Generated TED tree for: ${searchTheme}`,
+        layer_config: dynamicLayerConfig,
+        scenario_inputs: parsedResponse.scenario_inputs ?? {
+          what: null,
+          who: null,
+          where: null,
+          when: null,
+        },
+        mode: "TED", // TED mode indicator
+        team_id: team_id || null,
+      })
+      .select("id")
+      .single();
+    if (ttErr) throw new Error(`DB error (tree): ${ttErr.message}`);
+
+    // 2️⃣ Insert root node at level 0
+    const rootNodeId = crypto.randomUUID();
+    const { error: rootError } = await sb.from("tree_nodes").insert({
+      id: rootNodeId,
+      tree_id: tt.id,
+      parent_id: null,
+      name: treeRoot.name,
+      description: treeRoot.description ?? "",
+      axis: "Root" as any,
+      level: 0,
+      node_order: 0,
+      children_count: treeRoot.children.length,
+      team_id: team_id || null,
+    });
+    if (rootError)
+      throw new Error(`DB error (root node): ${rootError.message}`);
+
+    // 3️⃣ Insert scenario nodes (level 1) with children_count = 0 (indicating pending generation)
+    const scenarioPromises = treeRoot.children.map(async (scenario, idx) => {
+      const scenarioId = crypto.randomUUID();
+      const { error } = await sb.from("tree_nodes").insert({
+        id: scenarioId,
+        tree_id: tt.id,
+        parent_id: rootNodeId,
+        name: scenario.name,
+        description: scenario.description ?? "",
+        axis: "Scenario" as any,
+        level: 1,
+        node_order: idx,
+        children_count: 0, // Important: Set to 0 to indicate subtree not generated yet
         team_id: team_id || null,
       });
-      if (rootError)
-        throw new Error(`DB error (root node): ${rootError.message}`);
-
-      // 3️⃣ Insert scenario nodes (level 1) with children_count = 0 (indicating pending generation)
-      const scenarioPromises = treeRoot.children.map(async (scenario, idx) => {
-        const scenarioId = crypto.randomUUID();
-        const { error } = await sb.from("tree_nodes").insert({
-          id: scenarioId,
-          tree_id: tt.id,
-          parent_id: rootNodeId,
-          name: scenario.name,
-          description: scenario.description ?? "",
-          axis: "Scenario" as any,
-          level: 1,
-          node_order: idx,
-          children_count: 0, // Important: Set to 0 to indicate subtree not generated yet
-          team_id: team_id || null,
-        });
-        if (error)
-          throw new Error(`DB error (scenario node): ${error.message}`);
-        return {
-          id: scenarioId,
-          name: scenario.name,
-          description: scenario.description,
-        };
-      });
-      const scenarios = await Promise.all(scenarioPromises);
-
-      console.log(
-        `[STEP 1] Created ${scenarios.length} scenarios, starting Step 2 generation`
-      );
-
-      // Start Step 2 generation for each scenario asynchronously with proper error handling
-      const step2Promises = scenarios.map(async (scenario) => {
-        try {
-          console.log(
-            `[STEP 1] Starting Step 2 for scenario: ${scenario.name} (ID: ${scenario.id})`
-          );
-
-          const step2Response = await fetch(req.url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: req.headers.get("Authorization") || "",
-            },
-            body: JSON.stringify({
-              searchTheme,
-              team_id,
-              step: 2,
-              scenarioId: scenario.id,
-              scenarioName: scenario.name,
-              scenarioDescription: scenario.description,
-              treeId: tt.id,
-            }),
-          });
-
-          if (!step2Response.ok) {
-            const errorText = await step2Response.text();
-            console.error(
-              `[STEP 1] Step 2 failed for scenario ${scenario.name}:`,
-              {
-                status: step2Response.status,
-                statusText: step2Response.statusText,
-                error: errorText,
-              }
-            );
-            throw new Error(
-              `Step 2 failed: ${step2Response.status} - ${errorText}`
-            );
-          }
-
-          const step2Result = await step2Response.json();
-          console.log(
-            `[STEP 1] Step 2 completed for scenario: ${scenario.name}`,
-            step2Result
-          );
-          return {
-            scenario: scenario.name,
-            success: true,
-            result: step2Result,
-          };
-        } catch (error) {
-          console.error(
-            `[STEP 1] Error in Step 2 for scenario ${scenario.name}:`,
-            {
-              message: error.message,
-              stack: error.stack,
-            }
-          );
-          return {
-            scenario: scenario.name,
-            success: false,
-            error: error.message,
-          };
-        }
-      });
-
-      // Don't wait for all Step 2 to complete - let them run in background
-      console.log(
-        `[STEP 1] Initiated ${step2Promises.length} Step 2 processes`
-      );
-
-      // Start the processes but don't await them - they'll complete asynchronously
-      Promise.all(step2Promises)
-        .then((results) => {
-          const successful = results.filter((r) => r.success).length;
-          const failed = results.filter((r) => !r.success).length;
-          console.log(
-            `[STEP 1] All Step 2 processes completed: ${successful} successful, ${failed} failed`
-          );
-          if (failed > 0) {
-            console.error(
-              `[STEP 1] Failed scenarios:`,
-              results.filter((r) => !r.success)
-            );
-          }
-        })
-        .catch((error) => {
-          console.error(`[STEP 1] Error waiting for Step 2 completion:`, error);
-        });
-
-      return new Response(
-        JSON.stringify({
-          success: true,
-          treeId: tt.id,
-          step: 1,
-          scenarios: scenarios.map((s) => ({ id: s.id, name: s.name })),
-        }),
-        {
-          status: 200,
-          headers: { ...CORS, "Content-Type": "application/json" },
-        }
-      );
-    } // ===============================
-    // STEP 2: Generate Subtree for specific scenario
-    // ===============================
-    else if (step === 2) {
-      console.log(`[STEP 2] === STEP 2 ENTRY POINT ===`);
-      console.log(`[STEP 2] Raw request body:`, requestBody);
-
-      const { scenarioName, scenarioDescription, treeId } = requestBody;
-
-      console.log(`[STEP 2] Starting Step 2 with params:`, {
-        scenarioId,
-        scenarioName,
-        scenarioDescription,
-        treeId,
-        team_id,
-      });
-
-      if (!scenarioId || !scenarioName || !treeId) {
-        console.error(`[STEP 2] Missing required parameters:`, {
-          scenarioId: !!scenarioId,
-          scenarioName: !!scenarioName,
-          treeId: !!treeId,
-        });
-        return new Response(
-          JSON.stringify({
-            error:
-              "scenarioId, scenarioName, and treeId are required for step 2",
-          }),
-          {
-            status: 400,
-            headers: { ...CORS, "Content-Type": "application/json" },
-          }
-        );
-      }
-
-      console.log(
-        `=== STEP 2: Generating subtree for scenario: ${scenarioName} ===`
-      );
-
-      /*──────── OpenAI for Step 2 ────────*/
-      const oa = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "gpt-4.1",
-          response_format: { type: "json_object" },
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are a structured, concise assistant specialized in detailed technology subtree generation.",
-            },
-            {
-              role: "user",
-              content: makeStepTwoPrompt(
-                searchTheme,
-                scenarioName,
-                scenarioDescription
-              ),
-            },
-          ],
-        }),
-      });
-      if (!oa.ok) throw new Error(`OpenAI ${oa.status}: ${await oa.text()}`);
-      const gpt = await oa.json();
-      console.log(
-        `Raw OpenAI response (Step 2 - ${scenarioName}):`,
-        JSON.stringify(gpt.choices[0].message.content, null, 2)
-      );
-
-      let parsedResponse;
-      try {
-        parsedResponse = JSON.parse(gpt.choices[0].message.content);
-        console.log(
-          `[STEP 2] Parsed OpenAI response structure:`,
-          Object.keys(parsedResponse)
-        );
-      } catch (parseError) {
-        console.error(`[STEP 2] Failed to parse OpenAI response:`, parseError);
-        throw new Error(
-          `Failed to parse OpenAI response: ${parseError.message}`
-        );
-      }
-
-      // Handle children array format (no scenario wrapper needed)
-      let purposeNodes: BareNode[];
-      if (parsedResponse.children && Array.isArray(parsedResponse.children)) {
-        purposeNodes = parsedResponse.children;
-        console.log(
-          `[STEP 2] Using direct children array, found ${purposeNodes.length} purpose nodes`
-        );
-      } else if (parsedResponse.subtree && parsedResponse.subtree.children) {
-        // Fallback: if model still returns subtree format, extract children
-        purposeNodes = parsedResponse.subtree.children;
-        console.log(
-          `[STEP 2] Using subtree.children, found ${purposeNodes.length} purpose nodes`
-        );
-      } else if (parsedResponse.name && parsedResponse.children) {
-        // Fallback: if model returns scenario node, extract children
-        purposeNodes = parsedResponse.children;
-        console.log(
-          `[STEP 2] Using scenario.children, found ${purposeNodes.length} purpose nodes`
-        );
-      } else {
-        console.error(
-          `[STEP 2] Invalid subtree structure for ${scenarioName}. Available keys:`,
-          Object.keys(parsedResponse)
-        );
-        console.error(`[STEP 2] Full response:`, parsedResponse);
-        throw new Error("Model returned malformed subtree");
-      } /*──────── Python API Enrichment ────────*/
-      console.log(`=== Calling Python API for enrichment: ${scenarioName} ===`);
-
-      // Prepare subtree data for Python API
-      console.log(
-        `[STEP 2] Assigning IDs to ${purposeNodes.length} purpose nodes`
-      );
-      const subtreeWithIds = assignIdsToSubtree(purposeNodes);
-      console.log(`[STEP 2] Assigned IDs, building scenario tree input`);
-
-      const scenarioTreeInput = {
-        treeId,
-        scenarioNode: {
-          id: scenarioId,
-          title: scenarioName,
-          description: scenarioDescription,
-          level: 1,
-          children: subtreeWithIds,
-        },
+      if (error) throw new Error(`DB error (scenario node): ${error.message}`);
+      return {
+        id: scenarioId,
+        name: scenario.name,
+        description: scenario.description,
       };
+    });
+    const scenarios = await Promise.all(scenarioPromises);
 
-      console.log(`[STEP 2] Scenario tree input prepared:`, {
-        treeId,
-        scenarioNodeId: scenarioId,
-        childrenCount: subtreeWithIds.length,
-      });
+    console.log(
+      `[STEP 1] Created ${scenarios.length} scenarios, starting Step 2 generation`
+    );
 
-      // Call Python API for enrichment (mock for now)
-      console.log(`[STEP 2] Calling enrichment API...`);
-      const enrichedResponse = await callPythonEnrichmentAPI(scenarioTreeInput);
-      console.log(
-        `=== Enrichment completed for: ${scenarioName} ===`
-      ); /*──────── Save Enriched Data to Supabase ────────*/
-      console.log(
-        `[STEP 2] Starting to save ${purposeNodes.length} purpose nodes to database`
-      );
-
-      // Save subtree nodes with enriched data
-      const saveSubtreeWithEnrichment = async (
-        bareNode: BareNode,
-        enrichedNode: any,
-        parentId: string,
-        lvl: number,
-        idx: number
-      ) => {
-        const id = enrichedNode.id || crypto.randomUUID();
-        const axisForLevel = detectAxis(lvl); // FIXED: was lvl - 1, now just lvl
-
-        console.log(`[SAVE] Saving node at level ${lvl}:`, {
-          id,
-          name: bareNode.name,
-          parentId,
-          axis: axisForLevel,
-          level: lvl,
-          order: idx,
-          childrenCount: bareNode.children.length,
-        });
-
-        // Validate axis value exists in enum
-        const validAxisValues = [
-          "Root",
-          "Scenario",
-          "Purpose",
-          "Function",
-          "Measure",
-          "Measure2",
-          "Measure3",
-          "Measure4",
-          "Measure5",
-          "Measure6",
-          "Measure7",
-          "Technology",
-          "How1",
-          "How2",
-          "How3",
-          "How4",
-          "How5",
-          "How6",
-          "How7",
-        ];
-
-        if (!validAxisValues.includes(axisForLevel)) {
-          console.error(
-            `[SAVE] Invalid axis value: ${axisForLevel} for level ${lvl}`
-          );
-          throw new Error(
-            `Invalid axis value: ${axisForLevel} for level ${lvl}`
-          );
-        }
-
-        // Save tree node
-        try {
-          const { error } = await sb.from("tree_nodes").insert({
-            id,
-            tree_id: treeId,
-            parent_id: parentId,
-            name: bareNode.name,
-            description: bareNode.description ?? "",
-            axis: axisForLevel as any,
-            level: lvl,
-            node_order: idx,
-            children_count: bareNode.children.length,
-            team_id: team_id || null,
-          });
-
-          if (error) {
-            console.error(`[SAVE] Database error saving node ${id}:`, error);
-            throw new Error(`DB error (subtree node): ${error.message}`);
-          }
-
-          console.log(`[SAVE] Successfully saved node ${id} at level ${lvl}`);
-        } catch (dbError) {
-          console.error(`[SAVE] Failed to save node ${id}:`, dbError);
-          throw dbError;
-        }
-
-        // Save enriched data for this node (papers and use cases)
-        try {
-          if (enrichedNode.papers && enrichedNode.papers.length > 0) {
-            console.log(
-              `[SAVE] Saving ${enrichedNode.papers.length} papers for node ${id}`
-            );
-            await saveNodePapers(sb, id, treeId, enrichedNode.papers, team_id);
-          }
-          if (enrichedNode.useCases && enrichedNode.useCases.length > 0) {
-            console.log(
-              `[SAVE] Saving ${enrichedNode.useCases.length} use cases for node ${id}`
-            );
-            await saveNodeUseCases(
-              sb,
-              id,
-              treeId,
-              enrichedNode.useCases,
-              team_id
-            );
-          }
-        } catch (enrichError) {
-          console.error(
-            `[SAVE] Failed to save enriched data for node ${id}:`,
-            enrichError
-          );
-          // Don't throw here - continue with children even if enriched data fails
-        }
-
-        // Recursively save children
+    // Start Step 2 generation for each scenario asynchronously with proper error handling
+    const step2Promises = scenarios.map(async (scenario) => {
+      try {
         console.log(
-          `[SAVE] Processing ${bareNode.children.length} children for node ${id}`
+          `[STEP 1] Starting Step 2 for scenario: ${scenario.name} (ID: ${scenario.id})`
         );
-        for (let i = 0; i < bareNode.children.length; i++) {
-          const correspondingEnrichedChild = enrichedNode.children[i];
-          if (!correspondingEnrichedChild) {
-            console.error(
-              `[SAVE] Missing enriched child at index ${i} for node ${id}`
-            );
-            continue;
-          }
 
-          try {
-            await saveSubtreeWithEnrichment(
-              bareNode.children[i],
-              correspondingEnrichedChild,
-              id,
-              lvl + 1,
-              i
-            );
-          } catch (childError) {
-            console.error(
-              `[SAVE] Failed to save child ${i} of node ${id}:`,
-              childError
-            );
-            throw childError; // Propagate child errors
-          }
-        }
-
-        console.log(`[SAVE] Completed saving node ${id} and all its children`);
-      }; // First, save enriched data for the scenario node itself (level 1)
-      console.log(
-        `[STEP 2] Saving enriched data for scenario node: ${scenarioId}`
-      );
-      try {
-        if (
-          enrichedResponse.scenarioNode.papers &&
-          enrichedResponse.scenarioNode.papers.length > 0
-        ) {
-          console.log(
-            `[SCENARIO] Saving ${enrichedResponse.scenarioNode.papers.length} papers for scenario`
-          );
-          await saveNodePapers(
-            sb,
-            scenarioId,
-            treeId,
-            enrichedResponse.scenarioNode.papers,
-            team_id
-          );
-          console.log(`[DB] Saved scenario papers for: ${scenarioName}`);
-        }
-        if (
-          enrichedResponse.scenarioNode.useCases &&
-          enrichedResponse.scenarioNode.useCases.length > 0
-        ) {
-          console.log(
-            `[SCENARIO] Saving ${enrichedResponse.scenarioNode.useCases.length} use cases for scenario`
-          );
-          await saveNodeUseCases(
-            sb,
-            scenarioId,
-            treeId,
-            enrichedResponse.scenarioNode.useCases,
-            team_id
-          );
-          console.log(`[DB] Saved scenario use cases for: ${scenarioName}`);
-        }
-      } catch (scenarioEnrichError) {
-        console.error(
-          `[SCENARIO] Failed to save scenario enriched data:`,
-          scenarioEnrichError
-        );
-        // Continue anyway - don't fail the whole process
-      }
-
-      // Then, save all children of the scenario with enrichment (starting at level 2 = Purpose)
-      console.log(
-        `[STEP 2] Starting to save ${purposeNodes.length} purpose nodes as children of scenario`
-      );
-      try {
-        for (let i = 0; i < purposeNodes.length; i++) {
-          const correspondingEnrichedNode =
-            enrichedResponse.scenarioNode.children[i];
-          if (!correspondingEnrichedNode) {
-            console.error(`[STEP 2] Missing enriched node at index ${i}`);
-            continue;
-          }
-
-          console.log(
-            `[STEP 2] Saving purpose node ${i + 1}/${purposeNodes.length}: ${
-              purposeNodes[i].name
-            }`
-          );
-          await saveSubtreeWithEnrichment(
-            purposeNodes[i],
-            correspondingEnrichedNode,
-            scenarioId,
-            2, // Purpose level
-            i
-          );
-          console.log(
-            `[STEP 2] Successfully saved purpose node ${i + 1}/${
-              purposeNodes.length
-            }`
-          );
-        }
-        console.log(`[STEP 2] Completed saving all purpose nodes`);
-      } catch (saveError) {
-        console.error(`[STEP 2] Failed to save purpose nodes:`, saveError);
-        throw saveError;
-      } // Update scenario node to set correct children_count
-      console.log(
-        `[STEP 2] Updating scenario node ${scenarioId} with children_count: ${purposeNodes.length}`
-      );
-      try {
-        const { error: updateError } = await sb
-          .from("tree_nodes")
-          .update({
-            children_count: purposeNodes.length,
-          })
-          .eq("id", scenarioId);
-        if (updateError) {
-          console.error(
-            `[STEP 2] Failed to update scenario children_count:`,
-            updateError
-          );
-          throw new Error(
-            `DB error (updating scenario): ${updateError.message}`
-          );
-        }
-        console.log(`[STEP 2] Successfully updated scenario children_count`);
-      } catch (updateError) {
-        console.error(`[STEP 2] Error updating scenario:`, updateError);
-        throw updateError;
-      }
-
-      // Check if all scenarios are completed (have children_count > 0)
-      console.log(`[STEP 2] Checking completion status for tree ${treeId}`);
-      const { data: allScenarios, error: checkError } = await sb
-        .from("tree_nodes")
-        .select("children_count, name")
-        .eq("tree_id", treeId)
-        .eq("level", 1);
-
-      if (!checkError && allScenarios) {
-        const completedScenarios = allScenarios.filter(
-          (s) => s.children_count > 0
-        );
-        const allCompleted = allScenarios.every((s) => s.children_count > 0);
-
-        console.log(`[STEP 2] Tree completion status:`, {
-          totalScenarios: allScenarios.length,
-          completedScenarios: completedScenarios.length,
-          allCompleted,
-          scenarios: allScenarios.map((s) => ({
-            name: s.name,
-            children_count: s.children_count,
-          })),
+        // Call Step 2 logic directly (not via HTTP) to avoid recursive endpoint calls
+        const step2Result = await processStep2Internal({
+          searchTheme,
+          scenarioId: scenario.id,
+          scenarioName: scenario.name,
+          scenarioDescription: scenario.description || "",
+          treeId: tt.id,
+          team_id,
+          supabaseClient: sb,
+          openaiApiKey: OPENAI_API_KEY,
         });
 
-        if (allCompleted) {
-          // All scenarios now have their subtrees generated
-          console.log(`Tree ${treeId}: All scenarios completed`);
-        }
-      } else if (checkError) {
+        console.log(
+          `[STEP 1] Step 2 completed for scenario: ${scenario.name}`,
+          step2Result
+        );
+        return {
+          scenario: scenario.name,
+          success: true,
+          result: step2Result,
+        };
+      } catch (error) {
         console.error(
-          `[STEP 2] Error checking scenario completion:`,
-          checkError
+          `[STEP 1] Error in Step 2 for scenario ${scenario.name}:`,
+          {
+            message: error.message,
+            stack: error.stack,
+          }
+        );
+        return {
+          scenario: scenario.name,
+          success: false,
+          error: error.message,
+        };
+      }
+    }); // Start Step 2 processes for each scenario in background
+    console.log(
+      `[STEP 1] Starting ${scenarios.length} Step 2 processes in background...`
+    );
+
+    // Use a completely detached approach - no promise chains that could block function termination
+    // Schedule background processing in a way that won't prevent function completion
+    const backgroundProcessor = async () => {
+      try {
+        const results = await Promise.allSettled(step2Promises);
+        const successful = results.filter(
+          (r) => r.status === "fulfilled"
+        ).length;
+        const failed = results.filter((r) => r.status === "rejected").length;
+        console.log(
+          `[COMPLETE] All Step 2 processes completed: ${successful} successful, ${failed} failed`
+        );
+
+        if (failed > 0) {
+          const failedResults = results
+            .filter((r) => r.status === "rejected")
+            .map((r, i) => ({
+              scenario: scenarios[i]?.name || "Unknown",
+              error: r.reason?.message || r.reason,
+            }));
+          console.error(`[COMPLETE] Failed scenarios:`, failedResults);
+        }
+      } catch (error) {
+        console.error(
+          `[COMPLETE] Error in background Step 2 processing:`,
+          error
         );
       }
+    };
 
-      return new Response(
-        JSON.stringify({
-          success: true,
-          treeId,
-          scenarioId,
-          step: 2,
-          message: `Subtree generated for scenario: ${scenarioName}`,
-        }),
-        {
-          status: 200,
-          headers: { ...CORS, "Content-Type": "application/json" },
-        }
-      );
-    } else {
-      return new Response(
-        JSON.stringify({ error: "Invalid step parameter. Must be 1 or 2." }),
-        {
-          status: 400,
-          headers: { ...CORS, "Content-Type": "application/json" },
-        }
-      );
-    }
+    // Execute background processing without any awaiting or promise chaining
+    // This ensures the main function can complete immediately
+    backgroundProcessor(); // Fire and forget
+
+    // Return immediately so scenarios appear in UI with generating indicators
+    return new Response(
+      JSON.stringify({
+        success: true,
+        treeId: tt.id,
+        message:
+          "Tree generation started. Scenarios created, subtrees generating in background.",
+        scenarios: scenarios.map((s) => ({ id: s.id, name: s.name })),
+        status: "generating", // Indicates background processing is active
+      }),
+      {
+        status: 200,
+        headers: { ...CORS, "Content-Type": "application/json" },
+      }
+    );
   } catch (err: any) {
     console.error("=== EDGE FUNCTION ERROR (TED v2) ===");
     console.error("Error details:", {

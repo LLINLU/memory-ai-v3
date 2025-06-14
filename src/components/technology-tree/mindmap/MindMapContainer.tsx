@@ -45,11 +45,11 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   onDeleteNode,
 }) => {
   const { nodes, connections } = useMemo(() => {
-    console.log('MindMap: Processing data for compact D3 tree layout with root node');
-    console.log('User query for root:', query);
-    console.log('Level 1 items:', level1Items?.length || 0);
-    console.log('Level 2 items:', Object.keys(level2Items || {}).length);
-    console.log('Level 3 items:', Object.keys(level3Items || {}).length);
+    // console.log('MindMap: Processing data for compact D3 tree layout with root node');
+    // console.log('User query for root:', query);
+    // console.log('Level 1 items:', level1Items?.length || 0);
+    // console.log('Level 2 items:', Object.keys(level2Items || {}).length);
+    // console.log('Level 3 items:', Object.keys(level3Items || {}).length);
     
     return transformToMindMapData(
       level1Items || [],
@@ -83,8 +83,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   ]);
 
   const handleNodeClick = (nodeId: string, level: number) => {
-    console.log(`MindMap: Node clicked - Level ${level}, ID: ${nodeId}`);
-    
+
     // Don't allow clicking on the root node (level 0)
     if (level === 0) {
       console.log('MindMap: Root node clicked, ignoring');
@@ -123,7 +122,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     getTransform,
   } = usePanZoom(containerWidth, containerHeight);
 
-  console.log(`MindMap: Compact D3 layout - Container dimensions: ${containerWidth}x${containerHeight}, Nodes: ${nodes.length}`);
+  //console.log(`MindMap: Compact D3 layout - Container dimensions: ${containerWidth}x${containerHeight}, Nodes: ${nodes.length}`);
 
   return (
     <TooltipProvider delayDuration={300} skipDelayDuration={100}>

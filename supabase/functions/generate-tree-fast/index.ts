@@ -199,9 +199,7 @@ serve(async (req) => {
     }
 
     /*──────── Supabase ────────*/
-    const sb = createClient(SUPABASE_URL, SUPABASE_ROLE_KEY);
-
-    // 1️⃣ technology_trees - Save root metadata with FAST mode indicator
+    const sb = createClient(SUPABASE_URL, SUPABASE_ROLE_KEY); // 1️⃣ technology_trees - Save root metadata with FAST mode indicator
     const { data: tt, error: ttErr } = await sb
       .from("technology_trees")
       .insert({
@@ -250,9 +248,7 @@ serve(async (req) => {
       lvl = 1, // Start at level 1 for How1 applications
       idx = 0
     ) => {
-      const id = crypto.randomUUID();
-
-      // Map levels to correct axis for FAST:
+      const id = crypto.randomUUID(); // Map levels to correct axis for FAST:
       // Level 0 → Technology (root), Level 1 → How1, Level 2 → How2, Level 3 → How3, etc.
       const axisForLevel = detectAxisFast(lvl); // lvl 1 maps to How1, lvl 2 maps to How2, etc.
 

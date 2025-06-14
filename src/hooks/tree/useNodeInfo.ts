@@ -42,7 +42,7 @@ export const useNodeInfo = (
       return { title: "", description: "", nodeId: "" };
     }
 
-    console.log("useNodeInfo: selectedPath =", selectedPath);
+    //console.log("useNodeInfo: selectedPath =", selectedPath);
     let title = "";
     let description = "";
     let nodeId = "";
@@ -90,9 +90,6 @@ export const useNodeInfo = (
       parentId = selectedPath.level1;
     }
 
-    console.log(
-      `useNodeInfo: Found target level ${targetLevel}, id: ${targetId}, parentId: ${parentId}`
-    );
 
     // Now find the node info for the target level
     let selectedNode: TreeNode | undefined;
@@ -131,9 +128,9 @@ export const useNodeInfo = (
       title = selectedNode.name;
       description = selectedNode.description || "";
       nodeId = targetId;
-      console.log(
-        `useNodeInfo: Found node - title: ${title}, description: ${description}, nodeId: ${nodeId}`
-      );
+      // console.log(
+      //   `useNodeInfo: Found node - title: ${title}, description: ${description}, nodeId: ${nodeId}`
+      // );
     } else {
       console.log("useNodeInfo: No node found for the target level and ID");
     }
@@ -146,7 +143,7 @@ export const useNodeInfo = (
     if (level1Items && level2Items && level3Items && level4Items) {
       const nodeInfo = getSelectedNodeInfo();
       setSelectedNodeInfo(nodeInfo);
-      console.log("useNodeInfo: Updated selectedNodeInfo =", nodeInfo);
+      //console.log("useNodeInfo: Updated selectedNodeInfo =", nodeInfo);
     }
   }, [
     selectedPath,

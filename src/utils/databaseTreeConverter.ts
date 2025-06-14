@@ -68,8 +68,7 @@ const convertFastTreeToAppFormat = (
         color: `hsl(${200 + index * 30}, 70%, 50%)`,
         children_count: node.children_count,
       };
-    });
-  // Extract level 2 items (How2 nodes - children of How1 nodes)
+    }); // Extract level 2 items (How2 nodes - children of How1 nodes)
   const level2Items: Record<string, any[]> = {};
   level1Nodes.forEach((how1Node) => {
     if (how1Node.children && how1Node.children.length > 0) {
@@ -90,71 +89,73 @@ const convertFastTreeToAppFormat = (
           };
         });
       }
+    } else if (how1Node.children_count === 0) {
+      // Show How1 nodes that are pending subtree generation
+      level2Items[how1Node.id] = [];
     }
-  });
-  // Extract level 3 items (How3 nodes - children of How2 nodes)
+  }); // Extract level 3 items (How3 nodes - children of How2 nodes)
   const level3Items: Record<string, any[]> = {};
   level1Nodes.forEach((how1Node) => {
     how1Node.children?.forEach((how2Node) => {
-      if (
-        how2Node.axis === "How2" &&
-        how2Node.children &&
-        how2Node.children.length > 0
-      ) {
-        const how3Nodes = how2Node.children.filter(
-          (node) => node.axis === "How3"
-        );
-        if (how3Nodes.length > 0) {
-          level3Items[how2Node.id] = how3Nodes.map((node, index) => {
-            return {
-              id: node.id,
-              name: node.name,
-              info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
-                Math.floor(Math.random() * 20) + 1
-              }事例`,
-              description: node.description || "",
-              color: `hsl(${240 + index * 20}, 60%, 60%)`,
-              children_count: node.children_count,
-            };
-          });
+      if (how2Node.axis === "How2") {
+        if (how2Node.children && how2Node.children.length > 0) {
+          const how3Nodes = how2Node.children.filter(
+            (node) => node.axis === "How3"
+          );
+          if (how3Nodes.length > 0) {
+            level3Items[how2Node.id] = how3Nodes.map((node, index) => {
+              return {
+                id: node.id,
+                name: node.name,
+                info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
+                  Math.floor(Math.random() * 20) + 1
+                }事例`,
+                description: node.description || "",
+                color: `hsl(${240 + index * 20}, 60%, 60%)`,
+                children_count: node.children_count,
+              };
+            });
+          }
+        } else if (how2Node.children_count === 0) {
+          // Show How2 nodes that are pending subtree generation
+          level3Items[how2Node.id] = [];
         }
       }
     });
-  });
-  // Extract level 4 items (How4 nodes - children of How3 nodes)
+  }); // Extract level 4 items (How4 nodes - children of How3 nodes)
   const level4Items: Record<string, any[]> = {};
   level1Nodes.forEach((how1Node) => {
     how1Node.children?.forEach((how2Node) => {
       if (how2Node.axis === "How2") {
         how2Node.children?.forEach((how3Node) => {
-          if (
-            how3Node.axis === "How3" &&
-            how3Node.children &&
-            how3Node.children.length > 0
-          ) {
-            const how4Nodes = how3Node.children.filter(
-              (node) => node.axis === "How4"
-            );
-            if (how4Nodes.length > 0) {
-              level4Items[how3Node.id] = how4Nodes.map((node, index) => {
-                return {
-                  id: node.id,
-                  name: node.name,
-                  info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
-                    Math.floor(Math.random() * 20) + 1
-                  }事例`,
-                  description: node.description || "",
-                  color: `hsl(${260 + index * 15}, 55%, 65%)`,
-                  children_count: node.children_count,
-                };
-              });
+          if (how3Node.axis === "How3") {
+            if (how3Node.children && how3Node.children.length > 0) {
+              const how4Nodes = how3Node.children.filter(
+                (node) => node.axis === "How4"
+              );
+              if (how4Nodes.length > 0) {
+                level4Items[how3Node.id] = how4Nodes.map((node, index) => {
+                  return {
+                    id: node.id,
+                    name: node.name,
+                    info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
+                      Math.floor(Math.random() * 20) + 1
+                    }事例`,
+                    description: node.description || "",
+                    color: `hsl(${260 + index * 15}, 55%, 65%)`,
+                    children_count: node.children_count,
+                  };
+                });
+              }
+            } else if (how3Node.children_count === 0) {
+              // Show How3 nodes that are pending subtree generation
+              level4Items[how3Node.id] = [];
             }
           }
         });
       }
     });
-  });
-  // Helper function to extract children with specific axis types for FAST
+  }); // Helper function to extract children with specific axis types for FAST
   const extractFastChildrenByAxis = (
     parentNodes: TreeNodeFromDB[],
     axisType: string
@@ -178,6 +179,9 @@ const convertFastTreeToAppFormat = (
             children_count: node.children_count,
           }));
         }
+      } else if (parentNode.children_count === 0) {
+        // Show parent nodes that are pending subtree generation
+        items[parentNode.id] = [];
       }
     });
 
@@ -245,8 +249,10 @@ export const convertDatabaseTreeToAppFormat = (
     mode?: string;
   }
 ) => {
+  console.log(`[CONVERTER DEBUG] Converting tree structure with mode: ${treeMetadata?.mode || 'TED'}`);
+  
   if (!treeStructure?.root) {
-    //console.error("Invalid tree structure received from database");
+    console.error("[CONVERTER DEBUG] Invalid tree structure received from database");
     return null;
   }
 
@@ -255,6 +261,8 @@ export const convertDatabaseTreeToAppFormat = (
     treeMetadata?.mode === "FAST" ||
     (treeStructure.root.children &&
       treeStructure.root.children.some((child) => child.axis === "Technology"));
+
+  console.log(`[CONVERTER DEBUG] Using ${isFastTree ? 'FAST' : 'TED'} mode conversion`);
 
   if (isFastTree) {
     return convertFastTreeToAppFormat(treeStructure, treeMetadata);
@@ -278,14 +286,21 @@ const convertTedTreeToAppFormat = (
     }
     return allNodes;
   };
-
-  const allNodes = collectAllNodes(treeStructure.root);
-
-  // Extract level 1 items (Scenario nodes - children of root)
+  const allNodes = collectAllNodes(treeStructure.root);  // Extract level 1 items (Scenario nodes - children of root)
   const level1Nodes = treeStructure.root.children || [];
+
+  console.log(`[CONVERTER DEBUG TED] Found ${level1Nodes.length} level 1 nodes`);
+  console.log(`[CONVERTER DEBUG TED] Level 1 nodes:`, level1Nodes.map(node => ({
+    name: node.name,
+    axis: node.axis,
+    children_count: node.children_count,
+    id: node.id
+  })));
+
   const level1Items = level1Nodes
     .filter((node) => node.axis === "Scenario")
     .map((node, index) => {
+      console.log(`[CONVERTER DEBUG TED] Converting scenario: ${node.name} with children_count: ${node.children_count}`);
       return {
         id: node.id,
         name: node.name,
@@ -298,19 +313,22 @@ const convertTedTreeToAppFormat = (
       };
     });
 
+  console.log(`[CONVERTER DEBUG TED] Converted level1Items:`, level1Items.map(item => ({
+    name: item.name,
+    children_count: item.children_count,
+    id: item.id
+  })));
+
   // Extract level 2 items (Purpose nodes - children of Scenario nodes)
   const level2Items: Record<string, any[]> = {};
   level1Nodes.forEach((scenarioNode) => {
-    //console.log(`Processing Scenario node ${scenarioNode.name} (${scenarioNode.id}) for Level 2`);
     if (scenarioNode.children && scenarioNode.children.length > 0) {
-      //console.log(`  Found ${scenarioNode.children.length} children`);
       const purposeNodes = scenarioNode.children.filter(
         (node) => node.axis === "Purpose"
       );
-      //console.log(`  Found ${purposeNodes.length} Purpose nodes`);
+
       if (purposeNodes.length > 0) {
         level2Items[scenarioNode.id] = purposeNodes.map((node, index) => {
-          //console.log(`    Creating Level 2 item: ${node.name} (${node.id})`);
           return {
             id: node.id,
             name: node.name,
@@ -323,45 +341,41 @@ const convertTedTreeToAppFormat = (
           };
         });
       }
+    } else if (scenarioNode.children_count === 0) {
+      level2Items[scenarioNode.id] = [];
     }
   });
 
-  //console.log("Level 2 items created:", Object.keys(level2Items).length, "scenario groups");
   // Extract level 3 items (Function nodes - children of Purpose nodes)
   const level3Items: Record<string, any[]> = {};
   level1Nodes.forEach((scenarioNode) => {
     scenarioNode.children?.forEach((purposeNode) => {
-      //console.log(`Processing Purpose node ${purposeNode.name} (${purposeNode.id}) for Level 3`);
-      if (
-        purposeNode.axis === "Purpose" &&
-        purposeNode.children &&
-        purposeNode.children.length > 0
-      ) {
-        //console.log(`  Found ${purposeNode.children.length} children`);
-        const functionNodes = purposeNode.children.filter(
-          (node) => node.axis === "Function"
-        );
-        //console.log(`  Found ${functionNodes.length} Function nodes`);
-        if (functionNodes.length > 0) {
-          level3Items[purposeNode.id] = functionNodes.map((node, index) => {
-            //console.log(`    Creating Level 3 item: ${node.name} (${node.id})`);
-            return {
-              id: node.id,
-              name: node.name,
-              info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
-                Math.floor(Math.random() * 20) + 1
-              }事例`,
-              description: node.description || "",
-              color: `hsl(${240 + index * 20}, 60%, 60%)`,
-              children_count: node.children_count,
-            };
-          });
+      if (purposeNode.axis === "Purpose") {
+        if (purposeNode.children && purposeNode.children.length > 0) {
+          const functionNodes = purposeNode.children.filter(
+            (node) => node.axis === "Function"
+          );
+          if (functionNodes.length > 0) {
+            level3Items[purposeNode.id] = functionNodes.map((node, index) => {
+              return {
+                id: node.id,
+                name: node.name,
+                info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
+                  Math.floor(Math.random() * 20) + 1
+                }事例`,
+                description: node.description || "",
+                color: `hsl(${240 + index * 20}, 60%, 60%)`,
+                children_count: node.children_count,
+              };
+            });
+          }
+        } else if (purposeNode.children_count === 0) {
+          level3Items[purposeNode.id] = [];
         }
       }
     });
   });
 
-  //console.log("Level 3 items created:", Object.keys(level3Items).length, "purpose groups");
   // Extract level 4 items (Measure nodes - children of Function nodes)
   // Note: The database may have Measure nodes at multiple levels (4, 5, 6, etc.)
   // We'll collect all Measure nodes that are direct children of Function nodes
@@ -370,39 +384,36 @@ const convertTedTreeToAppFormat = (
     scenarioNode.children?.forEach((purposeNode) => {
       if (purposeNode.axis === "Purpose") {
         purposeNode.children?.forEach((functionNode) => {
-          //console.log(`Processing Function node ${functionNode.name} (${functionNode.id}) for Level 4`);
-          if (
-            functionNode.axis === "Function" &&
-            functionNode.children &&
-            functionNode.children.length > 0
-          ) {
-            //console.log(`  Found ${functionNode.children.length} children`);
-            // Get all Measure nodes regardless of their database level
-            const measureNodes = functionNode.children.filter(
-              (node) => node.axis === "Measure"
-            );
-            //console.log(`  Found ${measureNodes.length} Measure nodes`);
-            if (measureNodes.length > 0) {
-              level4Items[functionNode.id] = measureNodes.map((node, index) => {
-                //console.log(`    Creating Level 4 item: ${node.name} (${node.id})`);
-                return {
-                  id: node.id,
-                  name: node.name,
-                  info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
-                    Math.floor(Math.random() * 20) + 1
-                  }事例`,
-                  description: node.description || "",
-                  color: `hsl(${260 + index * 15}, 55%, 65%)`,
-                  children_count: node.children_count,
-                };
-              });
+          if (functionNode.axis === "Function") {
+            if (functionNode.children && functionNode.children.length > 0) {
+              // Get all Measure nodes regardless of their database level
+              const measureNodes = functionNode.children.filter(
+                (node) => node.axis === "Measure"
+              );
+              if (measureNodes.length > 0) {
+                level4Items[functionNode.id] = measureNodes.map(
+                  (node, index) => {
+                    return {
+                      id: node.id,
+                      name: node.name,
+                      info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
+                        Math.floor(Math.random() * 20) + 1
+                      }事例`,
+                      description: node.description || "",
+                      color: `hsl(${260 + index * 15}, 55%, 65%)`,
+                      children_count: node.children_count,
+                    };
+                  }
+                );
+              }
+            } else if (functionNode.children_count === 0) {
+              level4Items[functionNode.id] = [];
             }
           }
         });
       }
     });
-  });
-  // Helper function to extract children with specific axis types
+  }); // Helper function to extract children with specific axis types
   const extractChildrenByAxis = (
     parentNodes: TreeNodeFromDB[],
     axisType: string
@@ -426,6 +437,9 @@ const convertTedTreeToAppFormat = (
             children_count: node.children_count,
           }));
         }
+      } else if (parentNode.children_count === 0) {
+        // Show parent nodes that are pending subtree generation
+        items[parentNode.id] = [];
       }
     });
 

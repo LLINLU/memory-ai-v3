@@ -98,10 +98,13 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
   // Special styling for root node
   const isRoot = node.level === 0;
   const rootCursor = isRoot ? "cursor-default" : "cursor-pointer";
-
-  // Check if this node is being generated (children_count = 0 for TED scenario nodes)
+  // Check if this node is being generated (children_count = 0 for TED scenario nodes only)
+  // Only Level 1 nodes (scenarios) should show generating status when children_count = 0
+  // Level 4+ nodes naturally have children_count = 0 as leaf nodes
   const isGenerating =
-    typeof node.children_count === "number" && node.children_count === 0;
+    typeof node.children_count === "number" && 
+    node.children_count === 0 && 
+    node.level === 1; // Only show generating for Level 1 (scenario) nodes
 
   const nodeContent = (
     <div
