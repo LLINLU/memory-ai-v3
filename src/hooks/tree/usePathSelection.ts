@@ -40,6 +40,7 @@ export const usePathSelection = (
     setShowLevel4,
     handleAddLevel4,
     updateTreeData,
+    userClickedNode, // NEW: Get the user's actual clicked node
   } = usePathSelectionState(initialPath, isMindmapView);
 
   // Update tree data for auto-selection
@@ -48,7 +49,7 @@ export const usePathSelection = (
       updateTreeData(treeData);
     }
   }, [treeData, updateTreeData]);
-  
+
   // Use only TED-generated data if available, otherwise use empty arrays
   const level1Data = treeData?.level1Items || [];
   const level2Data = treeData?.level2Items || {};
@@ -86,19 +87,19 @@ export const usePathSelection = (
     level8Data,
     level9Data,
     level10Data
-  ); 
+  );
 
   // FIXED: Only update path in treemap mode, skip auto-selection in mindmap mode
   useEffect(() => {
-    console.log('Path update effect triggered:', {
+    console.log("Path update effect triggered:", {
       isMindmapView,
       hasTreeData: !!treeData?.level1Items,
-      currentLevel1: selectedPath.level1
+      currentLevel1: selectedPath.level1,
     });
 
     // Skip auto-selection entirely in mindmap mode
     if (isMindmapView) {
-      console.log('Mindmap mode: Skipping auto-selection path update');
+      console.log("Mindmap mode: Skipping auto-selection path update");
       return;
     }
 
@@ -108,7 +109,7 @@ export const usePathSelection = (
         (item) => item.id === selectedPath.level1
       );
       if (!currentLevel1Exists) {
-        console.log('Treemap mode: Auto-selecting first level1 item');
+        console.log("Treemap mode: Auto-selecting first level1 item");
         setSelectedPath((prev) => ({
           ...prev,
           level1: treeData.level1Items[0].id,
@@ -138,7 +139,6 @@ export const usePathSelection = (
   const deleteNode = (level: PathLevel, nodeId: string) => {
     removeNode(level, nodeId, selectedPath, setSelectedPath);
   };
-  
   return {
     selectedPath,
     hasUserMadeSelection,
@@ -158,5 +158,6 @@ export const usePathSelection = (
     level10Items,
     showLevel4,
     handleAddLevel4,
+    userClickedNode, // NEW: Expose the user's actual clicked node
   };
 };

@@ -11,16 +11,11 @@ export const useScrollNavigation = () => {
   const updateScrollButtons = useCallback(() => {
     if (containerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
-      
-      console.log('Scroll debug:', { scrollLeft, scrollWidth, clientWidth, canScroll: scrollWidth > clientWidth });
-      
+         
       setCanScrollLeft(scrollLeft > 5);
       
       const maxScrollLeft = scrollWidth - clientWidth;
       const canScrollRightValue = scrollLeft < maxScrollLeft - 5;
-      
-      console.log('Right scroll debug:', { maxScrollLeft, currentScroll: scrollLeft, canScrollRight: canScrollRightValue });
-      
       setCanScrollRight(canScrollRightValue);
     }
   }, []);

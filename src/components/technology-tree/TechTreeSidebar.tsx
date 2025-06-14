@@ -21,6 +21,19 @@ interface TechTreeSidebarProps {
   onResize: () => void;
   selectedNodeTitle?: string;
   selectedNodeDescription?: string;
+  selectedNodeId?: string;
+  selectedPath?: {
+    level1: string;
+    level2: string;
+    level3: string;
+    level4?: string;
+    level5?: string;
+    level6?: string;
+    level7?: string;
+    level8?: string;
+    level9?: string;
+    level10?: string;
+  };
 }
 
 export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
@@ -40,6 +53,8 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
   onResize,
   selectedNodeTitle,
   selectedNodeDescription,
+  selectedNodeId,
+  selectedPath,
 }) => {
   return (
     <ResizablePanel
@@ -71,6 +86,8 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
             onCheckResults={onCheckResults}
             selectedNodeTitle={selectedNodeTitle}
             selectedNodeDescription={selectedNodeDescription}
+            selectedNodeId={selectedNodeId}
+            selectedPath={selectedPath}
           />
         </div>
       </div>

@@ -1,8 +1,8 @@
-
 import React from "react";
 import { SearchResults } from "./SearchResults";
 import { ChatConversation } from "./ChatConversation";
 import { ChatInput } from "./ChatInput";
+import { EnrichedDataDisplay } from "./EnrichedDataDisplay";
 import { NodeSuggestion } from "@/types/chat";
 
 interface SidebarContentProps {
@@ -17,6 +17,19 @@ interface SidebarContentProps {
   onCheckResults?: () => void;
   selectedNodeTitle?: string;
   selectedNodeDescription?: string;
+  selectedNodeId?: string;
+  selectedPath?: {
+    level1: string;
+    level2: string;
+    level3: string;
+    level4?: string;
+    level5?: string;
+    level6?: string;
+    level7?: string;
+    level8?: string;
+    level9?: string;
+    level10?: string;
+  };
 }
 
 export const SidebarContent = ({
@@ -31,12 +44,14 @@ export const SidebarContent = ({
   onCheckResults,
   selectedNodeTitle,
   selectedNodeDescription,
+  selectedNodeId,
+  selectedPath,
 }: SidebarContentProps) => {
   if (sidebarTab === "chat") {
     return (
       <div className="h-full flex flex-col">
-        <ChatConversation 
-          chatMessages={chatMessages} 
+        <ChatConversation
+          chatMessages={chatMessages}
           onUseNode={onUseNode}
           onEditNode={onEditNode}
           onRefine={onRefine}
@@ -49,13 +64,13 @@ export const SidebarContent = ({
         />
       </div>
     );
-  }
-
+  } // Always show SearchResults, but pass real data when a node is selected
   return (
     <div className="h-full flex flex-col">
-      <SearchResults 
-        selectedNodeTitle={selectedNodeTitle} 
+      <SearchResults
+        selectedNodeTitle={selectedNodeTitle}
         selectedNodeDescription={selectedNodeDescription}
+        selectedNodeId={selectedNodeId}
       />
     </div>
   );

@@ -77,9 +77,7 @@ export const QueryDisplay = ({ query, treeMode }: QueryDisplayProps) => {
     try {
       console.log(`Generating tree with query: "${inputQuery}" in ${selectedMode} mode`);
       
-      const result = await generateTree(inputQuery.trim(), selectedMode);
-      
-      if (result) {
+      const result = await generateTree(inputQuery.trim(), selectedMode);      if (result) {
         // Navigate to new tree with the generated data
         navigate("/technology-tree", {
           state: {
@@ -89,6 +87,7 @@ export const QueryDisplay = ({ query, treeMode }: QueryDisplayProps) => {
             treeData: result.treeStructure,
             treeId: result.treeId,
             fromDatabase: true,
+            isGenerating: (result as any).status === "generating", // Indicate if still generating
           },
           replace: true,
         });

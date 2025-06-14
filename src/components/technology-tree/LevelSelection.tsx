@@ -311,7 +311,7 @@ export const LevelSelection = ({
         duration: 1000,
       });
 
-      console.log("Node selection event:", { level, nodeId, refreshEvent });
+      //console.log("Node selection event:", { level, nodeId, refreshEvent });
     }
 
     onNodeClick(level, nodeId);
