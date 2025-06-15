@@ -100,7 +100,6 @@ export const usePathSelectionState = (
         }
       } else if (currentLevelIndex === 2) {
         // For level 3 nodes, find which level 2 node contains this level 3 node
-        // Need to search through level2Items first to find level2 nodes, then check level3Items
         for (const [level1Id, level2Children] of Object.entries(treeData.level2Items || {})) {
           if (Array.isArray(level2Children)) {
             for (const level2Child of level2Children) {
@@ -113,8 +112,36 @@ export const usePathSelectionState = (
             if (parentNodeId) break;
           }
         }
+      } else if (currentLevelIndex === 3) {
+        // For level 4 nodes, find which level 3 node contains this level 4 node
+        for (const [level2Id, level3Children] of Object.entries(treeData.level3Items || {})) {
+          if (Array.isArray(level3Children)) {
+            for (const level3Child of level3Children) {
+              const level4Children = treeData.level4Items?.[level3Child.id] || [];
+              if (level4Children.find((child: any) => child.id === currentNodeId)) {
+                parentNodeId = level3Child.id;
+                break;
+              }
+            }
+            if (parentNodeId) break;
+          }
+        }
+      } else if (currentLevelIndex === 4) {
+        // For level 5 nodes, find which level 4 node contains this level 5 node
+        for (const [level3Id, level4Children] of Object.entries(treeData.level4Items || {})) {
+          if (Array.isArray(level4Children)) {
+            for (const level4Child of level4Children) {
+              const level5Children = treeData.level5Items?.[level4Child.id] || [];
+              if (level5Children.find((child: any) => child.id === currentNodeId)) {
+                parentNodeId = level4Child.id;
+                break;
+              }
+            }
+            if (parentNodeId) break;
+          }
+        }
       } else {
-        // For level 4+ nodes, use the original logic
+        // For level 6+ nodes, use the original logic
         const parentLevelKey = `${parentLevel}Items`;
         const parentLevelItems = treeData[parentLevelKey] || {};
         for (const [parentId, children] of Object.entries(parentLevelItems)) {
