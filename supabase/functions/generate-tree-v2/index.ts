@@ -3,6 +3,91 @@ import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 // =============================================================================
+// MOCK API FUNCTIONS (for Papers and Use Cases)
+// =============================================================================
+
+/**
+ * Mock function to simulate Python API call for tree papers enrichment
+ * Returns tree data enriched with papers only
+ */
+async function callPythonPapersAPI(
+  scenarioTree: ScenarioTreeInput
+): Promise<any> {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 800));
+
+  console.log(`[MOCK PAPERS API] Scenario: ${scenarioTree.scenarioNode.title}`);
+
+  // Generate papers-only enriched data for the entire subtree
+  const enrichedNode = enrichNodeWithPapers(scenarioTree.scenarioNode);
+
+  return {
+    treeId: scenarioTree.treeId,
+    scenarioNode: enrichedNode,
+  };
+}
+
+async function callPythonUseCasesAPI(
+  scenarioTree: ScenarioTreeInput
+): Promise<any> {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 1200));
+
+  console.log(
+    `[MOCK USECASES API] Scenario: ${scenarioTree.scenarioNode.title}`
+  );
+
+  // Generate use cases-only enriched data for the entire subtree
+  const enrichedNode = enrichNodeWithUseCases(scenarioTree.scenarioNode);
+
+  return {
+    treeId: scenarioTree.treeId,
+    scenarioNode: enrichedNode,
+  };
+}
+
+
+/**
+ * Recursively enrich each node with papers only
+ */
+function enrichNodeWithPapers(node: any): any {
+  const papers = generateMockPapers(node.title, node.level);
+
+  const enrichedChildren = node.children.map((child: any) =>
+    enrichNodeWithPapers(child)
+  );
+
+  return {
+    ...node,
+    papers,
+    children: enrichedChildren,
+  };
+}
+
+/**
+ * Recursively enrich each node with use cases only
+ *
+ * 🚫 TEMPORARILY DISABLED - Use Cases API not production ready
+ * This function is commented out until the use cases API is ready for production
+ */
+
+function enrichNodeWithUseCases(node: any): any {
+  const useCases = generateMockUseCases(node.title, node.level);
+
+  const enrichedChildren = node.children.map((child: any) =>
+    enrichNodeWithUseCases(child)
+  );
+
+  return {
+    ...node,
+    useCases,
+    children: enrichedChildren,
+  };
+}
+
+
+
+// =============================================================================
 // TYPE DEFINITIONS (Inlined from api-specifications/python-api-types.ts)
 // =============================================================================
 
@@ -175,11 +260,10 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
       children: subtreeWithIds,
     },
   };
-
-  // Call Python API for enrichment (mock for now)
-  console.log(`[STEP 2 INTERNAL] Calling enrichment API...`);
-  const enrichedResponse = await callPythonEnrichmentAPI(scenarioTreeInput);
-  console.log(`=== Enrichment completed for: ${scenarioName} ===`);
+  // Call Python API for enrichment (papers only for now)
+  console.log(`[STEP 2 INTERNAL] Calling papers API...`);
+  const enrichedResponse = await callPythonPapersAPI(scenarioTreeInput);
+  console.log(`=== Papers enrichment completed for: ${scenarioName} ===`);
 
   /*──────── Save Enriched Data to Supabase ────────*/
 
@@ -250,16 +334,12 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
     } catch (dbError) {
       console.error(`[SAVE] Failed to save node ${id}:`, dbError);
       throw dbError;
-    }
-
-    // Save enriched data for this node (papers and use cases)
+    } // Save enriched data for this node (papers only for now)
     try {
       if (enrichedNode.papers && enrichedNode.papers.length > 0) {
         await saveNodePapers(sb, id, treeId, enrichedNode.papers, team_id);
       }
-      if (enrichedNode.useCases && enrichedNode.useCases.length > 0) {
-        await saveNodeUseCases(sb, id, treeId, enrichedNode.useCases, team_id);
-      }
+      // Use cases will be saved separately later
     } catch (enrichError) {
       console.error(
         `[SAVE] Failed to save enriched data for node ${id}:`,
@@ -290,8 +370,7 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
 
     console.log(`[SAVE] Completed saving node ${id} and all its children`);
   };
-
-  // Save enriched data for the scenario node itself
+  // Save enriched data for the scenario node itself (papers only for now)
   try {
     if (
       enrichedResponse.scenarioNode.papers &&
@@ -305,18 +384,7 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
         team_id
       );
     }
-    if (
-      enrichedResponse.scenarioNode.useCases &&
-      enrichedResponse.scenarioNode.useCases.length > 0
-    ) {
-      await saveNodeUseCases(
-        sb,
-        scenarioId,
-        treeId,
-        enrichedResponse.scenarioNode.useCases,
-        team_id
-      );
-    }
+    // Use cases will be saved separately later
   } catch (scenarioEnrichError) {
     console.error(
       `[STEP 2 INTERNAL] Failed to save enriched data for scenario node ${scenarioId}:`,
@@ -355,7 +423,6 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
       updateError
     );
   }
-
   console.log(
     `[STEP 2 INTERNAL] Successfully completed subtree generation for scenario: ${scenarioName}`
   );
@@ -366,6 +433,8 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
     scenarioName,
     purposeNodesCount: purposeNodes.length,
     enrichedDataSaved: true,
+    papersEnrichmentComplete: true,
+    useCasesEnrichmentPending: true,
   };
 }
 
@@ -467,38 +536,6 @@ async function saveNodeUseCases(
   }
 
   console.log(`[DB] Saved ${useCases.length} use cases for node: ${nodeId}`);
-}
-
-/**
- * Mock Python API call for tree enrichment
- */
-async function callPythonEnrichmentAPI(
-  scenarioTree: ScenarioTreeInput
-): Promise<EnrichedScenarioResponse> {
-  console.log(`[MOCK API] Scenario: ${scenarioTree.scenarioNode.title}`);
-
-  const enrichedNode = enrichNodeWithMockData(scenarioTree.scenarioNode);
-
-  return {
-    treeId: scenarioTree.treeId,
-    scenarioNode: enrichedNode,
-  };
-}
-
-function enrichNodeWithMockData(node: any): any {
-  const papers = generateMockPapers(node.title, node.level);
-  const useCases = generateMockUseCases(node.title, node.level);
-
-  const enrichedChildren = node.children.map((child: any) =>
-    enrichNodeWithMockData(child)
-  );
-
-  return {
-    ...node,
-    papers,
-    useCases,
-    children: enrichedChildren,
-  };
 }
 
 function generateMockPapers(nodeTitle: string, level: number): Paper[] {
@@ -609,7 +646,6 @@ function generateRandomDate(): string {
 
 // Helper function to assign unique IDs to subtree nodes for API consistency
 function assignIdsToSubtree(nodes: BareNode[], startLevel: number = 2): any[] {
-
   return nodes.map((node, index) => {
     const id = crypto.randomUUID();
 
@@ -638,6 +674,149 @@ function detectAxis(level: number): string {
     return axisMap[level];
   } else {
     return `Measure${level - axisMap.length + 2}`; // e.g., level 5 => Measure2, 6 => Measure3
+  }
+}
+
+// =============================================================================
+// USE CASES ENRICHMENT FUNCTION (ASYNC AFTER TREE GENERATION)
+// =============================================================================
+
+/**
+ * Enrich all tree nodes with use cases after the tree with papers is complete
+ */
+async function enrichTreeWithUseCases(
+  treeId: string,
+  supabaseClient: any,
+  teamId: string | null
+): Promise<void> {
+  console.log(`[USECASES] Starting use cases enrichment for tree: ${treeId}`);
+
+  try {
+    // Get all tree nodes for this tree
+    const { data: treeNodes, error: nodesError } = await supabaseClient
+      .from("tree_nodes")
+      .select("id, name, level, parent_id")
+      .eq("tree_id", treeId)
+      .order("level", { ascending: true });
+
+    if (nodesError) {
+      throw new Error(`Failed to fetch tree nodes: ${nodesError.message}`);
+    }
+
+    if (!treeNodes || treeNodes.length === 0) {
+      console.log(`[USECASES] No nodes found for tree ${treeId}`);
+      return;
+    }
+
+    console.log(
+      `[USECASES] Found ${treeNodes.length} nodes to enrich with use cases`
+    );
+
+    // Build tree structure for API call (scenario level nodes only)
+    const scenarioNodes = treeNodes.filter((node) => node.level === 1);
+
+    for (const scenarioNode of scenarioNodes) {
+      console.log(`[USECASES] Processing scenario: ${scenarioNode.name}`);
+
+      // Build subtree for this scenario
+      const scenarioSubtree = await buildScenarioTreeInput(
+        treeId,
+        scenarioNode,
+        treeNodes,
+        supabaseClient
+      );
+      // Call use cases API
+      const enrichedResponse = await callPythonUseCasesAPI(scenarioSubtree);
+
+      // Save use cases data recursively
+      await saveEnrichedUseCasesRecursively(
+        enrichedResponse.scenarioNode,
+        treeId,
+        supabaseClient,
+        teamId
+      );
+
+      console.log(
+        `[USECASES] Completed use cases enrichment for scenario: ${scenarioNode.name}`
+      );
+    }
+
+    console.log(
+      `[USECASES] Completed use cases enrichment for all scenarios in tree: ${treeId}`
+    );
+  } catch (error) {
+    console.error(`[USECASES] Error enriching tree with use cases:`, error);
+  }
+}
+
+/**
+ * Build scenario tree input for use cases API call
+ */
+async function buildScenarioTreeInput(
+  treeId: string,
+  scenarioNode: any,
+  allNodes: any[],
+  supabaseClient: any
+): Promise<ScenarioTreeInput> {
+  // Build nested structure from flat nodes array
+  const buildSubtree = (parentId: string, level: number): any[] => {
+    const children = allNodes.filter(
+      (node) => node.parent_id === parentId && node.level === level
+    );
+
+    return children.map((child) => ({
+      id: child.id,
+      title: child.name,
+      description: "", // Could be fetched if needed
+      level: child.level,
+      children: buildSubtree(child.id, child.level + 1),
+    }));
+  };
+
+  const children = buildSubtree(scenarioNode.id, scenarioNode.level + 1);
+
+  return {
+    treeId,
+    scenarioNode: {
+      id: scenarioNode.id,
+      title: scenarioNode.name,
+      description: "",
+      level: scenarioNode.level,
+      children,
+    },
+  };
+}
+
+/**
+ * Save enriched use cases data recursively for all nodes
+ */
+async function saveEnrichedUseCasesRecursively(
+  enrichedNode: any,
+  treeId: string,
+  supabaseClient: any,
+  teamId: string | null
+): Promise<void> {
+  // Save use cases for this node
+  if (enrichedNode.useCases && enrichedNode.useCases.length > 0) {
+    await saveNodeUseCases(
+      supabaseClient,
+      enrichedNode.id,
+      treeId,
+      enrichedNode.useCases,
+      teamId
+    );
+  }
+
+  // Recursively save use cases for children
+  if (enrichedNode.children && enrichedNode.children.length > 0) {
+    for (const child of enrichedNode.children) {
+      await saveEnrichedUseCasesRecursively(
+        child,
+        treeId,
+        supabaseClient,
+        teamId
+      );
+    }
   }
 }
 
@@ -974,6 +1153,10 @@ serve(async (req) => {
             }));
           console.error(`[COMPLETE] Failed scenarios:`, failedResults);
         }
+        // Now that tree with papers is complete, start use cases enrichment
+        // 🚫 TEMPORARILY DISABLED - Use Cases API not production ready
+        // console.log(`[USECASES] Starting use cases enrichment for all scenarios...`);
+        // await enrichTreeWithUseCases(tt.id, sb, team_id);
       } catch (error) {
         console.error(
           `[COMPLETE] Error in background Step 2 processing:`,

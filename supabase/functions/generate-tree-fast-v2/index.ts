@@ -159,7 +159,9 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
   }
 
   /*──────── Python API Enrichment ────────*/
-  console.log(`=== Calling Python API for enrichment: ${implementationName} ===`);
+  console.log(
+    `=== Calling Python API for enrichment: ${implementationName} ===`
+  );
 
   // Prepare subtree data for Python API
   const subtreeWithIds = assignIdsToSubtree(implementationNodes);
@@ -177,7 +179,9 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
 
   // Call Python API for enrichment (mock for now)
   console.log(`[STEP 2 INTERNAL FAST] Calling enrichment API...`);
-  const enrichedResponse = await callPythonEnrichmentAPI(implementationTreeInput);
+  const enrichedResponse = await callPythonEnrichmentAPI(
+    implementationTreeInput
+  );
   console.log(`=== Enrichment completed for: ${implementationName} ===`);
 
   /*──────── Save Enriched Data to Supabase ────────*/
@@ -472,7 +476,9 @@ async function saveNodeUseCases(
 async function callPythonEnrichmentAPI(
   implementationTree: ScenarioTreeInput
 ): Promise<EnrichedScenarioResponse> {
-  console.log(`[MOCK API] Implementation: ${implementationTree.scenarioNode.title}`);
+  console.log(
+    `[MOCK API] Implementation: ${implementationTree.scenarioNode.title}`
+  );
 
   const enrichedNode = enrichNodeWithMockData(implementationTree.scenarioNode);
 
@@ -875,27 +881,30 @@ serve(async (req) => {
       throw new Error(`DB error (root node): ${rootError.message}`);
 
     // 3️⃣ Insert implementation nodes (level 1 = How1) with children_count = 0 (indicating pending generation)
-    const implementationPromises = treeRoot.children.map(async (implementation, idx) => {
-      const implementationId = crypto.randomUUID();
-      const { error } = await sb.from("tree_nodes").insert({
-        id: implementationId,
-        tree_id: tt.id,
-        parent_id: rootNodeId,
-        name: implementation.name,
-        description: implementation.description ?? "",
-        axis: "How1" as any,
-        level: 1,
-        node_order: idx,
-        children_count: 0, // Important: Set to 0 to indicate subtree not generated yet
-        team_id: team_id || null,
-      });
-      if (error) throw new Error(`DB error (implementation node): ${error.message}`);
-      return {
-        id: implementationId,
-        name: implementation.name,
-        description: implementation.description,
-      };
-    });
+    const implementationPromises = treeRoot.children.map(
+      async (implementation, idx) => {
+        const implementationId = crypto.randomUUID();
+        const { error } = await sb.from("tree_nodes").insert({
+          id: implementationId,
+          tree_id: tt.id,
+          parent_id: rootNodeId,
+          name: implementation.name,
+          description: implementation.description ?? "",
+          axis: "How1" as any,
+          level: 1,
+          node_order: idx,
+          children_count: 0, // Important: Set to 0 to indicate subtree not generated yet
+          team_id: team_id || null,
+        });
+        if (error)
+          throw new Error(`DB error (implementation node): ${error.message}`);
+        return {
+          id: implementationId,
+          name: implementation.name,
+          description: implementation.description,
+        };
+      }
+    );
     const implementations = await Promise.all(implementationPromises);
 
     console.log(
@@ -969,7 +978,10 @@ serve(async (req) => {
               implementation: implementations[i]?.name || "Unknown",
               error: r.reason?.message || r.reason,
             }));
-          console.error(`[COMPLETE FAST] Failed implementations:`, failedResults);
+          console.error(
+            `[COMPLETE FAST] Failed implementations:`,
+            failedResults
+          );
         }
       } catch (error) {
         console.error(
@@ -989,7 +1001,10 @@ serve(async (req) => {
         treeId: tt.id,
         message:
           "FAST tree generation started. Implementations created, subtrees generating in background.",
-        implementations: implementations.map((i) => ({ id: i.id, name: i.name })),
+        implementations: implementations.map((i) => ({
+          id: i.id,
+          name: i.name,
+        })),
         status: "generating", // Indicates background processing is active
       }),
       {
