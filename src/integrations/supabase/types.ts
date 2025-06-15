@@ -9,6 +9,143 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      node_papers: {
+        Row: {
+          abstract: string
+          authors: string
+          citations: number
+          created_at: string
+          date: string
+          doi: string | null
+          id: string
+          journal: string
+          node_id: string
+          region: string
+          tags: Json
+          team_id: string | null
+          title: string
+          tree_id: string
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          abstract: string
+          authors: string
+          citations?: number
+          created_at?: string
+          date: string
+          doi?: string | null
+          id: string
+          journal: string
+          node_id: string
+          region: string
+          tags?: Json
+          team_id?: string | null
+          title: string
+          tree_id: string
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          abstract?: string
+          authors?: string
+          citations?: number
+          created_at?: string
+          date?: string
+          doi?: string | null
+          id?: string
+          journal?: string
+          node_id?: string
+          region?: string
+          tags?: Json
+          team_id?: string | null
+          title?: string
+          tree_id?: string
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "node_papers_node_id_fkey"
+            columns: ["node_id"]
+            isOneToOne: false
+            referencedRelation: "tree_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "node_papers_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "node_papers_tree_id_fkey"
+            columns: ["tree_id"]
+            isOneToOne: false
+            referencedRelation: "technology_trees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      node_use_cases: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          node_id: string
+          releases: number
+          team_id: string | null
+          title: string
+          tree_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id: string
+          node_id: string
+          releases?: number
+          team_id?: string | null
+          title: string
+          tree_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          node_id?: string
+          releases?: number
+          team_id?: string | null
+          title?: string
+          tree_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "node_use_cases_node_id_fkey"
+            columns: ["node_id"]
+            isOneToOne: false
+            referencedRelation: "tree_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "node_use_cases_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "node_use_cases_tree_id_fkey"
+            columns: ["tree_id"]
+            isOneToOne: false
+            referencedRelation: "technology_trees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       teams: {
         Row: {
           created_at: string | null
@@ -181,6 +318,41 @@ export type Database = {
             columns: ["tree_id"]
             isOneToOne: false
             referencedRelation: "technology_trees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      use_case_press_releases: {
+        Row: {
+          created_at: string
+          date: string | null
+          id: string
+          title: string
+          url: string
+          use_case_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string | null
+          id?: string
+          title: string
+          url: string
+          use_case_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string | null
+          id?: string
+          title?: string
+          url?: string
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "use_case_press_releases_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "node_use_cases"
             referencedColumns: ["id"]
           },
         ]

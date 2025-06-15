@@ -84,7 +84,6 @@ export const usePathSelectionState = (
     while (currentLevelIndex > 0) {
       const currentLevel = levels[currentLevelIndex];
       const parentLevel = levels[currentLevelIndex - 1];
-      const parentLevelKey = `${parentLevel}Items`;
 
       // Find the parent of the current node
       let parentNodeId = "";
@@ -99,8 +98,24 @@ export const usePathSelectionState = (
             break;
           }
         }
+      } else if (currentLevelIndex === 2) {
+        // For level 3 nodes, find which level 2 node contains this level 3 node
+        // Need to search through level2Items first to find level2 nodes, then check level3Items
+        for (const [level1Id, level2Children] of Object.entries(treeData.level2Items || {})) {
+          if (Array.isArray(level2Children)) {
+            for (const level2Child of level2Children) {
+              const level3Children = treeData.level3Items?.[level2Child.id] || [];
+              if (level3Children.find((child: any) => child.id === currentNodeId)) {
+                parentNodeId = level2Child.id;
+                break;
+              }
+            }
+            if (parentNodeId) break;
+          }
+        }
       } else {
-        // For level 3+ nodes, find which parent level contains this node
+        // For level 4+ nodes, use the original logic
+        const parentLevelKey = `${parentLevel}Items`;
         const parentLevelItems = treeData[parentLevelKey] || {};
         for (const [parentId, children] of Object.entries(parentLevelItems)) {
           if (Array.isArray(children) && children.find((child: any) => child.id === currentNodeId)) {
