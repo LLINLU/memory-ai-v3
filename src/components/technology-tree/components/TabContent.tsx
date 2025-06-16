@@ -18,7 +18,7 @@ export const TabContent = ({
   selectedNodeId,
 }: TabContentProps) => {
   const [currentFilter, setCurrentFilter] = useState("");
-  const [currentSort, setCurrentSort] = useState("");
+  const [currentSort, setCurrentSort] = useState("citations");
   // Get real enrichment data for the selected node
   const { papers, useCases } = useEnrichedData(selectedNodeId || null);
 
@@ -51,7 +51,7 @@ export const TabContent = ({
         filterString={currentFilter}
         sortBy={currentSort}
       />
-      {/* 
+      {/*
       {activeTab === "papers" ? (
         <PaperList
           selectedNodeId={selectedNodeId}

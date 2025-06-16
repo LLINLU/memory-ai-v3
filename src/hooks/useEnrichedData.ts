@@ -11,7 +11,8 @@ interface Paper {
   date: string | null; // Allow null dates for papers without publication dates
   citations?: number; // Make optional
   region: "domestic" | "international";
-  doi?: string;
+  doi: string;
+  score: number;
   url?: string;
 }
 

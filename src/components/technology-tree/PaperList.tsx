@@ -66,6 +66,8 @@ export const PaperList = ({
             abstract={paper.abstract}
             date={paper.date}
             citations={(paper as any).citations}
+            doi={paper.doi}
+            score={paper.score}
           />
         ))}
       </ul>

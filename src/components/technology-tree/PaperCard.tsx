@@ -19,6 +19,8 @@ interface PaperCardProps {
   abstract: string;
   date: string;
   citations?: number;
+  doi: string;
+  score: number;
 }
 
 // Map tag names to appropriate variants
@@ -99,6 +101,8 @@ export const PaperCard = ({
   abstract,
   date,
   citations,
+  doi,
+  score,
 }: PaperCardProps) => {
   return (
     <li className="w-full bg-white p-6 rounded-lg border border-gray-200">
@@ -142,14 +146,22 @@ export const PaperCard = ({
           <div className="flex flex-col gap-1 text-xs text-gray-500">
             {citations !== undefined && <span>{citations} citations</span>}
             <span>{date}</span>
+            {score !== 0 && <span>Relevance Score: {score}</span>}
           </div>
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              className="text-sm flex items-center gap-2"
+            <a
+              href={`https://doi.org/${doi}`}
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              DOI <ExternalLink size={16} />
-            </Button>
+              {" "}
+              <Button
+                variant="outline"
+                className="text-sm flex items-center gap-2"
+              >
+                DOI <ExternalLink size={16} />
+              </Button>
+            </a>
             <Button variant="outline" className="text-sm">
               保存
             </Button>
