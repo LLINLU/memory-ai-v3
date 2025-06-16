@@ -1,20 +1,31 @@
-
 import React from "react";
 import { MindMapConnection } from "@/utils/mindMapDataTransform";
 
 interface MindMapConnectionsProps {
   connections: MindMapConnection[];
+  layoutDirection: 'horizontal' | 'vertical';
 }
 
 export const MindMapConnections: React.FC<MindMapConnectionsProps> = ({
   connections,
+  layoutDirection,
 }) => {
   const createCurvedPath = (connection: MindMapConnection): string => {
     const { sourceX, sourceY, targetX, targetY } = connection;
-    const midX = sourceX + (targetX - sourceX) / 2;
     
-    // Create a smooth bezier curve similar to D3 tree layouts
-    return `M ${sourceX} ${sourceY} C ${midX} ${sourceY} ${midX} ${targetY} ${targetX} ${targetY}`;
+    if (layoutDirection === 'horizontal') {
+      // KEEP existing curved path logic unchanged for horizontal
+      const midX = sourceX + (targetX - sourceX) / 2;
+      
+      // Create a smooth bezier curve similar to D3 tree layouts
+      return `M ${sourceX} ${sourceY} C ${midX} ${sourceY} ${midX} ${targetY} ${targetX} ${targetY}`;
+    } else {
+      // NEW vertical curve logic only
+      const midY = sourceY + (targetY - sourceY) / 2;
+      
+      // Create vertical bezier curve
+      return `M ${sourceX} ${sourceY} C ${sourceX} ${midY} ${targetX} ${midY} ${targetX} ${targetY}`;
+    }
   };
 
   return (

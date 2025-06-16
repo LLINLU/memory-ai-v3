@@ -201,124 +201,188 @@ const addChildrenRecursively = (
 };
 
 // Helper function to create D3 nodes from hierarchical data
-const createD3Nodes = (hierarchicalData: any): MindMapNode[] => {
+const createD3Nodes = (hierarchicalData: any, layoutDirection: 'horizontal' | 'vertical' = 'horizontal'): MindMapNode[] => {
   if (!hierarchicalData.children || hierarchicalData.children.length === 0) {
     return [];
   }
 
   const root = d3.hierarchy(hierarchicalData);
 
-  // Depth-based separation with progressive spacing to prevent overlap
-  const treeLayout = d3
-    .tree()
-    .nodeSize([50, 400]) // Keep current nodeSize for good horizontal spacing
-    .separation((a, b) => {
-      // Keep tight spacing for level 1 nodes (children of root)
-      if (
-        a.parent &&
-        a.parent.depth === 0 &&
-        b.parent &&
-        b.parent.depth === 0
-      ) {
-        return 1.0; // Keep current tight spacing for level1
-      }
+  if (layoutDirection === 'horizontal') {
+    // KEEP EXACTLY AS IS - don't change anything for horizontal layout
+    const treeLayout = d3
+      .tree()
+      .nodeSize([50, 400]) // Keep current nodeSize for good horizontal spacing
+      .separation((a, b) => {
+        // Keep tight spacing for level 1 nodes (children of root)
+        if (
+          a.parent &&
+          a.parent.depth === 0 &&
+          b.parent &&
+          b.parent.depth === 0
+        ) {
+          return 1.0; // Keep current tight spacing for level1
+        }
 
-      // Specific spacing for level 2 nodes to prevent crowding
-      if (a.depth === 2 && b.depth === 2) {
-        return 1.3; // Increased spacing specifically for level2 green nodes
-      }
+        // Specific spacing for level 2 nodes to prevent crowding
+        if (a.depth === 2 && b.depth === 2) {
+          return 1.3; // Increased spacing specifically for level2 green nodes
+        }
 
-      // Progressive spacing for deeper levels
-      const maxDepth = Math.max(a.depth, b.depth);
-      if (maxDepth <= 3) return 1.5; // Level3 gets more space
-      return 1.8; // Level4+ gets maximum space
-    });
+        // Progressive spacing for deeper levels
+        const maxDepth = Math.max(a.depth, b.depth);
+        if (maxDepth <= 3) return 1.5; // Level3 gets more space
+        return 1.8; // Level4+ gets maximum space
+      });
 
-  treeLayout(root);
-  // Include ALL nodes including the root (depth 0)
-  const nodes = root.descendants().map((node) => ({
-    id: node.data.id,
-    name: node.data.name,
-    description: node.data.description,
-    level: node.data.level,
-    levelName: node.data.levelName,
-    x: node.y + MARGIN_LEFT, // Use new left margin constant
-    y: node.x + MARGIN_TOP, // Use top margin constant
-    parentId: node.parent ? node.parent.data.id : undefined,
-    isSelected: node.data.isSelected,
-    isCustom: node.data.isCustom,
-    children_count: node.data.children_count,
-  }));
+    treeLayout(root);
+    
+    // Include ALL nodes including the root (depth 0) - KEEP current horizontal logic unchanged
+    return root.descendants().map((node) => ({
+      id: node.data.id,
+      name: node.data.name,
+      description: node.data.description,
+      level: node.data.level,
+      levelName: node.data.levelName,
+      x: node.y + MARGIN_LEFT, // Keep current horizontal logic
+      y: node.x + MARGIN_TOP,   // Keep current horizontal logic
+      parentId: node.parent ? node.parent.data.id : undefined,
+      isSelected: node.data.isSelected,
+      isCustom: node.data.isCustom,
+      children_count: node.data.children_count,
+    }));
+  } else {
+    // NEW vertical layout only
+    const treeLayout = d3
+      .tree()
+      .nodeSize([200, 80]) // New vertical spacing - wider horizontal spacing, tighter vertical
+      .separation((a, b) => {
+        // Tighter separation for vertical layout
+        if (a.parent === b.parent) return 1.0;
+        return 1.2;
+      });
 
-  // Debug logging to verify single node selection
-  const selectedNodes = nodes.filter((n) => n.isSelected);
- 
-  return nodes;
+    treeLayout(root);
+    
+    // NEW vertical coordinate mapping
+    return root.descendants().map((node) => ({
+      id: node.data.id,
+      name: node.data.name,
+      description: node.data.description,
+      level: node.data.level,
+      levelName: node.data.levelName,
+      x: node.x + MARGIN_LEFT,  // New vertical flow - x is horizontal position
+      y: node.y + MARGIN_TOP,   // New vertical flow - y is vertical position (flows downward)
+      parentId: node.parent ? node.parent.data.id : undefined,
+      isSelected: node.data.isSelected,
+      isCustom: node.data.isCustom,
+      children_count: node.data.children_count,
+    }));
+  }
 };
 
 // Helper function to create connections from D3 hierarchy
-const createD3Connections = (hierarchicalData: any): MindMapConnection[] => {
+const createD3Connections = (hierarchicalData: any, layoutDirection: 'horizontal' | 'vertical' = 'horizontal'): MindMapConnection[] => {
   if (!hierarchicalData.children || hierarchicalData.children.length === 0) {
     return [];
   }
 
   const root = d3.hierarchy(hierarchicalData);
 
-  // Use the same depth-based separation as createD3Nodes
-  const treeLayout = d3
-    .tree()
-    .nodeSize([50, 400]) // Keep current nodeSize for good horizontal spacing
-    .separation((a, b) => {
-      // Keep tight spacing for level 1 nodes (children of root)
-      if (
-        a.parent &&
-        a.parent.depth === 0 &&
-        b.parent &&
-        b.parent.depth === 0
-      ) {
-        return 1.0; // Keep current tight spacing for level1
-      }
+  if (layoutDirection === 'horizontal') {
+    // KEEP ALL CURRENT CONNECTION LOGIC UNCHANGED for horizontal
+    const treeLayout = d3
+      .tree()
+      .nodeSize([50, 400]) // Keep current nodeSize for good horizontal spacing
+      .separation((a, b) => {
+        // Keep tight spacing for level 1 nodes (children of root)
+        if (
+          a.parent &&
+          a.parent.depth === 0 &&
+          b.parent &&
+          b.parent.depth === 0
+        ) {
+          return 1.0; // Keep current tight spacing for level1
+        }
 
-      // Specific spacing for level 2 nodes to prevent crowding
-      if (a.depth === 2 && b.depth === 2) {
-        return 1.3; // Increased spacing specifically for level2 green nodes
-      }
+        // Specific spacing for level 2 nodes to prevent crowding
+        if (a.depth === 2 && b.depth === 2) {
+          return 1.3; // Increased spacing specifically for level2 green nodes
+        }
 
-      // Progressive spacing for deeper levels
-      const maxDepth = Math.max(a.depth, b.depth);
-      if (maxDepth <= 3) return 1.5; // Level3 gets more space
-      return 1.8; // Level4+ gets maximum space
+        // Progressive spacing for deeper levels
+        const maxDepth = Math.max(a.depth, b.depth);
+        if (maxDepth <= 3) return 1.5; // Level3 gets more space
+        return 1.8; // Level4+ gets maximum space
+      });
+
+    treeLayout(root);
+
+    const connections: MindMapConnection[] = [];
+
+    // Include ALL connections including from root - KEEP existing logic
+    root.links().forEach((link) => {
+      // Check if source is root node (level 0) to use correct width and height
+      const isRootSource = link.source.data.level === 0;
+      const sourceNodeWidth = isRootSource ? ROOT_NODE_WIDTH : NODE_WIDTH; // Now both are 280
+      const sourceNodeHeight = isRootSource ? ROOT_NODE_HEIGHT : NODE_HEIGHT;
+
+      // Calculate connection points with proper centering - KEEP existing logic
+      const sourceX = link.source.y + MARGIN_LEFT + sourceNodeWidth; // Use new left margin
+      const sourceY = link.source.x + MARGIN_TOP + sourceNodeHeight / 2; // Use correct height for centering
+      const targetX = link.target.y + MARGIN_LEFT; // Use new left margin
+      const targetY = link.target.x + MARGIN_TOP + NODE_HEIGHT / 2; // Use top margin
+
+      connections.push({
+        id: `${link.source.data.id}-${link.target.data.id}`,
+        sourceId: link.source.data.id,
+        targetId: link.target.data.id,
+        sourceX,
+        sourceY,
+        targetX,
+        targetY,
+      });
     });
 
-  treeLayout(root);
+    return connections;
+  } else {
+    // NEW vertical connection logic only
+    const treeLayout = d3
+      .tree()
+      .nodeSize([200, 80]) // New vertical spacing
+      .separation((a, b) => {
+        if (a.parent === b.parent) return 1.0;
+        return 1.2;
+      });
 
-  const connections: MindMapConnection[] = [];
+    treeLayout(root);
 
-  // Include ALL connections including from root
-  root.links().forEach((link) => {
-    // Check if source is root node (level 0) to use correct width and height
-    const isRootSource = link.source.data.level === 0;
-    const sourceNodeWidth = isRootSource ? ROOT_NODE_WIDTH : NODE_WIDTH; // Now both are 280
-    const sourceNodeHeight = isRootSource ? ROOT_NODE_HEIGHT : NODE_HEIGHT;
+    const connections: MindMapConnection[] = [];
 
-    // Calculate connection points with proper centering
-    const sourceX = link.source.y + MARGIN_LEFT + sourceNodeWidth; // Use new left margin
-    const sourceY = link.source.x + MARGIN_TOP + sourceNodeHeight / 2; // Use correct height for centering
-    const targetX = link.target.y + MARGIN_LEFT; // Use new left margin
-    const targetY = link.target.x + MARGIN_TOP + NODE_HEIGHT / 2; // Use top margin
+    // NEW vertical connections - bottom edge to top edge
+    root.links().forEach((link) => {
+      const isRootSource = link.source.data.level === 0;
+      const sourceNodeHeight = isRootSource ? ROOT_NODE_HEIGHT : NODE_HEIGHT;
 
-    connections.push({
-      id: `${link.source.data.id}-${link.target.data.id}`,
-      sourceId: link.source.data.id,
-      targetId: link.target.data.id,
-      sourceX,
-      sourceY,
-      targetX,
-      targetY,
+      // Bottom edge of source to top edge of target
+      const sourceX = link.source.x + MARGIN_LEFT + NODE_WIDTH / 2; // Center horizontally
+      const sourceY = link.source.y + MARGIN_TOP + sourceNodeHeight; // Bottom edge
+      const targetX = link.target.x + MARGIN_LEFT + NODE_WIDTH / 2; // Center horizontally  
+      const targetY = link.target.y + MARGIN_TOP; // Top edge
+
+      connections.push({
+        id: `${link.source.data.id}-${link.target.data.id}`,
+        sourceId: link.source.data.id,
+        targetId: link.target.data.id,
+        sourceX,
+        sourceY,
+        targetX,
+        targetY,
+      });
     });
-  });
 
-  return connections;
+    return connections;
+  }
 };
 
 export const transformToMindMapData = (
@@ -334,7 +398,8 @@ export const transformToMindMapData = (
   level10Items: Record<string, TreeNode[]>,
   levelNames: Record<string, string>,
   selectedPath: any,
-  query: string = "Research Query"
+  query: string = "Research Query",
+  layoutDirection: 'horizontal' | 'vertical' = 'horizontal'  // Add layout direction parameter
 ) => {
   // Build hierarchical data structure with proper root
   const hierarchicalData = buildHierarchy(
@@ -353,9 +418,9 @@ export const transformToMindMapData = (
     query
   );
 
-  // Create nodes and connections using D3 tree layout
-  const nodes = createD3Nodes(hierarchicalData);
-  const connections = createD3Connections(hierarchicalData);
+  // Create nodes and connections using D3 tree layout with layout direction
+  const nodes = createD3Nodes(hierarchicalData, layoutDirection);
+  const connections = createD3Connections(hierarchicalData, layoutDirection);
 
   // console.log("Level breakdown:", {
   //   root: nodes.filter((n) => n.level === 0).length,
