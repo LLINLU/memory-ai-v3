@@ -1,5 +1,4 @@
 
-import { useEffect } from "react";
 import { MainContent } from "./MainContent";
 
 interface TechTreeMainContentProps {
@@ -103,25 +102,7 @@ export const TechTreeMainContent = ({
   viewMode,
   onToggleView,
 }: TechTreeMainContentProps) => {
-  // Trigger scroll update when level data changes
-  useEffect(() => {
-    if (triggerScrollUpdate) {
-      console.log('Triggering scroll update due to level data change');
-      triggerScrollUpdate();
-    }
-  }, [
-    level1Items.length,
-    Object.keys(level2Items).length,
-    Object.keys(level3Items).length,
-    Object.keys(level4Items).length,
-    Object.keys(level5Items).length,
-    Object.keys(level6Items).length,
-    Object.keys(level7Items).length,
-    Object.keys(level8Items).length,
-    Object.keys(level9Items).length,
-    Object.keys(level10Items).length,
-    triggerScrollUpdate,
-  ]);
+  // Note: triggerScrollUpdate is now handled by TechnologyTree.tsx to avoid duplicates
 
   return (
     <MainContent

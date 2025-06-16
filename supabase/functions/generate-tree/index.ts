@@ -183,9 +183,7 @@ serve(async (req) => {
       // +1 because we count levels starting from 1
       dynamicLayerConfig.push(detectAxis(i - 1)); // Convert to 0-based for detectAxis
     } /*──────── Supabase ────────*/
-    const sb = createClient(SUPABASE_URL, SUPABASE_ROLE_KEY);
-
-    // 1️⃣ technology_trees - Save root metadata only
+    const sb = createClient(SUPABASE_URL, SUPABASE_ROLE_KEY); // 1️⃣ technology_trees - Save root metadata only
     const { data: tt, error: ttErr } = await sb
       .from("technology_trees")
       .insert({
@@ -231,7 +229,9 @@ serve(async (req) => {
       lvl = 1, // Start at level 1 for scenarios
       idx = 0
     ) => {
-      const id = crypto.randomUUID(); // Map levels to correct axis:
+      const id = crypto.randomUUID();
+
+      // Map levels to correct axis:
       // Level 1 → Scenario, Level 2 → Purpose, Level 3 → Function, Level 4 → Measure, Level 5+ → Measure2, Measure3...
       const axisForLevel = detectAxis(lvl - 1); // lvl 1 maps to axis[0] = "Scenario"
 

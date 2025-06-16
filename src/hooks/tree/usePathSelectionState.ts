@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { PathLevel } from "@/types/tree";
 
@@ -34,17 +33,26 @@ export const usePathSelectionState = (
   const [hasUserMadeSelection, setHasUserMadeSelection] = useState(false);
   const [showLevel4, setShowLevel4] = useState(false);
   const [treeData, setTreeData] = useState<any>(null);
-  
+
+  // NEW: Track the node that user actually clicked for sidebar display
+  const [userClickedNode, setUserClickedNode] = useState<{
+    level: PathLevel;
+    nodeId: string;
+  } | null>(null);
+
   // Debug logging
-  console.log('usePathSelectionState: disableAutoSelection =', disableAutoSelection);
-  
+  //console.log('usePathSelectionState: disableAutoSelection =', disableAutoSelection);
+
   // Store tree data for auto-selection
   const updateTreeData = (data: any) => {
     setTreeData(data);
-  }; 
+  };
 
   // Helper function to find the complete path for a node in mindmap mode
-  const findCompletePath = (targetLevel: PathLevel, targetNodeId: string): PathState => {
+  const findCompletePath = (
+    targetLevel: PathLevel,
+    targetNodeId: string
+  ): PathState => {
     if (!treeData) return initialPath;
 
     const newPath: PathState = {
@@ -61,12 +69,20 @@ export const usePathSelectionState = (
     };
 
     const levels: PathLevel[] = [
-      "level1", "level2", "level3", "level4", "level5",
-      "level6", "level7", "level8", "level9", "level10"
+      "level1",
+      "level2",
+      "level3",
+      "level4",
+      "level5",
+      "level6",
+      "level7",
+      "level8",
+      "level9",
+      "level10",
     ];
-    
+
     const targetLevelIndex = levels.indexOf(targetLevel);
-    
+
     if (targetLevelIndex === 0) {
       // Level 1 node - just set it directly
       newPath.level1 = targetNodeId;
@@ -87,7 +103,7 @@ export const usePathSelectionState = (
 
       // Find the parent of the current node
       let parentNodeId = "";
-      
+
       if (currentLevelIndex === 1) {
         // For level 2 nodes, find which level 1 node contains this level 2 node
         const level1Items = treeData.level1Items || [];
@@ -145,7 +161,10 @@ export const usePathSelectionState = (
         const parentLevelKey = `${parentLevel}Items`;
         const parentLevelItems = treeData[parentLevelKey] || {};
         for (const [parentId, children] of Object.entries(parentLevelItems)) {
-          if (Array.isArray(children) && children.find((child: any) => child.id === currentNodeId)) {
+          if (
+            Array.isArray(children) &&
+            children.find((child: any) => child.id === currentNodeId)
+          ) {
             parentNodeId = parentId;
             break;
           }
@@ -157,24 +176,26 @@ export const usePathSelectionState = (
         currentNodeId = parentNodeId;
         currentLevelIndex--;
       } else {
-        console.warn(`Could not find parent for ${currentLevel} node ${currentNodeId}`);
+        console.warn(
+          `Could not find parent for ${currentLevel} node ${currentNodeId}`
+        );
         break;
       }
     }
 
-    console.log('Mindmap: Built complete path:', newPath);
+    //console.log('Mindmap: Built complete path:', newPath);
     return newPath;
   };
 
   // Auto-select first path through the entire tree when tree data is loaded
   // BUT only if auto-selection is not disabled (i.e., not in mindmap view)
   useEffect(() => {
-    console.log('Auto-selection effect triggered:', {
-      disableAutoSelection,
-      hasTreeData: !!treeData,
-      hasUserMadeSelection,
-      hasLevel1Items: !!(treeData?.level1Items?.length)
-    });
+    // console.log('Auto-selection effect triggered:', {
+    //   disableAutoSelection,
+    //   hasTreeData: !!treeData,
+    //   hasUserMadeSelection,
+    //   hasLevel1Items: !!(treeData?.level1Items?.length)
+    // });
 
     if (
       disableAutoSelection ||
@@ -183,7 +204,7 @@ export const usePathSelectionState = (
       !treeData.level1Items ||
       treeData.level1Items.length === 0
     ) {
-      console.log('Skipping auto-selection due to conditions');
+      console.log("Skipping auto-selection due to conditions");
       return;
     }
 
@@ -202,7 +223,7 @@ export const usePathSelectionState = (
       !currentLevel1Exists ||
       (selectedPath.level1 && !selectedPath.level2)
     ) {
-      console.log('Auto-selecting first path for treemap view');
+      //console.log('Auto-selecting first path for treemap view');
       // Trigger the same logic as manual click to ensure cascade works
       setSelectedPath((prev) => {
         const newPath = { ...prev };
@@ -246,15 +267,17 @@ export const usePathSelectionState = (
       });
     }
   }, [treeData, hasUserMadeSelection, disableAutoSelection]);
-
   const handleNodeClick = (level: PathLevel, nodeId: string) => {
-    console.log('Node clicked:', { level, nodeId, disableAutoSelection });
+    console.log("Node clicked:", { level, nodeId, disableAutoSelection });
     setHasUserMadeSelection(true);
+
+    // Track the user's actual click for sidebar display
+    setUserClickedNode({ level, nodeId });
 
     // Scroll to top of the page when a node is selected
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: "smooth",
     });
 
     setSelectedPath((prev) => {
@@ -282,12 +305,12 @@ export const usePathSelectionState = (
 
       // MINDMAP MODE: Build complete path by traversing up the tree
       if (disableAutoSelection) {
-        console.log('Mindmap mode: Building complete path for', level, nodeId);
+        console.log("Mindmap mode: Building complete path for", level, nodeId);
         return findCompletePath(level, nodeId);
       }
 
       // TREEMAP MODE: Auto-selection enabled
-      console.log('Treemap mode: Auto-selection enabled for', level, nodeId);
+      console.log("Treemap mode: Auto-selection enabled for", level, nodeId);
       const newPath = { ...prev };
       const levels: PathLevel[] = [
         "level1",
@@ -344,7 +367,6 @@ export const usePathSelectionState = (
   const handleAddLevel4 = () => {
     setShowLevel4(true);
   };
-
   return {
     selectedPath,
     setSelectedPath,
@@ -355,5 +377,6 @@ export const usePathSelectionState = (
     setShowLevel4,
     handleAddLevel4,
     updateTreeData,
+    userClickedNode, // NEW: Expose the user's actual clicked node
   };
 };

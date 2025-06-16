@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -20,42 +19,47 @@ interface ImplementationCardProps {
   pressReleases?: PressRelease[];
 }
 
-export const ImplementationCard = ({ 
-  title, 
-  description, 
-  releases, 
-  badgeColor, 
+export const ImplementationCard = ({
+  title,
+  description,
+  releases,
+  badgeColor,
   badgeTextColor,
-  pressReleases = []
+  pressReleases = [],
 }: ImplementationCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const hasMoreReleases = pressReleases.length > 3;
-  const displayedReleases = isExpanded ? pressReleases : pressReleases.slice(0, 3);
+  const displayedReleases = isExpanded
+    ? pressReleases
+    : pressReleases.slice(0, 3);
   const { toast } = useToast();
 
   const handleSave = () => {
     toast({
       title: "事例を保存しました",
-      description: `${title}があなたのライブラリに保存されました`
+      description: `${title}があなたのライブラリに保存されました`,
     });
   };
-
   return (
     <div className="bg-white p-4 rounded-lg border border-gray-200">
-      <div className="flex items-center justify-between mb-2">
+      <div className="mb-2">
+        <div className="flex justify-end mb-2">
+          <Badge
+            className={cn(
+              `${badgeColor} ${badgeTextColor} border-0 font-normal`
+            )}
+          >
+            {releases}リリース
+          </Badge>
+        </div>
         <h4 className="font-semibold">{title}</h4>
-        <Badge 
-          className={cn(`ml-2 ${badgeColor} ${badgeTextColor} border-0 font-normal`)}
-        >
-          {releases}リリース
-        </Badge>
       </div>
-      <p className="text-gray-600 text-sm font-normal mb-3">
-        {description}
-      </p>
+      <p className="text-gray-600 text-sm font-normal mb-3">{description}</p>
       {pressReleases.length > 0 && (
         <div className="space-y-2 mb-4">
-          <div className="text-sm font-medium text-gray-700">プレスリリース：</div>
+          <div className="text-sm font-medium text-gray-700">
+            プレスリリース：
+          </div>
           <div className="pl-4 space-y-1.5">
             {displayedReleases.map((release, index) => (
               <a

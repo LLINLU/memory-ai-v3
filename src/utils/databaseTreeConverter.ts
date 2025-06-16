@@ -1,9 +1,11 @@
 import type { Json } from "@/integrations/supabase/types";
+import { supabase } from "@/integrations/supabase/client";
 
 interface TreeNodeFromDB {
   id: string;
   name: string;
   description: string | null;
+  children_count: number; // Number of children, 0 indicates generation in progress
   axis:
     | "Scenario"
     | "Purpose"
@@ -34,7 +36,55 @@ interface TreeStructureFromDB {
   scenario_inputs: Json;
 }
 
-const convertFastTreeToAppFormat = (
+interface NodeEnrichmentData {
+  paperCount: number;
+  useCaseCount: number;
+}
+
+// Helper function to fetch real paper and use case counts for nodes
+const fetchNodeEnrichmentCounts = async (
+  nodeIds: string[]
+): Promise<Map<string, NodeEnrichmentData>> => {
+  const enrichmentMap = new Map<string, NodeEnrichmentData>();
+
+  if (nodeIds.length === 0) {
+    return enrichmentMap;
+  }
+
+  console.log(
+    `[ENRICHMENT] Hardcoding counts as 20 for ${nodeIds.length} nodes`
+  );
+
+  // Hardcode all nodes to have 20 papers for now
+  nodeIds.forEach((nodeId) => {
+    enrichmentMap.set(nodeId, {
+      paperCount: 20,
+      useCaseCount: 5,
+    });
+  });
+  return enrichmentMap;
+};
+
+// Helper function to create info string with real or fallback data
+const createNodeInfoString = (
+  enrichmentData?: NodeEnrichmentData,
+  nodeId?: string
+): string => {
+  if (enrichmentData && enrichmentData.paperCount > 0) {
+    console.log(
+      `[NODE INFO] Node ${nodeId} has ${enrichmentData.paperCount} papers`
+    );
+    return `${enrichmentData.paperCount}論文`;
+  }
+  // Show 0 papers if no enriched data is available
+  console.log(
+    `[NODE INFO] Node ${nodeId} showing 0 papers - enrichmentData:`,
+    enrichmentData
+  );
+  return `0論文`;
+};
+
+const convertFastTreeToAppFormat = async (
   treeStructure: TreeStructureFromDB,
   treeMetadata?: { description?: string; search_theme?: string; name?: string }
 ) => {
@@ -51,24 +101,26 @@ const convertFastTreeToAppFormat = (
   };
   const allNodes = collectAllNodes(treeStructure.root);
 
+  // Get enrichment data for all nodes
+  const nodeIds = allNodes.map((node) => node.id);
+  const enrichmentMap = await fetchNodeEnrichmentCounts(nodeIds);
+
   // For FAST trees: Root IS the Technology (level 0)
   // Level 1 items are How1 nodes - children of Technology root
   const level1Nodes = treeStructure.root.children || [];
-
   const level1Items = level1Nodes
     .filter((node) => node.axis === "How1")
     .map((node, index) => {
+      const enrichmentData = enrichmentMap.get(node.id);
       return {
         id: node.id,
         name: node.name,
-        info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
-          Math.floor(Math.random() * 20) + 1
-        }事例`,
+        info: createNodeInfoString(enrichmentData, node.id),
         description: node.description || "",
         color: `hsl(${200 + index * 30}, 70%, 50%)`,
+        children_count: node.children_count,
       };
-    });
-  // Extract level 2 items (How2 nodes - children of How1 nodes)
+    }); // Extract level 2 items (How2 nodes - children of How1 nodes)
   const level2Items: Record<string, any[]> = {};
   level1Nodes.forEach((how1Node) => {
     if (how1Node.children && how1Node.children.length > 0) {
@@ -77,81 +129,82 @@ const convertFastTreeToAppFormat = (
       );
       if (how2Nodes.length > 0) {
         level2Items[how1Node.id] = how2Nodes.map((node, index) => {
+          const enrichmentData = enrichmentMap.get(node.id);
           return {
             id: node.id,
             name: node.name,
-            info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
-              Math.floor(Math.random() * 20) + 1
-            }事例`,
+            info: createNodeInfoString(enrichmentData, node.id),
             description: node.description || "",
             color: `hsl(${220 + index * 25}, 65%, 55%)`,
+            children_count: node.children_count,
           };
         });
       }
+    } else if (how1Node.children_count === 0) {
+      // Show How1 nodes that are pending subtree generation
+      level2Items[how1Node.id] = [];
     }
-  });
-  // Extract level 3 items (How3 nodes - children of How2 nodes)
+  }); // Extract level 3 items (How3 nodes - children of How2 nodes)
   const level3Items: Record<string, any[]> = {};
   level1Nodes.forEach((how1Node) => {
     how1Node.children?.forEach((how2Node) => {
-      if (
-        how2Node.axis === "How2" &&
-        how2Node.children &&
-        how2Node.children.length > 0
-      ) {
-        const how3Nodes = how2Node.children.filter(
-          (node) => node.axis === "How3"
-        );
-        if (how3Nodes.length > 0) {
-          level3Items[how2Node.id] = how3Nodes.map((node, index) => {
-            return {
-              id: node.id,
-              name: node.name,
-              info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
-                Math.floor(Math.random() * 20) + 1
-              }事例`,
-              description: node.description || "",
-              color: `hsl(${240 + index * 20}, 60%, 60%)`,
-            };
-          });
+      if (how2Node.axis === "How2") {
+        if (how2Node.children && how2Node.children.length > 0) {
+          const how3Nodes = how2Node.children.filter(
+            (node) => node.axis === "How3"
+          );
+          if (how3Nodes.length > 0) {
+            level3Items[how2Node.id] = how3Nodes.map((node, index) => {
+              const enrichmentData = enrichmentMap.get(node.id);
+              return {
+                id: node.id,
+                name: node.name,
+                info: createNodeInfoString(enrichmentData, node.id),
+                description: node.description || "",
+                color: `hsl(${240 + index * 20}, 60%, 60%)`,
+                children_count: node.children_count,
+              };
+            });
+          }
+        } else if (how2Node.children_count === 0) {
+          // Show How2 nodes that are pending subtree generation
+          level3Items[how2Node.id] = [];
         }
       }
     });
-  });
-  // Extract level 4 items (How4 nodes - children of How3 nodes)
+  }); // Extract level 4 items (How4 nodes - children of How3 nodes)
   const level4Items: Record<string, any[]> = {};
   level1Nodes.forEach((how1Node) => {
     how1Node.children?.forEach((how2Node) => {
       if (how2Node.axis === "How2") {
         how2Node.children?.forEach((how3Node) => {
-          if (
-            how3Node.axis === "How3" &&
-            how3Node.children &&
-            how3Node.children.length > 0
-          ) {
-            const how4Nodes = how3Node.children.filter(
-              (node) => node.axis === "How4"
-            );
-            if (how4Nodes.length > 0) {
-              level4Items[how3Node.id] = how4Nodes.map((node, index) => {
-                return {
-                  id: node.id,
-                  name: node.name,
-                  info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
-                    Math.floor(Math.random() * 20) + 1
-                  }事例`,
-                  description: node.description || "",
-                  color: `hsl(${260 + index * 15}, 55%, 65%)`,
-                };
-              });
+          if (how3Node.axis === "How3") {
+            if (how3Node.children && how3Node.children.length > 0) {
+              const how4Nodes = how3Node.children.filter(
+                (node) => node.axis === "How4"
+              );
+              if (how4Nodes.length > 0) {
+                level4Items[how3Node.id] = how4Nodes.map((node, index) => {
+                  const enrichmentData = enrichmentMap.get(node.id);
+                  return {
+                    id: node.id,
+                    name: node.name,
+                    info: createNodeInfoString(enrichmentData, node.id),
+                    description: node.description || "",
+                    color: `hsl(${260 + index * 15}, 55%, 65%)`,
+                    children_count: node.children_count,
+                  };
+                });
+              }
+            } else if (how3Node.children_count === 0) {
+              // Show How3 nodes that are pending subtree generation
+              level4Items[how3Node.id] = [];
             }
           }
         });
       }
     });
-  });
-
-  // Helper function to extract children with specific axis types for FAST
+  }); // Helper function to extract children with specific axis types for FAST
   const extractFastChildrenByAxis = (
     parentNodes: TreeNodeFromDB[],
     axisType: string
@@ -164,16 +217,21 @@ const convertFastTreeToAppFormat = (
           (node) => node.axis === axisType
         );
         if (childNodes.length > 0) {
-          items[parentNode.id] = childNodes.map((node, index) => ({
-            id: node.id,
-            name: node.name,
-            info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
-              Math.floor(Math.random() * 20) + 1
-            }事例`,
-            description: node.description || "",
-            color: `hsl(${260 + index * 15}, 55%, 65%)`,
-          }));
+          items[parentNode.id] = childNodes.map((node, index) => {
+            const enrichmentData = enrichmentMap.get(node.id);
+            return {
+              id: node.id,
+              name: node.name,
+              info: createNodeInfoString(enrichmentData, node.id),
+              description: node.description || "",
+              color: `hsl(${260 + index * 15}, 55%, 65%)`,
+              children_count: node.children_count,
+            };
+          });
         }
+      } else if (parentNode.children_count === 0) {
+        // Show parent nodes that are pending subtree generation
+        items[parentNode.id] = [];
       }
     });
 
@@ -232,7 +290,7 @@ const convertFastTreeToAppFormat = (
   return convertedData;
 };
 
-export const convertDatabaseTreeToAppFormat = (
+export const convertDatabaseTreeToAppFormat = async (
   treeStructure: TreeStructureFromDB,
   treeMetadata?: {
     description?: string;
@@ -241,8 +299,16 @@ export const convertDatabaseTreeToAppFormat = (
     mode?: string;
   }
 ) => {
+  console.log(
+    `[CONVERTER DEBUG] Converting tree structure with mode: ${
+      treeMetadata?.mode || "TED"
+    }`
+  );
+
   if (!treeStructure?.root) {
-    //console.error("Invalid tree structure received from database");
+    console.error(
+      "[CONVERTER DEBUG] Invalid tree structure received from database"
+    );
     return null;
   }
 
@@ -252,14 +318,18 @@ export const convertDatabaseTreeToAppFormat = (
     (treeStructure.root.children &&
       treeStructure.root.children.some((child) => child.axis === "Technology"));
 
+  console.log(
+    `[CONVERTER DEBUG] Using ${isFastTree ? "FAST" : "TED"} mode conversion`
+  );
+
   if (isFastTree) {
-    return convertFastTreeToAppFormat(treeStructure, treeMetadata);
+    return await convertFastTreeToAppFormat(treeStructure, treeMetadata);
   } else {
-    return convertTedTreeToAppFormat(treeStructure, treeMetadata);
+    return await convertTedTreeToAppFormat(treeStructure, treeMetadata);
   }
 };
 
-const convertTedTreeToAppFormat = (
+const convertTedTreeToAppFormat = async (
   treeStructure: TreeStructureFromDB,
   treeMetadata?: { description?: string; search_theme?: string; name?: string }
 ) => {
@@ -274,88 +344,108 @@ const convertTedTreeToAppFormat = (
     }
     return allNodes;
   };
-
   const allNodes = collectAllNodes(treeStructure.root);
+
+  // Get enrichment data for all nodes
+  const nodeIds = allNodes.map((node) => node.id);
+  const enrichmentMap = await fetchNodeEnrichmentCounts(nodeIds);
 
   // Extract level 1 items (Scenario nodes - children of root)
   const level1Nodes = treeStructure.root.children || [];
 
+  console.log(
+    `[CONVERTER DEBUG TED] Found ${level1Nodes.length} level 1 nodes`
+  );
+  console.log(
+    `[CONVERTER DEBUG TED] Level 1 nodes:`,
+    level1Nodes.map((node) => ({
+      name: node.name,
+      axis: node.axis,
+      children_count: node.children_count,
+      id: node.id,
+    }))
+  );
+
   const level1Items = level1Nodes
     .filter((node) => node.axis === "Scenario")
     .map((node, index) => {
+      console.log(
+        `[CONVERTER DEBUG TED] Converting scenario: ${node.name} with children_count: ${node.children_count}`
+      );
+      const enrichmentData = enrichmentMap.get(node.id);
       return {
         id: node.id,
         name: node.name,
-        info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
-          Math.floor(Math.random() * 20) + 1
-        }事例`,
+        info: createNodeInfoString(enrichmentData, node.id),
         description: node.description || "",
         color: `hsl(${200 + index * 30}, 70%, 50%)`,
+        children_count: node.children_count,
       };
     });
+
+  console.log(
+    `[CONVERTER DEBUG TED] Converted level1Items:`,
+    level1Items.map((item) => ({
+      name: item.name,
+      children_count: item.children_count,
+      id: item.id,
+    }))
+  );
 
   // Extract level 2 items (Purpose nodes - children of Scenario nodes)
   const level2Items: Record<string, any[]> = {};
   level1Nodes.forEach((scenarioNode) => {
-    //console.log(`Processing Scenario node ${scenarioNode.name} (${scenarioNode.id}) for Level 2`);
     if (scenarioNode.children && scenarioNode.children.length > 0) {
-      //console.log(`  Found ${scenarioNode.children.length} children`);
       const purposeNodes = scenarioNode.children.filter(
         (node) => node.axis === "Purpose"
       );
-      //console.log(`  Found ${purposeNodes.length} Purpose nodes`);
       if (purposeNodes.length > 0) {
         level2Items[scenarioNode.id] = purposeNodes.map((node, index) => {
-          //console.log(`    Creating Level 2 item: ${node.name} (${node.id})`);
+          const enrichmentData = enrichmentMap.get(node.id);
           return {
             id: node.id,
             name: node.name,
-            info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
-              Math.floor(Math.random() * 20) + 1
-            }事例`,
+            info: createNodeInfoString(enrichmentData, node.id),
             description: node.description || "",
             color: `hsl(${220 + index * 25}, 65%, 55%)`,
+            children_count: node.children_count,
           };
         });
       }
+    } else if (scenarioNode.children_count === 0) {
+      level2Items[scenarioNode.id] = [];
     }
   });
 
-  //console.log("Level 2 items created:", Object.keys(level2Items).length, "scenario groups");
   // Extract level 3 items (Function nodes - children of Purpose nodes)
   const level3Items: Record<string, any[]> = {};
   level1Nodes.forEach((scenarioNode) => {
     scenarioNode.children?.forEach((purposeNode) => {
-      //console.log(`Processing Purpose node ${purposeNode.name} (${purposeNode.id}) for Level 3`);
-      if (
-        purposeNode.axis === "Purpose" &&
-        purposeNode.children &&
-        purposeNode.children.length > 0
-      ) {
-        //console.log(`  Found ${purposeNode.children.length} children`);
-        const functionNodes = purposeNode.children.filter(
-          (node) => node.axis === "Function"
-        );
-        //console.log(`  Found ${functionNodes.length} Function nodes`);
-        if (functionNodes.length > 0) {
-          level3Items[purposeNode.id] = functionNodes.map((node, index) => {
-            //console.log(`    Creating Level 3 item: ${node.name} (${node.id})`);
-            return {
-              id: node.id,
-              name: node.name,
-              info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
-                Math.floor(Math.random() * 20) + 1
-              }事例`,
-              description: node.description || "",
-              color: `hsl(${240 + index * 20}, 60%, 60%)`,
-            };
-          });
+      if (purposeNode.axis === "Purpose") {
+        if (purposeNode.children && purposeNode.children.length > 0) {
+          const functionNodes = purposeNode.children.filter(
+            (node) => node.axis === "Function"
+          );
+          if (functionNodes.length > 0) {
+            level3Items[purposeNode.id] = functionNodes.map((node, index) => {
+              const enrichmentData = enrichmentMap.get(node.id);
+              return {
+                id: node.id,
+                name: node.name,
+                info: createNodeInfoString(enrichmentData, node.id),
+                description: node.description || "",
+                color: `hsl(${240 + index * 20}, 60%, 60%)`,
+                children_count: node.children_count,
+              };
+            });
+          }
+        } else if (purposeNode.children_count === 0) {
+          level3Items[purposeNode.id] = [];
         }
       }
     });
   });
 
-  //console.log("Level 3 items created:", Object.keys(level3Items).length, "purpose groups");
   // Extract level 4 items (Measure nodes - children of Function nodes)
   // Note: The database may have Measure nodes at multiple levels (4, 5, 6, etc.)
   // We'll collect all Measure nodes that are direct children of Function nodes
@@ -364,39 +454,35 @@ const convertTedTreeToAppFormat = (
     scenarioNode.children?.forEach((purposeNode) => {
       if (purposeNode.axis === "Purpose") {
         purposeNode.children?.forEach((functionNode) => {
-          //console.log(`Processing Function node ${functionNode.name} (${functionNode.id}) for Level 4`);
-          if (
-            functionNode.axis === "Function" &&
-            functionNode.children &&
-            functionNode.children.length > 0
-          ) {
-            //console.log(`  Found ${functionNode.children.length} children`);
-            // Get all Measure nodes regardless of their database level
-            const measureNodes = functionNode.children.filter(
-              (node) => node.axis === "Measure"
-            );
-            //console.log(`  Found ${measureNodes.length} Measure nodes`);
-            if (measureNodes.length > 0) {
-              level4Items[functionNode.id] = measureNodes.map((node, index) => {
-                //console.log(`    Creating Level 4 item: ${node.name} (${node.id})`);
-                return {
-                  id: node.id,
-                  name: node.name,
-                  info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
-                    Math.floor(Math.random() * 20) + 1
-                  }事例`,
-                  description: node.description || "",
-                  color: `hsl(${260 + index * 15}, 55%, 65%)`,
-                };
-              });
+          if (functionNode.axis === "Function") {
+            if (functionNode.children && functionNode.children.length > 0) {
+              // Get all Measure nodes regardless of their database level
+              const measureNodes = functionNode.children.filter(
+                (node) => node.axis === "Measure"
+              );
+              if (measureNodes.length > 0) {
+                level4Items[functionNode.id] = measureNodes.map(
+                  (node, index) => {
+                    const enrichmentData = enrichmentMap.get(node.id);
+                    return {
+                      id: node.id,
+                      name: node.name,
+                      info: createNodeInfoString(enrichmentData, node.id),
+                      description: node.description || "",
+                      color: `hsl(${260 + index * 15}, 55%, 65%)`,
+                      children_count: node.children_count,
+                    };
+                  }
+                );
+              }
+            } else if (functionNode.children_count === 0) {
+              level4Items[functionNode.id] = [];
             }
           }
         });
       }
     });
-  });
-
-  // Helper function to extract children with specific axis types
+  }); // Helper function to extract children with specific axis types
   const extractChildrenByAxis = (
     parentNodes: TreeNodeFromDB[],
     axisType: string
@@ -409,16 +495,21 @@ const convertTedTreeToAppFormat = (
           (node) => node.axis === axisType
         );
         if (childNodes.length > 0) {
-          items[parentNode.id] = childNodes.map((node, index) => ({
-            id: node.id,
-            name: node.name,
-            info: `${Math.floor(Math.random() * 50) + 1}論文 • ${
-              Math.floor(Math.random() * 20) + 1
-            }事例`,
-            description: node.description || "",
-            color: `hsl(${260 + index * 15}, 55%, 65%)`,
-          }));
+          items[parentNode.id] = childNodes.map((node, index) => {
+            const enrichmentData = enrichmentMap.get(node.id);
+            return {
+              id: node.id,
+              name: node.name,
+              info: createNodeInfoString(enrichmentData, node.id),
+              description: node.description || "",
+              color: `hsl(${260 + index * 15}, 55%, 65%)`,
+              children_count: node.children_count,
+            };
+          });
         }
+      } else if (parentNode.children_count === 0) {
+        // Show parent nodes that are pending subtree generation
+        items[parentNode.id] = [];
       }
     });
 

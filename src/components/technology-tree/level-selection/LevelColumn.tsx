@@ -17,6 +17,7 @@ interface LevelItem {
   info?: string;
   isCustom?: boolean;
   description?: string;
+  children_count?: number;
 }
 
 interface LevelColumnProps {
@@ -238,12 +239,10 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-      </div>
-
-      <div className="space-y-4">
-        {items.map((item) => (
+      </div>      <div className="space-y-4">
+        {items.map((item, index) => (
           <TreeNode
-            key={item.id}
+            key={`${item.id}-${item.children_count || 0}-${index}`}
             item={item}
             isSelected={selectedId === item.id}
             onClick={() => onNodeClick(item.id)}

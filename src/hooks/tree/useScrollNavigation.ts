@@ -6,31 +6,35 @@ export const useScrollNavigation = () => {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [lastVisibleLevel, setLastVisibleLevel] = useState(3);
+  const scrollUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Update scroll button states
   const updateScrollButtons = useCallback(() => {
     if (containerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
-      
-      console.log('Scroll debug:', { scrollLeft, scrollWidth, clientWidth, canScroll: scrollWidth > clientWidth });
-      
+         
       setCanScrollLeft(scrollLeft > 5);
       
       const maxScrollLeft = scrollWidth - clientWidth;
       const canScrollRightValue = scrollLeft < maxScrollLeft - 5;
-      
-      console.log('Right scroll debug:', { maxScrollLeft, currentScroll: scrollLeft, canScrollRight: canScrollRightValue });
-      
       setCanScrollRight(canScrollRightValue);
     }
   }, []);
 
-  // Force update scroll buttons with delay to ensure DOM is fully rendered
+  // Throttled version of triggerScrollUpdate to prevent excessive calls during tree generation
   const triggerScrollUpdate = useCallback(() => {
-    // Use multiple timeouts to catch different rendering phases
-    setTimeout(() => updateScrollButtons(), 100);
-    setTimeout(() => updateScrollButtons(), 300);
-    setTimeout(() => updateScrollButtons(), 500);
+    // Clear existing timeout to prevent multiple rapid calls
+    if (scrollUpdateTimeoutRef.current) {
+      clearTimeout(scrollUpdateTimeoutRef.current);
+    }
+    
+    // Set a new timeout with debouncing
+    scrollUpdateTimeoutRef.current = setTimeout(() => {
+      // Use multiple timeouts to catch different rendering phases, but only once per batch
+      updateScrollButtons();
+      setTimeout(() => updateScrollButtons(), 200);
+      setTimeout(() => updateScrollButtons(), 400);
+    }, 100);
   }, [updateScrollButtons]);
 
   // Calculate the last visible level based on available items
@@ -81,7 +85,6 @@ export const useScrollNavigation = () => {
       });
     }
   }, []);
-
   // Set up event listeners
   useEffect(() => {
     const container = containerRef.current;
@@ -100,6 +103,10 @@ export const useScrollNavigation = () => {
         container.removeEventListener("scroll", updateScrollButtons);
         document.removeEventListener("panel-resize", handlePanelResize);
         window.removeEventListener("resize", handlePanelResize);
+        // Clean up any pending scroll update timeouts
+        if (scrollUpdateTimeoutRef.current) {
+          clearTimeout(scrollUpdateTimeoutRef.current);
+        }
       };
     }
   }, [updateScrollButtons]);

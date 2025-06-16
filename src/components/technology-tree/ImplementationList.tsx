@@ -1,61 +1,58 @@
-
 import React from "react";
 import { ImplementationCard } from "./ImplementationCard";
+import { useEnrichedData } from "@/hooks/useEnrichedData";
 
-export const ImplementationList = () => {
+interface ImplementationListProps {
+  selectedNodeId?: string;
+}
+
+export const ImplementationList = ({
+  selectedNodeId,
+}: ImplementationListProps) => {
+  const { useCases, loading } = useEnrichedData(selectedNodeId || null);
+
+  // Show loading state when fetching real data
+  if (selectedNodeId && loading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+  // Use real data if available and a node is selected
+  if (selectedNodeId && useCases.length > 0) {
+    return (
+      <div className="space-y-4">
+        {useCases.map((useCase) => (
+          <ImplementationCard
+            key={useCase.id}
+            title={useCase.title}
+            description={useCase.description}
+            releases={useCase.releases}
+            badgeColor="bg-[#E8F1FF]"
+            badgeTextColor="text-[#0EA5E9]"
+            pressReleases={useCase.pressReleases}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  // Show empty state when no node is selected
+  if (!selectedNodeId) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <p className="text-gray-500 text-sm">ノードを選択して実装事例を表示</p>
+      </div>
+    );
+  }
+
+  // Show empty state when node is selected but no data is available
   return (
-    <div className="space-y-4">
-      <ImplementationCard
-        title="Commercial AO-SLO System"
-        description="Commercially available adaptive optics system for clinical ophthalmology applications. Features real-time wavefront sensing and high-speed image acquisition."
-        releases={3}
-        badgeColor="bg-[#E8F1FF]"
-        badgeTextColor="text-[#0EA5E9]"
-        pressReleases={[
-          {
-            title: "Launch of Next-Generation AO-SLO System",
-            url: "#release-1"
-          },
-          {
-            title: "Clinical Trial Results for AO-SLO Implementation",
-            url: "#release-2"
-          },
-          {
-            title: "FDA Approval for Commercial AO-SLO System",
-            url: "#release-3"
-          }
-        ]}
-      />
-      
-      <ImplementationCard
-        title="Research-Grade AO Platform"
-        description="Custom-built adaptive optics system integrating multiple imaging modalities. Enables simultaneous fluorescence imaging and structural assessment."
-        releases={5}
-        badgeColor="bg-[#E8F1FF]"
-        badgeTextColor="text-[#0EA5E9]"
-        pressReleases={[
-          {
-            title: "New Research Platform Development",
-            url: "#release-1"
-          },
-          {
-            title: "Integration of Multi-Modal Imaging",
-            url: "#release-2"
-          },
-          {
-            title: "Breakthrough in Fluorescence Detection",
-            url: "#release-3"
-          },
-          {
-            title: "Enhanced Resolution Achievement",
-            url: "#release-4"
-          },
-          {
-            title: "Platform Optimization Results",
-            url: "#release-5"
-          }
-        ]}
-      />
+    <div className="flex items-center justify-center py-8">
+      <p className="text-gray-500 text-sm">
+        この技術の実装事例はまだありません
+      </p>
     </div>
   );
 };

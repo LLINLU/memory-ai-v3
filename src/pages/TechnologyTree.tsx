@@ -1,5 +1,4 @@
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
 import { TechTreeLayout } from "@/components/technology-tree/TechTreeLayout";
@@ -43,7 +42,6 @@ const TechnologyTree = () => {
   // Get the current view mode - single source of truth
   const viewModeHook = useMindMapView();
   const { viewMode, toggleView } = viewModeHook;
-
   // Store the conversation history from the research context
   const [savedConversationHistory, setSavedConversationHistory] = useState<
     any[]
@@ -53,7 +51,19 @@ const TechnologyTree = () => {
   const [hasLoadedDatabase, setHasLoadedDatabase] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
   const [currentQuery, setCurrentQuery] = useState<string>("");
-  const { loadTreeFromDatabase } = useTreeGeneration();
+  const lastCompletedCountRef = useRef(0);
+  const lastToastCountRef = useRef(0); // Track the last count for which we showed a progress toast
+  const pollingToastShownRef = useRef<string | null>(null); // Track which tree ID has shown the toast
+  const {
+    loadTreeFromDatabase,
+    checkScenarioCompletion,
+    pollingTreeId,
+    setPollingTreeId,
+  } = useTreeGeneration();
+  // Debug: Track pollingTreeId changes
+  useEffect(() => {
+    console.log("[POLLING STATE] pollingTreeId changed to:", pollingTreeId);
+  }, [pollingTreeId]);
 
   // Extract conversation history from location state if available
   useEffect(() => {
@@ -84,7 +94,6 @@ const TechnologyTree = () => {
     updateLastVisibleLevel,
     triggerScrollUpdate,
   } = useScrollNavigation();
-
   // Don't render the tree if we're still initializing or no data is available
   if (
     isInitializing ||
@@ -124,9 +133,9 @@ const TechnologyTree = () => {
       </div>
     );
   }
-
   const {
     selectedPath,
+    userClickedNode,
     sidebarTab,
     showSidebar,
     collapsedSidebar,
@@ -152,8 +161,7 @@ const TechnologyTree = () => {
     handleAddLevel4,
     scenario: databaseScenario, // Get scenario from database tree data
   } = useTechnologyTree(databaseTreeData, viewModeHook); // Pass viewModeHook here
-
-  // Update last visible level when tree data changes and trigger scroll update
+  // Update last visible level when tree data changes and trigger scroll update (debounced)
   useEffect(() => {
     updateLastVisibleLevel({
       level4Items: Object.values(level4Items).flat(),
@@ -165,9 +173,12 @@ const TechnologyTree = () => {
       level10Items: Object.values(level10Items).flat(),
     });
 
-    // Trigger scroll update after level data changes
-    console.log("Tree data updated, triggering scroll update");
-    triggerScrollUpdate();
+    // Trigger scroll update with debouncing to prevent excessive calls during tree generation
+    const timeoutId = setTimeout(() => {
+      triggerScrollUpdate();
+    }, 150); // Small delay to batch rapid updates during polling
+
+    return () => clearTimeout(timeoutId);
   }, [
     level4Items,
     level5Items,
@@ -179,15 +190,16 @@ const TechnologyTree = () => {
     updateLastVisibleLevel,
     triggerScrollUpdate,
   ]);
-
-  // Trigger scroll update when database tree data is loaded
+  // Trigger scroll update when database tree data is loaded (debounced)
   useEffect(() => {
     if (databaseTreeData) {
-      console.log("Database tree data loaded, triggering scroll update");
-      triggerScrollUpdate();
+      const timeoutId = setTimeout(() => {
+        triggerScrollUpdate();
+      }, 200); // Slightly longer delay for database updates
+
+      return () => clearTimeout(timeoutId);
     }
   }, [databaseTreeData, triggerScrollUpdate]);
-
   // Initialize tree data with TED results if available
   useEffect(() => {
     const initializeTreeData = async () => {
@@ -218,11 +230,10 @@ const TechnologyTree = () => {
 
         console.log("Loading tree from database, ID:", locationState.treeId);
         setHasLoadedDatabase(true); // Prevent re-loading
-
         try {
           const result = await loadTreeFromDatabase(locationState.treeId);
           if (result?.treeStructure) {
-            const convertedData = convertDatabaseTreeToAppFormat(
+            const convertedData = await convertDatabaseTreeToAppFormat(
               result.treeStructure,
               {
                 description: result.treeData?.description,
@@ -234,10 +245,55 @@ const TechnologyTree = () => {
             if (convertedData) {
               setDatabaseTreeData(convertedData);
               // Set the query from the database tree data
-              setCurrentQuery(result.treeData?.search_theme || locationState?.query || "");
+              setCurrentQuery(
+                result.treeData?.search_theme || locationState?.query || ""
+              );
+
+              // Check if this tree has incomplete scenarios and start polling if needed
+              const level1Items = convertedData.level1Items || [];
+              const incompleteScenarios = level1Items.filter(
+                (item) =>
+                  typeof item.children_count === "number" &&
+                  item.children_count === 0
+              );
+
+              // console.log("[INIT DEBUG] Loaded tree from database", {
+              //   totalScenarios: level1Items.length,
+              //   incompleteScenarios: incompleteScenarios.length,
+              //   incompleteDetails: incompleteScenarios.map(s => ({
+              //     name: s.name,
+              //     children_count: s.children_count,
+              //     id: s.id
+              //   })),
+              //   treeId: locationState.treeId,
+              //   hasSetPollingTreeId: typeof setPollingTreeId === 'function'
+              // });
+
+              if (incompleteScenarios.length > 0) {
+                console.log(
+                  "[INIT DEBUG] Found incomplete scenarios, starting polling for tree:",
+                  locationState.treeId
+                );
+                console.log(
+                  "[INIT DEBUG] About to call setPollingTreeId with:",
+                  locationState.treeId
+                );
+                setPollingTreeId(locationState.treeId);
+                console.log(
+                  "[INIT DEBUG] setPollingTreeId called successfully"
+                );
+              } else {
+                console.log(
+                  "[INIT DEBUG] All scenarios complete, no polling needed"
+                );
+              }
+
               toast({
                 title: "データベースツリーを読み込みました",
-                description: "保存されたツリー構造を表示しています。",
+                description:
+                  incompleteScenarios.length > 0
+                    ? `保存されたツリー構造を表示中。${incompleteScenarios.length}個のシナリオを生成中...`
+                    : "保存されたツリー構造を表示しています。",
               });
             }
           }
@@ -266,7 +322,7 @@ const TechnologyTree = () => {
           "Initializing with TED-generated tree data:",
           locationState.treeData
         );
-        
+
         // Set query from location state
         setCurrentQuery(locationState?.query || "");
 
@@ -326,7 +382,7 @@ const TechnologyTree = () => {
       console.log(
         "No specific initialization required, completing initialization"
       );
-      
+
       // Set query from location state if available
       if (locationState?.query) {
         setCurrentQuery(locationState.query);
@@ -382,9 +438,9 @@ const TechnologyTree = () => {
     handleEditNodeFromChat,
     handleRefineNode,
   } = useTechTreeSidebarActions(setChatMessages, addCustomNode, setSidebarTab);
-
   const selectedNodeInfo = useNodeInfo(
     selectedPath,
+    userClickedNode,
     level1Items,
     level2Items,
     level3Items,
@@ -459,7 +515,6 @@ const TechnologyTree = () => {
   useEffect(() => {
     document.title = "研究背景を整理します | Technology Tree";
   }, []);
-
   const sidebarContent = (
     <TechTreeSidebar
       sidebarTab={sidebarTab}
@@ -478,8 +533,107 @@ const TechnologyTree = () => {
       onResize={handlePanelResize}
       selectedNodeTitle={selectedNodeInfo.title}
       selectedNodeDescription={selectedNodeInfo.description}
+      selectedNodeId={selectedNodeInfo.nodeId}
+      selectedPath={selectedPath}
     />
-  );
+  ); // Polling effect for TED v2 scenario completion with progressive display
+  useEffect(() => {
+    if (!pollingTreeId) {
+      // Reset toast tracking when polling stops
+      pollingToastShownRef.current = null;
+      lastToastCountRef.current = 0;
+      return;
+    }
+
+    // Reset the last completed count when starting new polling
+    lastCompletedCountRef.current = 0;
+    lastToastCountRef.current = 0; // Reset toast tracking too
+
+    // Show initial polling notification only once per tree
+    if (pollingToastShownRef.current !== pollingTreeId) {
+      pollingToastShownRef.current = pollingTreeId;
+      toast({
+        title: "シナリオ生成開始",
+        description:
+          "詳細シナリオを生成中です。完了したものから順次表示されます。",
+        duration: 4000,
+      });
+    }
+    const pollInterval = setInterval(async () => {
+      try {
+        const result = await checkScenarioCompletion(pollingTreeId);
+
+        // Check if any NEW scenario has completed since last check
+        if (result.completedScenarios > lastCompletedCountRef.current) {
+          const newlyCompleted =
+            result.completedScenarios - lastCompletedCountRef.current; // Always reload the tree data to get the latest completed subtrees
+          const updatedTree = await loadTreeFromDatabase(pollingTreeId);
+          if (updatedTree?.treeStructure) {
+            const convertedData = await convertDatabaseTreeToAppFormat(
+              updatedTree.treeStructure,
+              {
+                description: updatedTree.treeData?.description,
+                search_theme: updatedTree.treeData?.search_theme,
+                name: updatedTree.treeData?.name,
+                mode: (updatedTree.treeData as any)?.mode,
+              }
+            );
+            if (convertedData) {
+              // Add a timestamp to force deep React re-render
+              const timestampedData = {
+                ...convertedData,
+                _timestamp: Date.now(),
+              };
+              setDatabaseTreeData(timestampedData);
+
+              // Update the ref BEFORE showing toasts to prevent repetition
+              const previousCount = lastCompletedCountRef.current;
+              lastCompletedCountRef.current = result.completedScenarios;
+
+              // Show appropriate toast based on completion status
+              if (result.completed) {
+                setPollingTreeId(null);
+                toast({
+                  title: "ツリー生成完了",
+                  description: "すべてのシナリオの詳細が生成されました。",
+                  duration: 5000,
+                });
+              } else {
+                // Show progress toast for partial completion with celebratory message
+                // Only show if this is actually a NEW completion (not shown before)
+                const progressPercent = Math.round(
+                  (result.completedScenarios / result.totalScenarios) * 100
+                ); // Only show toast if we haven't shown it for this completion count yet
+                if (result.completedScenarios > lastToastCountRef.current) {
+                  lastToastCountRef.current = result.completedScenarios; // Update toast tracking
+
+                  toast({
+                    title: "新しいシナリオが完成しました",
+                    description: `${result.completedScenarios}/${result.totalScenarios} のシナリオが完了 (${progressPercent}%)`,
+                    duration: 3000,
+                  });
+                }
+              }
+            } else {
+              // Update count even if conversion failed to prevent infinite retries
+              lastCompletedCountRef.current = result.completedScenarios;
+            }
+          } else {
+            // Update count even if database load failed to prevent infinite retries
+            lastCompletedCountRef.current = result.completedScenarios;
+          }
+        }
+      } catch (error) {
+        console.error("Error during progressive polling:", error);
+        // Continue polling even if there's an error
+      }
+    }, 3000); // Poll every 3 seconds for responsive progressive updates
+
+    // Cleanup on unmount or when polling stops
+    return () => {
+      clearInterval(pollInterval);
+    };
+  }, [pollingTreeId, checkScenarioCompletion, loadTreeFromDatabase]);
 
   return (
     <SidebarProvider defaultOpen={false}>
