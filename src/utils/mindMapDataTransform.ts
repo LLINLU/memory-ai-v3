@@ -252,14 +252,15 @@ const createD3Nodes = (hierarchicalData: any, layoutDirection: 'horizontal' | 'v
       children_count: node.data.children_count,
     }));
   } else {
-    // NEW vertical layout only
+    // FIXED vertical layout - better spacing
     const treeLayout = d3
       .tree()
-      .nodeSize([200, 80]) // New vertical spacing - wider horizontal spacing, tighter vertical
+      .nodeSize([120, 100]) // Fixed: more vertical spacing, less horizontal spread
       .separation((a, b) => {
-        // Tighter separation for vertical layout
+        // Fixed: Tighter separation for first level nodes
+        if (a.depth === 1 && b.depth === 1) return 0.8; // Tighter first level
         if (a.parent === b.parent) return 1.0;
-        return 1.2;
+        return 1.2; // Slightly better separation for different parents
       });
 
     treeLayout(root);
@@ -346,11 +347,13 @@ const createD3Connections = (hierarchicalData: any, layoutDirection: 'horizontal
 
     return connections;
   } else {
-    // NEW vertical connection logic only
+    // FIXED vertical connection logic with matching nodeSize
     const treeLayout = d3
       .tree()
-      .nodeSize([200, 80]) // New vertical spacing
+      .nodeSize([120, 100]) // Fixed: matches the node spacing
       .separation((a, b) => {
+        // Fixed: matching separation logic
+        if (a.depth === 1 && b.depth === 1) return 0.8;
         if (a.parent === b.parent) return 1.0;
         return 1.2;
       });
