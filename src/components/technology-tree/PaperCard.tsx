@@ -153,6 +153,7 @@ export const PaperCard = ({
               href={`https://doi.org/${doi}`}
               target="_blank"
               rel="noopener noreferrer"
+              className="notranslate"
             >
               {" "}
               <Button
