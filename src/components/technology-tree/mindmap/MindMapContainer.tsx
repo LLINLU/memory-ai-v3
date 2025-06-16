@@ -1,13 +1,11 @@
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
 import { MindMapConnections } from "./MindMapConnections";
 import { MindMapControls } from "./MindMapControls";
 import { usePanZoom } from "@/hooks/tree/usePanZoom";
 import { TooltipProvider } from "@/components/ui/tooltip";
-
-export type LayoutDirection = 'horizontal' | 'vertical';
 
 interface MindMapContainerProps {
   selectedPath: any;
@@ -46,9 +44,13 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   onEditNode,
   onDeleteNode,
 }) => {
-  const [layoutDirection, setLayoutDirection] = useState<LayoutDirection>('horizontal');
-
   const { nodes, connections } = useMemo(() => {
+    // console.log('MindMap: Processing data for compact D3 tree layout with root node');
+    // console.log('User query for root:', query);
+    // console.log('Level 1 items:', level1Items?.length || 0);
+    // console.log('Level 2 items:', Object.keys(level2Items || {}).length);
+    // console.log('Level 3 items:', Object.keys(level3Items || {}).length);
+    
     return transformToMindMapData(
       level1Items || [],
       level2Items || {},
@@ -62,8 +64,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
       level10Items || {},
       levelNames,
       selectedPath,
-      query || "Research Query",
-      layoutDirection
+      query || "Research Query"
     );
   }, [
     level1Items,
@@ -79,10 +80,10 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     levelNames,
     selectedPath,
     query,
-    layoutDirection,
   ]);
 
   const handleNodeClick = (nodeId: string, level: number) => {
+
     // Don't allow clicking on the root node (level 0)
     if (level === 0) {
       console.log('MindMap: Root node clicked, ignoring');
@@ -102,22 +103,10 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     // Placeholder for add node functionality
   };
 
-  const toggleLayout = () => {
-    setLayoutDirection(prev => prev === 'horizontal' ? 'vertical' : 'horizontal');
-  };
-
-  // Calculate container dimensions based on layout direction
-  const containerWidth = nodes.length > 0 ? 
-    (layoutDirection === 'horizontal' 
-      ? Math.max(...nodes.map(n => n.x + 400), 1400)
-      : Math.max(...nodes.map(n => n.x + 300), 1200)
-    ) : 1400;
-    
-  const containerHeight = nodes.length > 0 ? 
-    (layoutDirection === 'horizontal'
-      ? Math.max(...nodes.map(n => n.y + 120), 600)
-      : Math.max(...nodes.map(n => n.y + 200), 800)
-    ) : 600;
+  // Calculate container dimensions based on compact D3 layout with proper padding
+  // Account for reduced horizontal spacing (400px nodeSize) and left margin (250px)
+  const containerWidth = nodes.length > 0 ? Math.max(...nodes.map(n => n.x + 400), 1400) : 1400;
+  const containerHeight = nodes.length > 0 ? Math.max(...nodes.map(n => n.y + 120), 600) : 600;
 
   const {
     zoom,
@@ -132,6 +121,8 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     resetView,
     getTransform,
   } = usePanZoom(containerWidth, containerHeight);
+
+  //console.log(`MindMap: Compact D3 layout - Container dimensions: ${containerWidth}x${containerHeight}, Nodes: ${nodes.length}`);
 
   return (
     <TooltipProvider delayDuration={300} skipDelayDuration={100}>
@@ -186,8 +177,6 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
           onZoomIn={zoomIn}
           onZoomOut={zoomOut}
           onResetView={resetView}
-          layoutDirection={layoutDirection}
-          onToggleLayout={toggleLayout}
         />
       </div>
     </TooltipProvider>
