@@ -38,7 +38,7 @@ interface TreeStructureFromDB {
 
 interface NodeEnrichmentData {
   paperCount: number;
-  useCaseCount: number;
+  //useCaseCount: number;
 }
 
 // Helper function to fetch real paper and use case counts for nodes
@@ -51,17 +51,38 @@ const fetchNodeEnrichmentCounts = async (
     return enrichmentMap;
   }
 
-  console.log(
-    `[ENRICHMENT] Hardcoding counts as 20 for ${nodeIds.length} nodes`
-  );
+  // Get paper counts for all nodes
+  const { data: paperData, error: paperError } = await supabase
+    .from("node_papers" as any)
+    .select("node_id")
+    .in("node_id", nodeIds);
 
-  // Hardcode all nodes to have 20 papers for now
-  nodeIds.forEach((nodeId) => {
-    enrichmentMap.set(nodeId, {
-      paperCount: 20,
-      useCaseCount: 5,
+  if (paperError) {
+
+    // Hardcode all nodes to have 20 papers for now
+    nodeIds.forEach((nodeId) => {
+      enrichmentMap.set(nodeId, {
+        paperCount: 20,
+        //useCaseCount: 0,
+      });
     });
-  });
+  } else {
+    const paperCountMap = new Map<string, number>();
+
+    // Count papers for each node
+    paperData?.forEach((paper: any) => {
+      const nodeId = paper.node_id;
+      paperCountMap.set(nodeId, (paperCountMap.get(nodeId) || 0) + 1);
+    });
+
+    // Create enrichment data for all requested nodes
+    nodeIds.forEach((nodeId) => {
+      enrichmentMap.set(nodeId, {
+        paperCount: paperCountMap.get(nodeId) || 0,
+        //useCaseCount: useCaseCountMap.get(nodeId) || 0,
+      });
+    });
+  }
   return enrichmentMap;
 };
 
