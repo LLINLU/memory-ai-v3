@@ -64,6 +64,8 @@ export const usePaperList = (
     date: paper.date,
     citations: paper.citations || 0,
     region: paper.region || "domestic",
+    doi: paper.doi,
+    score: paper.score,
   })); // Use real data if available, otherwise show empty if no node selected
   const basePapers =
     selectedNodeId && transformedRealPapers.length > 0

@@ -130,6 +130,7 @@ interface Paper {
   region: string;
   doi: string;
   url: string;
+  score: number;
 }
 
 interface UseCase {
@@ -543,6 +544,7 @@ async function saveNodePapers(
       doi: paper.doi,
       url: paper.url,
       team_id: teamId,
+      score: paper.score,
     };
   });
 
@@ -631,6 +633,7 @@ function generateMockPapers(nodeTitle: string, level: number): Paper[] {
       region: Math.random() > 0.5 ? "international" : "domestic",
       doi: `10.1000/mock.${paperId.split("-")[0]}`,
       url: `https://example.com/paper/${paperId}`,
+      score: 0,
     });
   }
 
