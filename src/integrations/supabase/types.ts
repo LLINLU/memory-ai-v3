@@ -15,12 +15,13 @@ export type Database = {
           authors: string
           citations: number
           created_at: string
-          date: string
+          date: string | null
           doi: string | null
           id: string
           journal: string
           node_id: string
           region: string
+          score: number | null
           tags: Json
           team_id: string | null
           title: string
@@ -33,12 +34,13 @@ export type Database = {
           authors: string
           citations?: number
           created_at?: string
-          date: string
+          date?: string | null
           doi?: string | null
           id: string
           journal: string
           node_id: string
           region: string
+          score?: number | null
           tags?: Json
           team_id?: string | null
           title: string
@@ -51,12 +53,13 @@ export type Database = {
           authors?: string
           citations?: number
           created_at?: string
-          date?: string
+          date?: string | null
           doi?: string | null
           id?: string
           journal?: string
           node_id?: string
           region?: string
+          score?: number | null
           tags?: Json
           team_id?: string | null
           title?: string
