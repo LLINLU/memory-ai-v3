@@ -207,7 +207,7 @@ export const useNodeInfo = (
       //   `useNodeInfo: Found node - title: ${title}, description: ${description}, nodeId: ${nodeId}`
       // );
     } else {
-      console.log("useNodeInfo: No node found for the target level and ID");
+      //console.log("useNodeInfo: No node found for the target level and ID");
     }
 
     return { title, description, nodeId };

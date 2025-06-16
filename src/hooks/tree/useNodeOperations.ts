@@ -50,11 +50,11 @@ export const useNodeOperations = (
   const [level10Items, setLevel10Items] =
     useState<Record<string, TreeNode[]>>(initialLevel10Items);  // Update state when initial data changes (e.g., when database data is loaded)
   useEffect(() => {
-    console.log("useNodeOperations: Updating state with new data", {
-      level1Count: initialLevel1Items.length,
-      level2Keys: Object.keys(initialLevel2Items),
-      timestamp: Date.now()
-    });
+    // console.log("useNodeOperations: Updating state with new data", {
+    //   level1Count: initialLevel1Items.length,
+    //   level2Keys: Object.keys(initialLevel2Items),
+    //   timestamp: Date.now()
+    // });
     setLevel1Items(initialLevel1Items);
     setLevel2Items(initialLevel2Items);
     setLevel3Items(initialLevel3Items);

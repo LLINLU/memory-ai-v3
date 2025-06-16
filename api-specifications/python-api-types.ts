@@ -53,7 +53,7 @@ export interface EnrichedTreeNode {
 
   // Generated data for this node
   papers: Paper[]; // Generated papers for this node
-  useCases: UseCase[]; // Generated use cases for this node
+  useCases?: UseCase[]; // Generated use cases for this node (optional until API is ready)
 }
 
 // =============================================================================
@@ -70,7 +70,7 @@ export interface Paper {
   journal: string; // Publication journal/conference name
   tags: string[]; // Array of relevant tags for categorization
   abstract: string; // Paper abstract/summary
-  date: string; // Publication date (YYYY-MM-DD format)
+  date: string | null; // Publication date (YYYY-MM-DD format) or null if unknown
   citations: number; // Number of citations for filtering and sorting
   region: "domestic" | "international"; // Geographic origin for filtering
   doi?: string; // Optional DOI identifier

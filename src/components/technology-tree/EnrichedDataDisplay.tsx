@@ -55,15 +55,19 @@ export const EnrichedDataDisplay: React.FC<EnrichedDataDisplayProps> = ({
   return (
     <div className="p-4">
       <Tabs defaultValue="papers" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        {/* 🚫 TEMPORARILY DISABLED - Use Cases Tab not production ready */}
+        {/* Only show papers tab for now */}
+        <TabsList className="grid w-full grid-cols-1">
           <TabsTrigger value="papers" className="flex items-center gap-2">
             <BookOpen className="w-4 h-4" />
             論文 ({papers.length})
           </TabsTrigger>
+          {/* 
           <TabsTrigger value="usecases" className="flex items-center gap-2">
             <Users className="w-4 h-4" />
             事例 ({useCases.length})
           </TabsTrigger>
+          */}
         </TabsList>
 
         <TabsContent value="papers" className="space-y-4">
@@ -91,35 +95,47 @@ export const EnrichedDataDisplay: React.FC<EnrichedDataDisplayProps> = ({
                     >
                       {paper.region === "international" ? "国際" : "国内"}
                     </Badge>
-                  </div>
+                  </div>{" "}
                   <CardDescription className="text-xs">
-                    {paper.authors} • {paper.journal}
+                    {[paper.authors, paper.journal]
+                      .filter(Boolean)
+                      .join(" • ") || "著者・ジャーナル情報なし"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <p className="text-xs text-gray-700 line-clamp-3">
-                    {paper.abstract}
-                  </p>
+                  {paper.abstract && (
+                    <p className="text-xs text-gray-700 line-clamp-3">
+                      {paper.abstract}
+                    </p>
+                  )}
 
-                  <div className="flex flex-wrap gap-1">
-                    {paper.tags.slice(0, 3).map((tag, index) => (
-                      <Badge key={index} variant="outline" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                    {paper.tags.length > 3 && (
-                      <span className="text-xs text-gray-500">
-                        +{paper.tags.length - 3}
-                      </span>
-                    )}
-                  </div>
+                  {paper.tags && paper.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {paper.tags.slice(0, 3).map((tag, index) => (
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="text-xs"
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                      {paper.tags.length > 3 && (
+                        <span className="text-xs text-gray-500">
+                          +{paper.tags.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  )}
 
                   <div className="flex items-center justify-between text-xs text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
-                      {paper.date}
-                    </div>
-                    <div>被引用数: {paper.citations}</div>
+                    {paper.date && (
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {paper.date}
+                      </div>
+                    )}
+                    <div>被引用数: {paper.citations || 0}</div>
                   </div>
 
                   {(paper.url || paper.doi) && (
@@ -153,6 +169,8 @@ export const EnrichedDataDisplay: React.FC<EnrichedDataDisplayProps> = ({
           )}
         </TabsContent>
 
+        {/* 🚫 TEMPORARILY DISABLED - Use Cases Tab not production ready */}
+        {/* 
         <TabsContent value="usecases" className="space-y-4">
           {useCases.length === 0 ? (
             <div className="text-center text-gray-500 py-8">
@@ -214,6 +232,7 @@ export const EnrichedDataDisplay: React.FC<EnrichedDataDisplayProps> = ({
             ))
           )}
         </TabsContent>
+        */}
       </Tabs>
     </div>
   );

@@ -16,22 +16,29 @@ export const usePaperList = (
     timePeriod: "",
     citations: "",
     region: "",
+    completeness: "",
   });
   const [sortBy, setSortBy] = useState("");
-
   // Use external filter/sort if provided, otherwise use internal state
   const activeFilters = externalFilterString
     ? (() => {
         const filterArray = externalFilterString.split(",").filter(Boolean);
-        const newFilters = { timePeriod: "", citations: "", region: "" };
+        const newFilters = {
+          timePeriod: "",
+          citations: "",
+          region: "",
+          completeness: "",
+        };
 
         filterArray.forEach((filter) => {
           if (filter.includes("past-")) {
             newFilters.timePeriod = filter;
-          } else if (filter.includes("citations-")) {
+          } else if (filter.includes("citations-") || filter === "any") {
             newFilters.citations = filter;
           } else if (["domestic", "international", "both"].includes(filter)) {
             newFilters.region = filter;
+          } else if (["complete", "incomplete", "all"].includes(filter)) {
+            newFilters.completeness = filter;
           }
         });
 
@@ -81,12 +88,16 @@ export const usePaperList = (
           if (currentYear - paperYear > 10) return false;
           break;
       }
-    }
-
-    // Citations filter (only apply if the paper has citations property)
+    } // Citations filter (only apply if the paper has citations property)
     if (activeFilters.citations && "citations" in paper) {
       const citations = (paper as any).citations || 0;
       switch (activeFilters.citations) {
+        case "any":
+          // Show all papers including those with 0 citations
+          break;
+        case "citations-0":
+          if (citations !== 0) return false;
+          break;
         case "citations-10":
           if (citations < 10) return false;
           break;
@@ -97,15 +108,29 @@ export const usePaperList = (
           if (citations < 100) return false;
           break;
       }
-    }
-
-    // Region filter (only apply if the paper has region property)
+    } // Region filter (only apply if the paper has region property)
     if (
       activeFilters.region &&
       activeFilters.region !== "both" &&
       "region" in paper
     ) {
       if ((paper as any).region !== activeFilters.region) return false;
+    }
+
+    // Completeness filter
+    if (activeFilters.completeness) {
+      const hasCompleteInfo = paper.authors && paper.journal;
+      switch (activeFilters.completeness) {
+        case "complete":
+          if (!hasCompleteInfo) return false;
+          break;
+        case "incomplete":
+          if (hasCompleteInfo) return false;
+          break;
+        case "all":
+          // Show all papers regardless of completeness
+          break;
+      }
     }
 
     return true;
@@ -183,28 +208,34 @@ export const usePaperList = (
     } else {
       setPapers(paperSets.default);
     }
-  }, [currentPaperSet]);
-  // Reset pagination when filters or sort change
+  }, [currentPaperSet]); // Reset pagination when filters or sort change
   useEffect(() => {
     setCurrentPage(1);
   }, [
     activeFilters.timePeriod,
     activeFilters.citations,
     activeFilters.region,
+    activeFilters.completeness,
     activeSortBy,
   ]);
-
   const handleFilterChange = (filterString: string) => {
     const filterArray = filterString.split(",").filter(Boolean);
-    const newFilters = { timePeriod: "", citations: "", region: "" };
+    const newFilters = {
+      timePeriod: "",
+      citations: "",
+      region: "",
+      completeness: "",
+    };
 
     filterArray.forEach((filter) => {
       if (filter.includes("past-")) {
         newFilters.timePeriod = filter;
-      } else if (filter.includes("citations-")) {
+      } else if (filter.includes("citations-") || filter === "any") {
         newFilters.citations = filter;
       } else if (["domestic", "international", "both"].includes(filter)) {
         newFilters.region = filter;
+      } else if (["complete", "incomplete", "all"].includes(filter)) {
+        newFilters.completeness = filter;
       }
     });
 

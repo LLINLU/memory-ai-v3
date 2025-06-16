@@ -46,7 +46,6 @@ async function callPythonUseCasesAPI(
   };
 }
 
-
 /**
  * Recursively enrich each node with papers only
  */
@@ -85,8 +84,6 @@ function enrichNodeWithUseCases(node: any): any {
   };
 }
 
-
-
 // =============================================================================
 // TYPE DEFINITIONS (Inlined from api-specifications/python-api-types.ts)
 // =============================================================================
@@ -117,7 +114,7 @@ interface EnrichedTreeNode {
   description?: string;
   level: number;
   papers: Paper[];
-  useCases: UseCase[];
+  useCases?: UseCase[]; // Optional since use cases API is not production ready
   children: EnrichedTreeNode[];
 }
 
@@ -128,7 +125,7 @@ interface Paper {
   journal: string;
   tags: string[];
   abstract: string;
-  date: string;
+  date: string | null; // Allow null dates for papers without publication dates
   citations: number;
   region: string;
   doi: string;
@@ -148,9 +145,10 @@ interface UseCase {
 }
 
 // =============================================================================
-// STEP 2 INTERNAL PROCESSING FUNCTION
+// HELPER FUNCTIONS
 // =============================================================================
 
+// STEP 2 INTERNAL PROCESSING FUNCTION
 interface Step2Params {
   searchTheme: string;
   scenarioId: string;
@@ -259,11 +257,16 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
       level: 1,
       children: subtreeWithIds,
     },
-  };
-  // Call Python API for enrichment (papers only for now)
+  }; // Call Python API for enrichment (papers only for now)
   console.log(`[STEP 2 INTERNAL] Calling papers API...`);
-  const enrichedResponse = await callPythonPapersAPI(scenarioTreeInput);
-  console.log(`=== Papers enrichment completed for: ${scenarioName} ===`);
+  let enrichedResponse: EnrichedScenarioResponse;
+  try {
+    enrichedResponse = await callTreePapersAPI(scenarioTreeInput);
+  } catch (apiErr) {
+    console.error("[tree_papers] prod API failed, using mock:", apiErr.message);
+    enrichedResponse = await callPythonPapersAPI(scenarioTreeInput);
+  }
+  console.log(`=== Papers enrichment completed: ${enrichedResponse} ===`);
 
   /*──────── Save Enriched Data to Supabase ────────*/
 
@@ -277,16 +280,6 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
   ) => {
     const id = enrichedNode.id || crypto.randomUUID();
     const axisForLevel = detectAxis(lvl);
-
-    console.log(`[SAVE] Saving node at level ${lvl}:`, {
-      id,
-      name: bareNode.name,
-      parentId,
-      axis: axisForLevel,
-      level: lvl,
-      order: idx,
-      childrenCount: bareNode.children.length,
-    });
 
     // Validate axis value exists in enum
     const validAxisValues = [
@@ -439,8 +432,83 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
 }
 
 // =============================================================================
-// HELPER FUNCTIONS
-// =============================================================================
+// Basic-Auth helper (prod tree_papers)
+// ---------------------------------------------------------------------------
+function makeBasicAuthHeader(): string {
+  const user = Deno.env.get("SEARCH_API_USER") ?? "admin";
+  const pass = Deno.env.get("SEARCH_API_PASS") ?? "adminpassword";
+  return "Basic " + btoa(`${user}:${pass}`);
+}
+
+// ---------------------------------------------------------------------------
+// Production tree_papers API call
+// ---------------------------------------------------------------------------
+async function callTreePapersAPI(
+  scenarioTree: ScenarioTreeInput
+): Promise<EnrichedScenarioResponse> {
+  // Transform the data to match the API's expected snake_case format
+  const apiPayload = transformToSnakeCase(scenarioTree);
+
+  const res = await fetch("https://search-api.memoryai.jp/tree_papers", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: makeBasicAuthHeader(),
+    },
+    body: JSON.stringify(apiPayload),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`tree_papers API ${res.status}: ${text}`);
+  }
+
+  const response = await res.json();
+  // Transform the response back to camelCase if needed
+  return transformToCamelCase(response);
+}
+
+// Helper function to transform camelCase to snake_case for API
+function transformToSnakeCase(data: ScenarioTreeInput): any {
+  const transformNode = (node: any): any => ({
+    id: node.id,
+    title: node.title,
+    description: node.description,
+    level: node.level,
+    children: node.children.map(transformNode),
+    ...(node.keywords && { keywords: node.keywords }),
+    ...(node.context && { context: node.context }),
+  });
+
+  return {
+    tree_id: data.treeId, // Convert treeId to tree_id
+    scenario_node: transformNode(data.scenarioNode), // Convert scenarioNode to scenario_node
+  };
+}
+
+// Helper function to transform snake_case response back to camelCase
+function transformToCamelCase(response: any): EnrichedScenarioResponse {
+  const transformNode = (node: any): any => ({
+    id: node.id,
+    title: node.title,
+    description: node.description,
+    level: node.level,
+    papers: (node.papers || []).map((paper: any) => ({
+      ...paper,
+      date: validateAndFormatDate(paper.date), // Validate dates from API
+      region: validateRegion(paper.region), // Validate regions from API
+    })),
+    useCases: node.use_cases || node.useCases, // Handle both formats
+    children: (node.children || []).map(transformNode),
+  });
+
+  return {
+    treeId: response.tree_id || response.treeId, // Handle both formats
+    scenarioNode: transformNode(
+      response.scenario_node || response.scenarioNode
+    ),
+  };
+}
 
 /**
  * Save papers for a specific node
@@ -454,22 +522,29 @@ async function saveNodePapers(
 ): Promise<void> {
   if (papers.length === 0) return;
 
-  const papersToInsert = papers.map((paper) => ({
-    id: paper.id,
-    node_id: nodeId,
-    tree_id: treeId,
-    title: paper.title,
-    authors: paper.authors,
-    journal: paper.journal,
-    tags: paper.tags,
-    abstract: paper.abstract,
-    date: paper.date,
-    citations: paper.citations,
-    region: paper.region,
-    doi: paper.doi,
-    url: paper.url,
-    team_id: teamId,
-  }));
+  const papersToInsert = papers.map((paper) => {
+    const validatedDate = validateAndFormatDate(paper.date);
+    const validatedRegion = validateRegion(paper.region);
+    console.log(
+      `[DB INSERT] Paper "${paper.title}" - Original date: "${paper.date}", Validated date: ${validatedDate}, Original region: "${paper.region}", Validated region: "${validatedRegion}"`
+    );
+    return {
+      id: paper.id,
+      node_id: nodeId,
+      tree_id: treeId,
+      title: paper.title,
+      authors: paper.authors,
+      journal: paper.journal,
+      tags: paper.tags,
+      abstract: paper.abstract,
+      date: validatedDate, // This will be either a valid date string or null
+      citations: paper.citations,
+      region: validatedRegion, // This will be either "domestic" or "international"
+      doi: paper.doi,
+      url: paper.url,
+      team_id: teamId,
+    };
+  });
 
   const { error } = await supabaseClient
     .from("node_papers")
@@ -644,7 +719,7 @@ function generateRandomDate(): string {
   return randomDate.toISOString().split("T")[0];
 }
 
-// Helper function to assign unique IDs to subtree nodes for API consistency
+// Helper function to assign unique IDs to subtree nodes for API
 function assignIdsToSubtree(nodes: BareNode[], startLevel: number = 2): any[] {
   return nodes.map((node, index) => {
     const id = crypto.randomUUID();
@@ -1222,3 +1297,81 @@ serve(async (req) => {
     );
   }
 });
+
+// Helper function to validate and format dates
+function validateAndFormatDate(dateString: string | null): string | null {
+  console.log(
+    `[DATE VALIDATION] Input: "${dateString}" (type: ${typeof dateString})`
+  );
+
+  // Handle empty or null dates - return null instead of current date
+  if (!dateString || dateString.trim() === "") {
+    console.log(`[DATE VALIDATION] Empty/null date, returning null`);
+    return null;
+  }
+
+  // Check if the date is already in valid YYYY-MM-DD format
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    // Validate that it's a real date
+    const date = new Date(dateString);
+    if (!isNaN(date.getTime())) {
+      console.log(`[DATE VALIDATION] Valid YYYY-MM-DD format: "${dateString}"`);
+      return dateString;
+    }
+  }
+
+  // Try to parse other date formats
+  const date = new Date(dateString);
+  if (!isNaN(date.getTime())) {
+    const formattedDate = date.toISOString().split("T")[0];
+    console.log(
+      `[DATE VALIDATION] Parsed and formatted: "${dateString}" -> "${formattedDate}"`
+    );
+    return formattedDate;
+  }
+
+  // If all else fails, return null for invalid dates
+  console.warn(`[DB] Invalid date format: "${dateString}", storing as null`);
+  return null;
+}
+
+// Helper function to validate region field
+function validateRegion(region: string): "domestic" | "international" {
+  console.log(`[REGION VALIDATION] Input: "${region}"`);
+
+  if (!region || typeof region !== "string") {
+    console.log(
+      `[REGION VALIDATION] Empty/invalid region, defaulting to "international"`
+    );
+    return "international";
+  }
+
+  const normalizedRegion = region.toLowerCase().trim();
+
+  // Check for domestic indicators
+  if (
+    normalizedRegion.includes("domestic") ||
+    normalizedRegion.includes("japan") ||
+    normalizedRegion.includes("jp") ||
+    normalizedRegion.includes("japanese")
+  ) {
+    console.log(`[REGION VALIDATION] Classified as domestic: "${region}"`);
+    return "domestic";
+  }
+
+  // Check for international indicators
+  if (
+    normalizedRegion.includes("international") ||
+    normalizedRegion.includes("global") ||
+    normalizedRegion.includes("worldwide")
+  ) {
+    console.log(`[REGION VALIDATION] Classified as international: "${region}"`);
+    return "international";
+  }
+
+  // Default to international for unknown values
+  console.log(
+    `[REGION VALIDATION] Unknown region "${region}", defaulting to "international"`
+  );
+  return "international";
+}

@@ -19,7 +19,6 @@ export const TabContent = ({
 }: TabContentProps) => {
   const [currentFilter, setCurrentFilter] = useState("");
   const [currentSort, setCurrentSort] = useState("");
-
   // Get real enrichment data for the selected node
   const { papers, useCases } = useEnrichedData(selectedNodeId || null);
 
@@ -45,6 +44,14 @@ export const TabContent = ({
           onSortChange={handleSortChange}
         />
       </div>
+      {/* 🚫 TEMPORARILY DISABLED - Use Cases Tab not production ready */}
+      {/* Only show papers for now */}
+      <PaperList
+        selectedNodeId={selectedNodeId}
+        filterString={currentFilter}
+        sortBy={currentSort}
+      />
+      {/* 
       {activeTab === "papers" ? (
         <PaperList
           selectedNodeId={selectedNodeId}
@@ -54,6 +61,7 @@ export const TabContent = ({
       ) : (
         <ImplementationList selectedNodeId={selectedNodeId} />
       )}
+      */}
     </>
   );
 };

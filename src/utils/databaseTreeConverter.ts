@@ -51,97 +51,37 @@ const fetchNodeEnrichmentCounts = async (
     return enrichmentMap;
   }
 
-  try {
-    // Try to query the enriched data tables directly
-    // These tables exist but aren't in the generated types, so we cast the results
+  console.log(
+    `[ENRICHMENT] Hardcoding counts as 20 for ${nodeIds.length} nodes`
+  );
 
-    // Get paper counts for all nodes
-    const { data: paperData, error: paperError } = await supabase
-      .from("node_papers" as any)
-      .select("node_id")
-      .in("node_id", nodeIds);
-
-    // Get use case counts for all nodes
-    const { data: useCaseData, error: useCaseError } = await supabase
-      .from("node_use_cases" as any)
-      .select("node_id")
-      .in("node_id", nodeIds);
-
-    if (paperError || useCaseError) {
-      console.warn("Tables not accessible, using deterministic counts:", {
-        paperError,
-        useCaseError,
-      });
-      // Fall back to deterministic counts based on node IDs
-      nodeIds.forEach((nodeId) => {
-        const seed = nodeId
-          .split("")
-          .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        const paperCount = (seed % 40) + 5; // 5-45 papers
-        const useCaseCount = (seed % 15) + 1; // 1-15 use cases
-
-        enrichmentMap.set(nodeId, {
-          paperCount,
-          useCaseCount,
-        });
-      });
-    } else {
-      // Count papers and use cases by node_id
-      const paperCountMap = new Map<string, number>();
-      const useCaseCountMap = new Map<string, number>();
-
-      // Count papers for each node
-      paperData?.forEach((paper: any) => {
-        const nodeId = paper.node_id;
-        paperCountMap.set(nodeId, (paperCountMap.get(nodeId) || 0) + 1);
-      });
-
-      // Count use cases for each node
-      useCaseData?.forEach((useCase: any) => {
-        const nodeId = useCase.node_id;
-        useCaseCountMap.set(nodeId, (useCaseCountMap.get(nodeId) || 0) + 1);
-      });
-
-      // Create enrichment data for all requested nodes
-      nodeIds.forEach((nodeId) => {
-        enrichmentMap.set(nodeId, {
-          paperCount: paperCountMap.get(nodeId) || 0,
-          useCaseCount: useCaseCountMap.get(nodeId) || 0,
-        });
-      });
-    }
-  } catch (error) {
-    console.warn("Error fetching enrichment counts:", error);
-    // Return deterministic fallback counts if there's an error
-    nodeIds.forEach((nodeId) => {
-      const seed = nodeId
-        .split("")
-        .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      const paperCount = (seed % 40) + 5; // 5-45 papers
-      const useCaseCount = (seed % 15) + 1; // 1-15 use cases
-
-      enrichmentMap.set(nodeId, {
-        paperCount,
-        useCaseCount,
-      });
+  // Hardcode all nodes to have 20 papers for now
+  nodeIds.forEach((nodeId) => {
+    enrichmentMap.set(nodeId, {
+      paperCount: 20,
+      useCaseCount: 5,
     });
-  }
-
+  });
   return enrichmentMap;
 };
 
 // Helper function to create info string with real or fallback data
-const createNodeInfoString = (enrichmentData?: NodeEnrichmentData): string => {
-  if (
-    enrichmentData &&
-    (enrichmentData.paperCount > 0 || enrichmentData.useCaseCount > 0)
-  ) {
-    return `${enrichmentData.paperCount}論文 • ${enrichmentData.useCaseCount}事例`;
+const createNodeInfoString = (
+  enrichmentData?: NodeEnrichmentData,
+  nodeId?: string
+): string => {
+  if (enrichmentData && enrichmentData.paperCount > 0) {
+    console.log(
+      `[NODE INFO] Node ${nodeId} has ${enrichmentData.paperCount} papers`
+    );
+    return `${enrichmentData.paperCount}論文`;
   }
-  // Fallback to random numbers if no enriched data is available
-  return `${Math.floor(Math.random() * 50) + 1}論文 • ${
-    Math.floor(Math.random() * 20) + 1
-  }事例`;
+  // Show 0 papers if no enriched data is available
+  console.log(
+    `[NODE INFO] Node ${nodeId} showing 0 papers - enrichmentData:`,
+    enrichmentData
+  );
+  return `0論文`;
 };
 
 const convertFastTreeToAppFormat = async (
@@ -175,7 +115,7 @@ const convertFastTreeToAppFormat = async (
       return {
         id: node.id,
         name: node.name,
-        info: createNodeInfoString(enrichmentData),
+        info: createNodeInfoString(enrichmentData, node.id),
         description: node.description || "",
         color: `hsl(${200 + index * 30}, 70%, 50%)`,
         children_count: node.children_count,
@@ -193,7 +133,7 @@ const convertFastTreeToAppFormat = async (
           return {
             id: node.id,
             name: node.name,
-            info: createNodeInfoString(enrichmentData),
+            info: createNodeInfoString(enrichmentData, node.id),
             description: node.description || "",
             color: `hsl(${220 + index * 25}, 65%, 55%)`,
             children_count: node.children_count,
@@ -219,7 +159,7 @@ const convertFastTreeToAppFormat = async (
               return {
                 id: node.id,
                 name: node.name,
-                info: createNodeInfoString(enrichmentData),
+                info: createNodeInfoString(enrichmentData, node.id),
                 description: node.description || "",
                 color: `hsl(${240 + index * 20}, 60%, 60%)`,
                 children_count: node.children_count,
@@ -249,7 +189,7 @@ const convertFastTreeToAppFormat = async (
                   return {
                     id: node.id,
                     name: node.name,
-                    info: createNodeInfoString(enrichmentData),
+                    info: createNodeInfoString(enrichmentData, node.id),
                     description: node.description || "",
                     color: `hsl(${260 + index * 15}, 55%, 65%)`,
                     children_count: node.children_count,
@@ -282,7 +222,7 @@ const convertFastTreeToAppFormat = async (
             return {
               id: node.id,
               name: node.name,
-              info: createNodeInfoString(enrichmentData),
+              info: createNodeInfoString(enrichmentData, node.id),
               description: node.description || "",
               color: `hsl(${260 + index * 15}, 55%, 65%)`,
               children_count: node.children_count,
@@ -436,7 +376,7 @@ const convertTedTreeToAppFormat = async (
       return {
         id: node.id,
         name: node.name,
-        info: createNodeInfoString(enrichmentData),
+        info: createNodeInfoString(enrichmentData, node.id),
         description: node.description || "",
         color: `hsl(${200 + index * 30}, 70%, 50%)`,
         children_count: node.children_count,
@@ -465,7 +405,7 @@ const convertTedTreeToAppFormat = async (
           return {
             id: node.id,
             name: node.name,
-            info: createNodeInfoString(enrichmentData),
+            info: createNodeInfoString(enrichmentData, node.id),
             description: node.description || "",
             color: `hsl(${220 + index * 25}, 65%, 55%)`,
             children_count: node.children_count,
@@ -492,7 +432,7 @@ const convertTedTreeToAppFormat = async (
               return {
                 id: node.id,
                 name: node.name,
-                info: createNodeInfoString(enrichmentData),
+                info: createNodeInfoString(enrichmentData, node.id),
                 description: node.description || "",
                 color: `hsl(${240 + index * 20}, 60%, 60%)`,
                 children_count: node.children_count,
@@ -527,7 +467,7 @@ const convertTedTreeToAppFormat = async (
                     return {
                       id: node.id,
                       name: node.name,
-                      info: createNodeInfoString(enrichmentData),
+                      info: createNodeInfoString(enrichmentData, node.id),
                       description: node.description || "",
                       color: `hsl(${260 + index * 15}, 55%, 65%)`,
                       children_count: node.children_count,
@@ -560,7 +500,7 @@ const convertTedTreeToAppFormat = async (
             return {
               id: node.id,
               name: node.name,
-              info: createNodeInfoString(enrichmentData),
+              info: createNodeInfoString(enrichmentData, node.id),
               description: node.description || "",
               color: `hsl(${260 + index * 15}, 55%, 65%)`,
               children_count: node.children_count,

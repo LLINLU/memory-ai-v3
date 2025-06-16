@@ -161,8 +161,7 @@ const TechnologyTree = () => {
     handleAddLevel4,
     scenario: databaseScenario, // Get scenario from database tree data
   } = useTechnologyTree(databaseTreeData, viewModeHook); // Pass viewModeHook here
-
-  // Update last visible level when tree data changes and trigger scroll update
+  // Update last visible level when tree data changes and trigger scroll update (debounced)
   useEffect(() => {
     updateLastVisibleLevel({
       level4Items: Object.values(level4Items).flat(),
@@ -174,9 +173,12 @@ const TechnologyTree = () => {
       level10Items: Object.values(level10Items).flat(),
     });
 
-    // Trigger scroll update after level data changes
-    console.log("Tree data updated, triggering scroll update");
-    triggerScrollUpdate();
+    // Trigger scroll update with debouncing to prevent excessive calls during tree generation
+    const timeoutId = setTimeout(() => {
+      triggerScrollUpdate();
+    }, 150); // Small delay to batch rapid updates during polling
+
+    return () => clearTimeout(timeoutId);
   }, [
     level4Items,
     level5Items,
@@ -188,24 +190,19 @@ const TechnologyTree = () => {
     updateLastVisibleLevel,
     triggerScrollUpdate,
   ]);
-
-  // Trigger scroll update when database tree data is loaded
+  // Trigger scroll update when database tree data is loaded (debounced)
   useEffect(() => {
     if (databaseTreeData) {
-      console.log("Database tree data loaded, triggering scroll update");
-      triggerScrollUpdate();
+      const timeoutId = setTimeout(() => {
+        triggerScrollUpdate();
+      }, 200); // Slightly longer delay for database updates
+
+      return () => clearTimeout(timeoutId);
     }
   }, [databaseTreeData, triggerScrollUpdate]);
   // Initialize tree data with TED results if available
   useEffect(() => {
     const initializeTreeData = async () => {
-      // console.log("[INIT DEBUG] Starting tree data initialization", {
-      //   fromDatabase: locationState?.fromDatabase,
-      //   treeId: locationState?.treeId,
-      //   hasTreeData: !!locationState?.treeData,
-      //   hasTedResults: !!locationState?.tedResults,
-      //   hasLoadedDatabase,
-      // });
       // Helper function to validate UUID format
       const isValidUUID = (str: string) => {
         const uuidRegex =
@@ -569,12 +566,10 @@ const TechnologyTree = () => {
         // Check if any NEW scenario has completed since last check
         if (result.completedScenarios > lastCompletedCountRef.current) {
           const newlyCompleted =
-            result.completedScenarios - lastCompletedCountRef.current;
-
-          // Always reload the tree data to get the latest completed subtrees
+            result.completedScenarios - lastCompletedCountRef.current; // Always reload the tree data to get the latest completed subtrees
           const updatedTree = await loadTreeFromDatabase(pollingTreeId);
           if (updatedTree?.treeStructure) {
-            const convertedData = convertDatabaseTreeToAppFormat(
+            const convertedData = await convertDatabaseTreeToAppFormat(
               updatedTree.treeStructure,
               {
                 description: updatedTree.treeData?.description,

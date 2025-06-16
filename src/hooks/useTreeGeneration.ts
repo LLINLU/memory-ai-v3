@@ -387,7 +387,7 @@ export const useTreeGeneration = () => {
       }
 
       const result = data || [];
-      console.log("List trees result:", result);
+      //console.log("List trees result:", result);
       setTrees(result);
       return result;
     } catch (error) {

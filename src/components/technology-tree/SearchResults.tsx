@@ -47,7 +47,7 @@ export const SearchResults = ({
       <SelectedNodeInfo
         title={selectedNodeTitle}
         description={selectedNodeDescription}
-      />{" "}
+      />
       <TabContent
         activeTab={activeTab}
         onValueChange={setActiveTab}
