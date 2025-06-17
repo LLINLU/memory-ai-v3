@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState } from "react";
 import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
@@ -123,6 +124,10 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
 
   const toggleLayout = () => {
     setLayoutDirection(prev => prev === 'horizontal' ? 'vertical' : 'horizontal');
+    // Automatically center the view after layout change
+    setTimeout(() => {
+      resetView();
+    }, 100); // Small delay to ensure layout change has completed
   };
 
   return (
