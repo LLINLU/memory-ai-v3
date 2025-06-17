@@ -159,14 +159,6 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
     }
   };
 
-  // Define title color based on level
-  const getTitleColor = () => {
-    if (title === "レベル1") return "#3d5e80";
-    if (title === "レベル2") return "#3774c2";
-    if (title === "レベル3") return "#467efd";
-    return "text-blue-700";
-  };
-
   // Dynamic tooltip text based on showDescriptions state
   const getTooltipText = () => {
     return showDescriptions
@@ -188,7 +180,7 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
         <h2
           className="text-base"
           style={{
-            color: getTitleColor(),
+            color: "#000000",
             fontSize: "14px",
             fontWeight: 400,
           }}
@@ -239,7 +231,8 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-      </div>      <div className="space-y-4">
+      </div>
+      <div className="space-y-4">
         {items.map((item, index) => (
           <TreeNode
             key={`${item.id}-${item.children_count || 0}-${index}`}
