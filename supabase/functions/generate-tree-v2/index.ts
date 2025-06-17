@@ -262,7 +262,7 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
   console.log(`[STEP 2 INTERNAL] Calling papers API...`);
   let enrichedResponse: EnrichedScenarioResponse;
   try {
-    enrichedResponse = await callTreePapersAPI(scenarioTreeInput);
+    enrichedResponse = await callTreePapersAPI(scenarioTreeInput, searchTheme);
   } catch (apiErr) {
     console.error("[tree_papers] prod API failed, using mock:", apiErr.message);
     enrichedResponse = await callPythonPapersAPI(scenarioTreeInput);
@@ -445,10 +445,11 @@ function makeBasicAuthHeader(): string {
 // Production tree_papers API call
 // ---------------------------------------------------------------------------
 async function callTreePapersAPI(
-  scenarioTree: ScenarioTreeInput
+  scenarioTree: ScenarioTreeInput,
+  query: string
 ): Promise<EnrichedScenarioResponse> {
   // Transform the data to match the API's expected snake_case format
-  const apiPayload = transformToSnakeCase(scenarioTree);
+  const apiPayload = transformToSnakeCase(scenarioTree, query);
 
   const res = await fetch("https://search-api.memoryai.jp/tree_papers", {
     method: "POST",
@@ -470,7 +471,7 @@ async function callTreePapersAPI(
 }
 
 // Helper function to transform camelCase to snake_case for API
-function transformToSnakeCase(data: ScenarioTreeInput): any {
+function transformToSnakeCase(data: ScenarioTreeInput, query: string): any {
   const transformNode = (node: any): any => ({
     id: node.id,
     title: node.title,
@@ -483,6 +484,7 @@ function transformToSnakeCase(data: ScenarioTreeInput): any {
 
   return {
     tree_id: data.treeId, // Convert treeId to tree_id
+    query: query, // Add the query parameter
     scenario_node: transformNode(data.scenarioNode), // Convert scenarioNode to scenario_node
   };
 }
