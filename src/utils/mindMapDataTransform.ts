@@ -1,3 +1,4 @@
+
 import { TreeNode } from "@/types/tree";
 import * as d3 from "d3";
 
@@ -252,13 +253,13 @@ const createD3Nodes = (hierarchicalData: any, layoutDirection: 'horizontal' | 'v
       children_count: node.data.children_count,
     }));
   } else {
-    // OPTIMIZED vertical layout - better spacing for top-down flow
+    // IMPROVED vertical layout - increased spacing to prevent overlaps
     const treeLayout = d3
       .tree()
-      .nodeSize([80, 150]) // Optimized: more vertical distance, less horizontal distance
+      .nodeSize([100, 200]) // Increased from [80, 150] to [100, 200] for more horizontal space
       .separation((a, b) => {
-        // Much tighter horizontal spacing for vertical layout
-        return a.parent === b.parent ? 0.6 : 0.8;
+        // Improved separation to prevent overlapping
+        return a.parent === b.parent ? 1.0 : 1.2; // Increased from 0.6:0.8 to 1.0:1.2
       });
 
     treeLayout(root);
@@ -345,13 +346,13 @@ const createD3Connections = (hierarchicalData: any, layoutDirection: 'horizontal
 
     return connections;
   } else {
-    // OPTIMIZED vertical connection logic with layout-aware dimensions
+    // IMPROVED vertical connection logic with better spacing
     const treeLayout = d3
       .tree()
-      .nodeSize([80, 150]) // Optimized: matches the node spacing
+      .nodeSize([100, 200]) // Updated to match node layout spacing
       .separation((a, b) => {
-        // Much tighter horizontal spacing for vertical layout
-        return a.parent === b.parent ? 0.6 : 0.8;
+        // Improved separation matching node layout
+        return a.parent === b.parent ? 1.0 : 1.2;
       });
 
     treeLayout(root);

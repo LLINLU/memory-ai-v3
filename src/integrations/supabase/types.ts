@@ -98,6 +98,7 @@ export type Database = {
           description: string
           id: string
           node_id: string
+          press_releases: string[]
           product: string
           team_id: string | null
           tree_id: string
@@ -109,6 +110,7 @@ export type Database = {
           description: string
           id: string
           node_id: string
+          press_releases?: string[]
           product: string
           team_id?: string | null
           tree_id: string
@@ -120,6 +122,7 @@ export type Database = {
           description?: string
           id?: string
           node_id?: string
+          press_releases?: string[]
           product?: string
           team_id?: string | null
           tree_id?: string
