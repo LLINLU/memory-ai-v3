@@ -74,7 +74,7 @@ export const useTreeGeneration = () => {
         return null;
       } // Choose the appropriate edge function based on mode
       const functionName =
-        mode === "FAST" ? "generate-tree-fast" : "generate-tree-v2";
+        mode === "FAST" ? "generate-tree-fast" : "generate-tree-v3";
 
       // Get team_id from user details
       const team_id = userDetails?.team_id;
@@ -216,7 +216,6 @@ export const useTreeGeneration = () => {
           }
           return acc;
         }, {} as Record<string, number>);
-
       }
 
       // Approach 3: Force a connection refresh by making a simple query first

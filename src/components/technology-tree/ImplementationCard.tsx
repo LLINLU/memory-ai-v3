@@ -13,6 +13,7 @@ interface PressRelease {
 interface ImplementationCardProps {
   title: string;
   description: string;
+  company?: string[];
   releases: number;
   badgeColor: string;
   badgeTextColor: string;
@@ -22,6 +23,7 @@ interface ImplementationCardProps {
 export const ImplementationCard = ({
   title,
   description,
+  company = [],
   releases,
   badgeColor,
   badgeTextColor,
@@ -51,8 +53,19 @@ export const ImplementationCard = ({
           >
             {releases}リリース
           </Badge>
-        </div>
-        <h4 className="font-semibold">{title}</h4>
+        </div>        <h4 className="font-semibold">{title}</h4>
+        {company.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-1">
+            {company.map((comp, index) => (
+              <span
+                key={index}
+                className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded"
+              >
+                {comp}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
       <p className="text-gray-600 text-sm font-normal mb-3">{description}</p>
       {pressReleases.length > 0 && (
