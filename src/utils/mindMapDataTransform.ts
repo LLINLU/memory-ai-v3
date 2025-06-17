@@ -252,15 +252,13 @@ const createD3Nodes = (hierarchicalData: any, layoutDirection: 'horizontal' | 'v
       children_count: node.data.children_count,
     }));
   } else {
-    // FIXED vertical layout - better spacing
+    // OPTIMIZED vertical layout - better spacing for top-down flow
     const treeLayout = d3
       .tree()
-      .nodeSize([120, 100]) // Fixed: more vertical spacing, less horizontal spread
+      .nodeSize([80, 150]) // Optimized: more vertical distance, less horizontal distance
       .separation((a, b) => {
-        // Fixed: Tighter separation for first level nodes
-        if (a.depth === 1 && b.depth === 1) return 0.8; // Tighter first level
-        if (a.parent === b.parent) return 1.0;
-        return 1.2; // Slightly better separation for different parents
+        // Much tighter horizontal spacing for vertical layout
+        return a.parent === b.parent ? 0.6 : 0.8;
       });
 
     treeLayout(root);
@@ -347,30 +345,32 @@ const createD3Connections = (hierarchicalData: any, layoutDirection: 'horizontal
 
     return connections;
   } else {
-    // FIXED vertical connection logic with matching nodeSize
+    // OPTIMIZED vertical connection logic with layout-aware dimensions
     const treeLayout = d3
       .tree()
-      .nodeSize([120, 100]) // Fixed: matches the node spacing
+      .nodeSize([80, 150]) // Optimized: matches the node spacing
       .separation((a, b) => {
-        // Fixed: matching separation logic
-        if (a.depth === 1 && b.depth === 1) return 0.8;
-        if (a.parent === b.parent) return 1.0;
-        return 1.2;
+        // Much tighter horizontal spacing for vertical layout
+        return a.parent === b.parent ? 0.6 : 0.8;
       });
 
     treeLayout(root);
 
     const connections: MindMapConnection[] = [];
 
-    // NEW vertical connections - bottom edge to top edge
+    // NEW vertical connections - layout-aware dimensions
     root.links().forEach((link) => {
       const isRootSource = link.source.data.level === 0;
-      const sourceNodeHeight = isRootSource ? ROOT_NODE_HEIGHT : NODE_HEIGHT;
+      
+      // Use layout-specific dimensions
+      const sourceNodeWidth = 120; // Vertical layout width
+      const sourceNodeHeight = isRootSource ? 110 : 100; // Vertical layout heights
+      const targetNodeWidth = 120;
 
       // Bottom edge of source to top edge of target
-      const sourceX = link.source.x + MARGIN_LEFT + NODE_WIDTH / 2; // Center horizontally
+      const sourceX = link.source.x + MARGIN_LEFT + sourceNodeWidth / 2; // Center horizontally
       const sourceY = link.source.y + MARGIN_TOP + sourceNodeHeight; // Bottom edge
-      const targetX = link.target.x + MARGIN_LEFT + NODE_WIDTH / 2; // Center horizontally  
+      const targetX = link.target.x + MARGIN_LEFT + targetNodeWidth / 2; // Center horizontally  
       const targetY = link.target.y + MARGIN_TOP; // Top edge
 
       connections.push({

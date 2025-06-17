@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from "react";
 import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
@@ -101,9 +100,12 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     // Placeholder for add node functionality
   };
 
-  // Calculate container dimensions based on layout direction
-  const containerWidth = nodes.length > 0 ? Math.max(...nodes.map(n => n.x + 400), 1400) : 1400;
-  const containerHeight = nodes.length > 0 ? Math.max(...nodes.map(n => n.y + 120), 600) : 600;
+  // Calculate container dimensions based on layout direction and node dimensions
+  const getNodeWidth = () => layoutDirection === 'horizontal' ? 280 : 120;
+  const getNodeHeight = () => layoutDirection === 'horizontal' ? 60 : 100;
+  
+  const containerWidth = nodes.length > 0 ? Math.max(...nodes.map(n => n.x + getNodeWidth() + 100), 1400) : 1400;
+  const containerHeight = nodes.length > 0 ? Math.max(...nodes.map(n => n.y + getNodeHeight() + 100), 600) : 600;
 
   const {
     zoom,
@@ -154,6 +156,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
               <MindMapNodeComponent
                 key={node.id}
                 node={node}
+                layoutDirection={layoutDirection}
                 onClick={handleNodeClick}
                 onEdit={onEditNode}
                 onDelete={onDeleteNode}

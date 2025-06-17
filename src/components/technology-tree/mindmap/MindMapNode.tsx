@@ -13,6 +13,7 @@ import { NodeLoadingIndicator } from "../level-selection/node-components/NodeLoa
 
 interface MindMapNodeProps {
   node: MindMapNode;
+  layoutDirection: 'horizontal' | 'vertical';
   onClick: (nodeId: string, level: number) => void;
   onEdit?: (
     level: string,
@@ -26,6 +27,7 @@ interface MindMapNodeProps {
 
 export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
   node,
+  layoutDirection,
   onClick,
   onEdit,
   onDelete,
@@ -33,6 +35,17 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
   onAddNode,
 }) => {
   const { toast } = useToast();
+
+  // Layout-specific dimensions
+  const getNodeWidth = () => layoutDirection === 'horizontal' ? 280 : 120;
+  const getNodeHeight = () => {
+    const isRoot = node.level === 0;
+    if (layoutDirection === 'horizontal') {
+      return isRoot ? 70 : 60;
+    } else {
+      return isRoot ? 110 : 100;
+    }
+  };
 
   const getLevelColor = (level: number) => {
     const colors = [
@@ -112,8 +125,8 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
       style={{
         left: node.x,
         top: node.y,
-        width: 280, // All nodes now use the same width (280px)
-        height: isRoot ? 70 : 60, // Updated to use new shorter heights
+        width: getNodeWidth(),
+        height: getNodeHeight(),
       }}
       onClick={handleClick}
     >

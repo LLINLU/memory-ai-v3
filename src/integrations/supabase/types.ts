@@ -93,35 +93,35 @@ export type Database = {
       }
       node_use_cases: {
         Row: {
+          company: string[]
           created_at: string
           description: string
           id: string
           node_id: string
-          releases: number
+          product: string
           team_id: string | null
-          title: string
           tree_id: string
           updated_at: string
         }
         Insert: {
+          company?: string[]
           created_at?: string
           description: string
           id: string
           node_id: string
-          releases?: number
+          product: string
           team_id?: string | null
-          title: string
           tree_id: string
           updated_at?: string
         }
         Update: {
+          company?: string[]
           created_at?: string
           description?: string
           id?: string
           node_id?: string
-          releases?: number
+          product?: string
           team_id?: string | null
-          title?: string
           tree_id?: string
           updated_at?: string
         }
@@ -321,41 +321,6 @@ export type Database = {
             columns: ["tree_id"]
             isOneToOne: false
             referencedRelation: "technology_trees"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      use_case_press_releases: {
-        Row: {
-          created_at: string
-          date: string | null
-          id: string
-          title: string
-          url: string
-          use_case_id: string
-        }
-        Insert: {
-          created_at?: string
-          date?: string | null
-          id?: string
-          title: string
-          url: string
-          use_case_id: string
-        }
-        Update: {
-          created_at?: string
-          date?: string | null
-          id?: string
-          title?: string
-          url?: string
-          use_case_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "use_case_press_releases_use_case_id_fkey"
-            columns: ["use_case_id"]
-            isOneToOne: false
-            referencedRelation: "node_use_cases"
             referencedColumns: ["id"]
           },
         ]
