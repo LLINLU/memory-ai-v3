@@ -38,7 +38,7 @@ interface TreeStructureFromDB {
 
 interface NodeEnrichmentData {
   paperCount: number;
-  //useCaseCount: number;
+  useCaseCount: number;
 }
 
 // Helper function to fetch real paper and use case counts for nodes
@@ -50,24 +50,29 @@ const fetchNodeEnrichmentCounts = async (
   if (nodeIds.length === 0) {
     return enrichmentMap;
   }
-
   // Get paper counts for all nodes
   const { data: paperData, error: paperError } = await supabase
     .from("node_papers" as any)
     .select("node_id")
     .in("node_id", nodeIds);
 
-  if (paperError) {
+  // Get use case counts for all nodes
+  const { data: useCaseData, error: useCaseError } = await supabase
+    .from("node_use_cases" as any)
+    .select("node_id")
+    .in("node_id", nodeIds);
 
-    // Hardcode all nodes to have 20 papers for now
+  if (paperError || useCaseError) {
+    // Hardcode all nodes to have 20 papers and 0 use cases for now
     nodeIds.forEach((nodeId) => {
       enrichmentMap.set(nodeId, {
         paperCount: 20,
-        //useCaseCount: 0,
+        useCaseCount: 0,
       });
     });
   } else {
     const paperCountMap = new Map<string, number>();
+    const useCaseCountMap = new Map<string, number>();
 
     // Count papers for each node
     paperData?.forEach((paper: any) => {
@@ -75,11 +80,17 @@ const fetchNodeEnrichmentCounts = async (
       paperCountMap.set(nodeId, (paperCountMap.get(nodeId) || 0) + 1);
     });
 
+    // Count use cases for each node
+    useCaseData?.forEach((useCase: any) => {
+      const nodeId = useCase.node_id;
+      useCaseCountMap.set(nodeId, (useCaseCountMap.get(nodeId) || 0) + 1);
+    });
+
     // Create enrichment data for all requested nodes
     nodeIds.forEach((nodeId) => {
       enrichmentMap.set(nodeId, {
         paperCount: paperCountMap.get(nodeId) || 0,
-        //useCaseCount: useCaseCountMap.get(nodeId) || 0,
+        useCaseCount: useCaseCountMap.get(nodeId) || 0,
       });
     });
   }
@@ -91,18 +102,18 @@ const createNodeInfoString = (
   enrichmentData?: NodeEnrichmentData,
   nodeId?: string
 ): string => {
-  if (enrichmentData && enrichmentData.paperCount > 0) {
+  if (enrichmentData && (enrichmentData.paperCount > 0 || enrichmentData.useCaseCount > 0)) {
     console.log(
-      `[NODE INFO] Node ${nodeId} has ${enrichmentData.paperCount} papers`
+      `[NODE INFO] Node ${nodeId} has ${enrichmentData.paperCount} papers, ${enrichmentData.useCaseCount} use cases`
     );
-    return `${enrichmentData.paperCount}論文`;
+    return `${enrichmentData.paperCount}論文・${enrichmentData.useCaseCount}事例`;
   }
-  // Show 0 papers if no enriched data is available
+  // Show 0 papers and use cases if no enriched data is available
   console.log(
-    `[NODE INFO] Node ${nodeId} showing 0 papers - enrichmentData:`,
+    `[NODE INFO] Node ${nodeId} showing 0 papers/use cases - enrichmentData:`,
     enrichmentData
   );
-  return `0論文`;
+  return `0論文・0事例`;
 };
 
 const convertFastTreeToAppFormat = async (

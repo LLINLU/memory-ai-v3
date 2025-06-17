@@ -18,14 +18,10 @@ interface Paper {
 
 interface UseCase {
   id: string;
-  title: string;
+  product: string;
   description: string;
-  releases: number;
-  pressReleases: Array<{
-    title: string;
-    url: string;
-    date?: string;
-  }>;
+  company: string[];
+  press_releases: string[];
 }
 
 interface EnrichedData {
@@ -70,38 +66,35 @@ export const useEnrichedData = (nodeId: string | null): EnrichedData => {
 
         if (papersError) {
           throw new Error(`Failed to load papers: ${papersError.message}`);
-        }
-
-        // Set papers data with proper typing
+        }        // Set papers data with proper typing
         setPapers((papersData as any) || []);
         console.log(
           `[useEnrichedData] Papers set to state:`,
           (papersData as any) || []
         );
 
-        // Load use cases with press releases (commented out for now)
-        // const { data: useCasesData, error: useCasesError } = await supabase
-        //   .from("node_use_cases")
-        //   .select(
-        //     `
-        //     *,
-        //     use_case_press_releases(*)
-        //   `
-        //   )
-        //   .eq("node_id", nodeId);
+        // Load use cases from the database
+        const { data: useCasesData, error: useCasesError } = await supabase
+          .from("node_use_cases" as any)
+          .select("*")
+          .eq("node_id", nodeId);
 
-        // if (useCasesError) {
-        //   throw new Error(`Failed to load use cases: ${useCasesError.message}`);
-        // }
+        console.log(`[useEnrichedData] Use cases query result:`, {
+          data: useCasesData,
+          error: useCasesError,
+          dataLength: useCasesData?.length || 0,
+        });
 
-        // // Transform use cases data to include press releases
-        // const transformedUseCases =
-        //   useCasesData?.map((useCase) => ({
-        //     ...useCase,
-        //     pressReleases: useCase.use_case_press_releases || [],
-        //   })) || [];
+        if (useCasesError) {
+          throw new Error(`Failed to load use cases: ${useCasesError.message}`);
+        }
 
-        // setUseCases(transformedUseCases);
+        // Set use cases data
+        setUseCases((useCasesData as any) || []);
+        console.log(
+          `[useEnrichedData] Use cases set to state:`,
+          (useCasesData as any) || []
+        );
       } catch (err) {
         console.error("Error loading enriched data:", err);
         setError(err instanceof Error ? err.message : "Unknown error");

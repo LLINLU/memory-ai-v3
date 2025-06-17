@@ -88,28 +88,18 @@ export const TabContent: React.FC<TabContentProps> = ({
           onFilterChange={handleFilterChange}
           onSortChange={handleSortChange}
         />
-      </div>
-      <div id="google_translate_element"></div>
-      {/* 🚫 TEMPORARILY DISABLED - Use Cases Tab not production ready */}
-      {/* Only show papers for now */}
+      </div>      <div id="google_translate_element"></div>
       <div className="translate">
-        <PaperList
-          selectedNodeId={selectedNodeId}
-          filterString={currentFilter}
-          sortBy={currentSort}
-        />
+        {activeTab === "papers" ? (
+          <PaperList
+            selectedNodeId={selectedNodeId}
+            filterString={currentFilter}
+            sortBy={currentSort}
+          />
+        ) : (
+          <ImplementationList selectedNodeId={selectedNodeId} />
+        )}
       </div>
-      {/*
-      {activeTab === "papers" ? (
-        <PaperList
-          selectedNodeId={selectedNodeId}
-          filterString={currentFilter}
-          sortBy={currentSort}
-        />
-      ) : (
-        <ImplementationList selectedNodeId={selectedNodeId} />
-      )}
-      */}
     </>
   );
 };
