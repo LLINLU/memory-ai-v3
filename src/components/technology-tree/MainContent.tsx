@@ -15,7 +15,7 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/components/ui/toggle-group";
-import { TreePine, Network } from "lucide-react";
+import { Network } from "lucide-react";
 
 interface MainContentProps {
   selectedPath: {
@@ -175,7 +175,11 @@ export const MainContent = ({
                   size="sm"
                   className="flex items-center gap-1 text-blue-600 hover:bg-blue-50 px-2 py-1 h-7 text-xs data-[state=on]:bg-blue-100 data-[state=on]:text-blue-700"
                 >
-                  <TreePine className="h-3 w-3" />
+                  <svg className="h-3 w-3" viewBox="0 0 12 12" fill="currentColor">
+                    <rect x="1" y="1" width="2" height="10" />
+                    <rect x="5" y="1" width="2" height="10" />
+                    <rect x="9" y="1" width="2" height="10" />
+                  </svg>
                   ツリーマップ
                 </ToggleGroupItem>
               </ToggleGroup>
