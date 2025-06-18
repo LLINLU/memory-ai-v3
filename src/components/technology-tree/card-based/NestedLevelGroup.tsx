@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { ExpandableNode } from './ExpandableNode';
@@ -57,6 +58,7 @@ interface NestedLevelGroupProps {
   onDeleteNode?: (level: string, nodeId: string) => void;
   isLevelExpanded: (levelKey: string) => boolean;
   toggleLevelExpansion: (levelKey: string) => void;
+  isNodeVisuallySelected: (level: string, nodeId: string) => boolean;
 }
 
 export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
@@ -78,6 +80,7 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
   onDeleteNode,
   isLevelExpanded,
   toggleLevelExpansion,
+  isNodeVisuallySelected,
 }) => {
   const levelNames2 = {
     2: 'level2',
@@ -209,7 +212,7 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
   const renderNode = (item: LevelItem) => {
     const hasChildren = hasChildrenForNode(item);
     const childLevelKey = `${levelKey}-${item.id}`;
-    const isSelected = isNodeSelected(item);
+    const isVisuallySelected = isNodeVisuallySelected(levelNames2[currentLevel], item.id);
     const isExpanded = isLevelExpanded(childLevelKey);
 
     const handleEditClick = (e: React.MouseEvent) => {
@@ -247,7 +250,7 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
       <ExpandableNode
         key={item.id}
         item={item}
-        isSelected={isSelected}
+        isSelected={isVisuallySelected}
         isExpanded={isExpanded}
         hasChildren={hasChildren}
         onToggleExpansion={() => toggleLevelExpansion(childLevelKey)}
@@ -271,6 +274,7 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
             onDeleteNode={onDeleteNode}
             isLevelExpanded={isLevelExpanded}
             toggleLevelExpansion={toggleLevelExpansion}
+            isNodeVisuallySelected={isNodeVisuallySelected}
           />
         )}
       </ExpandableNode>

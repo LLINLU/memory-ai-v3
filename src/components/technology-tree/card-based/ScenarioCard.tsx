@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ChevronDown, ChevronRight, Maximize, Minimize } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -68,6 +69,7 @@ interface ScenarioCardProps {
   onNodeClick: (level: string, nodeId: string) => void;
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
+  isNodeVisuallySelected: (level: string, nodeId: string) => boolean;
 }
 
 export const ScenarioCard: React.FC<ScenarioCardProps> = ({
@@ -90,8 +92,9 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
   onNodeClick,
   onEditNode,
   onDeleteNode,
+  isNodeVisuallySelected,
 }) => {
-  const isSelected = selectedPath.level1 === scenario.id;
+  const isVisuallySelected = isNodeVisuallySelected('level1', scenario.id);
   const hasChildren = level2Items.length > 0;
 
   const handleScenarioClick = () => {
@@ -191,7 +194,7 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
             </div>
             <TreeNode
               item={scenario}
-              isSelected={isSelected}
+              isSelected={isVisuallySelected}
               onClick={handleScenarioClick}
               onEditClick={handleEditClick}
               onDeleteClick={handleDeleteClick}
@@ -220,6 +223,7 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
             onDeleteNode={onDeleteNode}
             isLevelExpanded={isLevelExpanded}
             toggleLevelExpansion={onToggleLevelExpansion}
+            isNodeVisuallySelected={isNodeVisuallySelected}
           />
         </CardContent>
       )}
