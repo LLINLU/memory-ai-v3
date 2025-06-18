@@ -4,6 +4,12 @@ import { ChevronDown, ChevronRight, Maximize, Minimize } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { TreeNode } from '../level-selection/TreeNode';
 import { NestedLevelGroup } from './NestedLevelGroup';
 
@@ -121,18 +127,27 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
         {/* Top row: Expand/Collapse button positioned at top-right */}
         {hasChildren && (
           <div className="absolute top-4 right-4 z-10">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={isExpanded ? onCollapseAll : onExpandAll}
-              className="h-8 w-8 p-0"
-            >
-              {isExpanded ? (
-                <Minimize className="h-4 w-4" />
-              ) : (
-                <Maximize className="h-4 w-4" />
-              )}
-            </Button>
+            <TooltipProvider delayDuration={200} skipDelayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={isExpanded ? onCollapseAll : onExpandAll}
+                    className="h-8 w-8 p-0"
+                  >
+                    {isExpanded ? (
+                      <Minimize className="h-4 w-4" />
+                    ) : (
+                      <Maximize className="h-4 w-4" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>すべて展開</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         )}
         
