@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from "react";
 import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
@@ -182,6 +181,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
           </div>
         </div>
 
+        {/* Move legend outside the transformed container so it stays fixed in viewport */}
         <MindMapLegend treeMode={treeMode} />
 
         <MindMapControls
