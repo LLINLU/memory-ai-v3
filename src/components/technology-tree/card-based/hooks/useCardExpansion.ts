@@ -65,9 +65,10 @@ export const useCardExpansion = () => {
     }));
   }, []);
 
-  // NEW: Auto-expand nodes that have children up to level 4
+  // Enhanced auto-expand function that expands all nodes with children up to level 4
   const autoExpandWithChildren = useCallback((
-    scenarioId: string, 
+    allScenarios: any[],
+    level2Items: Record<string, any[]>,
     allLevelItems: {
       level3Items: Record<string, any[]>;
       level4Items: Record<string, any[]>;
@@ -77,39 +78,61 @@ export const useCardExpansion = () => {
       level8Items: Record<string, any[]>;
       level9Items: Record<string, any[]>;
       level10Items: Record<string, any[]>;
-    },
-    level2Items: any[]
+    }
   ) => {
-    console.log(`[EXPANSION DEBUG] Auto-expanding scenario ${scenarioId} with children`);
+    console.log(`[EXPANSION DEBUG] Auto-expanding all scenarios with level 4 data`);
     
-    const expandedLevels: { [key: string]: boolean } = {};
+    const newExpansionState: ExpansionState = {};
     
-    // Auto-expand level 2 items that have level 3 children
-    level2Items.forEach(level2Item => {
-      const level3Children = allLevelItems.level3Items[level2Item.id] || [];
-      if (level3Children.length > 0) {
-        const level2Key = `${scenarioId}-${level2Item.id}`;
-        expandedLevels[level2Key] = true;
-        console.log(`[EXPANSION DEBUG] Auto-expanding level 2 key: ${level2Key}`);
-        
-        // Auto-expand level 3 items that have level 4 children
-        level3Children.forEach(level3Item => {
+    // Process each scenario
+    allScenarios.forEach(scenario => {
+      const scenarioId = scenario.id;
+      const scenarioLevel2Items = level2Items[scenarioId] || [];
+      
+      // Check if this scenario has any level 4 data
+      const hasLevel4Data = scenarioLevel2Items.some(level2Item => {
+        const level3Children = allLevelItems.level3Items[level2Item.id] || [];
+        return level3Children.some(level3Item => {
           const level4Children = allLevelItems.level4Items[level3Item.id] || [];
-          if (level4Children.length > 0) {
-            const level3Key = `${level2Key}-${level3Item.id}`;
-            expandedLevels[level3Key] = true;
-            console.log(`[EXPANSION DEBUG] Auto-expanding level 3 key: ${level3Key} (has ${level4Children.length} level 4 children)`);
+          return level4Children.length > 0;
+        });
+      });
+
+      if (hasLevel4Data) {
+        console.log(`[EXPANSION DEBUG] Found level 4 data in scenario: ${scenario.name}`);
+        
+        const expandedLevels: { [key: string]: boolean } = {};
+        
+        // Auto-expand level 2 items that have level 3 children
+        scenarioLevel2Items.forEach(level2Item => {
+          const level3Children = allLevelItems.level3Items[level2Item.id] || [];
+          if (level3Children.length > 0) {
+            const level2Key = `${scenarioId}-${level2Item.id}`;
+            expandedLevels[level2Key] = true;
+            console.log(`[EXPANSION DEBUG] Auto-expanding level 2 key: ${level2Key}`);
+            
+            // Auto-expand level 3 items that have level 4 children
+            level3Children.forEach(level3Item => {
+              const level4Children = allLevelItems.level4Items[level3Item.id] || [];
+              if (level4Children.length > 0) {
+                const level3Key = `${level2Key}-${level3Item.id}`;
+                expandedLevels[level3Key] = true;
+                console.log(`[EXPANSION DEBUG] Auto-expanding level 3 key: ${level3Key} (has ${level4Children.length} level 4 children)`);
+              }
+            });
           }
         });
+
+        newExpansionState[scenarioId] = {
+          isExpanded: true,
+          expandedLevels,
+        };
       }
     });
 
     setExpansionState(prev => ({
       ...prev,
-      [scenarioId]: {
-        isExpanded: true,
-        expandedLevels,
-      },
+      ...newExpansionState,
     }));
   }, []);
 
