@@ -64,6 +64,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       ref={nodeRef}
       className={`
         py-4 px-4 rounded-lg cursor-pointer transition-all relative
+        min-w-[200px] w-full
         ${nodeStyleClass}
         group
       `}
@@ -71,7 +72,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex flex-col relative z-10">
+      <div className="flex flex-col relative z-10 min-w-0">
         <NodeContent 
           item={item} 
           isSelected={isSelected} 
@@ -81,12 +82,12 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
         
         {/* Show description when showDescription is true */}
         {showDescription && item.description && (
-          <div className={`mt-3 text-sm ${descriptionTextColor} border-t pt-2 border-gray-100`}>
+          <div className={`mt-3 text-sm ${descriptionTextColor} border-t pt-2 border-gray-100 overflow-hidden`}>
             {item.description}
           </div>
         )}
         
-        {/* Show actions when hovered */}
+        {/* Show actions when hovered - positioned to not affect width */}
         {isHovered && (
           <div className="mt-2 flex justify-end">
             <NodeActions 
