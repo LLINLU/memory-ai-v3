@@ -1,8 +1,7 @@
-
-
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { ExpandableNode } from './ExpandableNode';
+import { getLevelBadgeStyle } from '../utils/levelColors';
 
 interface LevelItem {
   id: string;
@@ -281,7 +280,7 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
   return (
     <div className="space-y-2">
       <div className="mb-3">
-        <Badge variant="secondary" className="text-xs">
+        <Badge variant="outline" className={`text-xs ${getLevelBadgeStyle(currentLevel)}`}>
           {getLevelLabel(currentLevel)}
         </Badge>
       </div>
@@ -289,4 +288,3 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     </div>
   );
 };
-
