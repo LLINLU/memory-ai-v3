@@ -296,6 +296,7 @@ export const MainContent = ({
             onNodeClick={onNodeClick}
             onEditNode={onEditNode}
             onDeleteNode={onDeleteNode}
+            treeMode={treeMode}
           />
         )}
       </div>
