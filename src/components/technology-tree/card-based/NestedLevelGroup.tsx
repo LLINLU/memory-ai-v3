@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { ExpandableNode } from './ExpandableNode';
@@ -128,13 +129,6 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     // For level 3 nodes, also check if they have level 4 children in allLevelItems
     if (currentLevel === 3) {
       const level4Children = allLevelItems.level4Items[item.id]?.length > 0;
-      console.log(`[CHILDREN DEBUG] Level 3 node ${item.name} (${item.id}):`, {
-        directChildren,
-        level4Children,
-        nextLevelItemsKeys: Object.keys(nextLevelItems),
-        level4ItemsKeys: Object.keys(allLevelItems.level4Items),
-        level4ChildrenArray: allLevelItems.level4Items[item.id]
-      });
       return directChildren || level4Children;
     }
     
@@ -142,32 +136,82 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     if (currentLevel < 10) {
       const nextLevelItemsMap = getLevelItems(currentLevel + 1);
       const nextLevelChildren = nextLevelItemsMap[item.id]?.length > 0;
-      console.log(`[CHILDREN DEBUG] Level ${currentLevel} node ${item.name} (${item.id}):`, {
-        directChildren,
-        nextLevelChildren,
-        currentLevel,
-        nextLevel: currentLevel + 1
-      });
       return directChildren || nextLevelChildren;
     }
     
     return directChildren;
   };
 
+  // Enhanced selection validation function
+  const isNodeSelected = (item: LevelItem): boolean => {
+    const currentLevelKey = levelNames2[currentLevel];
+    const currentLevelSelection = selectedPath[currentLevelKey];
+    
+    // First check if this node is selected at the current level
+    if (currentLevelSelection !== item.id) {
+      return false;
+    }
+    
+    // Then validate that the full path is valid by checking parent selections
+    // For level 2, must have valid level 1 selection (scenarioId)
+    if (currentLevel === 2) {
+      return selectedPath.level1 === scenarioId;
+    }
+    
+    // For level 3, must have valid level 1 and level 2 selections
+    if (currentLevel === 3) {
+      if (selectedPath.level1 !== scenarioId || !selectedPath.level2) {
+        return false;
+      }
+      // Check if this level 3 item exists under the selected level 2 item
+      const level2Items = allLevelItems.level3Items[selectedPath.level2] || [];
+      return level2Items.some(l3Item => l3Item.id === item.id);
+    }
+    
+    // For level 4, must have valid level 1, 2, and 3 selections
+    if (currentLevel === 4) {
+      if (selectedPath.level1 !== scenarioId || !selectedPath.level2 || !selectedPath.level3) {
+        return false;
+      }
+      // Check if this level 4 item exists under the selected level 3 item
+      const level3Items = allLevelItems.level4Items[selectedPath.level3] || [];
+      return level3Items.some(l4Item => l4Item.id === item.id);
+    }
+    
+    // For higher levels, follow the same pattern
+    if (currentLevel >= 5) {
+      // Validate all parent levels are selected
+      const requiredLevels = ['level1', 'level2', 'level3', 'level4'];
+      for (let i = 5; i < currentLevel; i++) {
+        requiredLevels.push(`level${i}` as keyof typeof selectedPath);
+      }
+      
+      for (const level of requiredLevels) {
+        if (!selectedPath[level as keyof typeof selectedPath]) {
+          return false;
+        }
+      }
+      
+      // Check if this item exists under the selected parent
+      const parentLevel = currentLevel - 1;
+      const parentKey = `level${parentLevel}` as keyof typeof selectedPath;
+      const parentId = selectedPath[parentKey];
+      
+      if (!parentId) return false;
+      
+      const parentLevelItems = getLevelItems(currentLevel);
+      const currentLevelItems = parentLevelItems[parentId] || [];
+      return currentLevelItems.some(item_check => item_check.id === item.id);
+    }
+    
+    return false;
+  };
+
   const renderNode = (item: LevelItem) => {
     const hasChildren = hasChildrenForNode(item);
     const childLevelKey = `${levelKey}-${item.id}`;
-    const isSelected = selectedPath[levelNames2[currentLevel]] === item.id;
+    const isSelected = isNodeSelected(item);
     const isExpanded = isLevelExpanded(childLevelKey);
-
-    console.log(`[RENDER DEBUG] Rendering level ${currentLevel} node:`, {
-      nodeName: item.name,
-      nodeId: item.id,
-      hasChildren,
-      isExpanded,
-      childLevelKey,
-      currentLevel
-    });
 
     const handleEditClick = (e: React.MouseEvent) => {
       e.stopPropagation();
@@ -198,12 +242,6 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
       } else {
         nextLevelItemsForChildren = getLevelItems(currentLevel + 2); // next level items for children
       }
-
-      console.log(`[CHILDREN RENDER DEBUG] Rendering children for level ${currentLevel} node ${item.name}:`, {
-        childrenCount: childrenToRender.length,
-        childrenFromNextLevel: nextLevelItems[item.id]?.length || 0,
-        childrenFromLevel4: currentLevel === 3 ? allLevelItems.level4Items[item.id]?.length || 0 : 'N/A'
-      });
     }
 
     return (
@@ -240,15 +278,6 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     );
   };
 
-  // Debug logging for this level
-  console.log(`[LEVEL DEBUG] NestedLevelGroup level ${currentLevel}:`, {
-    itemsCount: items.length,
-    nextLevelItemsKeys: Object.keys(nextLevelItems),
-    level4ItemsKeys: Object.keys(allLevelItems.level4Items),
-    scenarioId,
-    levelKey
-  });
-
   return (
     <div className="space-y-2">
       <div className="mb-3">
@@ -260,3 +289,4 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     </div>
   );
 };
+
