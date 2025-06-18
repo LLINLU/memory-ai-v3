@@ -1,4 +1,5 @@
-import { Connection, MindMapNode } from "@/types/mindmap";
+
+import { Connection, MindMapNode, MindMapConnection } from "@/types/mindmap";
 
 export const transformToMindMapData = (
   level1Items: any[],
@@ -16,7 +17,7 @@ export const transformToMindMapData = (
   queryText: string,
   layoutDirection: 'horizontal' | 'vertical' = 'horizontal',
   isNodeVisuallySelected?: (level: string, nodeId: string) => boolean
-): { nodes: MindMapNode[]; connections: Connection[] } => {
+): { nodes: MindMapNode[]; connections: MindMapConnection[] } => {
   const nodes: MindMapNode[] = [];
   const connections: Connection[] = [];
 
@@ -111,5 +112,21 @@ export const transformToMindMapData = (
   processNextLevel(level8Items ? Object.values(level8Items).flat() : [], 9, level9Items);
   processNextLevel(level9Items ? Object.values(level9Items).flat() : [], 10, level10Items);
 
-  return { nodes, connections };
+  // Transform basic connections to MindMapConnections with coordinates
+  const mindMapConnections: MindMapConnection[] = connections.map((conn, index) => {
+    const sourceNode = nodes.find(n => n.id === conn.source);
+    const targetNode = nodes.find(n => n.id === conn.target);
+    
+    return {
+      id: `conn-${index}`,
+      source: conn.source,
+      target: conn.target,
+      sourceX: sourceNode ? sourceNode.x + (horizontalLayout ? 280 : 60) : 0,
+      sourceY: sourceNode ? sourceNode.y + (horizontalLayout ? 30 : 50) : 0,
+      targetX: targetNode ? targetNode.x : 0,
+      targetY: targetNode ? targetNode.y + (horizontalLayout ? 30 : 50) : 0,
+    };
+  });
+
+  return { nodes, connections: mindMapConnections };
 };

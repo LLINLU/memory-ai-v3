@@ -1,5 +1,5 @@
 import React from "react";
-import { MindMapNode } from "@/utils/mindMapDataTransform";
+import { MindMapNode } from "@/types/mindmap";
 import {
   Tooltip,
   TooltipContent,
@@ -138,7 +138,7 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
         <div
           className={`${
             isRoot ? "text-base" : "text-sm"
-          } font-medium break-words leading-tight text-center ${
+          }  font-medium break-words leading-tight text-center ${
             isGenerating ? "mb-1" : ""
           }`}
           title={node.name}
