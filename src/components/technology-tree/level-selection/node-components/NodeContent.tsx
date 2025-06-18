@@ -57,7 +57,6 @@ export const NodeContent: React.FC<NodeContentProps> = ({
       toast({
         title: "Copy failed",
         description: "Failed to copy title to clipboard",
-        variant: "destructive",
       });
     }
   };
