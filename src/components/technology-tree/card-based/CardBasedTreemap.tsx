@@ -49,7 +49,6 @@ interface CardBasedTreemapProps {
   onNodeClick: (level: string, nodeId: string) => void;
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
-  isNodeVisuallySelected: (level: string, nodeId: string) => boolean;
 }
 
 export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
@@ -73,7 +72,6 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
   onNodeClick,
   onEditNode,
   onDeleteNode,
-  isNodeVisuallySelected,
 }) => {
   const {
     toggleScenarioExpansion,
@@ -84,6 +82,9 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     isLevelExpanded,
   } = useCardExpansion();
 
+  // Visual selection state - only one node can be visually selected at a time
+  const [visuallySelectedNode, setVisuallySelectedNode] = useState<{level: string, nodeId: string} | null>(null);
+
   const allLevelItems = {
     level3Items,
     level4Items,
@@ -93,6 +94,17 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     level8Items,
     level9Items,
     level10Items,
+  };
+
+  const handleNodeClick = (level: string, nodeId: string) => {
+    // Set visual selection
+    setVisuallySelectedNode({ level, nodeId });
+    // Call original click handler
+    onNodeClick(level, nodeId);
+  };
+
+  const isNodeVisuallySelected = (level: string, nodeId: string): boolean => {
+    return visuallySelectedNode?.level === level && visuallySelectedNode?.nodeId === nodeId;
   };
 
   const getAllLevelKeys = (scenarioId: string): string[] => {
@@ -143,7 +155,7 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
               onToggleLevelExpansion={(levelKey) => toggleLevelExpansion(scenario.id, levelKey)}
               onExpandAll={() => expandAll(scenario.id, getAllLevelKeys(scenario.id))}
               onCollapseAll={() => collapseAll(scenario.id)}
-              onNodeClick={onNodeClick}
+              onNodeClick={handleNodeClick}
               onEditNode={onEditNode}
               onDeleteNode={onDeleteNode}
               isNodeVisuallySelected={isNodeVisuallySelected}
