@@ -76,7 +76,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
         <NodeContent 
           item={item} 
           isSelected={isSelected} 
-          isHovered={isHovered && !showDescription} 
+          isHovered={isHovered} 
           level={level} 
         />
         

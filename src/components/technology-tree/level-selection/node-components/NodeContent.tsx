@@ -75,10 +75,14 @@ export const NodeContent: React.FC<NodeContentProps> = ({
         {isHovered && !isGenerating && (
           <button
             onClick={handleCopyTitle}
-            className="flex-shrink-0 p-1 rounded hover:bg-white/20 transition-colors opacity-70 hover:opacity-100"
+            className={`flex-shrink-0 p-1 rounded transition-colors ${
+              isSelected 
+                ? "hover:bg-white/30 text-white/80 hover:text-white" 
+                : "hover:bg-gray-200 text-gray-500 hover:text-gray-700"
+            }`}
             title="Copy title"
           >
-            <Copy className="h-3 w-3" />
+            <Copy className="h-4 w-4" />
           </button>
         )}
       </div>
