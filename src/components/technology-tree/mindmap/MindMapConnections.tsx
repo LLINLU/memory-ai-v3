@@ -1,6 +1,5 @@
-
 import React from "react";
-import { MindMapConnection } from "@/types/mindmap";
+import { MindMapConnection } from "@/utils/mindMapDataTransform";
 
 interface MindMapConnectionsProps {
   connections: MindMapConnection[];
