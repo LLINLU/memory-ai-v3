@@ -118,6 +118,9 @@ export const useCardExpansion = () => {
                 const level3Key = `${level2Key}-${level3Item.id}`;
                 expandedLevels[level3Key] = true;
                 console.log(`[EXPANSION DEBUG] Auto-expanding level 3 key: ${level3Key} (has ${level4Children.length} level 4 children)`);
+                
+                // Debug: Log the level 4 children that should be visible
+                console.log(`[EXPANSION DEBUG] Level 4 children for ${level3Item.name}:`, level4Children.map(child => child.name));
               }
             });
           }
@@ -130,6 +133,7 @@ export const useCardExpansion = () => {
       }
     });
 
+    console.log(`[EXPANSION DEBUG] Setting expansion state:`, newExpansionState);
     setExpansionState(prev => ({
       ...prev,
       ...newExpansionState,
@@ -141,7 +145,9 @@ export const useCardExpansion = () => {
   }, [expansionState]);
 
   const isLevelExpanded = useCallback((scenarioId: string, levelKey: string) => {
-    return expansionState[scenarioId]?.expandedLevels?.[levelKey] || false;
+    const result = expansionState[scenarioId]?.expandedLevels?.[levelKey] || false;
+    console.log(`[EXPANSION DEBUG] Checking if level expanded - scenarioId: ${scenarioId}, levelKey: ${levelKey}, result: ${result}`);
+    return result;
   }, [expansionState]);
 
   return {
