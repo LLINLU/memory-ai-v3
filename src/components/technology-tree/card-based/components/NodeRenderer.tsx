@@ -77,6 +77,7 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
   toggleLevelExpansion,
 }) => {
   const levelNames2 = {
+    1: 'level1',  // FIXED: Added level 1 mapping
     2: 'level2',
     3: 'level3',
     4: 'level4',
@@ -92,6 +93,11 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
   const childLevelKey = `${levelKey}-${item.id}`;
   const isSelected = isNodeSelected(item, selectedPath, scenarioId, currentLevel, allLevelItems);
   const isExpanded = isLevelExpanded(childLevelKey);
+
+  const handleNodeClick = () => {
+    console.log(`NodeRenderer: Clicking node at level ${currentLevel} with id ${item.id}, mapping to ${levelNames2[currentLevel]}`);
+    onNodeClick(levelNames2[currentLevel], item.id);
+  };
 
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -132,7 +138,7 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
       isExpanded={isExpanded}
       hasChildren={hasChildren}
       onToggleExpansion={() => toggleLevelExpansion(childLevelKey)}
-      onNodeClick={() => onNodeClick(levelNames2[currentLevel], item.id)}
+      onNodeClick={handleNodeClick}
       onEditClick={handleEditClick}
       onDeleteClick={handleDeleteClick}
       level={currentLevel}
