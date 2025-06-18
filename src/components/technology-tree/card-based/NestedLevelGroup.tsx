@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { ExpandableNode } from './ExpandableNode';
@@ -119,11 +120,54 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     }
   };
 
+  // Enhanced children detection function
+  const hasChildrenForNode = (item: LevelItem): boolean => {
+    // Check if the node has children in the current nextLevelItems
+    const directChildren = nextLevelItems[item.id]?.length > 0;
+    
+    // For level 3 nodes, also check if they have level 4 children in allLevelItems
+    if (currentLevel === 3) {
+      const level4Children = allLevelItems.level4Items[item.id]?.length > 0;
+      console.log(`[CHILDREN DEBUG] Level 3 node ${item.name} (${item.id}):`, {
+        directChildren,
+        level4Children,
+        nextLevelItemsKeys: Object.keys(nextLevelItems),
+        level4ItemsKeys: Object.keys(allLevelItems.level4Items),
+        level4ChildrenArray: allLevelItems.level4Items[item.id]
+      });
+      return directChildren || level4Children;
+    }
+    
+    // For other levels, check the appropriate level items
+    if (currentLevel < 10) {
+      const nextLevelItemsMap = getLevelItems(currentLevel + 1);
+      const nextLevelChildren = nextLevelItemsMap[item.id]?.length > 0;
+      console.log(`[CHILDREN DEBUG] Level ${currentLevel} node ${item.name} (${item.id}):`, {
+        directChildren,
+        nextLevelChildren,
+        currentLevel,
+        nextLevel: currentLevel + 1
+      });
+      return directChildren || nextLevelChildren;
+    }
+    
+    return directChildren;
+  };
+
   const renderNode = (item: LevelItem) => {
-    const hasChildren = nextLevelItems[item.id]?.length > 0;
+    const hasChildren = hasChildrenForNode(item);
     const childLevelKey = `${levelKey}-${item.id}`;
     const isSelected = selectedPath[levelNames2[currentLevel]] === item.id;
     const isExpanded = isLevelExpanded(childLevelKey);
+
+    console.log(`[RENDER DEBUG] Rendering level ${currentLevel} node:`, {
+      nodeName: item.name,
+      nodeId: item.id,
+      hasChildren,
+      isExpanded,
+      childLevelKey,
+      currentLevel
+    });
 
     const handleEditClick = (e: React.MouseEvent) => {
       e.stopPropagation();
@@ -139,6 +183,29 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
       }
     };
 
+    // Get the correct children for rendering
+    let childrenToRender: LevelItem[] = [];
+    let nextLevelItemsForChildren: Record<string, LevelItem[]> = {};
+
+    if (hasChildren && isExpanded) {
+      // First try to get children from nextLevelItems
+      childrenToRender = nextLevelItems[item.id] || [];
+      
+      // If no direct children but we're at level 3, get from level4Items
+      if (childrenToRender.length === 0 && currentLevel === 3) {
+        childrenToRender = allLevelItems.level4Items[item.id] || [];
+        nextLevelItemsForChildren = getLevelItems(5); // level 5 items for level 4 children
+      } else {
+        nextLevelItemsForChildren = getLevelItems(currentLevel + 2); // next level items for children
+      }
+
+      console.log(`[CHILDREN RENDER DEBUG] Rendering children for level ${currentLevel} node ${item.name}:`, {
+        childrenCount: childrenToRender.length,
+        childrenFromNextLevel: nextLevelItems[item.id]?.length || 0,
+        childrenFromLevel4: currentLevel === 3 ? allLevelItems.level4Items[item.id]?.length || 0 : 'N/A'
+      });
+    }
+
     return (
       <ExpandableNode
         key={item.id}
@@ -152,14 +219,14 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
         onDeleteClick={handleDeleteClick}
         level={currentLevel}
       >
-        {hasChildren && isExpanded && (
+        {hasChildren && isExpanded && childrenToRender.length > 0 && (
           <NestedLevelGroup
-            items={nextLevelItems[item.id]}
+            items={childrenToRender}
             selectedPath={selectedPath}
             scenarioId={scenarioId}
             currentLevel={currentLevel + 1}
             levelKey={childLevelKey}
-            nextLevelItems={getLevelItems(currentLevel + 1)}
+            nextLevelItems={nextLevelItemsForChildren}
             allLevelItems={allLevelItems}
             levelNames={levelNames}
             onNodeClick={onNodeClick}
@@ -172,6 +239,15 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
       </ExpandableNode>
     );
   };
+
+  // Debug logging for this level
+  console.log(`[LEVEL DEBUG] NestedLevelGroup level ${currentLevel}:`, {
+    itemsCount: items.length,
+    nextLevelItemsKeys: Object.keys(nextLevelItems),
+    level4ItemsKeys: Object.keys(allLevelItems.level4Items),
+    scenarioId,
+    levelKey
+  });
 
   return (
     <div className="space-y-2">
