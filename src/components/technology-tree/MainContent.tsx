@@ -80,6 +80,9 @@ interface MainContentProps {
   // View mode props - passed from parent
   viewMode: "treemap" | "mindmap";
   onToggleView: () => void;
+  // Visual selection props
+  visuallySelectedNode?: { level: number; nodeId: string } | null;
+  onVisualSelection?: (level: number, nodeId: string) => void;
 }
 
 export const MainContent = ({
@@ -121,6 +124,8 @@ export const MainContent = ({
   containerRef,
   viewMode,
   onToggleView,
+  visuallySelectedNode,
+  onVisualSelection,
 }: MainContentProps) => {
   const isTreemapView = viewMode === "treemap";
   const isMindmapView = viewMode === "mindmap";
@@ -277,6 +282,8 @@ export const MainContent = ({
             onNodeClick={onNodeClick}
             onEditNode={onEditNode}
             onDeleteNode={onDeleteNode}
+            visuallySelectedNode={visuallySelectedNode}
+            onVisualSelection={onVisualSelection}
           />
         ) : (
           <MindMapContainer

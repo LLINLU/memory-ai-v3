@@ -49,6 +49,9 @@ interface CardBasedTreemapProps {
   onNodeClick: (level: string, nodeId: string) => void;
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
+  // Visual selection props
+  visuallySelectedNode?: { level: number; nodeId: string } | null;
+  onVisualSelection?: (level: number, nodeId: string) => void;
 }
 
 export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
@@ -72,6 +75,8 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
   onNodeClick,
   onEditNode,
   onDeleteNode,
+  visuallySelectedNode,
+  onVisualSelection,
 }) => {
   const {
     toggleScenarioExpansion,
@@ -144,6 +149,8 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
               onNodeClick={onNodeClick}
               onEditNode={onEditNode}
               onDeleteNode={onDeleteNode}
+              visuallySelectedNode={visuallySelectedNode}
+              onVisualSelection={onVisualSelection}
             />
           );
         })}

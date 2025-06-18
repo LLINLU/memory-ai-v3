@@ -12,6 +12,7 @@ import {
 import { TreeNode } from '../level-selection/TreeNode';
 import { NestedLevelGroup } from './NestedLevelGroup';
 import { getLevelBadgeClasses } from '@/utils/levelColors';
+import { isNodeVisuallySelected } from './utils/SelectionLogic';
 
 interface LevelItem {
   id: string;
@@ -68,6 +69,9 @@ interface ScenarioCardProps {
   onNodeClick: (level: string, nodeId: string) => void;
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
+  // Visual selection props
+  visuallySelectedNode?: { level: number; nodeId: string } | null;
+  onVisualSelection?: (level: number, nodeId: string) => void;
 }
 
 export const ScenarioCard: React.FC<ScenarioCardProps> = ({
@@ -90,12 +94,19 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
   onNodeClick,
   onEditNode,
   onDeleteNode,
+  visuallySelectedNode,
+  onVisualSelection,
 }) => {
-  const isSelected = selectedPath.level1 === scenario.id;
+  // Use visual selection instead of path-based selection
+  const isSelected = isNodeVisuallySelected(scenario.id,  1, visuallySelectedNode);
   const hasChildren = level2Items.length > 0;
 
   const handleScenarioClick = () => {
     onNodeClick('level1', scenario.id);
+    // Update visual selection
+    if (onVisualSelection) {
+      onVisualSelection(1, scenario.id);
+    }
   };
 
   const handleEditClick = (e: React.MouseEvent) => {
@@ -220,6 +231,8 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
             onDeleteNode={onDeleteNode}
             isLevelExpanded={isLevelExpanded}
             toggleLevelExpansion={onToggleLevelExpansion}
+            visuallySelectedNode={visuallySelectedNode}
+            onVisualSelection={onVisualSelection}
           />
         </CardContent>
       )}
