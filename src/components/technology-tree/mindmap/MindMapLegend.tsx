@@ -36,8 +36,8 @@ export const MindMapLegend: React.FC<MindMapLegendProps> = ({
   const legendItems = getLegendLabels();
 
   return (
-    <div className="absolute bottom-4 left-4 z-50">
-      <div className="bg-white border-2 border-gray-300 rounded-lg shadow-xl p-4 min-w-[200px]">
+    <div className="absolute bottom-4 left-4 z-10">
+      <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4 shadow-lg border min-w-[200px]">
         <div className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
           Legend
         </div>
