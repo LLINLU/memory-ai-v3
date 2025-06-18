@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ScenarioCard } from './ScenarioCard';
 import { useCardExpansion } from './hooks/useCardExpansion';
 
@@ -78,6 +78,7 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     toggleLevelExpansion,
     expandAll,
     collapseAll,
+    autoExpandWithChildren,
     isScenarioExpanded,
     isLevelExpanded,
   } = useCardExpansion();
@@ -92,6 +93,28 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     level9Items,
     level10Items,
   };
+
+  // Auto-expand the first scenario if it has level 4 data
+  useEffect(() => {
+    if (level1Items.length > 0) {
+      const firstScenario = level1Items[0];
+      const scenarioLevel2Items = level2Items[firstScenario.id] || [];
+      
+      // Check if this scenario has any level 4 data
+      const hasLevel4Data = scenarioLevel2Items.some(level2Item => {
+        const level3Children = level3Items[level2Item.id] || [];
+        return level3Children.some(level3Item => {
+          const level4Children = level4Items[level3Item.id] || [];
+          return level4Children.length > 0;
+        });
+      });
+
+      if (hasLevel4Data && !isScenarioExpanded(firstScenario.id)) {
+        console.log(`[TREEMAP DEBUG] Auto-expanding first scenario ${firstScenario.name} with level 4 data`);
+        autoExpandWithChildren(firstScenario.id, allLevelItems, scenarioLevel2Items);
+      }
+    }
+  }, [level1Items, level2Items, level3Items, level4Items, autoExpandWithChildren, isScenarioExpanded]);
 
   const getAllLevelKeys = (scenarioId: string): string[] => {
     const keys: string[] = [];

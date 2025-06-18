@@ -65,6 +65,54 @@ export const useCardExpansion = () => {
     }));
   }, []);
 
+  // NEW: Auto-expand nodes that have children up to level 4
+  const autoExpandWithChildren = useCallback((
+    scenarioId: string, 
+    allLevelItems: {
+      level3Items: Record<string, any[]>;
+      level4Items: Record<string, any[]>;
+      level5Items: Record<string, any[]>;
+      level6Items: Record<string, any[]>;
+      level7Items: Record<string, any[]>;
+      level8Items: Record<string, any[]>;
+      level9Items: Record<string, any[]>;
+      level10Items: Record<string, any[]>;
+    },
+    level2Items: any[]
+  ) => {
+    console.log(`[EXPANSION DEBUG] Auto-expanding scenario ${scenarioId} with children`);
+    
+    const expandedLevels: { [key: string]: boolean } = {};
+    
+    // Auto-expand level 2 items that have level 3 children
+    level2Items.forEach(level2Item => {
+      const level3Children = allLevelItems.level3Items[level2Item.id] || [];
+      if (level3Children.length > 0) {
+        const level2Key = `${scenarioId}-${level2Item.id}`;
+        expandedLevels[level2Key] = true;
+        console.log(`[EXPANSION DEBUG] Auto-expanding level 2 key: ${level2Key}`);
+        
+        // Auto-expand level 3 items that have level 4 children
+        level3Children.forEach(level3Item => {
+          const level4Children = allLevelItems.level4Items[level3Item.id] || [];
+          if (level4Children.length > 0) {
+            const level3Key = `${level2Key}-${level3Item.id}`;
+            expandedLevels[level3Key] = true;
+            console.log(`[EXPANSION DEBUG] Auto-expanding level 3 key: ${level3Key} (has ${level4Children.length} level 4 children)`);
+          }
+        });
+      }
+    });
+
+    setExpansionState(prev => ({
+      ...prev,
+      [scenarioId]: {
+        isExpanded: true,
+        expandedLevels,
+      },
+    }));
+  }, []);
+
   const isScenarioExpanded = useCallback((scenarioId: string) => {
     return expansionState[scenarioId]?.isExpanded || false;
   }, [expansionState]);
@@ -78,6 +126,7 @@ export const useCardExpansion = () => {
     toggleLevelExpansion,
     expandAll,
     collapseAll,
+    autoExpandWithChildren,
     isScenarioExpanded,
     isLevelExpanded,
   };
