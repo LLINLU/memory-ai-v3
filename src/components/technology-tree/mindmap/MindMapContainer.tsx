@@ -25,6 +25,7 @@ interface MindMapContainerProps {
   onNodeClick: (level: string, nodeId: string) => void;
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
+  treeMode?: string; // Add treeMode prop
 }
 
 export const MindMapContainer: React.FC<MindMapContainerProps> = ({
@@ -44,6 +45,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   onNodeClick,
   onEditNode,
   onDeleteNode,
+  treeMode, // Add treeMode parameter
 }) => {
   // Add layout state - default to horizontal to preserve current behavior
   const [layoutDirection, setLayoutDirection] = useState<'horizontal' | 'vertical'>('horizontal');
@@ -180,7 +182,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
           </div>
         </div>
 
-        <MindMapLegend levelNames={levelNames} />
+        <MindMapLegend treeMode={treeMode} />
 
         <MindMapControls
           zoom={zoom}
