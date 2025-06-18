@@ -116,58 +116,58 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full relative">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 flex-1">
-            {hasChildren && (
-              <button
-                onClick={onToggleExpansion}
-                className="flex-shrink-0 p-1 hover:bg-gray-100 rounded transition-colors"
-              >
-                {isExpanded ? (
-                  <ChevronDown className="h-5 w-5 text-gray-600" />
-                ) : (
-                  <ChevronRight className="h-5 w-5 text-gray-600" />
-                )}
-              </button>
-            )}
-            <div className="flex-1">
-              <div className="mb-2">
-                <Badge variant="outline" className="text-xs text-gray-600 bg-gray-50">
-                  レベル1:シナリオ
-                </Badge>
-              </div>
-              <TreeNode
-                item={scenario}
-                isSelected={isSelected}
-                onClick={handleScenarioClick}
-                onEditClick={handleEditClick}
-                onDeleteClick={handleDeleteClick}
-                level={1}
-                showDescription={true}
-                subNodeCount={level2Items.length}
-                isLastLevel={!hasChildren}
-              />
-            </div>
+        {/* Top row: Expand/Collapse button positioned at top-right */}
+        {hasChildren && (
+          <div className="absolute top-4 right-4 z-10">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={isExpanded ? onCollapseAll : onExpandAll}
+              className="h-8 w-8 p-0"
+            >
+              {isExpanded ? (
+                <Minimize className="h-4 w-4" />
+              ) : (
+                <Maximize className="h-4 w-4" />
+              )}
+            </Button>
           </div>
-          
+        )}
+        
+        {/* Main content row */}
+        <div className="flex items-center gap-2 pr-12">
           {hasChildren && (
-            <div className="flex gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={isExpanded ? onCollapseAll : onExpandAll}
-                className="h-8 w-8 p-0"
-              >
-                {isExpanded ? (
-                  <Minimize className="h-4 w-4" />
-                ) : (
-                  <Maximize className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
+            <button
+              onClick={onToggleExpansion}
+              className="flex-shrink-0 p-1 hover:bg-gray-100 rounded transition-colors"
+            >
+              {isExpanded ? (
+                <ChevronDown className="h-5 w-5 text-gray-600" />
+              ) : (
+                <ChevronRight className="h-5 w-5 text-gray-600" />
+              )}
+            </button>
           )}
+          <div className="flex-1">
+            <div className="mb-2">
+              <Badge variant="outline" className="text-xs text-gray-600 bg-gray-50">
+                レベル1:シナリオ
+              </Badge>
+            </div>
+            <TreeNode
+              item={scenario}
+              isSelected={isSelected}
+              onClick={handleScenarioClick}
+              onEditClick={handleEditClick}
+              onDeleteClick={handleDeleteClick}
+              level={1}
+              showDescription={true}
+              subNodeCount={level2Items.length}
+              isLastLevel={!hasChildren}
+            />
+          </div>
         </div>
       </CardHeader>
       
