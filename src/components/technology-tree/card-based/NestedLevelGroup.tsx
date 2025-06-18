@@ -82,29 +82,31 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
 }) => {
   return (
     <div className="space-y-2">
-      <div className="mb-3">
+      <div className="ml-6 mb-2">
         <Badge variant="secondary" className="text-xs">
           {getLevelLabel(currentLevel, levelNames)}
         </Badge>
       </div>
-      {items.map((item) => (
-        <NodeRenderer
-          key={item.id}
-          item={item}
-          selectedPath={selectedPath}
-          scenarioId={scenarioId}
-          currentLevel={currentLevel}
-          levelKey={levelKey}
-          nextLevelItems={nextLevelItems}
-          allLevelItems={allLevelItems}
-          levelNames={levelNames}
-          onNodeClick={onNodeClick}
-          onEditNode={onEditNode}
-          onDeleteNode={onDeleteNode}
-          isLevelExpanded={isLevelExpanded}
-          toggleLevelExpansion={toggleLevelExpansion}
-        />
-      ))}
+      <div className={`space-y-2 ${currentLevel >= 2 ? 'max-w-4xl' : ''}`}>
+        {items.map((item) => (
+          <NodeRenderer
+            key={item.id}
+            item={item}
+            selectedPath={selectedPath}
+            scenarioId={scenarioId}
+            currentLevel={currentLevel}
+            levelKey={levelKey}
+            nextLevelItems={nextLevelItems}
+            allLevelItems={allLevelItems}
+            levelNames={levelNames}
+            onNodeClick={onNodeClick}
+            onEditNode={onEditNode}
+            onDeleteNode={onDeleteNode}
+            isLevelExpanded={isLevelExpanded}
+            toggleLevelExpansion={toggleLevelExpansion}
+          />
+        ))}
+      </div>
     </div>
   );
 };
