@@ -131,9 +131,18 @@ export const useTechnologyTree = (
     userClickedNode, // NEW: Get the user's actual clicked node
   } = usePathSelection(initialPath, treeDataToUse, isMindmapView);
 
-  // Wrap the handleNodeClick to update the view-specific path
+  // Get visual selection methods from view mode hook
+  const setSelectedNode = viewModeHook?.setSelectedNode;
+  const isNodeVisuallySelected = viewModeHook?.isNodeVisuallySelected || (() => false);
+
+  // Wrap the handleNodeClick to update both path and visual selection
   const handleNodeClick = (level: string, nodeId: string) => {
     originalHandleNodeClick(level as PathLevel, nodeId);
+
+    // Update visual selection
+    if (setSelectedNode) {
+      setSelectedNode(level, nodeId);
+    }
 
     // If we have the view mode hook, update the current view's path
     if (viewModeHook?.setCurrentPath) {
@@ -177,7 +186,8 @@ export const useTechnologyTree = (
     hasUserMadeSelection,
     showLevel4,
     searchMode,
-    scenario: treeDataToUse?.scenario, // Add scenario from database tree data    setSelectedView,
+    scenario: treeDataToUse?.scenario, // Add scenario from database tree data
+    setSelectedView,
     setSidebarTab,
     setShowSidebar,
     handleNodeClick,
@@ -201,5 +211,7 @@ export const useTechnologyTree = (
     level10Items,
     handleAddLevel4,
     userClickedNode, // NEW: Expose the user's actual clicked node
+    // Add visual selection methods
+    isNodeVisuallySelected,
   };
 };

@@ -6,6 +6,9 @@ export type ViewMode = "treemap" | "mindmap";
 export const useMindMapView = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("mindmap");
   
+  // Shared visual selection state between both views
+  const [visuallySelectedNode, setVisuallySelectedNode] = useState<{level: string, nodeId: string} | null>(null);
+  
   // Separate path states for each view
   const [treemapPath, setTreemapPath] = useState({
     level1: "",
@@ -54,6 +57,19 @@ export const useMindMapView = () => {
     }
   };
 
+  // Visual selection methods
+  const setSelectedNode = (level: string, nodeId: string) => {
+    setVisuallySelectedNode({ level, nodeId });
+  };
+
+  const clearSelectedNode = () => {
+    setVisuallySelectedNode(null);
+  };
+
+  const isNodeVisuallySelected = (level: string, nodeId: string): boolean => {
+    return visuallySelectedNode?.level === level && visuallySelectedNode?.nodeId === nodeId;
+  };
+
   // Initialize treemap path with auto-selection when tree data is available
   const initializeTreemapPath = (treeData: any) => {
     if (!treeData?.level1Items?.[0]) return;
@@ -88,5 +104,10 @@ export const useMindMapView = () => {
     initializeTreemapPath,
     treemapPath,
     mindmapPath,
+    // Visual selection methods
+    visuallySelectedNode,
+    setSelectedNode,
+    clearSelectedNode,
+    isNodeVisuallySelected,
   };
 };

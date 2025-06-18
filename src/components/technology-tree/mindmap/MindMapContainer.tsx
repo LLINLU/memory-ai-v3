@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from "react";
 import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
@@ -24,6 +23,7 @@ interface MindMapContainerProps {
   onNodeClick: (level: string, nodeId: string) => void;
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
+  isNodeVisuallySelected?: (level: string, nodeId: string) => boolean;
 }
 
 export const MindMapContainer: React.FC<MindMapContainerProps> = ({
@@ -43,6 +43,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   onNodeClick,
   onEditNode,
   onDeleteNode,
+  isNodeVisuallySelected,
 }) => {
   // Add layout state - default to horizontal to preserve current behavior
   const [layoutDirection, setLayoutDirection] = useState<'horizontal' | 'vertical'>('horizontal');
@@ -62,7 +63,8 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
       levelNames,
       selectedPath,
       query || "Research Query",
-      layoutDirection  // Pass layout direction to transform function
+      layoutDirection,  // Pass layout direction to transform function
+      isNodeVisuallySelected // Pass visual selection function
     );
   }, [
     level1Items,
@@ -79,6 +81,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     selectedPath,
     query,
     layoutDirection,  // Add to dependency array
+    isNodeVisuallySelected, // Add to dependency array
   ]);
 
   const handleNodeClick = (nodeId: string, level: number) => {

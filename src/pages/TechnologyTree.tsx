@@ -160,6 +160,7 @@ const TechnologyTree = () => {
     showLevel4,
     handleAddLevel4,
     scenario: databaseScenario, // Get scenario from database tree data
+    isNodeVisuallySelected, // Get the visual selection method
   } = useTechnologyTree(databaseTreeData, viewModeHook); // Pass viewModeHook here
   // Update last visible level when tree data changes and trigger scroll update (debounced)
   useEffect(() => {
@@ -689,6 +690,7 @@ const TechnologyTree = () => {
                 triggerScrollUpdate={triggerScrollUpdate}
                 viewMode={viewMode}
                 onToggleView={toggleView}
+                isNodeVisuallySelected={isNodeVisuallySelected}
               />
             </div>
           </TechTreeLayout>

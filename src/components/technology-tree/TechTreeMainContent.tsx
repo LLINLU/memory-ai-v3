@@ -1,4 +1,3 @@
-
 import { MainContent } from "./MainContent";
 
 interface TechTreeMainContentProps {
@@ -64,6 +63,7 @@ interface TechTreeMainContentProps {
   // View mode props
   viewMode: "treemap" | "mindmap";
   onToggleView: () => void;
+  isNodeVisuallySelected: (level: string, nodeId: string) => boolean;
 }
 
 export const TechTreeMainContent = ({
@@ -101,6 +101,7 @@ export const TechTreeMainContent = ({
   triggerScrollUpdate,
   viewMode,
   onToggleView,
+  isNodeVisuallySelected,
 }: TechTreeMainContentProps) => {
   // Note: triggerScrollUpdate is now handled by TechnologyTree.tsx to avoid duplicates
 
@@ -139,6 +140,7 @@ export const TechTreeMainContent = ({
       containerRef={containerRef}
       viewMode={viewMode}
       onToggleView={onToggleView}
+      isNodeVisuallySelected={isNodeVisuallySelected}
     />
   );
 };
