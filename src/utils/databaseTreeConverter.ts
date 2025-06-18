@@ -478,27 +478,22 @@ const convertTedTreeToAppFormat = async (
     });
   });
 
-  // Extract level 4 items - FIXED: Include ALL children of Function nodes
+  // Extract level 4 items (Measure nodes - children of Function nodes)
+  // Note: The database may have Measure nodes at multiple levels (4, 5, 6, etc.)
+  // We'll collect all Measure nodes that are direct children of Function nodes
   const level4Items: Record<string, any[]> = {};
   level1Nodes.forEach((scenarioNode) => {
     scenarioNode.children?.forEach((purposeNode) => {
       if (purposeNode.axis === "Purpose") {
         purposeNode.children?.forEach((functionNode) => {
           if (functionNode.axis === "Function") {
-            console.log(
-              `[CONVERTER DEBUG] Processing Function node ${functionNode.name} with ${functionNode.children?.length || 0} children`
-            );
-            
             if (functionNode.children && functionNode.children.length > 0) {
-              // Include ALL children of Function nodes, regardless of axis type
-              const level4Nodes = functionNode.children;
-              console.log(
-                `[CONVERTER DEBUG] Found ${level4Nodes.length} level 4 nodes for function ${functionNode.name}:`,
-                level4Nodes.map(node => ({ name: node.name, axis: node.axis }))
+              // Get all Measure nodes regardless of their database level
+              const measureNodes = functionNode.children.filter(
+                (node) => node.axis === "Measure"
               );
-              
-              if (level4Nodes.length > 0) {
-                level4Items[functionNode.id] = level4Nodes.map(
+              if (measureNodes.length > 0) {
+                level4Items[functionNode.id] = measureNodes.map(
                   (node, index) => {
                     const enrichmentData = enrichmentMap.get(node.id);
                     return {
@@ -519,16 +514,7 @@ const convertTedTreeToAppFormat = async (
         });
       }
     });
-  });
-
-  console.log(
-    `[CONVERTER DEBUG] Final level4Items keys:`,
-    Object.keys(level4Items),
-    `Total level 4 nodes:`,
-    Object.values(level4Items).reduce((sum, items) => sum + items.length, 0)
-  );
-
-  // Helper function to extract children with specific axis types
+  }); // Helper function to extract children with specific axis types
   const extractChildrenByAxis = (
     parentNodes: TreeNodeFromDB[],
     axisType: string

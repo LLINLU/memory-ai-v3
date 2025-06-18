@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { ExpandableNode } from './ExpandableNode';
@@ -120,36 +119,11 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     }
   };
 
-  // Debug current level data
-  React.useEffect(() => {
-    console.log(`[NESTED LEVEL DEBUG] Level ${currentLevel}:`, {
-      itemsCount: items.length,
-      items: items.map(item => ({ id: item.id, name: item.name })),
-      nextLevelItemsKeys: Object.keys(nextLevelItems),
-      levelKey,
-    });
-    
-    // Specifically debug level 4 rendering
-    if (currentLevel === 4) {
-      console.log(`[NESTED LEVEL DEBUG] Rendering Level 4 nodes:`, items);
-    }
-  }, [items, currentLevel, nextLevelItems, levelKey]);
-
   const renderNode = (item: LevelItem) => {
     const hasChildren = nextLevelItems[item.id]?.length > 0;
     const childLevelKey = `${levelKey}-${item.id}`;
     const isSelected = selectedPath[levelNames2[currentLevel]] === item.id;
     const isExpanded = isLevelExpanded(childLevelKey);
-
-    console.log(`[NESTED LEVEL DEBUG] Rendering node at level ${currentLevel}:`, {
-      name: item.name,
-      id: item.id,
-      hasChildren,
-      childrenCount: nextLevelItems[item.id]?.length || 0,
-      isSelected,
-      isExpanded,
-      childLevelKey,
-    });
 
     const handleEditClick = (e: React.MouseEvent) => {
       e.stopPropagation();
@@ -206,13 +180,7 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
           {getLevelLabel(currentLevel)}
         </Badge>
       </div>
-      {items.length > 0 ? (
-        items.map(renderNode)
-      ) : (
-        <div className="text-sm text-gray-500 italic">
-          No items at this level
-        </div>
-      )}
+      {items.map(renderNode)}
     </div>
   );
 };

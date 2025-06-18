@@ -1,5 +1,4 @@
-
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ScenarioCard } from './ScenarioCard';
 import { useCardExpansion } from './hooks/useCardExpansion';
 
@@ -79,7 +78,6 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     toggleLevelExpansion,
     expandAll,
     collapseAll,
-    autoExpandWithChildren,
     isScenarioExpanded,
     isLevelExpanded,
   } = useCardExpansion();
@@ -94,35 +92,6 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     level9Items,
     level10Items,
   };
-
-  // Debug level 4 data availability
-  useEffect(() => {
-    console.log(`[TREEMAP DEBUG] Level 4 Items Debug:`, {
-      level4Keys: Object.keys(level4Items),
-      level4Count: Object.values(level4Items).reduce((sum, items) => sum + items.length, 0),
-      level4Items,
-    });
-
-    // Log each level 3 item and its level 4 children
-    Object.entries(level3Items).forEach(([level2Id, level3ItemsList]) => {
-      level3ItemsList.forEach(level3Item => {
-        const level4Children = level4Items[level3Item.id] || [];
-        if (level4Children.length > 0) {
-          console.log(`[TREEMAP DEBUG] Level 3 item "${level3Item.name}" has ${level4Children.length} level 4 children:`, level4Children.map(child => child.name));
-        }
-      });
-    });
-  }, [level3Items, level4Items]);
-
-  // Enhanced auto-expansion effect - runs when level 4 data is available
-  useEffect(() => {
-    if (level1Items.length > 0 && Object.keys(level4Items).length > 0) {
-      console.log(`[TREEMAP DEBUG] Detected ${Object.keys(level4Items).length} level 4 item groups, triggering auto-expansion`);
-      
-      // Auto-expand all scenarios that have level 4 data
-      autoExpandWithChildren(level1Items, level2Items, allLevelItems);
-    }
-  }, [level1Items, level2Items, level3Items, level4Items, autoExpandWithChildren]);
 
   const getAllLevelKeys = (scenarioId: string): string[] => {
     const keys: string[] = [];
