@@ -142,7 +142,19 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     return directChildren;
   };
 
-  // Enhanced selection validation function
+  // Find the deepest selected level in the current path
+  const getDeepestSelectedLevel = (): number => {
+    // Start from level 10 and work backwards to find the deepest selection
+    for (let level = 10; level >= 1; level--) {
+      const levelKey = `level${level}` as keyof typeof selectedPath;
+      if (selectedPath[levelKey]) {
+        return level;
+      }
+    }
+    return 1; // Default to level 1 if nothing is selected
+  };
+
+  // Enhanced selection validation function - only highlight the deepest selected node
   const isNodeSelected = (item: LevelItem): boolean => {
     const currentLevelKey = levelNames2[currentLevel];
     const currentLevelSelection = selectedPath[currentLevelKey];
@@ -152,7 +164,13 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
       return false;
     }
     
-    // Then validate that the full path is valid by checking parent selections
+    // Only highlight if this is the deepest selected level
+    const deepestSelectedLevel = getDeepestSelectedLevel();
+    if (currentLevel !== deepestSelectedLevel) {
+      return false;
+    }
+    
+    // Validate that the full path is valid by checking parent selections
     // For level 2, must have valid level 1 selection (scenarioId)
     if (currentLevel === 2) {
       return selectedPath.level1 === scenarioId;
@@ -289,4 +307,3 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     </div>
   );
 };
-
