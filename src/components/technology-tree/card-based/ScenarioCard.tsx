@@ -137,7 +137,7 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
         )}
         
         {/* Main content row */}
-        <div className="flex items-center gap-2 pr-12">
+        <div className="flex items-center gap-2">
           {hasChildren && (
             <button
               onClick={onToggleExpansion}
