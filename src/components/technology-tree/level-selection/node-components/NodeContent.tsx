@@ -22,7 +22,6 @@ export const NodeContent: React.FC<NodeContentProps> = ({
   
   // Force white text for better contrast on blue backgrounds
   const textColorClass = isSelected ? "text-white" : "text-gray-800";
-  const descriptionTextColor = isSelected ? "text-gray-100" : "text-gray-600";
 
   // Extract only the Japanese part of the title (before the English part in parentheses)
   const getJapaneseTitle = (name: string) => {
@@ -98,13 +97,6 @@ export const NodeContent: React.FC<NodeContentProps> = ({
       {item.info && !isGenerating && (
         <p className={`text-xs mt-1 ${textColorClass} break-words`}>
           {item.info}
-        </p>
-      )}
-
-      {/* Only display description when hovered */}
-      {isHovered && item.description && (
-        <p className={`mt-3 text-sm ${descriptionTextColor} break-words overflow-hidden`}>
-          {item.description}
         </p>
       )}
     </div>
