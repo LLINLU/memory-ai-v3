@@ -4,6 +4,7 @@ import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
 import { MindMapConnections } from "./MindMapConnections";
 import { MindMapControls } from "./MindMapControls";
+import { MindMapLegend } from "./MindMapLegend";
 import { usePanZoom } from "@/hooks/tree/usePanZoom";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
@@ -178,6 +179,8 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
             )}
           </div>
         </div>
+
+        <MindMapLegend levelNames={levelNames} />
 
         <MindMapControls
           zoom={zoom}
