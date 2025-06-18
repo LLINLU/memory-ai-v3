@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { MessageSquare, CirclePlus, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { NodeLoadingIndicator } from "../level-selection/node-components/NodeLoadingIndicator";
-import { getLevelColors } from "@/utils/levelColors";
 
 interface MindMapNodeProps {
   node: MindMapNode;
@@ -48,13 +47,30 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
     }
   };
 
+  const getLevelColor = (level: number) => {
+    const colors = [
+      "bg-slate-200 border-slate-400 text-slate-900", // Root node (level 0)
+      "bg-blue-100 border-blue-300 text-blue-800", // Level 1
+      "bg-green-100 border-green-300 text-green-800", // Level 2
+      "bg-purple-100 border-purple-300 text-purple-800", // Level 3
+      "bg-orange-100 border-orange-300 text-orange-800", // Level 4
+      "bg-pink-100 border-pink-300 text-pink-800", // Level 5
+      "bg-indigo-100 border-indigo-300 text-indigo-800", // Level 6
+      "bg-yellow-100 border-yellow-300 text-yellow-800", // Level 7
+      "bg-red-100 border-red-300 text-red-800", // Level 8
+      "bg-teal-100 border-teal-300 text-teal-800", // Level 9
+      "bg-gray-100 border-gray-300 text-gray-800", // Level 10
+    ];
+    return colors[level] || colors[colors.length - 1];
+  };
+
   const getNodeStyling = () => {
     if (node.isSelected) {
       // Selected nodes get the custom blue background with white text
       return "bg-[#2563eb] border-[#2563eb] text-white";
     }
-    // Non-selected nodes use the shared level colors
-    return getLevelColors(node.level);
+    // Non-selected nodes use the existing level colors
+    return getLevelColor(node.level);
   };
 
   const handleClick = () => {

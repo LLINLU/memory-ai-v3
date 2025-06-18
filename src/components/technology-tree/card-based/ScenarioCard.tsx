@@ -11,8 +11,6 @@ import {
 } from '@/components/ui/tooltip';
 import { TreeNode } from '../level-selection/TreeNode';
 import { NestedLevelGroup } from './NestedLevelGroup';
-import { getLevelBadgeClasses } from '@/utils/levelColors';
-import { isNodeVisuallySelected } from './utils/SelectionLogic';
 
 interface LevelItem {
   id: string;
@@ -69,9 +67,6 @@ interface ScenarioCardProps {
   onNodeClick: (level: string, nodeId: string) => void;
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
-  // Visual selection props
-  visuallySelectedNode?: { level: number; nodeId: string } | null;
-  onVisualSelection?: (level: number, nodeId: string) => void;
 }
 
 export const ScenarioCard: React.FC<ScenarioCardProps> = ({
@@ -94,19 +89,12 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
   onNodeClick,
   onEditNode,
   onDeleteNode,
-  visuallySelectedNode,
-  onVisualSelection,
 }) => {
-  // Use visual selection instead of path-based selection
-  const isSelected = isNodeVisuallySelected(scenario.id,  1, visuallySelectedNode);
+  const isSelected = selectedPath.level1 === scenario.id;
   const hasChildren = level2Items.length > 0;
 
   const handleScenarioClick = () => {
     onNodeClick('level1', scenario.id);
-    // Update visual selection
-    if (onVisualSelection) {
-      onVisualSelection(1, scenario.id);
-    }
   };
 
   const handleEditClick = (e: React.MouseEvent) => {
@@ -196,7 +184,7 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
           )}
           <div className="flex-1">
             <div className="mb-2">
-              <Badge className={`text-xs ${getLevelBadgeClasses(1)}`}>
+              <Badge variant="outline" className="text-xs text-gray-600 bg-gray-50">
                 レベル1:{levelNames.level1}
               </Badge>
             </div>
@@ -231,8 +219,6 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
             onDeleteNode={onDeleteNode}
             isLevelExpanded={isLevelExpanded}
             toggleLevelExpansion={onToggleLevelExpansion}
-            visuallySelectedNode={visuallySelectedNode}
-            onVisualSelection={onVisualSelection}
           />
         </CardContent>
       )}

@@ -42,19 +42,8 @@ export const ExpandableNode: React.FC<ExpandableNodeProps> = ({
     onToggleExpansion();
   };
 
-  // Define width constraints based on level
-  const getNodeWidthClass = (level: number) => {
-    switch (level) {
-      case 1: return 'w-full'; // Level 1 nodes use full width
-      case 2: return 'max-w-5xl'; // Level 2 narrower than level 1
-      case 3: return 'max-w-4xl'; // Level 3 narrower than level 2
-      case 4: return 'max-w-3xl'; // Level 4 narrower than level 3
-      default: return 'max-w-2xl'; // Level 5+ progressively narrower
-    }
-  };
-
   return (
-    <div className={`w-full ${getNodeWidthClass(level)}`}>
+    <div className="w-full">
       <div className="flex items-center gap-2">
         {hasChildren && (
           <button
@@ -86,7 +75,7 @@ export const ExpandableNode: React.FC<ExpandableNodeProps> = ({
       </div>
       
       {isExpanded && children && (
-        <div className="ml-6 mt-2 space-y-2">
+        <div className="ml-8 mt-2 space-y-2">
           {children}
         </div>
       )}
