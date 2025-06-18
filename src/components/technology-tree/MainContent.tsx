@@ -273,6 +273,7 @@ export const MainContent = ({
             level8Items={level8Items}
             level9Items={level9Items}
             level10Items={level10Items}
+            levelNames={levelNames}
             onNodeClick={onNodeClick}
             onEditNode={onEditNode}
             onDeleteNode={onDeleteNode}

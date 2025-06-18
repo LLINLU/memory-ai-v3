@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ChevronDown, ChevronRight, Maximize, Minimize } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -47,6 +46,18 @@ interface ScenarioCardProps {
     level9Items: Record<string, LevelItem[]>;
     level10Items: Record<string, LevelItem[]>;
   };
+  levelNames?: {
+    level1: string;
+    level2: string;
+    level3: string;
+    level4: string;
+    level5?: string;
+    level6?: string;
+    level7?: string;
+    level8?: string;
+    level9?: string;
+    level10?: string;
+  };
   isExpanded: boolean;
   isLevelExpanded: (levelKey: string) => boolean;
   onToggleExpansion: () => void;
@@ -63,6 +74,12 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
   selectedPath,
   level2Items,
   allLevelItems,
+  levelNames = {
+    level1: "シナリオ",
+    level2: "目的",
+    level3: "機能",
+    level4: "手段",
+  },
   isExpanded,
   isLevelExpanded,
   onToggleExpansion,
@@ -168,7 +185,7 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
           <div className="flex-1">
             <div className="mb-2">
               <Badge variant="outline" className="text-xs text-gray-600 bg-gray-50">
-                レベル1:シナリオ
+                レベル1:{levelNames.level1}
               </Badge>
             </div>
             <TreeNode
@@ -196,6 +213,7 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
             levelKey={scenario.id}
             nextLevelItems={allLevelItems.level3Items}
             allLevelItems={allLevelItems}
+            levelNames={levelNames}
             onNodeClick={onNodeClick}
             onEditNode={onEditNode}
             onDeleteNode={onDeleteNode}

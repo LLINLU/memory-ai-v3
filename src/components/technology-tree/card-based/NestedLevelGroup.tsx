@@ -39,6 +39,18 @@ interface NestedLevelGroupProps {
     level9Items: Record<string, LevelItem[]>;
     level10Items: Record<string, LevelItem[]>;
   };
+  levelNames?: {
+    level1: string;
+    level2: string;
+    level3: string;
+    level4: string;
+    level5?: string;
+    level6?: string;
+    level7?: string;
+    level8?: string;
+    level9?: string;
+    level10?: string;
+  };
   onNodeClick: (level: string, nodeId: string) => void;
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
@@ -54,13 +66,19 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
   levelKey,
   nextLevelItems,
   allLevelItems,
+  levelNames = {
+    level1: "シナリオ",
+    level2: "目的",
+    level3: "機能",
+    level4: "手段",
+  },
   onNodeClick,
   onEditNode,
   onDeleteNode,
   isLevelExpanded,
   toggleLevelExpansion,
 }) => {
-  const levelNames = {
+  const levelNames2 = {
     2: 'level2',
     3: 'level3',
     4: 'level4',
@@ -74,15 +92,15 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
 
   const getLevelLabel = (level: number): string => {
     switch (level) {
-      case 2: return 'レベル2:目的';
-      case 3: return 'レベル3:機能';
-      case 4: return 'レベル4:方法';
-      case 5: return 'レベル5:手段';
-      case 6: return 'レベル6:技術';
-      case 7: return 'レベル7:実装';
-      case 8: return 'レベル8:詳細';
-      case 9: return 'レベル9:具体';
-      case 10: return 'レベル10:最終';
+      case 2: return `レベル2:${levelNames.level2}`;
+      case 3: return `レベル3:${levelNames.level3}`;
+      case 4: return `レベル4:${levelNames.level4}`;
+      case 5: return `レベル5:${levelNames.level5 || '手段'}`;
+      case 6: return `レベル6:${levelNames.level6 || '技術'}`;
+      case 7: return `レベル7:${levelNames.level7 || '実装'}`;
+      case 8: return `レベル8:${levelNames.level8 || '詳細'}`;
+      case 9: return `レベル9:${levelNames.level9 || '具体'}`;
+      case 10: return `レベル10:${levelNames.level10 || '最終'}`;
       default: return `レベル${level}`;
     }
   };
@@ -104,20 +122,20 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
   const renderNode = (item: LevelItem) => {
     const hasChildren = nextLevelItems[item.id]?.length > 0;
     const childLevelKey = `${levelKey}-${item.id}`;
-    const isSelected = selectedPath[levelNames[currentLevel]] === item.id;
+    const isSelected = selectedPath[levelNames2[currentLevel]] === item.id;
     const isExpanded = isLevelExpanded(childLevelKey);
 
     const handleEditClick = (e: React.MouseEvent) => {
       e.stopPropagation();
       if (onEditNode) {
-        onEditNode(levelNames[currentLevel], item.id, { title: item.name, description: item.description || '' });
+        onEditNode(levelNames2[currentLevel], item.id, { title: item.name, description: item.description || '' });
       }
     };
 
     const handleDeleteClick = (e: React.MouseEvent) => {
       e.stopPropagation();
       if (onDeleteNode) {
-        onDeleteNode(levelNames[currentLevel], item.id);
+        onDeleteNode(levelNames2[currentLevel], item.id);
       }
     };
 
@@ -129,7 +147,7 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
         isExpanded={isExpanded}
         hasChildren={hasChildren}
         onToggleExpansion={() => toggleLevelExpansion(childLevelKey)}
-        onNodeClick={() => onNodeClick(levelNames[currentLevel], item.id)}
+        onNodeClick={() => onNodeClick(levelNames2[currentLevel], item.id)}
         onEditClick={handleEditClick}
         onDeleteClick={handleDeleteClick}
         level={currentLevel}
@@ -143,6 +161,7 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
             levelKey={childLevelKey}
             nextLevelItems={getLevelItems(currentLevel + 1)}
             allLevelItems={allLevelItems}
+            levelNames={levelNames}
             onNodeClick={onNodeClick}
             onEditNode={onEditNode}
             onDeleteNode={onDeleteNode}

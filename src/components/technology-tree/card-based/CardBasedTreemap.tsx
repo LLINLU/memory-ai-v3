@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ScenarioCard } from './ScenarioCard';
 import { useCardExpansion } from './hooks/useCardExpansion';
@@ -35,6 +34,18 @@ interface CardBasedTreemapProps {
   level8Items?: Record<string, LevelItem[]>;
   level9Items?: Record<string, LevelItem[]>;
   level10Items?: Record<string, LevelItem[]>;
+  levelNames?: {
+    level1: string;
+    level2: string;
+    level3: string;
+    level4: string;
+    level5?: string;
+    level6?: string;
+    level7?: string;
+    level8?: string;
+    level9?: string;
+    level10?: string;
+  };
   onNodeClick: (level: string, nodeId: string) => void;
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
@@ -52,6 +63,12 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
   level8Items = {},
   level9Items = {},
   level10Items = {},
+  levelNames = {
+    level1: "シナリオ",
+    level2: "目的",
+    level3: "機能",
+    level4: "手段",
+  },
   onNodeClick,
   onEditNode,
   onDeleteNode,
@@ -117,6 +134,7 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
               selectedPath={selectedPath}
               level2Items={scenarioLevel2Items}
               allLevelItems={allLevelItems}
+              levelNames={levelNames}
               isExpanded={isScenarioExpanded(scenario.id)}
               isLevelExpanded={(levelKey) => isLevelExpanded(scenario.id, levelKey)}
               onToggleExpansion={() => toggleScenarioExpansion(scenario.id)}
