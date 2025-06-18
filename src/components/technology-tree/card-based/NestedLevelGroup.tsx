@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { Badge } from '@/components/ui/badge';
 import { ExpandableNode } from './ExpandableNode';
 
 interface LevelItem {
@@ -72,6 +72,21 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     10: 'level10',
   } as const;
 
+  const getLevelLabel = (level: number): string => {
+    switch (level) {
+      case 2: return 'レベル2:目的';
+      case 3: return 'レベル3:機能';
+      case 4: return 'レベル4:方法';
+      case 5: return 'レベル5:手段';
+      case 6: return 'レベル6:技術';
+      case 7: return 'レベル7:実装';
+      case 8: return 'レベル8:詳細';
+      case 9: return 'レベル9:具体';
+      case 10: return 'レベル10:最終';
+      default: return `レベル${level}`;
+    }
+  };
+
   const getLevelItems = (level: number): Record<string, LevelItem[]> => {
     switch (level) {
       case 3: return allLevelItems.level3Items;
@@ -141,6 +156,11 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
 
   return (
     <div className="space-y-2">
+      <div className="mb-3">
+        <Badge variant="secondary" className="text-xs">
+          {getLevelLabel(currentLevel)}
+        </Badge>
+      </div>
       {items.map(renderNode)}
     </div>
   );

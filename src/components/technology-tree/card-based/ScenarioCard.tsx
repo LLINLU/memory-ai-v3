@@ -3,6 +3,7 @@ import React from 'react';
 import { ChevronDown, ChevronRight, Maximize, Minimize } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { TreeNode } from '../level-selection/TreeNode';
 import { NestedLevelGroup } from './NestedLevelGroup';
 
@@ -132,6 +133,11 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
               </button>
             )}
             <div className="flex-1">
+              <div className="mb-2">
+                <Badge variant="outline" className="text-xs text-gray-600 bg-gray-50">
+                  レベル1:シナリオ
+                </Badge>
+              </div>
               <TreeNode
                 item={scenario}
                 isSelected={isSelected}
