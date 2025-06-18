@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { NodeRenderer } from './components/NodeRenderer';
@@ -58,6 +59,9 @@ interface NestedLevelGroupProps {
   onDeleteNode?: (level: string, nodeId: string) => void;
   isLevelExpanded: (levelKey: string) => boolean;
   toggleLevelExpansion: (levelKey: string) => void;
+  // NEW: Visual selection props
+  visuallySelectedNode?: { level: number; nodeId: string } | null;
+  onVisualSelection?: (level: number, nodeId: string) => void;
 }
 
 export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
@@ -79,6 +83,8 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
   onDeleteNode,
   isLevelExpanded,
   toggleLevelExpansion,
+  visuallySelectedNode,
+  onVisualSelection,
 }) => {
   return (
     <div className="space-y-2">
@@ -104,6 +110,8 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
             onDeleteNode={onDeleteNode}
             isLevelExpanded={isLevelExpanded}
             toggleLevelExpansion={toggleLevelExpansion}
+            visuallySelectedNode={visuallySelectedNode}
+            onVisualSelection={onVisualSelection}
           />
         ))}
       </div>

@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { ExpandableNode } from '../ExpandableNode';
 import { NestedLevelGroup } from '../NestedLevelGroup';
-import { isNodeSelected } from '../utils/SelectionLogic';
+import { isNodeVisuallySelected } from '../utils/SelectionLogic';
 import { hasChildrenForNode, getLevelItems } from '../utils/LevelUtils';
 
 interface LevelItem {
@@ -59,6 +58,9 @@ interface NodeRendererProps {
   onDeleteNode?: (level: string, nodeId: string) => void;
   isLevelExpanded: (levelKey: string) => boolean;
   toggleLevelExpansion: (levelKey: string) => void;
+  // NEW: Visual selection props
+  visuallySelectedNode?: { level: number; nodeId: string } | null;
+  onVisualSelection?: (level: number, nodeId: string) => void;
 }
 
 export const NodeRenderer: React.FC<NodeRendererProps> = ({
@@ -75,9 +77,11 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
   onDeleteNode,
   isLevelExpanded,
   toggleLevelExpansion,
+  visuallySelectedNode,
+  onVisualSelection,
 }) => {
   const levelNames2 = {
-    1: 'level1',  // FIXED: Added level 1 mapping
+    1: 'level1',
     2: 'level2',
     3: 'level3',
     4: 'level4',
@@ -91,12 +95,21 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
 
   const hasChildren = hasChildrenForNode(item, nextLevelItems, currentLevel, allLevelItems);
   const childLevelKey = `${levelKey}-${item.id}`;
-  const isSelected = isNodeSelected(item, selectedPath, scenarioId, currentLevel, allLevelItems);
+  
+  // Use visual selection for background highlighting
+  const isSelected = isNodeVisuallySelected(item.id, currentLevel, visuallySelectedNode);
   const isExpanded = isLevelExpanded(childLevelKey);
 
   const handleNodeClick = () => {
     console.log(`NodeRenderer: Clicking node at level ${currentLevel} with id ${item.id}, mapping to ${levelNames2[currentLevel]}`);
+    
+    // Update path logic (for navigation)
     onNodeClick(levelNames2[currentLevel], item.id);
+    
+    // Update visual selection (for background highlighting)
+    if (onVisualSelection) {
+      onVisualSelection(currentLevel, item.id);
+    }
   };
 
   const handleEditClick = (e: React.MouseEvent) => {
@@ -158,6 +171,8 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
           onDeleteNode={onDeleteNode}
           isLevelExpanded={isLevelExpanded}
           toggleLevelExpansion={toggleLevelExpansion}
+          visuallySelectedNode={visuallySelectedNode}
+          onVisualSelection={onVisualSelection}
         />
       )}
     </ExpandableNode>

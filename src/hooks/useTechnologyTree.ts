@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { usePathSelection } from "./tree/usePathSelection";
 import { useSidebar } from "./tree/useSidebar";
 import { useInputQuery } from "./tree/useInputQuery";
+import { useVisualSelection } from "./tree/useVisualSelection";
 import { useLocation } from "react-router-dom";
 import { PathLevel } from "@/types/tree";
 
@@ -91,6 +92,14 @@ export const useTechnologyTree = (
   // Track if treemap initialization has been done to prevent infinite loops
   const [treemapInitialized, setTreemapInitialized] = useState(false);
 
+  // Initialize visual selection hook
+  const {
+    visuallySelectedNode,
+    setVisualSelection,
+    clearVisualSelection,
+    isNodeVisuallySelected,
+  } = useVisualSelection();
+
   // Initialize treemap path only once when switching to treemap view and we have data
   useEffect(() => {
     if (
@@ -109,6 +118,7 @@ export const useTechnologyTree = (
       setTreemapInitialized(false);
     }
   }, [isMindmapView, treeDataToUse, viewModeHook, treemapInitialized]);
+
   const {
     selectedPath,
     hasUserMadeSelection,
@@ -131,9 +141,13 @@ export const useTechnologyTree = (
     userClickedNode, // NEW: Get the user's actual clicked node
   } = usePathSelection(initialPath, treeDataToUse, isMindmapView);
 
-  // Wrap the handleNodeClick to update the view-specific path
+  // Wrap the handleNodeClick to update both path and visual selection
   const handleNodeClick = (level: string, nodeId: string) => {
     originalHandleNodeClick(level as PathLevel, nodeId);
+
+    // Update visual selection for background highlighting
+    const levelNumber = parseInt(level.replace('level', ''));
+    setVisualSelection(levelNumber, nodeId);
 
     // If we have the view mode hook, update the current view's path
     if (viewModeHook?.setCurrentPath) {
@@ -177,7 +191,8 @@ export const useTechnologyTree = (
     hasUserMadeSelection,
     showLevel4,
     searchMode,
-    scenario: treeDataToUse?.scenario, // Add scenario from database tree data    setSelectedView,
+    scenario: treeDataToUse?.scenario, // Add scenario from database tree data
+    setSelectedView,
     setSidebarTab,
     setShowSidebar,
     handleNodeClick,
@@ -201,5 +216,10 @@ export const useTechnologyTree = (
     level10Items,
     handleAddLevel4,
     userClickedNode, // NEW: Expose the user's actual clicked node
+    // NEW: Visual selection exports
+    visuallySelectedNode,
+    setVisualSelection,
+    clearVisualSelection,
+    isNodeVisuallySelected,
   };
 };

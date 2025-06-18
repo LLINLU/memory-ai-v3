@@ -1,4 +1,3 @@
-
 interface LevelItem {
   id: string;
   name: string;
@@ -56,6 +55,16 @@ export const getDeepestSelectedLevel = (selectedPath: SelectedPath): number => {
   return 1; // Default to level 1 if nothing is selected
 };
 
+// NEW: Simple visual selection function - independent from path logic
+export const isNodeVisuallySelected = (
+  nodeId: string,
+  level: number,
+  visuallySelectedNode: { level: number; nodeId: string } | null
+): boolean => {
+  return visuallySelectedNode?.level === level && visuallySelectedNode?.nodeId === nodeId;
+};
+
+// Keep the existing path-based selection logic for navigation/logic purposes
 export const isNodeSelected = (
   item: LevelItem,
   selectedPath: SelectedPath,
@@ -73,8 +82,7 @@ export const isNodeSelected = (
     scenarioId
   });
   
-  // FIXED: Only check if this specific node is selected at its level
-  // Remove the "deepest level only" restriction that was causing issues
+  // Only check if this specific node is selected at its level
   if (currentLevelSelection !== item.id) {
     return false;
   }
