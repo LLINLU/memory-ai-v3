@@ -4,6 +4,7 @@ import { LevelSelection } from "./LevelSelection";
 import { ScenarioSection } from "./ScenarioSection";
 import { QueryDisplay } from "./QueryDisplay";
 import { MindMapContainer } from "./mindmap/MindMapContainer";
+import { CardBasedTreemap } from "./card-based/CardBasedTreemap";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -260,7 +261,7 @@ export const MainContent = ({
       
       <div className="flex-1 overflow-hidden">
         {isTreemapView ? (
-          <LevelSelection
+          <CardBasedTreemap
             selectedPath={selectedPath}
             level1Items={level1Items}
             level2Items={level2Items}
@@ -272,14 +273,9 @@ export const MainContent = ({
             level8Items={level8Items}
             level9Items={level9Items}
             level10Items={level10Items}
-            showLevel4={showLevel4}
             onNodeClick={onNodeClick}
             onEditNode={onEditNode}
             onDeleteNode={onDeleteNode}
-            levelNames={levelNames}
-            hideNavigationControls={true}
-            containerRef={containerRef}
-            onGuidanceClick={onGuidanceClick}
           />
         ) : (
           <MindMapContainer
