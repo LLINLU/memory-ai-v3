@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/tooltip';
 import { TreeNode } from '../level-selection/TreeNode';
 import { NestedLevelGroup } from './NestedLevelGroup';
+import { getLevelBadgeClasses } from '@/utils/levelColors';
 
 interface LevelItem {
   id: string;
@@ -184,7 +185,7 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
           )}
           <div className="flex-1">
             <div className="mb-2">
-              <Badge variant="outline" className="text-xs text-gray-600 bg-gray-50">
+              <Badge className={`text-xs ${getLevelBadgeClasses(1)}`}>
                 レベル1:{levelNames.level1}
               </Badge>
             </div>

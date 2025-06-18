@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { NodeRenderer } from './components/NodeRenderer';
 import { getLevelLabel } from './utils/LevelUtils';
+import { getLevelBadgeClasses } from '@/utils/levelColors';
 
 interface LevelItem {
   id: string;
@@ -83,7 +83,7 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
   return (
     <div className="space-y-2">
       <div className="ml-6 mb-2">
-        <Badge variant="secondary" className="text-xs">
+        <Badge className={`text-xs ${getLevelBadgeClasses(currentLevel)}`}>
           {getLevelLabel(currentLevel, levelNames)}
         </Badge>
       </div>
