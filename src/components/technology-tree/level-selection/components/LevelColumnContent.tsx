@@ -19,8 +19,6 @@ interface LevelColumnContentProps {
   onNodeClick: (nodeId: string) => void;
   onEditClick: (e: React.MouseEvent, item: LevelItem) => void;
   onDeleteClick: (e: React.MouseEvent, nodeId: string) => void;
-  onAddClick?: (e: React.MouseEvent, nodeId: string) => void;
-  onAiAssistClick?: (e: React.MouseEvent, nodeId: string) => void;
   levelNumber: number;
   showDescriptions: boolean;
   shouldShowAddButton: boolean;
@@ -36,41 +34,50 @@ export const LevelColumnContent: React.FC<LevelColumnContentProps> = ({
   onNodeClick,
   onEditClick,
   onDeleteClick,
-  onAddClick,
-  onAiAssistClick,
   levelNumber,
   showDescriptions,
   shouldShowAddButton,
   onCustomNodeClick,
   nextLevelItems,
   isLastLevel,
+  onDeleteNode,
 }) => {
+  const getSubNodeCount = (itemId: string): number => {
+    if (isLastLevel || !nextLevelItems[itemId]) {
+      return 0;
+    }
+    return nextLevelItems[itemId].length;
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent, nodeId: string) => {
+    e.stopPropagation();
+    if (onDeleteNode) {
+      onDeleteNode(nodeId);
+    }
+  };
+
   return (
-    <div className="space-y-2 mt-4">
-      {items.length === 0 ? (
-        <EmptyNodeList levelNumber={levelNumber} />
-      ) : (
-        items.map((item) => (
-          <TreeNode
-            key={item.id}
-            item={item}
-            isSelected={selectedId === item.id}
-            onClick={() => onNodeClick(item.id)}
-            onEditClick={(e) => onEditClick(e, item)}
-            onDeleteClick={(e) => onDeleteClick(e, item.id)}
-            onAddClick={onAddClick ? (e) => onAddClick(e, item.id) : undefined}
-            onAiAssistClick={onAiAssistClick ? (e) => onAiAssistClick(e, item.id) : undefined}
-            level={levelNumber}
-            showDescription={showDescriptions}
-            subNodeCount={item.children_count || nextLevelItems[item.id]?.length || 0}
-            isLastLevel={isLastLevel}
-          />
-        ))
-      )}
+    <div className="space-y-4">
+      {items.map((item, index) => (
+        <TreeNode
+          key={`${item.id}-${item.children_count || 0}-${index}`}
+          item={item}
+          isSelected={selectedId === item.id}
+          onClick={() => onNodeClick(item.id)}
+          onEditClick={(e) => onEditClick(e, item)}
+          onDeleteClick={(e) => handleDeleteClick(e, item.id)}
+          level={levelNumber}
+          showDescription={showDescriptions}
+          subNodeCount={getSubNodeCount(item.id)}
+          isLastLevel={isLastLevel}
+        />
+      ))}
 
       {shouldShowAddButton && (
         <CustomNodeButton onClick={onCustomNodeClick} />
       )}
+
+      {items.length === 0 && <EmptyNodeList level={levelNumber} />}
     </div>
   );
 };

@@ -40,8 +40,6 @@ interface LevelColumnProps {
   nextLevelItems?: Record<string, LevelItem[]>;
   isLastLevel?: boolean;
   onGuidanceClick?: (type: string) => void;
-  onAddNodeClick?: (nodeId: string, level: number) => void;
-  onAiAssistClick?: (nodeId: string, level: number) => void;
 }
 
 export const LevelColumn: React.FC<LevelColumnProps> = ({
@@ -56,8 +54,6 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
   nextLevelItems = {},
   isLastLevel = false,
   onGuidanceClick,
-  onAddNodeClick,
-  onAiAssistClick,
 }) => {
   const {
     isEditDialogOpen,
@@ -112,20 +108,6 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
     e.stopPropagation();
     if (onDeleteNode) {
       onDeleteNode(nodeId);
-    }
-  };
-
-  const handleAddClick = (e: React.MouseEvent, nodeId: string) => {
-    e.stopPropagation();
-    if (onAddNodeClick) {
-      onAddNodeClick(nodeId, levelNumber);
-    }
-  };
-
-  const handleAiAssistClick = (e: React.MouseEvent, nodeId: string) => {
-    e.stopPropagation();
-    if (onAiAssistClick) {
-      onAiAssistClick(nodeId, levelNumber);
     }
   };
 
@@ -184,8 +166,6 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
         onNodeClick={onNodeClick}
         onEditClick={handleEditClick}
         onDeleteClick={handleDeleteClick}
-        onAddClick={handleAddClick}
-        onAiAssistClick={handleAiAssistClick}
         levelNumber={levelNumber}
         showDescriptions={showDescriptions}
         shouldShowAddButton={shouldShowAddButton()}
