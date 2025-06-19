@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 import {
@@ -109,6 +108,34 @@ export const PaperCard = ({
   return (
     <li className="w-full bg-white p-6 rounded-lg border border-gray-200">
       <div className="space-y-3">
+        {/* Information Cards - Above Title */}
+        <div className="flex gap-1 flex-wrap">
+          {citations !== undefined && (
+            <Card className="bg-gray-50 border-gray-200">
+              <CardContent className="px-2 py-1">
+                <div className="text-xs text-gray-500">Citations</div>
+                <div className="text-xs text-gray-800">{citations}</div>
+              </CardContent>
+            </Card>
+          )}
+          
+          <Card className="bg-gray-50 border-gray-200">
+            <CardContent className="px-2 py-1">
+              <div className="text-xs text-gray-500">Published</div>
+              <div className="text-xs text-gray-800">{date}</div>
+            </CardContent>
+          </Card>
+          
+          {score !== 0 && (
+            <Card className="bg-gray-50 border-gray-200">
+              <CardContent className="px-2 py-1">
+                <div className="text-xs text-gray-500">Relevance</div>
+                <div className="text-xs text-gray-800">{score.toFixed(4)}</div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
         <div>
           {title.japanese && (
             <h5 className="text-xl font-bold mb-2">{title.japanese}</h5>
@@ -145,34 +172,6 @@ export const PaperCard = ({
         </div>
         <p className="text-sm text-gray-700 leading-relaxed">{abstract}</p>
         
-        {/* Information Cards - Horizontal Layout */}
-        <div className="flex gap-2 flex-wrap">
-          {citations !== undefined && (
-            <Card className="bg-gray-50 border-gray-200">
-              <CardContent className="p-2">
-                <div className="text-xs text-gray-500 mb-1">Citations</div>
-                <div className="text-sm font-semibold text-gray-800">{citations}</div>
-              </CardContent>
-            </Card>
-          )}
-          
-          <Card className="bg-gray-50 border-gray-200">
-            <CardContent className="p-2">
-              <div className="text-xs text-gray-500 mb-1">Published</div>
-              <div className="text-sm font-semibold text-gray-800">{date}</div>
-            </CardContent>
-          </Card>
-          
-          {score !== 0 && (
-            <Card className="bg-gray-50 border-gray-200">
-              <CardContent className="p-2">
-                <div className="text-xs text-gray-500 mb-1">Relevance</div>
-                <div className="text-sm font-semibold text-gray-800">{score.toFixed(4)}</div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-
         <div className="flex gap-2 justify-end">
           <a
             href={`https://doi.org/${doi}`}
