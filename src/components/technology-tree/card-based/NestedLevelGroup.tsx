@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { ExpandableNode } from './ExpandableNode';
 import { getLevelBadgeStyle } from '../utils/levelColors';
 
@@ -297,14 +299,22 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
         <Badge variant="outline" className={`text-xs ${getLevelBadgeStyle(currentLevel)}`}>
           {getLevelLabel(currentLevel)}
         </Badge>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleAddClick}
-          className="h-6 w-6 p-0 hover:bg-gray-100"
-        >
-          <Plus className="h-3 w-3" />
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="sm"
+                onClick={handleAddClick}
+                className="h-6 w-6 p-0 rounded-full bg-gray-100 hover:bg-gray-200 border-0"
+              >
+                <Plus className="h-3 w-3 text-gray-600" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>このレベルの下にさらにノードを生成する</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       {items.map(renderNode)}
     </div>
