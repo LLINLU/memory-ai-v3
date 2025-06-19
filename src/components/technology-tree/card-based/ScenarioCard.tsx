@@ -112,6 +112,16 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
     }
   };
 
+  const handleAddClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // TODO: Implement add functionality for scenario card
+  };
+
+  const handleAiAssistClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // TODO: Implement AI assist functionality for scenario card
+  };
+
   const getAllLevelKeys = (): string[] => {
     const keys: string[] = [];
     
@@ -195,6 +205,8 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
               onClick={handleScenarioClick}
               onEditClick={handleEditClick}
               onDeleteClick={handleDeleteClick}
+              onAddClick={handleAddClick}
+              onAiAssistClick={handleAiAssistClick}
               level={1}
               showDescription={true}
               subNodeCount={level2Items.length}

@@ -42,6 +42,16 @@ export const ExpandableNode: React.FC<ExpandableNodeProps> = ({
     onToggleExpansion();
   };
 
+  const handleAddClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // TODO: Implement add functionality for card-based view
+  };
+
+  const handleAiAssistClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // TODO: Implement AI assist functionality for card-based view
+  };
+
   return (
     <div className="w-full">
       <div className="flex items-center gap-2">
@@ -66,6 +76,8 @@ export const ExpandableNode: React.FC<ExpandableNodeProps> = ({
             onClick={onNodeClick}
             onEditClick={onEditClick}
             onDeleteClick={onDeleteClick}
+            onAddClick={handleAddClick}
+            onAiAssistClick={handleAiAssistClick}
             level={level}
             showDescription={true}
             subNodeCount={0}

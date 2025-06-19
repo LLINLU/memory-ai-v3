@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Edit, CirclePlus, MessageSquare } from 'lucide-react';
+import { Edit, MessageSquare } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { DeleteNodeButton } from './DeleteNodeButton';
 
@@ -31,18 +31,6 @@ export const NodeActions: React.FC<NodeActionsProps> = ({
         }}
       >
         <Edit className="h-4 w-4" />
-      </Button>
-      
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        className="h-7 w-7 bg-white/70 hover:bg-white/90"
-        onClick={(e) => {
-          e.stopPropagation();
-          onAddClick(e);
-        }}
-      >
-        <CirclePlus className="h-4 w-4" />
       </Button>
       
       <Button 
