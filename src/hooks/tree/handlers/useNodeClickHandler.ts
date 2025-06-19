@@ -1,8 +1,8 @@
 import { PathLevel } from "@/types/tree";
 import { PathState } from "../state/usePathState";
 import { clearPathFromLevel, autoSelectChildren } from "../utils/pathUtils";
-import { callNodeEnrichment, buildParentTitles, getNodeDetails, isNodeLoading, hasNodeEnrichedData } from "@/services/nodeEnrichmentService";
-import { triggerEnrichmentRefresh } from "@/hooks/useEnrichedData";
+import { callNodeEnrichmentStreaming, buildParentTitles, getNodeDetails, isNodeLoading, hasNodeEnrichedData, StreamingResponse } from "@/services/nodeEnrichmentService";
+import { triggerEnrichmentRefresh, triggerEnrichmentStart } from "@/hooks/useEnrichedData";
 import { useUserDetail } from "@/hooks/useUserDetail";
 import { useLocation } from "react-router-dom";
 
@@ -33,50 +33,62 @@ export const useNodeClickHandler = (
         console.log('[NODE_ENRICHMENT] Node already loading, skipping:', nodeId);
         // Still update the UI selection but don't call API
       } else {
-        // Check if node already has data
-        const hasData = await hasNodeEnrichedData(nodeId);
-        if (hasData) {
-          console.log('[NODE_ENRICHMENT] Node already has data, skipping API call:', nodeId);
-          // Just trigger refresh to show existing data
-          triggerEnrichmentRefresh(nodeId);
-        } else {
-          // Start enrichment process in background
-          console.log('[NODE_ENRICHMENT] Starting enrichment for new node:', nodeId);
-          
-          // Get node details from the tree data 
-          const { title: nodeTitle, description: nodeDescription } = getNodeDetails(level, nodeId, initialPath, treeData);
-          console.log('[NODE_ENRICHMENT] Extracted node details:', { nodeTitle, nodeDescription });
-          
-          // Build parent titles array - simplified to empty array for now
-          const parentTitles = buildParentTitles(level, nodeId, initialPath, treeData);
-          console.log('[NODE_ENRICHMENT] Built parent titles:', parentTitles);
-          
-          // Build query parameter (combining search theme + node title + description)
-          const searchTheme = locationState.query || '';
-          const query = [searchTheme, nodeTitle, nodeDescription]
-            .filter(Boolean)
-            .join(', ');
+        // Immediately signal that enrichment might start for this node (for loading UI)
+        triggerEnrichmentStart(nodeId);
+        
+        // Check if node already has data (async but non-blocking for UI)
+        hasNodeEnrichedData(nodeId).then((hasData) => {
+          if (hasData) {
+            console.log('[NODE_ENRICHMENT] Node already has data, skipping API call:', nodeId);
+            // Just trigger refresh to show existing data (this will turn off loading)
+            triggerEnrichmentRefresh(nodeId);
+          } else {
+            // Start enrichment process in background
+            console.log('[NODE_ENRICHMENT] Starting enrichment for new node:', nodeId);
+            
+            // Get node details from the tree data 
+            const { title: nodeTitle, description: nodeDescription } = getNodeDetails(level, nodeId, initialPath, treeData);
+            console.log('[NODE_ENRICHMENT] Extracted node details:', { nodeTitle, nodeDescription });
+            
+            // Build parent titles array - simplified to empty array for now
+            const parentTitles = buildParentTitles(level, nodeId, initialPath, treeData);
+            console.log('[NODE_ENRICHMENT] Built parent titles:', parentTitles);
+            
+            // Build query parameter (combining search theme + node title + description)
+            const searchTheme = locationState.query || '';
+            const query = [searchTheme, nodeTitle, nodeDescription]
+              .filter(Boolean)
+              .join(', ');
 
-          // Call the enrichment API (non-blocking)
-          callNodeEnrichment({
-            nodeId,
-            treeId: locationState.treeId,
-            nodeTitle,
-            nodeDescription,
-            query,
-            parentTitles,
-            team_id: userDetails.team_id
-          }).then((enrichmentResult) => {
-            if (enrichmentResult.success) {
-              console.log('[NODE_ENRICHMENT] Enrichment successful - triggering sidebar refresh');
-              triggerEnrichmentRefresh(nodeId);
-            } else {
-              console.warn('[NODE_ENRICHMENT] Enrichment failed:', enrichmentResult.message);
-            }
-          }).catch((error) => {
-            console.error('[NODE_ENRICHMENT] Error during enrichment process:', error);
-          });
-        }
+            // Call the streaming enrichment API (non-blocking)
+            callNodeEnrichmentStreaming({
+              nodeId,
+              treeId: locationState.treeId,
+              nodeTitle,
+              nodeDescription,
+              query,
+              parentTitles,
+              team_id: userDetails.team_id
+            }, (response: StreamingResponse) => {
+              console.log('[NODE_ENRICHMENT_STREAMING] Received response:', response);
+              
+              if (response.type === 'papers') {
+                console.log('[NODE_ENRICHMENT_STREAMING] Papers received - triggering refresh');
+                triggerEnrichmentRefresh(nodeId);
+              } else if (response.type === 'useCases') {
+                console.log('[NODE_ENRICHMENT_STREAMING] Use cases received - triggering refresh');
+                triggerEnrichmentRefresh(nodeId);
+              } else if (response.type === 'complete') {
+                console.log('[NODE_ENRICHMENT_STREAMING] Enrichment complete');
+                triggerEnrichmentRefresh(nodeId);
+              } else if (response.type === 'error') {
+                console.warn('[NODE_ENRICHMENT_STREAMING] Enrichment error:', response.error);
+              }
+            }).catch((error) => {
+              console.error('[NODE_ENRICHMENT_STREAMING] Error during streaming enrichment:', error);
+            });
+          }
+        });
       }
     } else {
       console.log('[NODE_ENRICHMENT] Skipping enrichment - missing required context:', {
@@ -90,7 +102,9 @@ export const useNodeClickHandler = (
       if (prev[level] === nodeId) {
         // Clear the selected level and all subsequent levels
         return clearPathFromLevel(prev, level);
-      }      // MINDMAP MODE: Set only the selected level without auto-selection
+      }
+      
+      // MINDMAP MODE: Set only the selected level without auto-selection
       if (disableAutoSelection) {
         console.log("Mindmap mode: Setting selected node for", level, nodeId);
         const newPath = { ...prev };
@@ -101,19 +115,6 @@ export const useNodeClickHandler = (
       // TREEMAP MODE: Auto-selection enabled
       console.log("Treemap mode: Auto-selection enabled for", level, nodeId);
       const newPath = { ...prev };
-      const levels: PathLevel[] = [
-        "level1",
-        "level2",
-        "level3",
-        "level4",
-        "level5",
-        "level6",
-        "level7",
-        "level8",
-        "level9",
-        "level10",
-      ];
-      const currentIndex = levels.indexOf(level);
 
       // Clear current and all subsequent levels
       const clearedPath = clearPathFromLevel(newPath, level);

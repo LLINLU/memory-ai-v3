@@ -28,7 +28,7 @@ export const TabContent: React.FC<TabContentProps> = ({
   const [currentSort, setCurrentSort] = useState("citations");
 
   // Get real enrichment data for the selected node
-  const { papers, useCases } = useEnrichedData(selectedNodeId || null);
+  const { papers, useCases, loadingPapers, loadingUseCases } = useEnrichedData(selectedNodeId || null);
 
   const handleFilterChange = (filter: string) => {
     setCurrentFilter(filter);
@@ -82,6 +82,8 @@ export const TabContent: React.FC<TabContentProps> = ({
           onValueChange={onValueChange}
           papersCount={papers.length}
           useCasesCount={useCases.length}
+          loadingPapers={loadingPapers}
+          loadingUseCases={loadingUseCases}
         />
         <FilterSort
           className="justify-end"

@@ -9,10 +9,10 @@ interface ImplementationListProps {
 export const ImplementationList = ({
   selectedNodeId,
 }: ImplementationListProps) => {
-  const { useCases, loading } = useEnrichedData(selectedNodeId || null);
+  const { useCases, loadingUseCases } = useEnrichedData(selectedNodeId || null);
 
   // Show loading state when fetching real data
-  if (selectedNodeId && loading) {
+  if (selectedNodeId && loadingUseCases) {
     return (
       <div className="flex items-center justify-center py-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>

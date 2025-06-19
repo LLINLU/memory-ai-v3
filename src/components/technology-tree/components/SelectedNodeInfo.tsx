@@ -16,7 +16,16 @@ export const SelectedNodeInfo = ({
   
   return (
     <div className="mb-6">
-      {description && <p className="text-gray-700" style={{ fontSize: '14px', maxWidth: '80%' }}>{description}</p>}
+      {title && (
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          {title}
+        </h3>
+      )}
+      {description && (
+        <p className="text-gray-700" style={{ fontSize: '14px', maxWidth: '80%' }}>
+          {description}
+        </p>
+      )}
     </div>
   );
 };

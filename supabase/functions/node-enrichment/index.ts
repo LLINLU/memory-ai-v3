@@ -576,6 +576,15 @@ const CORS = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+// Streaming response types
+interface StreamingResponse {
+  type: 'papers' | 'useCases' | 'complete' | 'error';
+  data?: any;
+  error?: string;
+  nodeId: string;
+  timestamp: string;
+}
+
 /*──────────────────── edge entry ────────────────*/
 serve(async (req) => {
   if (req.method === "OPTIONS")
@@ -600,7 +609,8 @@ serve(async (req) => {
       query,
       parentTitles,
       team_id,
-    } = requestBody as NodeEnrichmentRequest;
+      streaming = false, // Add streaming parameter
+    } = requestBody as NodeEnrichmentRequest & { streaming?: boolean };
 
     // Validate required parameters
     if (!nodeId || !treeId || !nodeTitle || !query || parentTitles === undefined || parentTitles === null) {
@@ -669,105 +679,12 @@ serve(async (req) => {
     
     console.log(`[NODE_ENRICHMENT] Built query: ${searchQuery}`);
 
-    const articleRequest: SearchArticleRequest = {
-      query: searchQuery,
-    };
-
-    const marketImplRequest: SearchMarketImplRequest = {
-      query: searchQuery,
-    };
-
-    // Call both APIs concurrently for efficiency
-    const paperPromise = skipPapers
-      ? Promise.resolve(null)
-      : callSearchArticleAPI(articleRequest).catch(async (error) => {
-          console.warn(
-            `[NODE_ENRICHMENT] search_article API failed, using mock:`,
-
-            error.message
-          );
-          return await mockSearchArticleAPI(searchQuery);
-        });
-
-    const useCasePromise = skipUseCases
-      ? Promise.resolve(null)
-      : callSearchMarketImplAPI(marketImplRequest).catch(async (error) => {
-          console.warn(
-            `[NODE_ENRICHMENT] search_market_impl API failed, using mock:`,
-            error.message
-          );
-          return await mockSearchMarketImplAPI(searchQuery);
-        });
-
-    const [paperResult, useCaseResult] = await Promise.allSettled([
-      paperPromise,
-      useCasePromise,
-    ]);
-
-    let papers: Paper[] = [];
-    let useCases: UseCase[] = [];
-    let errors: string[] = [];
-
-    // Process search_article results
-    if (paperResult.status === "fulfilled" && paperResult.value) {
-      papers = paperResult.value.papers || [];
-    } else if (paperResult.status === "rejected") {
-      errors.push(`search_article failed: ${paperResult.reason}`);
+    // Handle streaming vs non-streaming responses
+    if (streaming) {
+      return handleStreamingResponse(sb, nodeId, treeId, searchQuery, team_id || null, skipPapers, skipUseCases);
+    } else {
+      return handleTraditionalResponse(sb, nodeId, treeId, nodeTitle, searchQuery, team_id || null, skipPapers, skipUseCases);
     }
-
-    // Process search_market_imple results
-    if (useCaseResult.status === "fulfilled" && useCaseResult.value) {
-      useCases = useCaseResult.value.use_cases || [];
-    } else if (useCaseResult.status === "rejected") {
-      errors.push(`search_market_impl failed: ${useCaseResult.reason}`);
-    }
-
-    // Save results to database concurrently
-    const saveResults = await Promise.allSettled([
-      skipPapers
-        ? Promise.resolve()
-        : saveNodePapers(sb, nodeId, treeId, papers, team_id || null),
-      skipUseCases
-        ? Promise.resolve()
-        : saveNodeUseCases(sb, nodeId, treeId, useCases, team_id || null),
-    ]);
-
-    // Check for save errors
-    if (saveResults[0].status === "rejected") {
-      errors.push(`Failed to save papers: ${saveResults[0].reason}`);
-    }
-
-    if (saveResults[1].status === "rejected") {
-      errors.push(`Failed to save use cases: ${saveResults[1].reason}`);
-    }
-
-    const response = {
-      success: true,
-      nodeId,
-      nodeTitle,
-      results: {
-        papers: {
-          count: papers.length,
-          saved: !skipPapers && saveResults[0].status === "fulfilled",
-        },
-        useCases: {
-          count: useCases.length,
-          saved: !skipUseCases && saveResults[1].status === "fulfilled",
-        },
-      },
-      errors: errors.length > 0 ? errors : undefined,
-      timestamp: new Date().toISOString(),
-    };
-
-    console.log(
-      `[NODE_ENRICHMENT] Completed enrichment for node: ${nodeTitle}`,
-      response
-    );
-
-    return new Response(JSON.stringify(response), {
-      status: 200,
-      headers: { ...CORS, "Content-Type": "application/json" },
-    });
   } catch (err: any) {
     console.error("=== NODE ENRICHMENT ERROR ===");
     console.error("Error details:", {
@@ -791,3 +708,255 @@ serve(async (req) => {
     );
   }
 });
+
+/**
+ * Handle streaming response - sends data as each API completes
+ */
+async function handleStreamingResponse(
+  sb: any,
+  nodeId: string,
+  treeId: string,
+  searchQuery: string,
+  team_id: string | null,
+  skipPapers: boolean,
+  skipUseCases: boolean
+): Promise<Response> {
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    start(controller) {
+      // Helper function to send data chunk
+      const sendChunk = (response: StreamingResponse) => {
+        const chunk = `data: ${JSON.stringify(response)}\n\n`;
+        controller.enqueue(encoder.encode(chunk));
+      };
+
+      // Process papers and use cases independently
+      const processPapers = async () => {
+        if (skipPapers) return;
+        
+        try {
+          console.log("[STREAMING] Starting papers API call");
+          const articleRequest: SearchArticleRequest = { query: searchQuery };
+          
+          let paperResult: SearchArticleResponse;
+          try {
+            paperResult = await callSearchArticleAPI(articleRequest);
+          } catch (error) {
+            console.warn("[STREAMING] Papers API failed, using mock:", error.message);
+            paperResult = await mockSearchArticleAPI(searchQuery);
+          }
+
+          const papers = paperResult.papers || [];
+          console.log(`[STREAMING] Got ${papers.length} papers, saving to database`);
+          
+          // Save papers to database
+          await saveNodePapers(sb, nodeId, treeId, papers, team_id);
+          
+          // Send papers response
+          sendChunk({
+            type: 'papers',
+            data: {
+              papers,
+              count: papers.length,
+              saved: true
+            },
+            nodeId,
+            timestamp: new Date().toISOString()
+          });
+          
+          console.log("[STREAMING] Papers completed and sent");
+        } catch (error) {
+          console.error("[STREAMING] Papers processing failed:", error);
+          sendChunk({
+            type: 'error',
+            error: `Papers processing failed: ${error.message}`,
+            nodeId,
+            timestamp: new Date().toISOString()
+          });
+        }
+      };
+
+      const processUseCases = async () => {
+        if (skipUseCases) return;
+        
+        try {
+          console.log("[STREAMING] Starting use cases API call");
+          const marketImplRequest: SearchMarketImplRequest = { query: searchQuery };
+          
+          let useCaseResult: SearchMarketImplResponse;
+          try {
+            useCaseResult = await callSearchMarketImplAPI(marketImplRequest);
+          } catch (error) {
+            console.warn("[STREAMING] Use cases API failed, using mock:", error.message);
+            useCaseResult = await mockSearchMarketImplAPI(searchQuery);
+          }
+
+          const useCases = useCaseResult.use_cases || [];
+          console.log(`[STREAMING] Got ${useCases.length} use cases, saving to database`);
+          
+          // Save use cases to database
+          await saveNodeUseCases(sb, nodeId, treeId, useCases, team_id);
+          
+          // Send use cases response
+          sendChunk({
+            type: 'useCases',
+            data: {
+              useCases,
+              count: useCases.length,
+              saved: true
+            },
+            nodeId,
+            timestamp: new Date().toISOString()
+          });
+          
+          console.log("[STREAMING] Use cases completed and sent");
+        } catch (error) {
+          console.error("[STREAMING] Use cases processing failed:", error);
+          sendChunk({
+            type: 'error',
+            error: `Use cases processing failed: ${error.message}`,
+            nodeId,
+            timestamp: new Date().toISOString()
+          });
+        }
+      };
+
+      // Run both processes concurrently
+      Promise.all([processPapers(), processUseCases()]).then(() => {
+        // Send completion signal
+        sendChunk({
+          type: 'complete',
+          nodeId,
+          timestamp: new Date().toISOString()
+        });
+        controller.close();
+      }).catch((error) => {
+        console.error("[STREAMING] Fatal error:", error);
+        sendChunk({
+          type: 'error',
+          error: `Fatal error: ${error.message}`,
+          nodeId,
+          timestamp: new Date().toISOString()
+        });
+        controller.close();
+      });
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      ...CORS,
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    },
+  });
+}
+
+/**
+ * Handle traditional response - waits for both APIs to complete
+ */
+async function handleTraditionalResponse(
+  sb: any,
+  nodeId: string,
+  treeId: string,
+  nodeTitle: string,
+  searchQuery: string,
+  team_id: string | null,
+  skipPapers: boolean,
+  skipUseCases: boolean
+): Promise<Response> {
+  const articleRequest: SearchArticleRequest = { query: searchQuery };
+  const marketImplRequest: SearchMarketImplRequest = { query: searchQuery };
+
+  // Call both APIs concurrently for efficiency
+  const paperPromise = skipPapers
+    ? Promise.resolve(null)
+    : callSearchArticleAPI(articleRequest).catch(async (error) => {
+        console.warn(
+          `[NODE_ENRICHMENT] search_article API failed, using mock:`,
+          error.message
+        );
+        return await mockSearchArticleAPI(searchQuery);
+      });
+
+  const useCasePromise = skipUseCases
+    ? Promise.resolve(null)
+    : callSearchMarketImplAPI(marketImplRequest).catch(async (error) => {
+        console.warn(
+          `[NODE_ENRICHMENT] search_market_impl API failed, using mock:`,
+          error.message
+        );
+        return await mockSearchMarketImplAPI(searchQuery);
+      });
+
+  const [paperResult, useCaseResult] = await Promise.allSettled([
+    paperPromise,
+    useCasePromise,
+  ]);
+
+  let papers: Paper[] = [];
+  let useCases: UseCase[] = [];
+  let errors: string[] = [];
+
+  // Process search_article results
+  if (paperResult.status === "fulfilled" && paperResult.value) {
+    papers = paperResult.value.papers || [];
+  } else if (paperResult.status === "rejected") {
+    errors.push(`search_article failed: ${paperResult.reason}`);
+  }
+
+  // Process search_market_imple results
+  if (useCaseResult.status === "fulfilled" && useCaseResult.value) {
+    useCases = useCaseResult.value.use_cases || [];
+  } else if (useCaseResult.status === "rejected") {
+    errors.push(`search_market_impl failed: ${useCaseResult.reason}`);
+  }
+
+  // Save results to database concurrently
+  const saveResults = await Promise.allSettled([
+    skipPapers
+      ? Promise.resolve()
+      : saveNodePapers(sb, nodeId, treeId, papers, team_id || null),
+    skipUseCases
+      ? Promise.resolve()
+      : saveNodeUseCases(sb, nodeId, treeId, useCases, team_id || null),
+  ]);
+
+  // Check for save errors
+  if (saveResults[0].status === "rejected") {
+    errors.push(`Failed to save papers: ${saveResults[0].reason}`);
+  }
+
+  if (saveResults[1].status === "rejected") {
+    errors.push(`Failed to save use cases: ${saveResults[1].reason}`);
+  }
+
+  const response = {
+    success: true,
+    nodeId,
+    nodeTitle,
+    results: {
+      papers: {
+        count: papers.length,
+        saved: !skipPapers && saveResults[0].status === "fulfilled",
+      },
+      useCases: {
+        count: useCases.length,
+        saved: !skipUseCases && saveResults[1].status === "fulfilled",
+      },
+    },
+    errors: errors.length > 0 ? errors : undefined,
+    timestamp: new Date().toISOString(),
+  };
+
+  console.log(
+    `[NODE_ENRICHMENT] Completed enrichment for node: ${nodeTitle}`,
+    response
+  );
+
+  return new Response(JSON.stringify(response), {
+    status: 200,
+    headers: { ...CORS, "Content-Type": "application/json" },
+  });
+}

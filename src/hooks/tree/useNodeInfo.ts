@@ -45,8 +45,8 @@ export const useNodeInfo = (
       return { title: "", description: "", nodeId: "" };
     }
 
-    //console.log("useNodeInfo: selectedPath =", selectedPath);
-    //console.log("useNodeInfo: userClickedNode =", userClickedNode);
+    // console.log("useNodeInfo: selectedPath =", selectedPath);
+    // console.log("useNodeInfo: userClickedNode =", userClickedNode);
     let title = "";
     let description = "";
     let nodeId = ""; // If we have a user clicked node, use that instead of the deepest auto-selected node
@@ -78,6 +78,8 @@ export const useNodeInfo = (
       } else if (targetLevel === 10) {
         parentId = selectedPath.level9 || "";
       }
+      
+      // console.log(`useNodeInfo: For level ${targetLevel}, using parentId: ${parentId}, targetId: ${targetId}`);
 
       // Find the node based on the target level
       if (targetLevel === 1) {
@@ -119,6 +121,112 @@ export const useNodeInfo = (
         //   `useNodeInfo: Found user-clicked node - level: ${targetLevel}, title: ${title}, description: ${description}, nodeId: ${nodeId}`
         // );
         return { title, description, nodeId };
+      } else {
+        console.log(`useNodeInfo: Could not find node for level: ${targetLevel}, parentId: ${parentId}, targetId: ${targetId}`);
+        
+        // Comprehensive search through all possible parents for this level
+        if (targetLevel === 2 && level2Items) {
+          for (const [parentId, items] of Object.entries(level2Items)) {
+            const foundNode = items.find((item) => item.id === targetId);
+            if (foundNode) {
+              console.log(`useNodeInfo: Found level2 node in different parent: ${parentId}`);
+              title = foundNode.name;
+              description = foundNode.description || "";
+              nodeId = targetId;
+              return { title, description, nodeId };
+            }
+          }
+        } else if (targetLevel === 3 && level3Items) {
+          for (const [parentId, items] of Object.entries(level3Items)) {
+            const foundNode = items.find((item) => item.id === targetId);
+            if (foundNode) {
+              console.log(`useNodeInfo: Found level3 node in different parent: ${parentId}`);
+              title = foundNode.name;
+              description = foundNode.description || "";
+              nodeId = targetId;
+              return { title, description, nodeId };
+            }
+          }
+        } else if (targetLevel === 4 && level4Items) {
+          for (const [parentId, items] of Object.entries(level4Items)) {
+            const foundNode = items.find((item) => item.id === targetId);
+            if (foundNode) {
+              console.log(`useNodeInfo: Found level4 node in different parent: ${parentId}`);
+              title = foundNode.name;
+              description = foundNode.description || "";
+              nodeId = targetId;
+              return { title, description, nodeId };
+            }
+          }
+        } else if (targetLevel === 5 && level5Items) {
+          for (const [parentId, items] of Object.entries(level5Items)) {
+            const foundNode = items.find((item) => item.id === targetId);
+            if (foundNode) {
+              console.log(`useNodeInfo: Found level5 node in different parent: ${parentId}`);
+              title = foundNode.name;
+              description = foundNode.description || "";
+              nodeId = targetId;
+              return { title, description, nodeId };
+            }
+          }
+        } else if (targetLevel === 6 && level6Items) {
+          for (const [parentId, items] of Object.entries(level6Items)) {
+            const foundNode = items.find((item) => item.id === targetId);
+            if (foundNode) {
+              console.log(`useNodeInfo: Found level6 node in different parent: ${parentId}`);
+              title = foundNode.name;
+              description = foundNode.description || "";
+              nodeId = targetId;
+              return { title, description, nodeId };
+            }
+          }
+        } else if (targetLevel === 7 && level7Items) {
+          for (const [parentId, items] of Object.entries(level7Items)) {
+            const foundNode = items.find((item) => item.id === targetId);
+            if (foundNode) {
+              console.log(`useNodeInfo: Found level7 node in different parent: ${parentId}`);
+              title = foundNode.name;
+              description = foundNode.description || "";
+              nodeId = targetId;
+              return { title, description, nodeId };
+            }
+          }
+        } else if (targetLevel === 8 && level8Items) {
+          for (const [parentId, items] of Object.entries(level8Items)) {
+            const foundNode = items.find((item) => item.id === targetId);
+            if (foundNode) {
+              console.log(`useNodeInfo: Found level8 node in different parent: ${parentId}`);
+              title = foundNode.name;
+              description = foundNode.description || "";
+              nodeId = targetId;
+              return { title, description, nodeId };
+            }
+          }
+        } else if (targetLevel === 9 && level9Items) {
+          for (const [parentId, items] of Object.entries(level9Items)) {
+            const foundNode = items.find((item) => item.id === targetId);
+            if (foundNode) {
+              console.log(`useNodeInfo: Found level9 node in different parent: ${parentId}`);
+              title = foundNode.name;
+              description = foundNode.description || "";
+              nodeId = targetId;
+              return { title, description, nodeId };
+            }
+          }
+        } else if (targetLevel === 10 && level10Items) {
+          for (const [parentId, items] of Object.entries(level10Items)) {
+            const foundNode = items.find((item) => item.id === targetId);
+            if (foundNode) {
+              console.log(`useNodeInfo: Found level10 node in different parent: ${parentId}`);
+              title = foundNode.name;
+              description = foundNode.description || "";
+              nodeId = targetId;
+              return { title, description, nodeId };
+            }
+          }
+        }
+        
+        console.log(`useNodeInfo: Comprehensive search failed for node: ${targetId} at level: ${targetLevel}`);
       }
     }
 

@@ -23,6 +23,16 @@ export interface NodeEnrichmentResponse {
   };
 }
 
+export interface StreamingResponse {
+  type: 'papers' | 'useCases' | 'complete' | 'error';
+  data?: any;
+  error?: string;
+  nodeId: string;
+  timestamp: string;
+}
+
+export type StreamingCallback = (response: StreamingResponse) => void;
+
 /**
  * Check if a node is currently being enriched
  */
@@ -61,7 +71,118 @@ export const hasNodeEnrichedData = async (nodeId: string): Promise<boolean> => {
 };
 
 /**
- * Call the node enrichment edge function when a node is clicked
+ * Call the node enrichment edge function with streaming support
+ */
+export const callNodeEnrichmentStreaming = async (
+  params: NodeEnrichmentRequest,
+  callback: StreamingCallback
+): Promise<void> => {
+  const { nodeId } = params;
+
+  // Check if already loading or already has data
+  if (loadingNodes.has(nodeId)) {
+    console.log('[NODE_ENRICHMENT_STREAMING] Node already being processed:', nodeId);
+    callback({
+      type: 'error',
+      error: 'Node enrichment already in progress',
+      nodeId,
+      timestamp: new Date().toISOString()
+    });
+    return;
+  }
+
+  // Check if node already has enriched data
+  const hasExistingData = await hasNodeEnrichedData(nodeId);
+  if (hasExistingData) {
+    console.log('[NODE_ENRICHMENT_STREAMING] Node already has enriched data:', nodeId);
+    callback({
+      type: 'complete',
+      nodeId,
+      timestamp: new Date().toISOString()
+    });
+    return;
+  }
+
+  // Mark as loading
+  loadingNodes.add(nodeId);
+
+  try {
+    console.log('[NODE_ENRICHMENT_STREAMING] Starting streaming enrichment for:', nodeId);
+
+    // Get the Supabase URL and anon key for direct fetch
+    const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+    const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      throw new Error('Missing Supabase configuration');
+    }
+
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/node-enrichment`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+      body: JSON.stringify({
+        ...params,
+        streaming: true
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    if (!response.body) {
+      throw new Error('No response body');
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              callback(data);
+              
+              // Mark as enriched when complete
+              if (data.type === 'complete') {
+                enrichedNodes.add(nodeId);
+              }
+            } catch (parseError) {
+              console.error('[NODE_ENRICHMENT_STREAMING] Error parsing chunk:', parseError);
+            }
+          }
+        }
+      }
+    } finally {
+      reader.releaseLock();
+    }
+  } catch (error) {
+    console.error('[NODE_ENRICHMENT_STREAMING] Error:', error);
+    callback({
+      type: 'error',
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+      nodeId,
+      timestamp: new Date().toISOString()
+    });
+  } finally {
+    // Always remove from loading set
+    loadingNodes.delete(nodeId);
+  }
+};
+
+/**
+ * Call the node enrichment edge function when a node is clicked (traditional approach)
  */
 export const callNodeEnrichment = async (
   params: NodeEnrichmentRequest
@@ -233,6 +354,43 @@ export const getNodeDetails = (
                 nodeDescription = foundNode.description || '';
                 break;
               }
+            }
+          }
+        }
+        
+        // If still not found, fall back to comprehensive search
+        if (!nodeTitle && !nodeDescription) {
+          console.log('[NODE_ENRICHMENT] Comprehensive search for node:', nodeId);
+          
+          // Search through all levels to find this node
+          const allLevelKeys = ['level1Items', 'level2Items', 'level3Items', 'level4Items', 'level5Items', 'level6Items', 'level7Items', 'level8Items', 'level9Items', 'level10Items'];
+          
+          for (const levelKey of allLevelKeys) {
+            if (!treeData?.[levelKey]) continue;
+            
+            if (levelKey === 'level1Items') {
+              // Level 1 is an array
+              const foundNode = treeData[levelKey].find((item: any) => item.id === nodeId);
+              if (foundNode) {
+                nodeTitle = foundNode.name || '';
+                nodeDescription = foundNode.description || '';
+                console.log('[NODE_ENRICHMENT] Found node in comprehensive search - level1:', foundNode);
+                break;
+              }
+            } else {
+              // Other levels are objects with parent keys
+              for (const [parentId, items] of Object.entries(treeData[levelKey])) {
+                if (Array.isArray(items)) {
+                  const foundNode = items.find((item: any) => item.id === nodeId);
+                  if (foundNode) {
+                    nodeTitle = foundNode.name || '';
+                    nodeDescription = foundNode.description || '';
+                    console.log(`[NODE_ENRICHMENT] Found node in comprehensive search - ${levelKey}:`, foundNode);
+                    break;
+                  }
+                }
+              }
+              if (nodeTitle) break;
             }
           }
         }
