@@ -1,7 +1,10 @@
-
 import { PathLevel } from "@/types/tree";
 import { PathState } from "../state/usePathState";
-import { findCompletePath, clearPathFromLevel, autoSelectChildren } from "../utils/pathUtils";
+import { clearPathFromLevel, autoSelectChildren } from "../utils/pathUtils";
+import { callNodeEnrichment, buildParentTitles, getNodeDetails, isNodeLoading, hasNodeEnrichedData } from "@/services/nodeEnrichmentService";
+import { triggerEnrichmentRefresh } from "@/hooks/useEnrichedData";
+import { useUserDetail } from "@/hooks/useUserDetail";
+import { useLocation } from "react-router-dom";
 
 export const useNodeClickHandler = (
   disableAutoSelection: boolean,
@@ -11,23 +14,88 @@ export const useNodeClickHandler = (
   setHasUserMadeSelection: (value: boolean) => void,
   setUserClickedNode: (node: { level: PathLevel; nodeId: string } | null) => void
 ) => {
-  const handleNodeClick = (level: PathLevel, nodeId: string) => {
+  const { userDetails } = useUserDetail();
+  const location = useLocation();
+  const locationState = location.state as {
+    treeId?: string;
+    query?: string;
+  } | null;  const handleNodeClick = async (level: PathLevel, nodeId: string) => {
     console.log("Node clicked:", { level, nodeId, disableAutoSelection });
     setHasUserMadeSelection(true);
 
     // Track the user's actual click for sidebar display
     setUserClickedNode({ level, nodeId });
 
+    // Check if we should proceed with enrichment
+    if (locationState?.treeId && userDetails?.team_id && treeData) {
+      // Check if node is already loading
+      if (isNodeLoading(nodeId)) {
+        console.log('[NODE_ENRICHMENT] Node already loading, skipping:', nodeId);
+        // Still update the UI selection but don't call API
+      } else {
+        // Check if node already has data
+        const hasData = await hasNodeEnrichedData(nodeId);
+        if (hasData) {
+          console.log('[NODE_ENRICHMENT] Node already has data, skipping API call:', nodeId);
+          // Just trigger refresh to show existing data
+          triggerEnrichmentRefresh(nodeId);
+        } else {
+          // Start enrichment process in background
+          console.log('[NODE_ENRICHMENT] Starting enrichment for new node:', nodeId);
+          
+          // Get node details from the tree data 
+          const { title: nodeTitle, description: nodeDescription } = getNodeDetails(level, nodeId, initialPath, treeData);
+          console.log('[NODE_ENRICHMENT] Extracted node details:', { nodeTitle, nodeDescription });
+          
+          // Build parent titles array - simplified to empty array for now
+          const parentTitles = buildParentTitles(level, nodeId, initialPath, treeData);
+          console.log('[NODE_ENRICHMENT] Built parent titles:', parentTitles);
+          
+          // Build query parameter (combining search theme + node title + description)
+          const searchTheme = locationState.query || '';
+          const query = [searchTheme, nodeTitle, nodeDescription]
+            .filter(Boolean)
+            .join(', ');
+
+          // Call the enrichment API (non-blocking)
+          callNodeEnrichment({
+            nodeId,
+            treeId: locationState.treeId,
+            nodeTitle,
+            nodeDescription,
+            query,
+            parentTitles,
+            team_id: userDetails.team_id
+          }).then((enrichmentResult) => {
+            if (enrichmentResult.success) {
+              console.log('[NODE_ENRICHMENT] Enrichment successful - triggering sidebar refresh');
+              triggerEnrichmentRefresh(nodeId);
+            } else {
+              console.warn('[NODE_ENRICHMENT] Enrichment failed:', enrichmentResult.message);
+            }
+          }).catch((error) => {
+            console.error('[NODE_ENRICHMENT] Error during enrichment process:', error);
+          });
+        }
+      }
+    } else {
+      console.log('[NODE_ENRICHMENT] Skipping enrichment - missing required context:', {
+        hasTreeId: !!locationState?.treeId,
+        hasTeamId: !!userDetails?.team_id,
+        hasTreeData: !!treeData
+      });
+    }
+
     setSelectedPath((prev) => {
       if (prev[level] === nodeId) {
         // Clear the selected level and all subsequent levels
         return clearPathFromLevel(prev, level);
-      }
-
-      // MINDMAP MODE: Build complete path by traversing up the tree
+      }      // MINDMAP MODE: Set only the selected level without auto-selection
       if (disableAutoSelection) {
-        console.log("Mindmap mode: Building complete path for", level, nodeId);
-        return findCompletePath(level, nodeId, treeData, initialPath);
+        console.log("Mindmap mode: Setting selected node for", level, nodeId);
+        const newPath = { ...prev };
+        newPath[level] = nodeId;
+        return newPath;
       }
 
       // TREEMAP MODE: Auto-selection enabled

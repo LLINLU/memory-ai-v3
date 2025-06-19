@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Paper {
@@ -29,14 +29,56 @@ interface EnrichedData {
   useCases?: UseCase[];
   loading: boolean;
   error: string | null;
+  refresh: () => void;
 }
+
+// Global event bus for triggering enriched data refreshes
+const enrichmentEventBus = {
+  listeners: new Set<(nodeId: string) => void>(),
+  
+  subscribe(listener: (nodeId: string) => void) {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  },
+  
+  emit(nodeId: string) {
+    this.listeners.forEach(listener => listener(nodeId));
+  }
+};
+
+// Export function to trigger refresh from outside
+export const triggerEnrichmentRefresh = (nodeId: string) => {
+  console.log(`[ENRICHMENT_REFRESH] Triggering refresh for node: ${nodeId}`);
+  enrichmentEventBus.emit(nodeId);
+};
 
 export const useEnrichedData = (nodeId: string | null): EnrichedData => {
   const [papers, setPapers] = useState<Paper[]>([]);
   const [useCases, setUseCases] = useState<UseCase[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const nodeIdRef = useRef<string | null>(null);
 
+  // Force refresh function
+  const refresh = () => {
+    console.log(`[useEnrichedData] Manual refresh triggered for nodeId: ${nodeId}`);
+    setRefreshTrigger(prev => prev + 1);
+  };
+
+  // Subscribe to global enrichment events
+  useEffect(() => {
+    if (!nodeId) return;
+    
+    const unsubscribe = enrichmentEventBus.subscribe((enrichedNodeId) => {
+      if (enrichedNodeId === nodeId) {
+        console.log(`[useEnrichedData] External refresh triggered for nodeId: ${nodeId}`);
+        setRefreshTrigger(prev => prev + 1);
+      }
+    });
+    
+    return unsubscribe;
+  }, [nodeId]);
   useEffect(() => {
     if (!nodeId) {
       setPapers([]);
@@ -45,12 +87,13 @@ export const useEnrichedData = (nodeId: string | null): EnrichedData => {
       setError(null);
       return;
     }
+    
     const loadEnrichedData = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        console.log(`[useEnrichedData] Loading data for nodeId: ${nodeId}`);
+        console.log(`[useEnrichedData] Loading data for nodeId: ${nodeId}, refreshTrigger: ${refreshTrigger}`);
 
         // Load papers
         const { data: papersData, error: papersError } = await supabase
@@ -66,7 +109,9 @@ export const useEnrichedData = (nodeId: string | null): EnrichedData => {
 
         if (papersError) {
           throw new Error(`Failed to load papers: ${papersError.message}`);
-        }        // Set papers data with proper typing
+        }
+
+        // Set papers data with proper typing
         setPapers((papersData as any) || []);
         console.log(
           `[useEnrichedData] Papers set to state:`,
@@ -106,12 +151,13 @@ export const useEnrichedData = (nodeId: string | null): EnrichedData => {
     };
 
     loadEnrichedData();
-  }, [nodeId]);
+  }, [nodeId, refreshTrigger]);
 
   return {
     papers,
     useCases,
     loading,
     error,
+    refresh,
   };
 };

@@ -10,6 +10,12 @@ export const findCompletePath = (
 ): PathState => {
   if (!treeData) return initialPath;
 
+  console.log('[FIND_COMPLETE_PATH] Starting path finding for:', {
+    targetLevel,
+    targetNodeId,
+    treeDataKeys: Object.keys(treeData || {})
+  });
+
   const newPath: PathState = {
     level1: "",
     level2: "",
@@ -41,6 +47,7 @@ export const findCompletePath = (
   if (targetLevelIndex === 0) {
     // Level 1 node - just set it directly
     newPath.level1 = targetNodeId;
+    console.log('[FIND_COMPLETE_PATH] Level 1 node, returning:', newPath);
     return newPath;
   }
 
@@ -56,6 +63,13 @@ export const findCompletePath = (
     const currentLevel = levels[currentLevelIndex];
     const parentLevel = levels[currentLevelIndex - 1];
 
+    console.log('[FIND_COMPLETE_PATH] Finding parent for:', {
+      currentLevel,
+      currentNodeId,
+      parentLevel,
+      currentLevelIndex
+    });
+
     // Find the parent of the current node
     let parentNodeId = "";
 
@@ -68,15 +82,26 @@ export const findCompletePath = (
           parentNodeId = level1Item.id;
           break;
         }
-      }
-    } else if (currentLevelIndex === 2) {
+      }    } else if (currentLevelIndex === 2) {
       // For level 3 nodes, find which level 2 node contains this level 3 node
+      console.log('[FIND_COMPLETE_PATH] Searching for level3 node parent in level2Items...');
       for (const [level1Id, level2Children] of Object.entries(treeData.level2Items || {})) {
         if (Array.isArray(level2Children)) {
           for (const level2Child of level2Children) {
             const level3Children = treeData.level3Items?.[level2Child.id] || [];
+            console.log('[FIND_COMPLETE_PATH] Checking level2 child:', {
+              level2ChildId: level2Child.id,
+              level2ChildName: level2Child.name,
+              level3ChildrenCount: level3Children.length,
+              level3ChildrenIds: level3Children.map((c: any) => c.id),
+              searchingFor: currentNodeId
+            });
             if (level3Children.find((child: any) => child.id === currentNodeId)) {
               parentNodeId = level2Child.id;
+              console.log('[FIND_COMPLETE_PATH] Found parent for level3 node:', {
+                parentNodeId,
+                parentName: level2Child.name
+              });
               break;
             }
           }
@@ -124,20 +149,24 @@ export const findCompletePath = (
           break;
         }
       }
-    }
-
-    if (parentNodeId) {
+    }    if (parentNodeId) {
       newPath[parentLevel] = parentNodeId;
+      console.log('[FIND_COMPLETE_PATH] Set parent in path:', {
+        parentLevel,
+        parentNodeId,
+        currentPath: newPath
+      });
       currentNodeId = parentNodeId;
       currentLevelIndex--;
     } else {
       console.warn(
-        `Could not find parent for ${currentLevel} node ${currentNodeId}`
+        `[FIND_COMPLETE_PATH] Could not find parent for ${currentLevel} node ${currentNodeId}`
       );
       break;
     }
   }
 
+  console.log('[FIND_COMPLETE_PATH] Final complete path:', newPath);
   return newPath;
 };
 
