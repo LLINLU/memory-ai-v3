@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Quote, Calendar, Star } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -112,28 +112,61 @@ export const PaperCard = ({
         {/* Information Cards - Above Title */}
         <div className="flex gap-1 flex-wrap">
           {citations !== undefined && (
-            <Card className="bg-gray-50 border-gray-200 shadow-none">
-              <CardContent className="px-2 py-1">
-                <div className="text-xs text-gray-500">Citations</div>
-                <div className="text-xs text-gray-800">{citations}</div>
-              </CardContent>
-            </Card>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Card className="bg-gray-50 border-gray-200 shadow-none cursor-default">
+                    <CardContent className="px-2 py-1">
+                      <div className="flex items-center gap-1">
+                        <Quote size={12} className="text-gray-600" />
+                        <span className="text-xs text-gray-800">{citations}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Citations {citations}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
           
-          <Card className="bg-gray-50 border-gray-200 shadow-none">
-            <CardContent className="px-2 py-1">
-              <div className="text-xs text-gray-500">Published</div>
-              <div className="text-xs text-gray-800">{date}</div>
-            </CardContent>
-          </Card>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Card className="bg-gray-50 border-gray-200 shadow-none cursor-default">
+                  <CardContent className="px-2 py-1">
+                    <div className="flex items-center gap-1">
+                      <Calendar size={12} className="text-gray-600" />
+                      <span className="text-xs text-gray-800">{date}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Published {date}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           
           {score !== 0 && (
-            <Card className="bg-gray-50 border-gray-200 shadow-none">
-              <CardContent className="px-2 py-1">
-                <div className="text-xs text-gray-500">Relevance</div>
-                <div className="text-xs text-gray-800">{score.toFixed(4)}</div>
-              </CardContent>
-            </Card>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Card className="bg-gray-50 border-gray-200 shadow-none cursor-default">
+                    <CardContent className="px-2 py-1">
+                      <div className="flex items-center gap-1">
+                        <Star size={12} className="text-gray-600" />
+                        <span className="text-xs text-gray-800">{score.toFixed(4)}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Relevance {score.toFixed(4)}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
         </div>
 
