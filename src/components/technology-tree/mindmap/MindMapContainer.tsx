@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from "react";
+
+import React, { useMemo, useState, useEffect } from "react";
 import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
 import { MindMapConnections } from "./MindMapConnections";
@@ -123,6 +124,19 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     resetView,
     getTransform,
   } = usePanZoom(containerWidth, containerHeight);
+
+  // Reset view when new tree data is loaded (new search/regeneration)
+  useEffect(() => {
+    // Only reset if we have actual tree data
+    if (level1Items && level1Items.length > 0) {
+      // Add a small delay to ensure the mindmap data has been fully processed
+      const timeoutId = setTimeout(() => {
+        resetView();
+      }, 100);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [query, level1Items?.length, resetView]); // Reset when query changes or when level1Items count changes
 
   const toggleLayout = () => {
     setLayoutDirection(prev => prev === 'horizontal' ? 'vertical' : 'horizontal');
