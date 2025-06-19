@@ -50,7 +50,7 @@ export const ImplementationCard = ({
         <div className="flex justify-start mb-2">
           <Badge
             className={cn(
-              `${badgeColor} ${badgeTextColor} border-0 font-normal`
+              `${badgeColor} ${badgeTextColor} border-0 font-normal pointer-events-none`
             )}
           >
             {releases}リリース
