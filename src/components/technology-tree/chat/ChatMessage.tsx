@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { NodeSuggestion } from "@/types/chat";
@@ -42,11 +41,21 @@ export const ChatMessage = ({
         <p key={i} className="text-base mb-2 whitespace-pre-line">{content}</p>
       ));
     }
+    
+    // Replace the specific text when rendering content
+    let content = message.content;
+    if (typeof content === 'string') {
+      content = content.replace(
+        /1️⃣ 選択したアイテムが各レベルの一番上に移動して表示されます。\n2️⃣ 関連するサブカテゴリが次のレベルに表示されます。/g,
+        '1️⃣ まず、興味のあるシナリオを選択してください。\n2️⃣ 次に、カードの横にあるボタンをクリックして次のレベルを表示します。'
+      );
+    }
+    
     return <p className={cn(
       "whitespace-pre-line",
       message.type === 'welcome' ? 'text-lg text-blue-800 mb-4' : 'text-base'
     )}>
-      {message.content}
+      {content}
     </p>;
   };
   
