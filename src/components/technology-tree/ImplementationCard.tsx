@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -107,14 +106,16 @@ export const ImplementationCard = ({
           )}
         </div>
       )}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={handleSave}
-        className="w-full mt-2 text-gray-500 hover:text-gray-700"
-      >
-        保存
-      </Button>
+      <div className="flex justify-center">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleSave}
+          className="mt-2 bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 px-6"
+        >
+          保存
+        </Button>
+      </div>
     </div>
   );
 };
