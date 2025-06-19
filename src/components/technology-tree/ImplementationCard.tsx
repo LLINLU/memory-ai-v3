@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -45,7 +46,7 @@ export const ImplementationCard = ({
   return (
     <div className="bg-white p-4 rounded-lg border border-gray-200">
       <div className="mb-2">
-        <div className="flex justify-end mb-2">
+        <div className="flex justify-start mb-2">
           <Badge
             className={cn(
               `${badgeColor} ${badgeTextColor} border-0 font-normal`
