@@ -1,4 +1,5 @@
 
+
 import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -79,7 +80,7 @@ export const ImplementationCard = ({
               <a
                 key={index}
                 href={release.url}
-                className="block text-sm text-blue-600 hover:underline"
+                className="block text-sm text-blue-600"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -90,7 +91,7 @@ export const ImplementationCard = ({
           {hasMoreReleases && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mt-1"
+              className="flex items-center gap-1 text-sm text-gray-600 mt-1"
             >
               {isExpanded ? (
                 <>
@@ -112,7 +113,7 @@ export const ImplementationCard = ({
           variant="outline"
           size="sm"
           onClick={handleSave}
-          className="mt-2 bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 px-6"
+          className="mt-2 bg-gray-50 text-gray-600 border-gray-200 px-6"
         >
           保存
         </Button>
@@ -120,3 +121,4 @@ export const ImplementationCard = ({
     </div>
   );
 };
+
