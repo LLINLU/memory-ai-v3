@@ -1,4 +1,3 @@
-
 import React from "react";
 import { LevelColumnHeader } from "./components/LevelColumnHeader";
 import { LevelColumnContent } from "./components/LevelColumnContent";
@@ -111,6 +110,20 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
     }
   };
 
+  const handleAddClick = (e: React.MouseEvent, item: LevelItem) => {
+    e.stopPropagation();
+    console.log("Add button clicked for item:", item.name);
+    // Open add dialog for this specific item's level
+    openAddDialog();
+  };
+
+  const handleAiAssistClick = (e: React.MouseEvent, item: LevelItem) => {
+    e.stopPropagation();
+    console.log("AI Assistant button clicked for item:", item.name);
+    // TODO: Integrate with AI chat functionality
+    // This could open a chat dialog or trigger AI suggestions for this node
+  };
+
   const handleSaveEdit = () => {
     if (editingNode && onEditNode) {
       onEditNode(editingNode.id, {
@@ -166,6 +179,8 @@ export const LevelColumn: React.FC<LevelColumnProps> = ({
         onNodeClick={onNodeClick}
         onEditClick={handleEditClick}
         onDeleteClick={handleDeleteClick}
+        onAddClick={handleAddClick}
+        onAiAssistClick={handleAiAssistClick}
         levelNumber={levelNumber}
         showDescriptions={showDescriptions}
         shouldShowAddButton={shouldShowAddButton()}

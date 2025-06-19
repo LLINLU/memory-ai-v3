@@ -19,6 +19,8 @@ interface LevelColumnContentProps {
   onNodeClick: (nodeId: string) => void;
   onEditClick: (e: React.MouseEvent, item: LevelItem) => void;
   onDeleteClick: (e: React.MouseEvent, nodeId: string) => void;
+  onAddClick: (e: React.MouseEvent, item: LevelItem) => void;
+  onAiAssistClick: (e: React.MouseEvent, item: LevelItem) => void;
   levelNumber: number;
   showDescriptions: boolean;
   shouldShowAddButton: boolean;
@@ -34,6 +36,8 @@ export const LevelColumnContent: React.FC<LevelColumnContentProps> = ({
   onNodeClick,
   onEditClick,
   onDeleteClick,
+  onAddClick,
+  onAiAssistClick,
   levelNumber,
   showDescriptions,
   shouldShowAddButton,
@@ -66,6 +70,8 @@ export const LevelColumnContent: React.FC<LevelColumnContentProps> = ({
           onClick={() => onNodeClick(item.id)}
           onEditClick={(e) => onEditClick(e, item)}
           onDeleteClick={(e) => handleDeleteClick(e, item.id)}
+          onAddClick={(e) => onAddClick(e, item)}
+          onAiAssistClick={(e) => onAiAssistClick(e, item)}
           level={levelNumber}
           showDescription={showDescriptions}
           subNodeCount={getSubNodeCount(item.id)}

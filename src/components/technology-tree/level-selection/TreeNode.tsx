@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { NodeActions } from './node-components/NodeActions';
 import { NodeContent } from './node-components/NodeContent';
@@ -17,6 +16,8 @@ interface TreeNodeProps {
   onClick: () => void;
   onEditClick: (e: React.MouseEvent) => void;
   onDeleteClick: (e: React.MouseEvent) => void;
+  onAddClick: (e: React.MouseEvent) => void;
+  onAiAssistClick: (e: React.MouseEvent) => void;
   level?: number;
   showDescription?: boolean;
   subNodeCount?: number;
@@ -29,6 +30,8 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   onClick,
   onEditClick,
   onDeleteClick,
+  onAddClick,
+  onAiAssistClick,
   level,
   showDescription = false,
   subNodeCount = 0,
@@ -93,7 +96,9 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
             <NodeActions 
               itemName={item.name} 
               onEditClick={onEditClick} 
-              onDeleteClick={onDeleteClick} 
+              onDeleteClick={onDeleteClick}
+              onAddClick={onAddClick}
+              onAiAssistClick={onAiAssistClick}
             />
           </div>
         )}
