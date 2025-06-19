@@ -6,11 +6,9 @@ interface MindMapLegendProps {
   treeMode?: string;
 }
 
-export const MindMapLegend: React.FC<MindMapLegendProps> = ({
+const MindMapLegendComponent: React.FC<MindMapLegendProps> = ({
   treeMode,
 }) => {
-  console.log('MindMapLegend: treeMode received:', treeMode);
-  
   // Define static legend labels based on framework
   const getLegendLabels = () => {
     if (treeMode === "FAST") {
@@ -36,8 +34,8 @@ export const MindMapLegend: React.FC<MindMapLegendProps> = ({
   const legendItems = getLegendLabels();
 
   return (
-    <div className="absolute bottom-4 left-4 z-50">
-      <div className="bg-white border-2 border-gray-300 rounded-lg shadow-xl p-4 min-w-[200px]">
+    <div className="absolute bottom-4 left-4 z-[60] pointer-events-none">
+      <div className="bg-white border-2 border-gray-300 rounded-lg shadow-xl p-4 min-w-[200px] pointer-events-auto">
         <div className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
           Legend
         </div>
@@ -61,3 +59,6 @@ export const MindMapLegend: React.FC<MindMapLegendProps> = ({
     </div>
   );
 };
+
+// Memoize the component to prevent unnecessary re-renders
+export const MindMapLegend = React.memo(MindMapLegendComponent);
