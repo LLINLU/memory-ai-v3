@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 import {
@@ -111,7 +112,7 @@ export const PaperCard = ({
         {/* Information Cards - Above Title */}
         <div className="flex gap-1 flex-wrap">
           {citations !== undefined && (
-            <Card className="bg-gray-50 border-gray-200">
+            <Card className="bg-gray-50 border-gray-200 shadow-none">
               <CardContent className="px-2 py-1">
                 <div className="text-xs text-gray-500">Citations</div>
                 <div className="text-xs text-gray-800">{citations}</div>
@@ -119,7 +120,7 @@ export const PaperCard = ({
             </Card>
           )}
           
-          <Card className="bg-gray-50 border-gray-200">
+          <Card className="bg-gray-50 border-gray-200 shadow-none">
             <CardContent className="px-2 py-1">
               <div className="text-xs text-gray-500">Published</div>
               <div className="text-xs text-gray-800">{date}</div>
@@ -127,7 +128,7 @@ export const PaperCard = ({
           </Card>
           
           {score !== 0 && (
-            <Card className="bg-gray-50 border-gray-200">
+            <Card className="bg-gray-50 border-gray-200 shadow-none">
               <CardContent className="px-2 py-1">
                 <div className="text-xs text-gray-500">Relevance</div>
                 <div className="text-xs text-gray-800">{score.toFixed(4)}</div>
