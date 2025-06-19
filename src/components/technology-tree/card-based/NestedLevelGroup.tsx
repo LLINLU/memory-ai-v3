@@ -1,5 +1,7 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 import { ExpandableNode } from './ExpandableNode';
 import { getLevelBadgeStyle } from '../utils/levelColors';
 
@@ -206,6 +208,18 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     return false;
   };
 
+  const handleAddClick = () => {
+    // Create custom event to add node with the level information
+    const addNodeEvent = new CustomEvent("add-node", {
+      detail: {
+        levelNumber: currentLevel.toString(),
+        title: "",
+        description: "",
+      },
+    });
+    document.dispatchEvent(addNodeEvent);
+  };
+
   const renderNode = (item: LevelItem) => {
     const hasChildren = hasChildrenForNode(item);
     const childLevelKey = `${levelKey}-${item.id}`;
@@ -279,10 +293,18 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
 
   return (
     <div className="space-y-2">
-      <div className="mb-3">
+      <div className="mb-3 flex items-center gap-2">
         <Badge variant="outline" className={`text-xs ${getLevelBadgeStyle(currentLevel)}`}>
           {getLevelLabel(currentLevel)}
         </Badge>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleAddClick}
+          className="h-6 w-6 p-0 hover:bg-gray-100"
+        >
+          <Plus className="h-3 w-3" />
+        </Button>
       </div>
       {items.map(renderNode)}
     </div>
