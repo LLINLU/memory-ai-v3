@@ -41,7 +41,8 @@ export const isNodeLoading = (nodeId: string): boolean => {
 };
 
 /**
- * Check if a node already has enriched data
+ * Check if a node already has BOTH papers AND use cases (complete enriched data)
+ * Returns true only if both types exist - if only one type exists, enrichment should still run
  */
 export const hasNodeEnrichedData = async (nodeId: string): Promise<boolean> => {
   try {
@@ -56,14 +57,14 @@ export const hasNodeEnrichedData = async (nodeId: string): Promise<boolean> => {
       supabase.from('node_use_cases').select('id').eq('node_id', nodeId).limit(1)
     ]);
 
-    const hasData = (papersResult.data && papersResult.data.length > 0) || 
-                   (useCasesResult.data && useCasesResult.data.length > 0);
+    const hasCompleteData = (papersResult.data && papersResult.data.length > 0) && 
+                           (useCasesResult.data && useCasesResult.data.length > 0);
 
-    if (hasData) {
+    if (hasCompleteData) {
       enrichedNodes.add(nodeId);
     }
 
-    return hasData;
+    return hasCompleteData;
   } catch (error) {
     console.error('[NODE_ENRICHMENT] Error checking existing data:', error);
     return false;
