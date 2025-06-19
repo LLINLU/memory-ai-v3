@@ -8,18 +8,15 @@ interface SidebarControlsProps {
   toggleSidebar: () => void;
   isExpanded: boolean;
   toggleExpand: () => void;
-  selectedNodeTitle?: string;
 }
 
 export const SidebarControls = ({
   toggleSidebar,
   isExpanded,
-  toggleExpand,
-  selectedNodeTitle
+  toggleExpand
 }: SidebarControlsProps) => {
   return (
-    <div className="flex items-center justify-between px-4 pt-4">
-      <h2 className="font-bold" style={{ fontSize: "16px" }}>{selectedNodeTitle || "結果"}</h2>
+    <div className="flex items-center justify-end px-4 pt-4">
       <div className="flex items-center gap-2">
         <Button 
           variant="ghost" 

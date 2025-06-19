@@ -7,9 +7,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, CirclePlus, Copy } from "lucide-react";
+import { MessageSquare, CirclePlus, Copy, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { NodeLoadingIndicator } from "../level-selection/node-components/NodeLoadingIndicator";
+import { NodeEnrichmentIndicator } from "../level-selection/node-components/NodeEnrichmentIndicator";
+import { isNodeLoading } from "@/services/nodeEnrichmentService";
 
 interface MindMapNodeProps {
   node: MindMapNode;
@@ -110,14 +112,16 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
   };
   // Special styling for root node
   const isRoot = node.level === 0;
-  const rootCursor = isRoot ? "cursor-default" : "cursor-pointer";
-  // Check if this node is being generated (children_count = 0 for TED scenario nodes only)
+  const rootCursor = isRoot ? "cursor-default" : "cursor-pointer";  // Check if this node is being generated (children_count = 0 for TED scenario nodes only)
   // Only Level 1 nodes (scenarios) should show generating status when children_count = 0
   // Level 4+ nodes naturally have children_count = 0 as leaf nodes
   const isGenerating =
     typeof node.children_count === "number" && 
     node.children_count === 0 && 
     node.level === 1; // Only show generating for Level 1 (scenario) nodes
+
+  // Check if this node is being enriched (論文・事例検索中)
+  const isEnriching = isNodeLoading(node.id);
 
   const nodeContent = (
     <div
@@ -129,17 +133,16 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
         height: getNodeHeight(),
       }}
       onClick={handleClick}
-    >
-      <div
+    >      <div
         className={`w-full h-full rounded-lg border-2 p-2 flex ${
-          isGenerating ? "flex-col" : "items-center"
+          isGenerating || isEnriching ? "flex-col" : "items-center"
         } justify-center ${getNodeStyling()}`}
       >
         <div
           className={`${
             isRoot ? "text-base" : "text-sm"
           } font-medium break-words leading-tight text-center ${
-            isGenerating ? "mb-1" : ""
+            isGenerating || isEnriching ? "mb-1" : ""
           }`}
           title={node.name}
         >
@@ -148,6 +151,10 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
         {isGenerating && (
           <div className="mt-1">
             <NodeLoadingIndicator size="sm" />
+          </div>
+        )}        {isEnriching && (
+          <div className="mt-1">
+            <NodeEnrichmentIndicator size="sm" />
           </div>
         )}
       </div>

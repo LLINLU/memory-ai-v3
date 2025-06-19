@@ -3,6 +3,9 @@ import { NodeActions } from './node-components/NodeActions';
 import { NodeContent } from './node-components/NodeContent';
 import { getNodeStyle } from './node-utils/nodeStyles';
 import { TreeNode as TreeNodeType } from '@/types/tree';
+import { Loader2 } from 'lucide-react';
+import { isNodeLoading } from '@/services/nodeEnrichmentService';
+import { NodeEnrichmentIndicator } from './node-components/NodeEnrichmentIndicator';
 import {
   Tooltip,
   TooltipContent,
@@ -54,10 +57,12 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
     
     return () => window.removeEventListener('resize', updateWidth);
   }, []);
-
   const nodeStyleClass = getNodeStyle(item, isSelected, level);
   // Force white text for selected nodes to ensure visibility
   const descriptionTextColor = isSelected ? "text-gray-100" : "text-gray-600";
+
+  // Check if this node is being enriched
+  const isEnriching = isNodeLoading(item.id);
 
   // Determine if tooltip should be shown
   const shouldShowTooltip = !isSelected && !isLastLevel && subNodeCount > 0;
@@ -82,11 +87,16 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
           isHovered={isHovered} 
           level={level} 
         />
-        
-        {/* Show description when showDescription is true */}
+          {/* Show description when showDescription is true */}
         {showDescription && item.description && (
           <div className={`mt-3 text-sm ${descriptionTextColor} border-t pt-2 border-gray-100 overflow-hidden`}>
             {item.description}
+          </div>
+        )}
+          {/* Show enrichment loading indicator */}
+        {isEnriching && (
+          <div className="mt-2">
+            <NodeEnrichmentIndicator size="sm" />
           </div>
         )}
         

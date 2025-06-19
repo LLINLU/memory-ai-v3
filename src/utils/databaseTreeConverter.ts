@@ -103,16 +103,9 @@ const createNodeInfoString = (
   nodeId?: string
 ): string => {
   if (enrichmentData && (enrichmentData.paperCount > 0 || enrichmentData.useCaseCount > 0)) {
-    console.log(
-      `[NODE INFO] Node ${nodeId} has ${enrichmentData.paperCount} papers, ${enrichmentData.useCaseCount} use cases`
-    );
     return `${enrichmentData.paperCount}論文・${enrichmentData.useCaseCount}事例`;
   }
   // Show 0 papers and use cases if no enriched data is available
-  console.log(
-    `[NODE INFO] Node ${nodeId} showing 0 papers/use cases - enrichmentData:`,
-    enrichmentData
-  );
   return `0論文・0事例`;
 };
 
@@ -385,25 +378,10 @@ const convertTedTreeToAppFormat = async (
   // Extract level 1 items (Scenario nodes - children of root)
   const level1Nodes = treeStructure.root.children || [];
 
-  console.log(
-    `[CONVERTER DEBUG TED] Found ${level1Nodes.length} level 1 nodes`
-  );
-  console.log(
-    `[CONVERTER DEBUG TED] Level 1 nodes:`,
-    level1Nodes.map((node) => ({
-      name: node.name,
-      axis: node.axis,
-      children_count: node.children_count,
-      id: node.id,
-    }))
-  );
 
   const level1Items = level1Nodes
     .filter((node) => node.axis === "Scenario")
     .map((node, index) => {
-      console.log(
-        `[CONVERTER DEBUG TED] Converting scenario: ${node.name} with children_count: ${node.children_count}`
-      );
       const enrichmentData = enrichmentMap.get(node.id);
       return {
         id: node.id,

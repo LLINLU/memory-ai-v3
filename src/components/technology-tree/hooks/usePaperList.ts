@@ -49,7 +49,7 @@ export const usePaperList = (
   const activeSortBy = externalSortBy || sortBy;
 
   // Use real data from database when node is selected
-  const { papers: realPapers, loading } = useEnrichedData(
+  const { papers: realPapers, loadingPapers } = useEnrichedData(
     selectedNodeId || null
   );
   // Transform real data to match the expected format for PaperCard
@@ -258,7 +258,7 @@ export const usePaperList = (
     setPageSize,
     totalPages,
     refreshKey,
-    loading,
+    loading: loadingPapers,
     onFilterChange: handleFilterChange,
     onSortChange: handleSortChange,
   };

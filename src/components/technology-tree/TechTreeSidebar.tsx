@@ -70,7 +70,6 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
           toggleSidebar={toggleSidebar}
           isExpanded={isExpanded}
           toggleExpand={toggleExpand}
-          selectedNodeTitle={selectedNodeTitle}
         />
 
         <div className="flex-1 overflow-hidden">
