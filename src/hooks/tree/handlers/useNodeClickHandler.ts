@@ -39,12 +39,12 @@ export const useNodeClickHandler = (
         // Check if node already has data (async but non-blocking for UI)
         hasNodeEnrichedData(nodeId).then((hasData) => {
           if (hasData) {
-            console.log('[NODE_ENRICHMENT] Node already has data, skipping API call:', nodeId);
+            console.log('[NODE_ENRICHMENT] Node already has complete data (both papers and use cases), skipping API call:', nodeId);
             // Just trigger refresh to show existing data (this will turn off loading)
             triggerEnrichmentRefresh(nodeId);
           } else {
             // Start enrichment process in background
-            console.log('[NODE_ENRICHMENT] Starting enrichment for new node:', nodeId);
+            console.log('[NODE_ENRICHMENT] Starting enrichment for node (may have partial data):', nodeId);
             
             // Get node details from the tree data 
             const { title: nodeTitle, description: nodeDescription } = getNodeDetails(level, nodeId, initialPath, treeData);
