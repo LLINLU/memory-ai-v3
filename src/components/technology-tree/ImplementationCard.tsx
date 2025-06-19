@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -73,7 +74,7 @@ export const ImplementationCard = ({
           <div className="text-sm font-medium text-gray-700">
             プレスリリース：
           </div>
-          <div className="pl-4 space-y-1.5">
+          <div className="space-y-1.5">
             {displayedReleases.map((release, index) => (
               <a
                 key={index}
