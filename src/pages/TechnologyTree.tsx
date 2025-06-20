@@ -21,6 +21,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useChatInitialization } from "@/hooks/tree/useChatInitialization";
 import { useNodeSelectionEffect } from "@/hooks/tree/useNodeSelectionEffect";
 import { FallbackAlert } from "@/components/technology-tree/FallbackAlert";
+import { enrichmentEventBus } from "@/hooks/useEnrichedData";
 
 const TechnologyTree = () => {
   const location = useLocation();
@@ -77,6 +78,50 @@ const TechnologyTree = () => {
     setDatabaseTreeData(null);
     setHasLoadedDatabase(false);
   }, [locationState?.treeId]);
+
+  // Listen for enrichment completion events and refresh tree data
+  useEffect(() => {
+    if (!locationState?.treeId || !databaseTreeData) return;
+
+    const refreshTreeData = async () => {
+      try {
+        console.log('[TREE_REFRESH] Refreshing tree data due to enrichment completion');
+        const result = await loadTreeFromDatabase(locationState.treeId!);
+        if (result?.treeStructure) {
+          const convertedData = await convertDatabaseTreeToAppFormat(
+            result.treeStructure,
+            {
+              description: result.treeData?.description,
+              search_theme: result.treeData?.search_theme,
+              name: result.treeData?.name,
+              mode: (result.treeData as any)?.mode,
+            }
+          );
+          if (convertedData) {
+            // Add timestamp to force React re-render
+            const timestampedData = {
+              ...convertedData,
+              _timestamp: Date.now(),
+            };
+            setDatabaseTreeData(timestampedData);
+            console.log('[TREE_REFRESH] Tree data refreshed successfully');
+          }
+        }
+      } catch (error) {
+        console.error('[TREE_REFRESH] Error refreshing tree data:', error);
+      }
+    };
+
+    // Subscribe to enrichment refresh events and refresh immediately
+    const unsubscribe = enrichmentEventBus.subscribe((nodeId: string) => {
+      console.log('[TREE_REFRESH] Enrichment event received for node:', nodeId, '- refreshing tree data immediately');
+      refreshTreeData();
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [locationState?.treeId, databaseTreeData, loadTreeFromDatabase]);
 
   const { scenario, handleEditScenario, searchMode } = useScenarioState({
     initialScenario: locationState?.scenario,

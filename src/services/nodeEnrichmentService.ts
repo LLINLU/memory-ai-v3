@@ -110,64 +110,69 @@ export const callNodeEnrichmentStreaming = async (
   try {
     console.log('[NODE_ENRICHMENT_STREAMING] Starting streaming enrichment for:', nodeId);
 
-    // Get the Supabase URL and anon key for direct fetch
-    const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-    const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      throw new Error('Missing Supabase configuration');
-    }
-
-    const response = await fetch(`${SUPABASE_URL}/functions/v1/node-enrichment`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-      },
-      body: JSON.stringify({
+    // Use the same pattern as other edge functions
+    const { data, error } = await supabase.functions.invoke('node-enrichment', {
+      body: {
         ...params,
         streaming: true
-      })
+      }
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    if (error) {
+      console.error('[NODE_ENRICHMENT_STREAMING] Edge function error:', error);
+      callback({
+        type: 'error',
+        error: error.message || 'Unknown error occurred',
+        nodeId,
+        timestamp: new Date().toISOString()
+      });
+      return;
     }
 
-    if (!response.body) {
-      throw new Error('No response body');
+    if (!data) {
+      callback({
+        type: 'error',
+        error: 'No data returned from Edge Function',
+        nodeId,
+        timestamp: new Date().toISOString()
+      });
+      return;
     }
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6));
-              callback(data);
-              
-              // Mark as enriched when complete
-              if (data.type === 'complete') {
-                enrichedNodes.add(nodeId);
-              }
-            } catch (parseError) {
-              console.error('[NODE_ENRICHMENT_STREAMING] Error parsing chunk:', parseError);
-            }
-          }
-        }
-      }
-    } finally {
-      reader.releaseLock();
+    // Simulate streaming by calling callbacks to trigger UI refreshes
+    // The actual data is saved to database by the edge function
+    console.log('[NODE_ENRICHMENT_STREAMING] Edge function completed, triggering callbacks');
+    
+    // Check what was actually saved and trigger appropriate callbacks
+    if (data.results?.papers?.saved && data.results.papers.count > 0) {
+      console.log('[NODE_ENRICHMENT_STREAMING] Papers were saved, triggering papers callback');
+      callback({
+        type: 'papers',
+        data: { count: data.results.papers.count },
+        nodeId,
+        timestamp: new Date().toISOString()
+      });
     }
+
+    if (data.results?.useCases?.saved && data.results.useCases.count > 0) {
+      console.log('[NODE_ENRICHMENT_STREAMING] Use cases were saved, triggering use cases callback');
+      callback({
+        type: 'useCases',
+        data: { count: data.results.useCases.count },
+        nodeId,
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    console.log('[NODE_ENRICHMENT_STREAMING] Triggering completion callback');
+    callback({
+      type: 'complete',
+      nodeId,
+      timestamp: new Date().toISOString()
+    });
+
+    // Mark as enriched when complete
+    enrichedNodes.add(nodeId);
   } catch (error) {
     console.error('[NODE_ENRICHMENT_STREAMING] Error:', error);
     callback({

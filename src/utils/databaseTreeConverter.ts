@@ -50,6 +50,9 @@ const fetchNodeEnrichmentCounts = async (
   if (nodeIds.length === 0) {
     return enrichmentMap;
   }
+  
+  console.log('[ENRICHMENT_COUNTS] Fetching counts for nodes:', nodeIds);
+  
   // Get paper counts for all nodes
   const { data: paperData, error: paperError } = await supabase
     .from("node_papers" as any)
@@ -61,6 +64,13 @@ const fetchNodeEnrichmentCounts = async (
     .from("node_use_cases" as any)
     .select("node_id")
     .in("node_id", nodeIds);
+
+  console.log('[ENRICHMENT_COUNTS] Query results:', {
+    paperData: paperData?.length || 0,
+    useCaseData: useCaseData?.length || 0,
+    paperError: paperError?.message,
+    useCaseError: useCaseError?.message
+  });
 
   if (paperError || useCaseError) {
     // Hardcode all nodes to have 20 papers and 0 use cases for now
@@ -88,12 +98,17 @@ const fetchNodeEnrichmentCounts = async (
 
     // Create enrichment data for all requested nodes
     nodeIds.forEach((nodeId) => {
+      const paperCount = paperCountMap.get(nodeId) || 0;
+      const useCaseCount = useCaseCountMap.get(nodeId) || 0;
       enrichmentMap.set(nodeId, {
-        paperCount: paperCountMap.get(nodeId) || 0,
-        useCaseCount: useCaseCountMap.get(nodeId) || 0,
+        paperCount,
+        useCaseCount,
       });
+      console.log(`[ENRICHMENT_COUNTS] Node ${nodeId}: ${paperCount} papers, ${useCaseCount} use cases`);
     });
   }
+  
+  console.log('[ENRICHMENT_COUNTS] Final enrichment map size:', enrichmentMap.size);
   return enrichmentMap;
 };
 
