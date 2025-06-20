@@ -610,7 +610,8 @@ serve(async (req) => {
       parentTitles,
       team_id,
       streaming = false, // Add streaming parameter
-    } = requestBody as NodeEnrichmentRequest & { streaming?: boolean };
+      enrichType, // Add enrichType parameter: 'papers', 'useCases', or undefined (both)
+    } = requestBody as NodeEnrichmentRequest & { streaming?: boolean; enrichType?: 'papers' | 'useCases' };
 
     // Validate required parameters
     if (!nodeId || !treeId || !nodeTitle || !query || parentTitles === undefined || parentTitles === null) {
@@ -655,11 +656,25 @@ serve(async (req) => {
       checkPapersExist(sb, nodeId),
       checkUseCasesExist(sb, nodeId),
     ]);
-    const skipPapers = papersExist;
-    const skipUseCases = useCasesExist;
+    
+    // Determine what to skip based on enrichType and existing data
+    let skipPapers = papersExist;
+    let skipUseCases = useCasesExist;
+    
+    if (enrichType === 'papers') {
+      skipUseCases = true; // Only process papers
+    } else if (enrichType === 'useCases') {
+      skipPapers = true; // Only process use cases
+    }
 
     console.log(
-      `[NODE_ENRICHMENT] Pre-flight check for node ${nodeId}:`, { skipPapers, skipUseCases }
+      `[NODE_ENRICHMENT] Pre-flight check for node ${nodeId}:`, { 
+        skipPapers, 
+        skipUseCases, 
+        enrichType: enrichType || 'both',
+        papersExist,
+        useCasesExist 
+      }
     );
 
     console.log(
