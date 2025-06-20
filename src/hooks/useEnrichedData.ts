@@ -35,7 +35,7 @@ interface EnrichedData {
 }
 
 // Global event bus for triggering enriched data refreshes
-const enrichmentEventBus = {
+export const enrichmentEventBus = {
   listeners: new Set<(nodeId: string) => void>(),
   
   subscribe(listener: (nodeId: string) => void) {
@@ -72,6 +72,19 @@ export const triggerEnrichmentRefresh = (nodeId: string) => {
 export const triggerEnrichmentStart = (nodeId: string) => {
   console.log(`[ENRICHMENT_START] Triggering start for node: ${nodeId}`);
   enrichmentStartEventBus.emit(nodeId);
+};
+
+// Export functions to signal specific enrichment starts
+export const triggerPapersStart = (nodeId: string) => {
+  console.log(`[PAPERS_START] Triggering papers start for node: ${nodeId}`);
+  // We'll emit a custom event for papers specifically
+  enrichmentEventBus.emit(`${nodeId}:papers:start`);
+};
+
+export const triggerUseCasesStart = (nodeId: string) => {
+  console.log(`[USECASES_START] Triggering use cases start for node: ${nodeId}`);
+  // We'll emit a custom event for use cases specifically
+  enrichmentEventBus.emit(`${nodeId}:usecases:start`);
 };
 
 export const useEnrichedData = (nodeId: string | null): EnrichedData => {
@@ -111,9 +124,28 @@ export const useEnrichedData = (nodeId: string | null): EnrichedData => {
       }
     });
     
+    // Listen for specific papers and use cases start events
+    const unsubscribePapersStart = enrichmentEventBus.subscribe((eventId) => {
+      if (eventId === `${nodeId}:papers:start`) {
+        console.log(`[useEnrichedData] Papers start triggered for nodeId: ${nodeId}`);
+        setLoadingPapers(true);
+        setInitialLoad(false);
+      }
+    });
+    
+    const unsubscribeUseCasesStart = enrichmentEventBus.subscribe((eventId) => {
+      if (eventId === `${nodeId}:usecases:start`) {
+        console.log(`[useEnrichedData] Use cases start triggered for nodeId: ${nodeId}`);
+        setLoadingUseCases(true);
+        setInitialLoad(false);
+      }
+    });
+    
     return () => {
       unsubscribeRefresh();
       unsubscribeStart();
+      unsubscribePapersStart();
+      unsubscribeUseCasesStart();
     };
   }, [nodeId]);
   useEffect(() => {

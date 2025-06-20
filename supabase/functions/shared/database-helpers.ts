@@ -30,7 +30,7 @@ export async function saveEnrichedDataToDB(
     supabaseClient,
     enrichedNode.id,
     treeId,
-    enrichedNode.useCases,
+    enrichedNode.useCases ?? [],
     teamId
   );
 
@@ -51,6 +51,20 @@ export async function saveNodePapers(
   teamId: string | null
 ): Promise<void> {
   if (papers.length === 0) return;
+
+  // First, delete existing papers for this node to avoid duplicates
+  // This ensures consistency with individual enrichment behavior
+  const { error: deleteError } = await supabaseClient
+    .from("node_papers")
+    .delete()
+    .eq("node_id", nodeId);
+
+  if (deleteError) {
+    console.warn(
+      `[SAVE_PAPERS] Failed to delete existing papers for node ${nodeId}:`,
+      deleteError
+    );
+  }
 
   const papersToInsert = papers.map((paper) => ({
     id: paper.id, // Use API-generated ID directly as primary key
@@ -93,6 +107,20 @@ export async function saveNodeUseCases(
   teamId: string | null
 ): Promise<void> {
   if (useCases.length === 0) return;
+
+  // First, delete existing use cases for this node to avoid duplicates
+  // This ensures consistency with individual enrichment behavior
+  const { error: deleteError } = await supabaseClient
+    .from("node_use_cases")
+    .delete()
+    .eq("node_id", nodeId);
+
+  if (deleteError) {
+    console.warn(
+      `[SAVE_USE_CASES] Failed to delete existing use cases for node ${nodeId}:`,
+      deleteError
+    );
+  }
 
   for (const useCase of useCases) {
     // Insert use case using API-generated ID directly

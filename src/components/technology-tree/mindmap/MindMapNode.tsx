@@ -11,7 +11,7 @@ import { MessageSquare, CirclePlus, Copy, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { NodeLoadingIndicator } from "../level-selection/node-components/NodeLoadingIndicator";
 import { NodeEnrichmentIndicator } from "../level-selection/node-components/NodeEnrichmentIndicator";
-import { isNodeLoading } from "@/services/nodeEnrichmentService";
+import { isNodeLoading, isPapersLoading, isUseCasesLoading } from "@/services/nodeEnrichmentService";
 
 interface MindMapNodeProps {
   node: MindMapNode;
@@ -122,6 +122,11 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
 
   // Check if this node is being enriched (論文・事例検索中)
   const isEnriching = isNodeLoading(node.id);
+  const loadingPapers = isPapersLoading(node.id);
+  const loadingUseCases = isUseCasesLoading(node.id);
+  
+  // Show enrichment indicator if either papers or use cases are loading
+  const showEnrichmentIndicator = loadingPapers || loadingUseCases;
 
   const nodeContent = (
     <div
@@ -135,14 +140,14 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
       onClick={handleClick}
     >      <div
         className={`w-full h-full rounded-lg border-2 p-2 flex ${
-          isGenerating || isEnriching ? "flex-col" : "items-center"
+          isGenerating || showEnrichmentIndicator ? "flex-col" : "items-center"
         } justify-center ${getNodeStyling()}`}
       >
         <div
           className={`${
             isRoot ? "text-base" : "text-sm"
           } font-medium break-words leading-tight text-center ${
-            isGenerating || isEnriching ? "mb-1" : ""
+            isGenerating || showEnrichmentIndicator ? "mb-1" : ""
           }`}
           title={node.name}
         >
@@ -152,9 +157,13 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
           <div className="mt-1">
             <NodeLoadingIndicator size="sm" />
           </div>
-        )}        {isEnriching && (
+        )}        {showEnrichmentIndicator && (
           <div className="mt-1">
-            <NodeEnrichmentIndicator size="sm" />
+            <NodeEnrichmentIndicator 
+              size="sm" 
+              loadingPapers={loadingPapers}
+              loadingUseCases={loadingUseCases}
+            />
           </div>
         )}
       </div>

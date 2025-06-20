@@ -65,9 +65,5 @@ export function getUserDisplayName(userDetails: UserDetails | null, userEmail?: 
     return userDetails.username;
   }
   
-  if (userEmail) {
-    return userEmail.split('@')[0];
-  }
-  
-  return 'ユーザー';
+  return userEmail || 'ユーザー';
 } 
