@@ -2,6 +2,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 // Global state to track loading nodes and prevent duplicate calls
 const loadingNodes = new Set<string>();
+const loadingPapers = new Set<string>();
+const loadingUseCases = new Set<string>();
 const enrichedNodes = new Set<string>();
 
 export interface NodeEnrichmentRequest {
@@ -38,6 +40,20 @@ export type StreamingCallback = (response: StreamingResponse) => void;
  */
 export const isNodeLoading = (nodeId: string): boolean => {
   return loadingNodes.has(nodeId);
+};
+
+/**
+ * Check if papers are currently being loaded for a node
+ */
+export const isPapersLoading = (nodeId: string): boolean => {
+  return loadingPapers.has(nodeId);
+};
+
+/**
+ * Check if use cases are currently being loaded for a node
+ */
+export const isUseCasesLoading = (nodeId: string): boolean => {
+  return loadingUseCases.has(nodeId);
 };
 
 /**
@@ -80,7 +96,7 @@ export const callNodeEnrichmentStreaming = async (
 ): Promise<void> => {
   const { nodeId } = params;
 
-  // Check if already loading or already has data
+  // Check if already loading
   if (loadingNodes.has(nodeId)) {
     console.log('[NODE_ENRICHMENT_STREAMING] Node already being processed:', nodeId);
     callback({
@@ -92,84 +108,80 @@ export const callNodeEnrichmentStreaming = async (
     return;
   }
 
-  // Check if node already has enriched data
-  const hasExistingData = await hasNodeEnrichedData(nodeId);
-  if (hasExistingData) {
-    console.log('[NODE_ENRICHMENT_STREAMING] Node already has enriched data:', nodeId);
-    callback({
-      type: 'complete',
-      nodeId,
-      timestamp: new Date().toISOString()
-    });
-    return;
-  }
-
   // Mark as loading
   loadingNodes.add(nodeId);
 
   try {
-    console.log('[NODE_ENRICHMENT_STREAMING] Starting streaming enrichment for:', nodeId);
+    console.log('[NODE_ENRICHMENT_STREAMING] Starting selective enrichment for:', nodeId);
 
-    // Use the same pattern as other edge functions
-    const { data, error } = await supabase.functions.invoke('node-enrichment', {
-      body: {
-        ...params,
-        streaming: true
-      }
+    // Check what data already exists
+    const [papersExist, useCasesExist] = await Promise.all([
+      checkPapersExist(nodeId),
+      checkUseCasesExist(nodeId)
+    ]);
+
+    console.log(`[NODE_ENRICHMENT_STREAMING] Data check for ${nodeId}:`, {
+      papersExist,
+      useCasesExist
     });
 
-    if (error) {
-      console.error('[NODE_ENRICHMENT_STREAMING] Edge function error:', error);
-      callback({
-        type: 'error',
-        error: error.message || 'Unknown error occurred',
-        nodeId,
-        timestamp: new Date().toISOString()
-      });
-      return;
-    }
-
-    if (!data) {
-      callback({
-        type: 'error',
-        error: 'No data returned from Edge Function',
-        nodeId,
-        timestamp: new Date().toISOString()
-      });
-      return;
-    }
-
-    // Simulate streaming by calling callbacks to trigger UI refreshes
-    // The actual data is saved to database by the edge function
-    console.log('[NODE_ENRICHMENT_STREAMING] Edge function completed, triggering callbacks');
+    // Only call APIs for data that doesn't exist yet
+    const promises: Promise<void>[] = [];
     
-    // Check what was actually saved and trigger appropriate callbacks
-    if (data.results?.papers?.saved && data.results.papers.count > 0) {
-      console.log('[NODE_ENRICHMENT_STREAMING] Papers were saved, triggering papers callback');
+    if (!papersExist) {
+      console.log('[NODE_ENRICHMENT_STREAMING] Papers missing, calling papers API');
+      loadingPapers.add(nodeId); // Mark papers as loading
+      
+      // Import and trigger papers start event for sidebar
+      import('@/hooks/useEnrichedData').then(({ triggerPapersStart }) => {
+        triggerPapersStart(nodeId);
+      });
+      
+      promises.push(callPapersEnrichment(params, callback));
+    } else {
+      console.log('[NODE_ENRICHMENT_STREAMING] Papers already exist, skipping papers API');
+    }
+
+    if (!useCasesExist) {
+      console.log('[NODE_ENRICHMENT_STREAMING] Use cases missing, calling use cases API');
+      loadingUseCases.add(nodeId); // Mark use cases as loading
+      
+      // Import and trigger use cases start event for sidebar
+      import('@/hooks/useEnrichedData').then(({ triggerUseCasesStart }) => {
+        triggerUseCasesStart(nodeId);
+      });
+      
+      promises.push(callUseCasesEnrichment(params, callback));
+    } else {
+      console.log('[NODE_ENRICHMENT_STREAMING] Use cases already exist, skipping use cases API');
+    }
+
+    // If both already exist, trigger completion immediately
+    if (promises.length === 0) {
+      console.log('[NODE_ENRICHMENT_STREAMING] All data already exists, triggering completion');
       callback({
-        type: 'papers',
-        data: { count: data.results.papers.count },
+        type: 'complete',
         nodeId,
         timestamp: new Date().toISOString()
       });
+      enrichedNodes.add(nodeId);
+      return;
     }
 
-    if (data.results?.useCases?.saved && data.results.useCases.count > 0) {
-      console.log('[NODE_ENRICHMENT_STREAMING] Use cases were saved, triggering use cases callback');
+    // Wait for any missing data to be fetched
+    await Promise.allSettled(promises);
+
+    console.log('[NODE_ENRICHMENT_STREAMING] All missing data processed');
+    
+    // Add a small delay to ensure all callbacks have been processed
+    setTimeout(() => {
+      console.log('[NODE_ENRICHMENT_STREAMING] Triggering final completion callback');
       callback({
-        type: 'useCases',
-        data: { count: data.results.useCases.count },
+        type: 'complete',
         nodeId,
         timestamp: new Date().toISOString()
       });
-    }
-
-    console.log('[NODE_ENRICHMENT_STREAMING] Triggering completion callback');
-    callback({
-      type: 'complete',
-      nodeId,
-      timestamp: new Date().toISOString()
-    });
+    }, 100);
 
     // Mark as enriched when complete
     enrichedNodes.add(nodeId);
@@ -184,6 +196,158 @@ export const callNodeEnrichmentStreaming = async (
   } finally {
     // Always remove from loading set
     loadingNodes.delete(nodeId);
+  }
+};
+
+// Helper function to check if papers exist for a node
+const checkPapersExist = async (nodeId: string): Promise<boolean> => {
+  try {
+    const { count, error } = await supabase
+      .from("node_papers")
+      .select("id", { count: "exact", head: true })
+      .eq("node_id", nodeId);
+
+    if (error) {
+      console.warn(`[CHECK_PAPERS] Error checking papers for ${nodeId}:`, error);
+      return false;
+    }
+
+    return (count ?? 0) > 0;
+  } catch (error) {
+    console.error('[CHECK_PAPERS] Error:', error);
+    return false;
+  }
+};
+
+// Helper function to check if use cases exist for a node
+const checkUseCasesExist = async (nodeId: string): Promise<boolean> => {
+  try {
+    const { count, error } = await supabase
+      .from("node_use_cases")
+      .select("id", { count: "exact", head: true })
+      .eq("node_id", nodeId);
+
+    if (error) {
+      console.warn(`[CHECK_USECASES] Error checking use cases for ${nodeId}:`, error);
+      return false;
+    }
+
+    return (count ?? 0) > 0;
+  } catch (error) {
+    console.error('[CHECK_USECASES] Error:', error);
+    return false;
+  }
+};
+
+// Helper function to enrich papers using dedicated papers endpoint
+const callPapersEnrichment = async (
+  params: NodeEnrichmentRequest,
+  callback: StreamingCallback
+): Promise<void> => {
+  const { nodeId } = params;
+  
+  try {
+    console.log('[PAPERS_ENRICHMENT] Starting papers enrichment for:', nodeId);
+    
+    const { data, error } = await supabase.functions.invoke('node-enrichment-papers', {
+      body: params
+    });
+
+    if (error) {
+      console.error('[PAPERS_ENRICHMENT] Papers enrichment error:', error);
+      callback({
+        type: 'error',
+        error: `Papers enrichment failed: ${error.message}`,
+        nodeId,
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+
+    if (data?.results?.papers?.saved) {
+      console.log('[PAPERS_ENRICHMENT] Papers saved successfully, triggering callback');
+      callback({
+        type: 'papers',
+        data: { count: data.results.papers.count },
+        nodeId,
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      console.log('[PAPERS_ENRICHMENT] Papers response received but not triggering callback:', {
+        hasResults: !!data?.results,
+        hasPapers: !!data?.results?.papers,
+        papersSaved: data?.results?.papers?.saved,
+        papersCount: data?.results?.papers?.count,
+        fullData: data
+      });
+    }
+  } catch (error) {
+    console.error('[PAPERS_ENRICHMENT] Error:', error);
+    callback({
+      type: 'error',
+      error: `Papers enrichment failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      nodeId,
+      timestamp: new Date().toISOString()
+    });
+  } finally {
+    // Always remove papers loading state
+    loadingPapers.delete(nodeId);
+  }
+};
+
+// Helper function to enrich use cases using dedicated use cases endpoint
+const callUseCasesEnrichment = async (
+  params: NodeEnrichmentRequest,
+  callback: StreamingCallback
+): Promise<void> => {
+  const { nodeId } = params;
+  
+  try {
+    console.log('[USECASES_ENRICHMENT] Starting use cases enrichment for:', nodeId);
+    
+    const { data, error } = await supabase.functions.invoke('node-enrichment-usecases', {
+      body: params
+    });
+
+    if (error) {
+      console.error('[USECASES_ENRICHMENT] Use cases enrichment error:', error);
+      callback({
+        type: 'error',
+        error: `Use cases enrichment failed: ${error.message}`,
+        nodeId,
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+
+    if (data?.results?.useCases?.saved) {
+      console.log('[USECASES_ENRICHMENT] Use cases saved successfully, triggering callback');
+      callback({
+        type: 'useCases',
+        data: { count: data.results.useCases.count },
+        nodeId,
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      console.log('[USECASES_ENRICHMENT] Use cases response received but not triggering callback:', {
+        hasResults: !!data?.results,
+        hasUseCases: !!data?.results?.useCases,
+        useCasesSaved: data?.results?.useCases?.saved,
+        useCasesCount: data?.results?.useCases?.count,
+        fullData: data
+      });
+    }
+  } catch (error) {
+    console.error('[USECASES_ENRICHMENT] Error:', error);
+    callback({
+      type: 'error',
+      error: `Use cases enrichment failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      nodeId,
+      timestamp: new Date().toISOString()
+    });
+  } finally {
+    // Always remove use cases loading state
+    loadingUseCases.delete(nodeId);
   }
 };
 

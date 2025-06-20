@@ -4,7 +4,7 @@ import { NodeContent } from './node-components/NodeContent';
 import { getNodeStyle } from './node-utils/nodeStyles';
 import { TreeNode as TreeNodeType } from '@/types/tree';
 import { Loader2 } from 'lucide-react';
-import { isNodeLoading } from '@/services/nodeEnrichmentService';
+import { isNodeLoading, isPapersLoading, isUseCasesLoading } from '@/services/nodeEnrichmentService';
 import { NodeEnrichmentIndicator } from './node-components/NodeEnrichmentIndicator';
 import {
   Tooltip,
@@ -63,6 +63,11 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
 
   // Check if this node is being enriched
   const isEnriching = isNodeLoading(item.id);
+  const loadingPapers = isPapersLoading(item.id);
+  const loadingUseCases = isUseCasesLoading(item.id);
+  
+  // Show enrichment indicator if either papers or use cases are loading
+  const showEnrichmentIndicator = loadingPapers || loadingUseCases;
 
   // Determine if tooltip should be shown
   const shouldShowTooltip = !isSelected && !isLastLevel && subNodeCount > 0;
@@ -94,9 +99,13 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
           </div>
         )}
           {/* Show enrichment loading indicator */}
-        {isEnriching && (
+        {showEnrichmentIndicator && (
           <div className="mt-2">
-            <NodeEnrichmentIndicator size="sm" />
+            <NodeEnrichmentIndicator 
+              size="sm" 
+              loadingPapers={loadingPapers}
+              loadingUseCases={loadingUseCases}
+            />
           </div>
         )}
         
