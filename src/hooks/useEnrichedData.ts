@@ -35,7 +35,7 @@ interface EnrichedData {
 }
 
 // Global event bus for triggering enriched data refreshes
-const enrichmentEventBus = {
+export const enrichmentEventBus = {
   listeners: new Set<(nodeId: string) => void>(),
   
   subscribe(listener: (nodeId: string) => void) {
