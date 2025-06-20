@@ -409,46 +409,39 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
     console.error(`[STEP 2 INTERNAL] Full response:`, parsedResponse);
     throw new Error("Model returned malformed subtree");
   }
-  /*──────── Python API Enrichment ────────*/
+  /*──────── Save Bare Tree Structure First ────────*/
   console.log(
-    `=== Calling both Papers and Use Cases APIs: ${scenarioName} ===`
+    `=== Saving bare tree structure for scenario: ${scenarioName} ===`
   );
 
   const subtreeWithIds = assignIdsToSubtree(purposeNodes);
 
-  const scenarioTreeInput = {
-    treeId,
-    scenarioNode: {
-      id: scenarioId,
-      title: scenarioName,
-      description: scenarioDescription,
-      level: 1,
-      children: subtreeWithIds,
-    },
+  // Helper function to find node in subtree by title
+  const findNodeInSubtree = (nodes: any[], title: string): any => {
+    for (const node of nodes) {
+      if (node.title === title) {
+        return node;
+      }
+      if (node.children && node.children.length > 0) {
+        const found = findNodeInSubtree(node.children, title);
+        if (found) return found;
+      }
+    }
+    return null;
   };
 
-  // Call Papers API (synchronous - save with nodes)
-  console.log(`[STEP 2 INTERNAL] Calling papers API...`);
-  let enrichedResponse: EnrichedScenarioResponse;
-  try {
-    enrichedResponse = await callTreePapersAPI(scenarioTreeInput, searchTheme);
-  } catch (apiErr) {
-    console.error("[tree_papers] prod API failed, using mock:", apiErr.message);
-    enrichedResponse = await callPythonPapersAPI(scenarioTreeInput);
-  }
-  console.log(`=== Papers enrichment completed ===`);
+  // Create mapping from enriched node IDs to saved node IDs
+  const nodeIdMapping = new Map<string, string>();
 
-  /*──────── Save Enriched Data to Supabase ────────*/
-
-  // Save subtree nodes with enriched data
-  const saveSubtreeWithEnrichment = async (
+  // Save bare tree nodes first (without enriched data)
+  const saveSubtreeWithoutEnrichment = async (
     bareNode: BareNode,
-    enrichedNode: any,
+    nodeId: string,
+    enrichedNodeId: string,
     parentId: string,
     lvl: number,
     idx: number
   ) => {
-    const id = enrichedNode.id || crypto.randomUUID();
     const axisForLevel = detectAxis(lvl);
 
     // Validate axis value exists in enum
@@ -473,10 +466,10 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
       throw new Error(`Invalid axis value: ${axisForLevel} for level ${lvl}`);
     }
 
-    // Save tree node
+    // Save tree node without enriched data
     try {
       const { error } = await sb.from("tree_nodes").insert({
-        id,
+        id: nodeId,
         tree_id: treeId,
         parent_id: parentId,
         name: bareNode.name,
@@ -489,42 +482,130 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
       });
 
       if (error) {
-        console.error(`[SAVE] Database error saving node ${id}:`, error);
-        throw new Error(`DB error (node ${id}): ${error.message}`);
+        console.error(`[SAVE] Database error saving node ${nodeId}:`, error);
+        throw new Error(`DB error (node ${nodeId}): ${error.message}`);
       }
     } catch (dbError) {
-      console.error(`[SAVE] Failed to save node ${id}:`, dbError);
+      console.error(`[SAVE] Failed to save node ${nodeId}:`, dbError);
       throw dbError;
-    } // Save enriched data for this node (papers only for now)
+    }
+
+    // Store the mapping for enrichment phase
+    nodeIdMapping.set(enrichedNodeId, nodeId);
+
+    // Recursively save children
+    const children = bareNode.children || [];
+    for (let i = 0; i < children.length; i++) {
+      // Find the corresponding child from subtreeWithIds
+      const correspondingParent = findNodeInSubtree(subtreeWithIds, bareNode.name);
+      const childId = correspondingParent?.children?.[i]?.id || crypto.randomUUID();
+      const childEnrichedId = correspondingParent?.children?.[i]?.id || childId;
+      await saveSubtreeWithoutEnrichment(
+        children[i],
+        childId,
+        childEnrichedId,
+        nodeId,
+        lvl + 1,
+        i
+      );
+    }
+  };
+
+  // Save purpose nodes (level 2) and their subtrees first
+  for (let i = 0; i < purposeNodes.length; i++) {
+    const purposeNodeId = subtreeWithIds[i].id;
+    await saveSubtreeWithoutEnrichment(
+      purposeNodes[i],
+      purposeNodeId,
+      subtreeWithIds[i].id, // Use same ID for enriched mapping
+      scenarioId,
+      2, // Purpose level
+      i
+    );
+  }
+
+  // Update scenario node children_count after bare tree is saved
+  const { error: updateError } = await sb
+    .from("tree_nodes")
+    .update({ children_count: purposeNodes.length })
+    .eq("id", scenarioId);
+
+  if (updateError) {
+    console.error(
+      `[STEP 2 INTERNAL] Failed to update children_count for scenario ${scenarioId}:`,
+      updateError
+    );
+  }
+
+  console.log(
+    `[STEP 2 INTERNAL] Bare tree structure saved for scenario: ${scenarioName}`
+  );
+
+  /*──────── Python API Enrichment ────────*/
+  console.log(
+    `=== Calling Papers API for enrichment: ${scenarioName} ===`
+  );
+
+  const scenarioTreeInput = {
+    treeId,
+    scenarioNode: {
+      id: scenarioId,
+      title: scenarioName,
+      description: scenarioDescription,
+      level: 1,
+      children: subtreeWithIds,
+    },
+  };
+
+  // Call Papers API (now after tree is already saved)
+  console.log(`[STEP 2 INTERNAL] Calling papers API...`);
+  let enrichedResponse: EnrichedScenarioResponse;
+  try {
+    enrichedResponse = await callTreePapersAPI(scenarioTreeInput, searchTheme);
+  } catch (apiErr) {
+    console.error("[tree_papers] prod API failed, using mock:", apiErr.message);
+    enrichedResponse = await callPythonPapersAPI(scenarioTreeInput);
+  }
+  console.log(`=== Papers enrichment completed ===`);
+
+  /*──────── Update Nodes with Enriched Data ────────*/
+
+  // Save only enriched data (papers) to existing nodes
+  const saveEnrichedDataOnly = async (
+    enrichedNode: any
+  ) => {
+    // Get the actual saved node ID from mapping
+    const actualNodeId = nodeIdMapping.get(enrichedNode.id);
+    if (!actualNodeId) {
+      console.warn(`[ENRICHMENT] No mapping found for enriched node ID: ${enrichedNode.id}, title: ${enrichedNode.title}`);
+      return;
+    }
+
+    // Save enriched data for this node (papers only for now)
     try {
       if (enrichedNode.papers && enrichedNode.papers.length > 0) {
-        await saveNodePapers(sb, id, treeId, enrichedNode.papers, team_id);
+        await saveNodePapers(sb, actualNodeId, treeId, enrichedNode.papers, team_id);
+        console.log(`[ENRICHMENT] Saved ${enrichedNode.papers.length} papers for node: ${enrichedNode.title}`);
       }
       // Use cases will be saved separately later
     } catch (enrichError) {
       console.error(
-        `[SAVE] Failed to save enriched data for node ${id}:`,
+        `[ENRICHMENT] Failed to save enriched data for node ${actualNodeId}:`,
         enrichError
       );
     }
-    const children = bareNode.children || [];
-    for (let i = 0; i < children.length; i++) {
-      const correspondingEnrichedChild = enrichedNode.children?.[i];
-      if (correspondingEnrichedChild) {
-        await saveSubtreeWithEnrichment(
-          children[i],
-          correspondingEnrichedChild,
-          id,
-          lvl + 1,
-          i
-        );
-      } else {
-        console.warn(
-          `[SAVE] No enriched data found for child ${i} of node ${id}`
-        );
+
+    // Recursively save enriched data for children
+    if (enrichedNode.children && enrichedNode.children.length > 0) {
+      for (const enrichedChild of enrichedNode.children) {
+        await saveEnrichedDataOnly(enrichedChild);
       }
     }
   };
+
+  // Save enriched data for the scenario node and its entire subtree
+  console.log(`[STEP 2 INTERNAL] Saving enriched data for scenario: ${scenarioName}`);
+  
   // Save enriched data for the scenario node itself (papers only for now)
   try {
     if (
@@ -538,6 +619,7 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
         enrichedResponse.scenarioNode.papers,
         team_id
       );
+      console.log(`[ENRICHMENT] Saved ${enrichedResponse.scenarioNode.papers.length} papers for scenario: ${scenarioName}`);
     }
     // Use cases will be saved separately later
   } catch (scenarioEnrichError) {
@@ -546,37 +628,12 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
       scenarioEnrichError
     );
   }
-  // Save purpose nodes (level 2) and their subtrees
-  for (let i = 0; i < purposeNodes.length; i++) {
-    const correspondingEnrichedNode =
-      enrichedResponse.scenarioNode.children?.[i];
-    if (correspondingEnrichedNode) {
-      await saveSubtreeWithEnrichment(
-        purposeNodes[i],
-        correspondingEnrichedNode,
-        scenarioId,
-        2, // Purpose level
-        i
-      );
-    } else {
-      console.warn(
-        `[STEP 2 INTERNAL] No enriched data found for purpose node ${i} of scenario ${scenarioId}`
-      );
+
+  // Save enriched data for purpose nodes and their subtrees
+  if (enrichedResponse.scenarioNode.children && enrichedResponse.scenarioNode.children.length > 0) {
+    for (const enrichedChild of enrichedResponse.scenarioNode.children) {
+      await saveEnrichedDataOnly(enrichedChild);
     }
-  }
-
-  // IMPORTANT: Update scenario node children_count ONLY AFTER all subtree nodes are completely saved
-  // This prevents the frontend polling from triggering too early when only partial data is available
-  const { error: updateError } = await sb
-    .from("tree_nodes")
-    .update({ children_count: purposeNodes.length })
-    .eq("id", scenarioId);
-
-  if (updateError) {
-    console.error(
-      `[STEP 2 INTERNAL] Failed to update children_count for scenario ${scenarioId}:`,
-      updateError
-    );
   }
   console.log(
     `[STEP 2 INTERNAL] Successfully completed subtree generation for scenario: ${scenarioName}`

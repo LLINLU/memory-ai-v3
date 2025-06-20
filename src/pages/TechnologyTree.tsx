@@ -22,6 +22,7 @@ import { useChatInitialization } from "@/hooks/tree/useChatInitialization";
 import { useNodeSelectionEffect } from "@/hooks/tree/useNodeSelectionEffect";
 import { FallbackAlert } from "@/components/technology-tree/FallbackAlert";
 import { enrichmentEventBus } from "@/hooks/useEnrichedData";
+import { useLevel1EnrichmentPolling } from "@/hooks/useLevel1EnrichmentPolling";
 
 const TechnologyTree = () => {
   const location = useLocation();
@@ -497,6 +498,14 @@ const TechnologyTree = () => {
     level9Items,
     level10Items
   );
+
+  // Extract level 1 node IDs for enrichment polling
+  const level1NodeIds = level1Items?.map(item => item.id) || [];
+  
+  // Use level 1 enrichment polling for automatic papers/use cases loading
+  // Use treeId from location state instead of pollingTreeId to continue polling even after tree generation completes
+  const enrichmentTreeId = locationState?.treeId || null;
+  useLevel1EnrichmentPolling(enrichmentTreeId, level1NodeIds);
 
   // Dynamic level names based on tree mode
   const treeMode =
