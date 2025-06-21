@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ScenarioCard } from './ScenarioCard';
 import { useCardExpansion } from './hooks/useCardExpansion';
@@ -126,6 +127,9 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
       <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         {level1Items.map((scenario) => {
           const scenarioLevel2Items = level2Items[scenario.id] || [];
+          const isSelected = selectedPath.level1 === scenario.id;
+          const isExpanded = isScenarioExpanded(scenario.id);
+          const shouldTakeFullWidth = isSelected || isExpanded;
           
           return (
             <ScenarioCard
@@ -135,7 +139,7 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
               level2Items={scenarioLevel2Items}
               allLevelItems={allLevelItems}
               levelNames={levelNames}
-              isExpanded={isScenarioExpanded(scenario.id)}
+              isExpanded={isExpanded}
               isLevelExpanded={(levelKey) => isLevelExpanded(scenario.id, levelKey)}
               onToggleExpansion={() => toggleScenarioExpansion(scenario.id)}
               onToggleLevelExpansion={(levelKey) => toggleLevelExpansion(scenario.id, levelKey)}
@@ -144,6 +148,7 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
               onNodeClick={onNodeClick}
               onEditNode={onEditNode}
               onDeleteNode={onDeleteNode}
+              shouldTakeFullWidth={shouldTakeFullWidth}
             />
           );
         })}
