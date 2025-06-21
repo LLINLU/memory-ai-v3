@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ScenarioCard } from './ScenarioCard';
 import { useCardExpansion } from './hooks/useCardExpansion';
@@ -122,10 +121,31 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     return keys;
   };
 
+  // Sort scenarios to put selected/expanded ones at the top
+  const sortedLevel1Items = [...level1Items].sort((a, b) => {
+    const aIsSelected = selectedPath.level1 === a.id;
+    const bIsSelected = selectedPath.level1 === b.id;
+    const aIsExpanded = isScenarioExpanded(a.id);
+    const bIsExpanded = isScenarioExpanded(b.id);
+    
+    // Selected scenarios come first
+    if (aIsSelected && !bIsSelected) return -1;
+    if (!aIsSelected && bIsSelected) return 1;
+    
+    // Then expanded scenarios (if neither is selected)
+    if (!aIsSelected && !bIsSelected) {
+      if (aIsExpanded && !bIsExpanded) return -1;
+      if (!aIsExpanded && bIsExpanded) return 1;
+    }
+    
+    // Maintain original order for scenarios with same priority
+    return level1Items.indexOf(a) - level1Items.indexOf(b);
+  });
+
   return (
     <div className="h-full overflow-y-auto p-4">
       <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-        {level1Items.map((scenario) => {
+        {sortedLevel1Items.map((scenario) => {
           const scenarioLevel2Items = level2Items[scenario.id] || [];
           const isSelected = selectedPath.level1 === scenario.id;
           const isExpanded = isScenarioExpanded(scenario.id);
