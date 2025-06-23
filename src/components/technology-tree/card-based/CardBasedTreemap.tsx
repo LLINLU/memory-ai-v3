@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ScenarioCard } from './ScenarioCard';
 import { useCardExpansion } from './hooks/useCardExpansion';
@@ -147,9 +148,9 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
       <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         {sortedLevel1Items.map((scenario) => {
           const scenarioLevel2Items = level2Items[scenario.id] || [];
-          const isSelected = selectedPath.level1 === scenario.id;
           const isExpanded = isScenarioExpanded(scenario.id);
-          const shouldTakeFullWidth = isSelected || isExpanded;
+          // Only take full width when manually expanded, not when selected
+          const shouldTakeFullWidth = isExpanded;
           
           return (
             <ScenarioCard
