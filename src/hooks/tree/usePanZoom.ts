@@ -42,6 +42,7 @@ export const usePanZoom = (
 
   const handleWheel = useCallback((event: React.WheelEvent) => {
     event.preventDefault();
+    event.stopPropagation(); // Prevent event from bubbling up to page level
     
     const rect = event.currentTarget.getBoundingClientRect();
     const centerX = rect.width / 2;

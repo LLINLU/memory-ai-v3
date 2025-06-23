@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
@@ -131,6 +130,12 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     getTransform,
   } = usePanZoom(containerWidth, containerHeight);
 
+  // Additional wheel event handler for container-level isolation
+  const handleContainerWheel = (event: React.WheelEvent) => {
+    event.stopPropagation();
+    event.preventDefault();
+  };
+
   // Center on selected node when switching from treemap to mindmap
   useEffect(() => {
     if (justSwitchedView && nodes.length > 0 && containerRef.current) {
@@ -187,7 +192,12 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
 
   return (
     <TooltipProvider delayDuration={300} skipDelayDuration={100}>
-      <div ref={containerRef} className="w-full h-full overflow-hidden bg-white relative">
+      <div 
+        ref={containerRef} 
+        className="w-full h-full overflow-hidden bg-white relative"
+        onWheelCapture={handleContainerWheel}
+        style={{ touchAction: 'none' }}
+      >
         <div
           className="w-full h-full relative"
           onWheel={handleWheel}
@@ -198,6 +208,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
           style={{
             cursor: isDragging ? 'grabbing' : 'grab',
             userSelect: isDragging ? 'none' : 'auto',
+            overflow: 'hidden', // Ensure no scrollbars appear
           }}
         >
           <div
