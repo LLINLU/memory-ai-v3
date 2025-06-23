@@ -1,3 +1,4 @@
+
 import React from "react";
 import { ResizablePanel } from "@/components/ui/resizable";
 import { SidebarControls } from "@/components/technology-tree/SidebarControls";
@@ -56,6 +57,11 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
   selectedNodeId,
   selectedPath,
 }) => {
+  // Handle wheel events to prevent bubbling to main page level
+  const handleSidebarWheel = (event: React.WheelEvent) => {
+    event.stopPropagation();
+  };
+
   return (
     <ResizablePanel
       defaultSize={20}
@@ -63,7 +69,7 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
       maxSize={isExpanded ? 80 : 50}
       onResize={onResize}
     >
-      <div className="h-full bg-white border-l border-gray-200 shadow-lg flex flex-col">
+      <div className="h-full bg-white border-l border-gray-200 shadow-lg flex flex-col" onWheel={handleSidebarWheel}>
         <SidebarControls
           sidebarTab={sidebarTab}
           setSidebarTab={setSidebarTab}
