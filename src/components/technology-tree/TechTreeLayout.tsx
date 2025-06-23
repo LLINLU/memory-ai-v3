@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   ResizablePanelGroup,
@@ -32,10 +33,10 @@ export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col overflow-hidden">
       <div className="flex flex-1 overflow-hidden">
-        {" "}
         <ResizablePanelGroup
           direction="horizontal"
           onLayout={handlePanelResize}
+          className="overflow-hidden"
         >
           <ResizablePanel
             defaultSize={isExpanded ? 20 : 60}
@@ -44,7 +45,9 @@ export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
             className="overflow-hidden"
             onResize={handlePanelResize}
           >
-            {children}
+            <div className="h-full overflow-hidden">
+              {children}
+            </div>
           </ResizablePanel>
 
           <ResizableHandle withHandle />
