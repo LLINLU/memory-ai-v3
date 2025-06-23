@@ -251,23 +251,32 @@ const callPapersEnrichment = async (
   
   // Use the queue system instead of direct API call
   enqueueEnrichment(nodeId, 'papers', params, (response) => {
+    console.log('[PAPERS_ENRICHMENT] Queue response:', {
+      nodeId,
+      type: response.type,
+      hasData: !!response.data,
+      dataKeys: response.data ? Object.keys(response.data) : [],
+      savedField: response.data?.saved,
+      countField: response.data?.count,
+      fullResponse: response
+    });
+
     if (response.type === 'error') {
       console.error('[PAPERS_ENRICHMENT] Papers enrichment error:', response.error);
       callback(response);
-    } else if (response.data?.saved || response.data?.count > 0) {
-      console.log('[PAPERS_ENRICHMENT] Papers saved successfully, triggering callback');
+    } else {
+      // Consider it successful if we got any data back (the API call succeeded)
+      // The presence of data means the enrichment process completed
+      console.log('[PAPERS_ENRICHMENT] Papers enrichment completed, triggering callback');
       callback({
         type: 'papers',
-        data: { count: response.data.count || 0 },
+        data: { 
+          count: response.data?.count || 0,
+          saved: response.data?.saved || false,
+          response: response.data 
+        },
         nodeId,
         timestamp: new Date().toISOString()
-      });
-    } else {
-      console.log('[PAPERS_ENRICHMENT] Papers response received but not triggering callback:', {
-        hasData: !!response.data,
-        savedField: response.data?.saved,
-        countField: response.data?.count,
-        fullData: response.data
       });
     }
     
@@ -287,23 +296,32 @@ const callUseCasesEnrichment = async (
   
   // Use the queue system instead of direct API call
   enqueueEnrichment(nodeId, 'useCases', params, (response) => {
+    console.log('[USECASES_ENRICHMENT] Queue response:', {
+      nodeId,
+      type: response.type,
+      hasData: !!response.data,
+      dataKeys: response.data ? Object.keys(response.data) : [],
+      savedField: response.data?.saved,
+      countField: response.data?.count,
+      fullResponse: response
+    });
+
     if (response.type === 'error') {
       console.error('[USECASES_ENRICHMENT] Use cases enrichment error:', response.error);
       callback(response);
-    } else if (response.data?.saved || response.data?.count > 0) {
-      console.log('[USECASES_ENRICHMENT] Use cases saved successfully, triggering callback');
+    } else {
+      // Consider it successful if we got any data back (the API call succeeded)
+      // The presence of data means the enrichment process completed
+      console.log('[USECASES_ENRICHMENT] Use cases enrichment completed, triggering callback');
       callback({
         type: 'useCases',
-        data: { count: response.data.count || 0 },
+        data: { 
+          count: response.data?.count || 0,
+          saved: response.data?.saved || false,
+          response: response.data 
+        },
         nodeId,
         timestamp: new Date().toISOString()
-      });
-    } else {
-      console.log('[USECASES_ENRICHMENT] Use cases response received but not triggering callback:', {
-        hasData: !!response.data,
-        savedField: response.data?.saved,
-        countField: response.data?.count,
-        fullData: response.data
       });
     }
     

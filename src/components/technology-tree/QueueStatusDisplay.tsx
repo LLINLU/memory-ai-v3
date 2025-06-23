@@ -6,11 +6,14 @@ import { Badge } from '@/components/ui/badge';
 export const QueueStatusDisplay: React.FC = () => {
   const [status, setStatus] = useState(getQueueStatus());
   const [isVisible, setIsVisible] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState(Date.now());
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setStatus(getQueueStatus());
-    }, 1000);
+      const newStatus = getQueueStatus();
+      setStatus(newStatus);
+      setLastUpdate(Date.now());
+    }, 500); // Check more frequently for better debugging
 
     return () => clearInterval(interval);
   }, []);
@@ -47,8 +50,7 @@ export const QueueStatusDisplay: React.FC = () => {
               ×
             </button>
           </div>
-        </CardHeader>
-        <CardContent className="text-xs space-y-2">
+        </CardHeader>        <CardContent className="text-xs space-y-2">
           <div className="flex items-center justify-between">
             <span>Queue:</span>
             <Badge variant={status.queueLength > 0 ? "default" : "secondary"}>
@@ -76,12 +78,39 @@ export const QueueStatusDisplay: React.FC = () => {
               {status.apiHealthy ? "Healthy" : "Failed"}
             </Badge>
           </div>
+            <div className="flex items-center justify-between">
+            <span>Total Processing:</span>
+            <Badge variant={(status.processing.papers + status.processing.useCases) > 0 ? "default" : "secondary"}>
+              {status.processing.papers + status.processing.useCases}
+            </Badge>
+          </div>
+            {(status as any).polling > 0 && (
+            <div className="flex items-center justify-between">
+              <span>Polling DB:</span>
+              <Badge variant="outline">
+                {(status as any).polling}
+              </Badge>
+            </div>
+          )}
+          
+          {(status as any).consecutiveFailures > 0 && (
+            <div className="flex items-center justify-between">
+              <span>Failures:</span>
+              <Badge variant="destructive">
+                {(status as any).consecutiveFailures}
+              </Badge>
+            </div>
+          )}
           
           {status.lastHealthCheck > 0 && (
             <div className="text-gray-500 text-xs">
               Last check: {new Date(status.lastHealthCheck).toLocaleTimeString()}
             </div>
           )}
+          
+          <div className="text-gray-500 text-xs">
+            Updated: {new Date(lastUpdate).toLocaleTimeString()}
+          </div>
         </CardContent>
       </Card>
     </div>
