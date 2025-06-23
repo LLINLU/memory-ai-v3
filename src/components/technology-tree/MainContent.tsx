@@ -12,10 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@/components/ui/toggle-group";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Network } from "lucide-react";
 
 interface MainContentProps {
@@ -49,7 +46,7 @@ interface MainContentProps {
     updatedNode: { title: string; description: string }
   ) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
-  levelNames?: {
+  levelNames: {
     level1: string;
     level2: string;
     level3: string;
@@ -98,12 +95,7 @@ export const MainContent = ({
   onNodeClick,
   onEditNode,
   onDeleteNode,
-  levelNames = {
-    level1: "シナリオ",
-    level2: "目的",
-    level3: "機能",
-    level4: "手段",
-  },
+  levelNames,
   query,
   scenario,
   onEditScenario,
@@ -142,7 +134,6 @@ export const MainContent = ({
       <div className="container mx-auto px-4 pt-2 pb-4 flex-shrink-0">
         {/* Query Display Section - appears first */}
         <QueryDisplay query={query} treeMode={treeMode} />
-
         {/* Title and Guidance Section */}
         <div className="mb-0" style={{ paddingTop: "0rem" }}>
           <div className="flex justify-between items-center mb-1">
@@ -153,7 +144,7 @@ export const MainContent = ({
               >
                 研究分野の階層表示
               </h3>
-              
+
               {/* View Toggle Button Group */}
               <ToggleGroup
                 type="single"
@@ -176,7 +167,11 @@ export const MainContent = ({
                   size="sm"
                   className="flex items-center gap-1 text-blue-600 hover:bg-blue-50 px-2 py-1 h-7 text-xs data-[state=on]:bg-blue-100 data-[state=on]:text-blue-700"
                 >
-                  <svg className="h-3 w-3" viewBox="0 0 12 12" fill="currentColor">
+                  <svg
+                    className="h-3 w-3"
+                    viewBox="0 0 12 12"
+                    fill="currentColor"
+                  >
                     <rect x="1" y="1" width="2" height="10" />
                     <rect x="5" y="1" width="2" height="10" />
                     <rect x="9" y="1" width="2" height="10" />
@@ -209,15 +204,15 @@ export const MainContent = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-white">
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     className="cursor-pointer"
-                    onClick={() => handleGuidanceItemClick('mindmap-usage')}
+                    onClick={() => handleGuidanceItemClick("mindmap-usage")}
                   >
                     Mindmapの使い方
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     className="cursor-pointer"
-                    onClick={() => handleGuidanceItemClick('treemap-usage')}
+                    onClick={() => handleGuidanceItemClick("treemap-usage")}
                   >
                     Treemapの使い方
                   </DropdownMenuItem>
@@ -225,16 +220,15 @@ export const MainContent = ({
               </DropdownMenu>
             </div>
           </div>
-        </div>
-
+        </div>{" "}
         {/* Scenario Section */}
         <ScenarioSection
           scenario={scenario}
           onEditScenario={onEditScenario}
           conversationHistory={conversationHistory}
           onGuidanceClick={onGuidanceClick}
+          treeMode={treeMode}
         />
-
         {/* Path Display - now shows for both treemap and mindmap views with viewMode prop */}
         <PathDisplay
           selectedPath={selectedPath}
@@ -258,7 +252,7 @@ export const MainContent = ({
           viewMode={viewMode}
         />
       </div>
-      
+
       <div className="flex-1 overflow-hidden">
         {isTreemapView ? (
           <CardBasedTreemap
