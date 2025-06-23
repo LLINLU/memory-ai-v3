@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { enqueueEnrichment } from "./enrichmentQueue";
 
 // Global state to track loading nodes and prevent duplicate calls
 const loadingNodes = new Set<string>();
@@ -246,53 +247,33 @@ const callPapersEnrichment = async (
 ): Promise<void> => {
   const { nodeId } = params;
   
-  try {
-    console.log('[PAPERS_ENRICHMENT] Starting papers enrichment for:', nodeId);
-    
-    const { data, error } = await supabase.functions.invoke('node-enrichment-papers', {
-      body: params
-    });
-
-    if (error) {
-      console.error('[PAPERS_ENRICHMENT] Papers enrichment error:', error);
-      callback({
-        type: 'error',
-        error: `Papers enrichment failed: ${error.message}`,
-        nodeId,
-        timestamp: new Date().toISOString()
-      });
-      return;
-    }
-
-    if (data?.results?.papers?.saved) {
+  console.log('[PAPERS_ENRICHMENT] Queueing papers enrichment for:', nodeId);
+  
+  // Use the queue system instead of direct API call
+  enqueueEnrichment(nodeId, 'papers', params, (response) => {
+    if (response.type === 'error') {
+      console.error('[PAPERS_ENRICHMENT] Papers enrichment error:', response.error);
+      callback(response);
+    } else if (response.data?.saved || response.data?.count > 0) {
       console.log('[PAPERS_ENRICHMENT] Papers saved successfully, triggering callback');
       callback({
         type: 'papers',
-        data: { count: data.results.papers.count },
+        data: { count: response.data.count || 0 },
         nodeId,
         timestamp: new Date().toISOString()
       });
     } else {
       console.log('[PAPERS_ENRICHMENT] Papers response received but not triggering callback:', {
-        hasResults: !!data?.results,
-        hasPapers: !!data?.results?.papers,
-        papersSaved: data?.results?.papers?.saved,
-        papersCount: data?.results?.papers?.count,
-        fullData: data
+        hasData: !!response.data,
+        savedField: response.data?.saved,
+        countField: response.data?.count,
+        fullData: response.data
       });
     }
-  } catch (error) {
-    console.error('[PAPERS_ENRICHMENT] Error:', error);
-    callback({
-      type: 'error',
-      error: `Papers enrichment failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      nodeId,
-      timestamp: new Date().toISOString()
-    });
-  } finally {
-    // Always remove papers loading state
+    
+    // Always remove papers loading state when done
     loadingPapers.delete(nodeId);
-  }
+  });
 };
 
 // Helper function to enrich use cases using dedicated use cases endpoint
@@ -302,53 +283,33 @@ const callUseCasesEnrichment = async (
 ): Promise<void> => {
   const { nodeId } = params;
   
-  try {
-    console.log('[USECASES_ENRICHMENT] Starting use cases enrichment for:', nodeId);
-    
-    const { data, error } = await supabase.functions.invoke('node-enrichment-usecases', {
-      body: params
-    });
-
-    if (error) {
-      console.error('[USECASES_ENRICHMENT] Use cases enrichment error:', error);
-      callback({
-        type: 'error',
-        error: `Use cases enrichment failed: ${error.message}`,
-        nodeId,
-        timestamp: new Date().toISOString()
-      });
-      return;
-    }
-
-    if (data?.results?.useCases?.saved) {
+  console.log('[USECASES_ENRICHMENT] Queueing use cases enrichment for:', nodeId);
+  
+  // Use the queue system instead of direct API call
+  enqueueEnrichment(nodeId, 'useCases', params, (response) => {
+    if (response.type === 'error') {
+      console.error('[USECASES_ENRICHMENT] Use cases enrichment error:', response.error);
+      callback(response);
+    } else if (response.data?.saved || response.data?.count > 0) {
       console.log('[USECASES_ENRICHMENT] Use cases saved successfully, triggering callback');
       callback({
         type: 'useCases',
-        data: { count: data.results.useCases.count },
+        data: { count: response.data.count || 0 },
         nodeId,
         timestamp: new Date().toISOString()
       });
     } else {
       console.log('[USECASES_ENRICHMENT] Use cases response received but not triggering callback:', {
-        hasResults: !!data?.results,
-        hasUseCases: !!data?.results?.useCases,
-        useCasesSaved: data?.results?.useCases?.saved,
-        useCasesCount: data?.results?.useCases?.count,
-        fullData: data
+        hasData: !!response.data,
+        savedField: response.data?.saved,
+        countField: response.data?.count,
+        fullData: response.data
       });
     }
-  } catch (error) {
-    console.error('[USECASES_ENRICHMENT] Error:', error);
-    callback({
-      type: 'error',
-      error: `Use cases enrichment failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      nodeId,
-      timestamp: new Date().toISOString()
-    });
-  } finally {
-    // Always remove use cases loading state
+    
+    // Always remove use cases loading state when done
     loadingUseCases.delete(nodeId);
-  }
+  });
 };
 
 /**
