@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Grid, LayoutGrid, Square, Columns2, Columns3 } from 'lucide-react';
 import { ScenarioCard } from './ScenarioCard';
@@ -151,8 +150,7 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     <div className="h-full overflow-y-auto p-4">
       {/* Layout Toggle Controls */}
       <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">カードレイアウト</h3>
+        <div className="flex items-center justify-end">
           <ToggleGroup 
             type="single" 
             value={cardLayout} 
