@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid, LayoutGrid, Square, Columns2, Columns3 } from 'lucide-react';
+import { Square, LayoutGrid, Columns2, Columns3 } from 'lucide-react';
 import { ScenarioCard } from './ScenarioCard';
 import { useCardExpansion } from './hooks/useCardExpansion';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -158,10 +158,10 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
             className="bg-gray-50 p-1 rounded-lg"
           >
             <ToggleGroupItem value="single-row" aria-label="Single row layout" className="data-[state=on]:bg-white">
-              <Grid className="h-4 w-4" />
+              <Square className="h-4 w-4" />
             </ToggleGroupItem>
             <ToggleGroupItem value="one-per-row" aria-label="One card per row" className="data-[state=on]:bg-white">
-              <Square className="h-4 w-4" />
+              <LayoutGrid className="h-4 w-4" />
             </ToggleGroupItem>
             <ToggleGroupItem value="two-per-row" aria-label="Two cards per row" className="data-[state=on]:bg-white">
               <Columns2 className="h-4 w-4" />
