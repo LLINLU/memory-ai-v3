@@ -33,12 +33,38 @@ export const useMindMapView = () => {
     level10: "",
   });
 
-  const toggleView = () => {
-    setViewMode(prev => prev === "treemap" ? "mindmap" : "treemap");
+  // Synchronize paths between views
+  const synchronizePaths = (fromView: ViewMode, toView: ViewMode) => {
+    if (fromView === "treemap" && toView === "mindmap") {
+      setMindmapPath({ ...treemapPath });
+    } else if (fromView === "mindmap" && toView === "treemap") {
+      setTreemapPath({ ...mindmapPath });
+    }
   };
 
-  const setTreemapView = () => setViewMode("treemap");
-  const setMindmapView = () => setViewMode("mindmap");
+  const toggleView = () => {
+    const currentView = viewMode;
+    const targetView = viewMode === "treemap" ? "mindmap" : "treemap";
+    
+    // Synchronize paths before switching
+    synchronizePaths(currentView, targetView);
+    
+    setViewMode(targetView);
+  };
+
+  const setTreemapView = () => {
+    if (viewMode !== "treemap") {
+      synchronizePaths(viewMode, "treemap");
+      setViewMode("treemap");
+    }
+  };
+
+  const setMindmapView = () => {
+    if (viewMode !== "mindmap") {
+      synchronizePaths(viewMode, "mindmap");
+      setViewMode("mindmap");
+    }
+  };
 
   // Get the path for the current view
   const getCurrentPath = () => {
