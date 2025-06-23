@@ -1,9 +1,8 @@
 
 import React, { useState } from 'react';
-import { Square, RectangleVertical, Columns2, Columns3 } from 'lucide-react';
-import { ScenarioCard } from './ScenarioCard';
+import { LayoutToggle } from './LayoutToggle';
+import { CardContainer } from './CardContainer';
 import { useCardExpansion } from './hooks/useCardExpansion';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 interface LevelItem {
   id: string;
@@ -128,82 +127,31 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     return keys;
   };
 
-  const getLayoutClasses = () => {
-    switch (cardLayout) {
-      case "single-row":
-        return "flex flex-nowrap overflow-x-auto";
-      case "one-per-row":
-        return "grid grid-cols-1";
-      case "two-per-row":
-        return "grid grid-cols-2";
-      case "three-per-row":
-        return "grid grid-cols-3";
-      default:
-        return "grid gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3";
-    }
-  };
-
-  const getCardClasses = () => {
-    return cardLayout === "single-row" ? "flex-shrink-0 w-80 mr-4" : "";
-  };
-
   return (
     <div className="h-full overflow-y-auto p-4">
-      {/* Layout Toggle Controls */}
-      <div className="mb-6">
-        <div className="flex items-center justify-end">
-          <ToggleGroup 
-            type="single" 
-            value={cardLayout} 
-            onValueChange={(value) => value && setCardLayout(value as CardLayoutMode)}
-            className="bg-gray-50 p-1 rounded-lg"
-          >
-            <ToggleGroupItem value="single-row" aria-label="Single row layout" className="data-[state=on]:bg-white">
-              <Square className="h-4 w-4" />
-            </ToggleGroupItem>
-            <ToggleGroupItem value="one-per-row" aria-label="One card per row" className="data-[state=on]:bg-white">
-              <RectangleVertical className="h-4 w-4" />
-            </ToggleGroupItem>
-            <ToggleGroupItem value="two-per-row" aria-label="Two cards per row" className="data-[state=on]:bg-white">
-              <Columns2 className="h-4 w-4" />
-            </ToggleGroupItem>
-            <ToggleGroupItem value="three-per-row" aria-label="Three cards per row" className="data-[state=on]:bg-white">
-              <Columns3 className="h-4 w-4" />
-            </ToggleGroupItem>
-          </ToggleGroup>
-        </div>
-      </div>
+      <LayoutToggle 
+        cardLayout={cardLayout}
+        onLayoutChange={setCardLayout}
+      />
 
-      {/* Cards Container */}
-      <div className={`${getLayoutClasses()} gap-4`}>
-        {level1Items.map((scenario) => {
-          const scenarioLevel2Items = level2Items[scenario.id] || [];
-          const isExpanded = isScenarioExpanded(scenario.id);
-          const shouldTakeFullWidth = false;
-          
-          return (
-            <div key={scenario.id} className={getCardClasses()}>
-              <ScenarioCard
-                scenario={scenario}
-                selectedPath={selectedPath}
-                level2Items={scenarioLevel2Items}
-                allLevelItems={allLevelItems}
-                levelNames={levelNames}
-                isExpanded={isExpanded}
-                isLevelExpanded={(levelKey) => isLevelExpanded(scenario.id, levelKey)}
-                onToggleExpansion={() => toggleScenarioExpansion(scenario.id)}
-                onToggleLevelExpansion={(levelKey) => toggleLevelExpansion(scenario.id, levelKey)}
-                onExpandAll={() => expandAll(scenario.id, getAllLevelKeys(scenario.id))}
-                onCollapseAll={() => collapseAll(scenario.id)}
-                onNodeClick={onNodeClick}
-                onEditNode={onEditNode}
-                onDeleteNode={onDeleteNode}
-                shouldTakeFullWidth={shouldTakeFullWidth}
-              />
-            </div>
-          );
-        })}
-      </div>
+      <CardContainer
+        cardLayout={cardLayout}
+        level1Items={level1Items}
+        selectedPath={selectedPath}
+        level2Items={level2Items}
+        allLevelItems={allLevelItems}
+        levelNames={levelNames}
+        isScenarioExpanded={isScenarioExpanded}
+        isLevelExpanded={isLevelExpanded}
+        toggleScenarioExpansion={toggleScenarioExpansion}
+        toggleLevelExpansion={toggleLevelExpansion}
+        expandAll={expandAll}
+        collapseAll={collapseAll}
+        getAllLevelKeys={getAllLevelKeys}
+        onNodeClick={onNodeClick}
+        onEditNode={onEditNode}
+        onDeleteNode={onDeleteNode}
+      />
     </div>
   );
 };
