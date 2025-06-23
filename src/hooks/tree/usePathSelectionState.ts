@@ -63,18 +63,15 @@ export const usePathSelectionState = (
     const firstLevel1 = treeData.level1Items[0];
     const currentLevel1Exists = treeData.level1Items.find(
       (item: any) => item.id === selectedPath.level1
-    );
-
-    // Trigger auto-selection if:
+    );    // Trigger auto-selection if:
     // 1. No level1 is selected, OR
-    // 2. Current level1 doesn't exist in tree data, OR
-    // 3. Level1 is selected but level2 is empty (need cascade)
+    // 2. Current level1 doesn't exist in tree data
+    // Note: Removed the level2 check to prevent auto-cascading to children
     if (
       !selectedPath.level1 ||
-      !currentLevel1Exists ||
-      (selectedPath.level1 && !selectedPath.level2)
+      !currentLevel1Exists
     ) {
-      // Trigger the same logic as manual click to ensure cascade works
+      // Only auto-select the level 1 node, don't cascade to children
       setSelectedPath((prev) => {
         let newPath = { ...prev };
         const levels: PathLevel[] = [
@@ -95,12 +92,10 @@ export const usePathSelectionState = (
           newPath[levels[i]] = "";
         }
 
-        // Set level 1
+        // Set only level 1 - no auto-cascading to children on page refresh
         newPath.level1 = firstLevel1.id;
 
-        // Auto-select children using the same logic as handleNodeClick
-        newPath = autoSelectChildren(newPath, "level1", firstLevel1.id, treeData);
-
+        console.log("Auto-selected level 1 only (no cascading):", newPath);
         return newPath;
       });
     }

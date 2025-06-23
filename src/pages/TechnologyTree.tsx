@@ -14,6 +14,7 @@ import { useMindMapView } from "@/hooks/tree/useMindMapView";
 
 import { ChatBox } from "@/components/technology-tree/ChatBox";
 import { TechTreeMainContent } from "@/components/technology-tree/TechTreeMainContent";
+import { QueueStatusDisplay } from "@/components/technology-tree/QueueStatusDisplay";
 import { useScenarioState } from "@/hooks/tree/useScenarioState";
 import { useTreeGeneration } from "@/hooks/useTreeGeneration";
 import { convertDatabaseTreeToAppFormat } from "@/utils/databaseTreeConverter";
@@ -745,9 +746,7 @@ const TechnologyTree = () => {
                 onToggleView={toggleView}
               />
             </div>
-          </TechTreeLayout>
-
-          <ChatBox
+          </TechTreeLayout>          <ChatBox
             messages={chatMessages}
             inputValue={inputValue}
             onInputChange={handleInputChange}
@@ -761,6 +760,9 @@ const TechnologyTree = () => {
             onToggleOpen={toggleChatBoxOpen}
             onToggleExpand={toggleChatBoxExpand}
           />
+          
+          {/* Queue Status Display */}
+          <QueueStatusDisplay />
         </div>
       </div>
     </SidebarProvider>

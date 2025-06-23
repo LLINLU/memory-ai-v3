@@ -202,7 +202,12 @@ export const stopLevel1EnrichmentTracking = () => {
 export const useLevel1EnrichmentPolling = (treeId: string | null, level1NodeIds: string[]) => {
   const [, forceUpdate] = useState({});
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pollingStartTime = useRef<number | null>(null);
   const lastCheckedCounts = useRef<Map<string, { papers: number; useCases: number }>>(new Map());
+  
+  // Configuration
+  const POLLING_TIMEOUT = 8 * 60 * 1000; // 8 minutes maximum polling
 
   // Force re-render when enrichment state changes
   const triggerUpdate = () => forceUpdate({});
@@ -211,9 +216,7 @@ export const useLevel1EnrichmentPolling = (treeId: string | null, level1NodeIds:
   useEffect(() => {
     if (!treeId || level1NodeIds.length === 0) {
       return;
-    }
-
-    // If we're already polling for a different tree, stop first
+    }    // If we're already polling for a different tree, stop first
     if (level1EnrichmentState.isPolling) {
       console.log(`[LEVEL1_ENRICHMENT] Stopping previous polling session`);
       stopLevel1EnrichmentTracking();
@@ -221,11 +224,36 @@ export const useLevel1EnrichmentPolling = (treeId: string | null, level1NodeIds:
         clearInterval(pollingIntervalRef.current);
         pollingIntervalRef.current = null;
       }
-    }
-
-    console.log(`[LEVEL1_ENRICHMENT] Starting polling for tree ${treeId} with ${level1NodeIds.length} level 1 nodes`);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    }console.log(`[LEVEL1_ENRICHMENT] Starting polling for tree ${treeId} with ${level1NodeIds.length} level 1 nodes`);
     
     level1EnrichmentState.isPolling = true;
+    pollingStartTime.current = Date.now();
+    
+    // Set up timeout to stop polling after 8 minutes
+    timeoutRef.current = setTimeout(() => {
+      console.warn(`[LEVEL1_ENRICHMENT] Polling timed out after ${POLLING_TIMEOUT / 1000} seconds, stopping...`);
+      stopLevel1EnrichmentTracking();
+      
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+      
+      // Mark remaining nodes as completed to stop showing loading indicators
+      level1NodeIds.forEach(nodeId => {
+        const status = level1EnrichmentState.enrichmentStatus.get(nodeId);
+        if (status && (!status.hasPapers || !status.hasUseCases)) {
+          console.log(`[LEVEL1_ENRICHMENT] Timeout: Marking ${nodeId} as completed (papers: ${status.hasPapers}, useCases: ${status.hasUseCases})`);
+          level1EnrichmentState.loadingNodes.delete(nodeId);
+        }
+      });
+      
+      triggerUpdate();
+    }, POLLING_TIMEOUT);
     
     // Initialize tracking and start polling (async to ensure proper initialization)
     const initializeAndStartPolling = async () => {
@@ -243,22 +271,27 @@ export const useLevel1EnrichmentPolling = (treeId: string | null, level1NodeIds:
       }, 5000);
     };
     
-    initializeAndStartPolling();
-
-    return () => {
+    initializeAndStartPolling();    return () => {
       if (pollingIntervalRef.current) {
         clearInterval(pollingIntervalRef.current);
         pollingIntervalRef.current = null;
       }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
     };
   }, [treeId, level1NodeIds.join(',')]);
-
   // Stop polling when component unmounts
   useEffect(() => {
     return () => {
       if (pollingIntervalRef.current) {
         clearInterval(pollingIntervalRef.current);
         pollingIntervalRef.current = null;
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
       }
       stopLevel1EnrichmentTracking();
     };
@@ -384,9 +417,7 @@ export const useLevel1EnrichmentPolling = (treeId: string | null, level1NodeIds:
       
       console.log(`[LEVEL1_ENRICHMENT] Progress: ${completeNodes.length}/${nodeIds.length} nodes complete. Pending: [${pendingNodes.join(', ')}]`);
       
-      const allComplete = completeNodes.length === nodeIds.length;
-
-      if (allComplete && level1EnrichmentState.isPolling) {
+      const allComplete = completeNodes.length === nodeIds.length;      if (allComplete && level1EnrichmentState.isPolling) {
         console.log(`[LEVEL1_ENRICHMENT] All level 1 nodes enrichment completed, stopping polling`);
         stopLevel1EnrichmentTracking();
         
@@ -394,14 +425,26 @@ export const useLevel1EnrichmentPolling = (treeId: string | null, level1NodeIds:
           clearInterval(pollingIntervalRef.current);
           pollingIntervalRef.current = null;
         }
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
         hasUpdates = true;
       } else if (level1EnrichmentState.isPolling) {
+        // Check if we're approaching timeout
+        const elapsed = Date.now() - (pollingStartTime.current || 0);
+        const remainingTime = POLLING_TIMEOUT - elapsed;
+        
+        if (remainingTime <= 60000) { // Less than 1 minute remaining
+          console.warn(`[LEVEL1_ENRICHMENT] Polling timeout approaching in ${Math.round(remainingTime / 1000)}s`);
+        }
+        
         // Log current status for debugging
         const statusSummary = nodeIds.map(nodeId => {
           const status = level1EnrichmentState.enrichmentStatus.get(nodeId);
           return `${nodeId}: P${status?.hasPapers ? '✓' : '✗'} U${status?.hasUseCases ? '✓' : '✗'}`;
         }).join(', ');
-        console.log(`[LEVEL1_ENRICHMENT] Continuing polling - Status: ${statusSummary}`);
+        console.log(`[LEVEL1_ENRICHMENT] Continuing polling (${Math.round(elapsed / 1000)}s elapsed) - Status: ${statusSummary}`);
       }
 
       // Force re-render if there were updates

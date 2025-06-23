@@ -7,6 +7,7 @@ import { Loader2 } from 'lucide-react';
 import { isNodeLoading, isPapersLoading, isUseCasesLoading } from '@/services/nodeEnrichmentService';
 import { isLevel1Loading, isLevel1PapersLoading, isLevel1UseCasesLoading } from '@/hooks/useLevel1EnrichmentPolling';
 import { NodeEnrichmentIndicator } from './node-components/NodeEnrichmentIndicator';
+import { useEnrichmentQueue } from '@/hooks/useEnrichmentQueue';
 import {
   Tooltip,
   TooltipContent,
@@ -61,13 +62,15 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   const nodeStyleClass = getNodeStyle(item, isSelected, level);
   // Force white text for selected nodes to ensure visibility
   const descriptionTextColor = isSelected ? "text-gray-100" : "text-gray-600";
-
   // Check if this node is being enriched
   const isEnriching = isNodeLoading(item.id);
   
   // For level 1 nodes (scenarios), use the new level 1 enrichment polling
   // For other levels, use the existing individual node enrichment
   const isLevel1Node = level === 1;
+  
+  // Get queue status for this node
+  const queueStatus = useEnrichmentQueue(item.id);
   
   let loadingPapers: boolean;
   let loadingUseCases: boolean;
@@ -121,8 +124,11 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
     loadingUseCases = isUseCasesLoading(item.id);
   }
   
-  // Show enrichment indicator if either papers or use cases are loading
-  const showEnrichmentIndicator = loadingPapers || loadingUseCases;
+  // Also consider queue status for any level
+  const hasQueueActivity = queueStatus.isLoading || queueStatus.isWaiting || queueStatus.hasError;
+  
+  // Show enrichment indicator if either papers or use cases are loading, or there's queue activity
+  const showEnrichmentIndicator = loadingPapers || loadingUseCases || hasQueueActivity;
 
   // Determine if tooltip should be shown
   const shouldShowTooltip = !isSelected && !isLastLevel && subNodeCount > 0;
@@ -152,11 +158,11 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
           <div className={`mt-3 text-sm ${descriptionTextColor} border-t pt-2 border-gray-100 overflow-hidden`}>
             {item.description}
           </div>
-        )}
-          {/* Show enrichment loading indicator */}
+        )}          {/* Show enrichment loading indicator */}
         {showEnrichmentIndicator && (
           <div className="mt-2">
             <NodeEnrichmentIndicator 
+              nodeId={item.id}
               size="sm" 
               loadingPapers={loadingPapers}
               loadingUseCases={loadingUseCases}

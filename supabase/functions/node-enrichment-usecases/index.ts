@@ -151,11 +151,14 @@ const CORS = {
 };
 
 serve(async (req) => {
+  // Always handle CORS first
   if (req.method === "OPTIONS") {
     return new Response("ok", { status: 200, headers: CORS });
   }
 
   try {
+    console.log(`[USECASES_ONLY] Function started, method: ${req.method}`);
+    
     const requestBody = await req.json();
     console.log(`[USECASES_ONLY] Received request for use cases enrichment`);
 
@@ -171,6 +174,13 @@ serve(async (req) => {
 
     // Validate required parameters
     if (!nodeId || !treeId || !nodeTitle || !query || parentTitles === undefined) {
+      console.error(`[USECASES_ONLY] Missing required parameters:`, {
+        hasNodeId: !!nodeId,
+        hasTreeId: !!treeId,
+        hasNodeTitle: !!nodeTitle,
+        hasQuery: !!query,
+        hasParentTitles: parentTitles !== undefined
+      });
       return new Response(
         JSON.stringify({
           error: "Missing required parameters",
@@ -188,6 +198,7 @@ serve(async (req) => {
     const SUPABASE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
     if (!SUPABASE_URL || !SUPABASE_ROLE_KEY) {
+      console.error(`[USECASES_ONLY] Missing Supabase environment variables`);
       throw new Error("Server mis-config (Supabase env vars)");
     }
 
