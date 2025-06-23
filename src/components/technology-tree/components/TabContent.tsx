@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { PaperList } from "../PaperList";
 import { ImplementationList } from "../ImplementationList";
@@ -40,6 +41,11 @@ export const TabContent: React.FC<TabContentProps> = ({
 
   const paperListRef = useRef<HTMLDivElement>(null);
 
+  // Handle wheel events to prevent bubbling to main page
+  const handleContentWheel = (event: React.WheelEvent) => {
+    event.stopPropagation();
+  };
+
   useEffect(() => {
     // Expose the init function globally for Google
     (window as any).googleTranslateElementInit = function () {
@@ -76,32 +82,42 @@ export const TabContent: React.FC<TabContentProps> = ({
   }, [selectedNodeId]);
 
   return (
-    <>
-      <div className="flex items-center justify-between mb-6">
-        <TabNavigator
-          onValueChange={onValueChange}
-          papersCount={papers.length}
-          useCasesCount={useCases.length}
-          loadingPapers={loadingPapers}
-          loadingUseCases={loadingUseCases}
-        />
-        <FilterSort
-          className="justify-end"
-          onFilterChange={handleFilterChange}
-          onSortChange={handleSortChange}
-        />
-      </div>      <div id="google_translate_element"></div>
-      <div className="translate">
-        {activeTab === "papers" ? (
-          <PaperList
-            selectedNodeId={selectedNodeId}
-            filterString={currentFilter}
-            sortBy={currentSort}
+    <div className="h-full flex flex-col">
+      <div className="flex-shrink-0 px-4">
+        <div className="flex items-center justify-between mb-6">
+          <TabNavigator
+            onValueChange={onValueChange}
+            papersCount={papers.length}
+            useCasesCount={useCases.length}
+            loadingPapers={loadingPapers}
+            loadingUseCases={loadingUseCases}
           />
-        ) : (
-          <ImplementationList selectedNodeId={selectedNodeId} />
-        )}
+          <FilterSort
+            className="justify-end"
+            onFilterChange={handleFilterChange}
+            onSortChange={handleSortChange}
+          />
+        </div>
+        <div id="google_translate_element"></div>
       </div>
-    </>
+      
+      <div 
+        className="flex-1 overflow-auto px-4 pb-4" 
+        data-papers-scroll
+        onWheel={handleContentWheel}
+      >
+        <div className="translate">
+          {activeTab === "papers" ? (
+            <PaperList
+              selectedNodeId={selectedNodeId}
+              filterString={currentFilter}
+              sortBy={currentSort}
+            />
+          ) : (
+            <ImplementationList selectedNodeId={selectedNodeId} />
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
