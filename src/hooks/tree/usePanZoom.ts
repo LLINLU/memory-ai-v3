@@ -19,6 +19,7 @@ interface UsePanZoomReturn {
   zoomIn: () => void;
   zoomOut: () => void;
   resetView: () => void;
+  centerOnNode: (nodeX: number, nodeY: number, nodeWidth: number, nodeHeight: number, viewportWidth: number, viewportHeight: number) => void;
   getTransform: () => string;
 }
 
@@ -132,6 +133,31 @@ export const usePanZoom = (
     });
   }, []);
 
+  const centerOnNode = useCallback((
+    nodeX: number, 
+    nodeY: number, 
+    nodeWidth: number, 
+    nodeHeight: number,
+    viewportWidth: number,
+    viewportHeight: number
+  ) => {
+    setState(prev => {
+      // Calculate the center of the node
+      const nodeCenterX = nodeX + nodeWidth / 2;
+      const nodeCenterY = nodeY + nodeHeight / 2;
+      
+      // Calculate pan values to center the node in the viewport
+      const newPanX = (viewportWidth / 2) - (nodeCenterX * prev.zoom);
+      const newPanY = (viewportHeight / 2) - (nodeCenterY * prev.zoom);
+      
+      return {
+        ...prev,
+        panX: newPanX,
+        panY: newPanY,
+      };
+    });
+  }, []);
+
   const getTransform = useCallback(() => {
     return `translate(${state.panX}px, ${state.panY}px) scale(${state.zoom})`;
   }, [state]);
@@ -149,6 +175,7 @@ export const usePanZoom = (
     zoomIn,
     zoomOut,
     resetView,
+    centerOnNode,
     getTransform,
   };
 };

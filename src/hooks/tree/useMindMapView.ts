@@ -5,6 +5,7 @@ export type ViewMode = "treemap" | "mindmap";
 
 export const useMindMapView = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("mindmap");
+  const [justSwitchedView, setJustSwitchedView] = useState(false);
   
   // Separate path states for each view
   const [treemapPath, setTreemapPath] = useState({
@@ -50,12 +51,14 @@ export const useMindMapView = () => {
     synchronizePaths(currentView, targetView);
     
     setViewMode(targetView);
+    setJustSwitchedView(true);
   };
 
   const setTreemapView = () => {
     if (viewMode !== "treemap") {
       synchronizePaths(viewMode, "treemap");
       setViewMode("treemap");
+      setJustSwitchedView(true);
     }
   };
 
@@ -63,7 +66,13 @@ export const useMindMapView = () => {
     if (viewMode !== "mindmap") {
       synchronizePaths(viewMode, "mindmap");
       setViewMode("mindmap");
+      setJustSwitchedView(true);
     }
+  };
+
+  // Function to clear the switch flag
+  const clearViewSwitchFlag = () => {
+    setJustSwitchedView(false);
   };
 
   // Get the path for the current view
@@ -106,9 +115,11 @@ export const useMindMapView = () => {
     viewMode,
     isTreemapView: viewMode === "treemap",
     isMindmapView: viewMode === "mindmap",
+    justSwitchedView,
     toggleView,
     setTreemapView,
     setMindmapView,
+    clearViewSwitchFlag,
     getCurrentPath,
     setCurrentPath,
     initializeTreemapPath,

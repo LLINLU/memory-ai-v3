@@ -109,6 +109,7 @@ export const useTechnologyTree = (
       setTreemapInitialized(false);
     }
   }, [isMindmapView, treeDataToUse, viewModeHook, treemapInitialized]);
+
   const {
     selectedPath,
     hasUserMadeSelection,
@@ -177,7 +178,10 @@ export const useTechnologyTree = (
     hasUserMadeSelection,
     showLevel4,
     searchMode,
-    scenario: treeDataToUse?.scenario, // Add scenario from database tree data    setSelectedView,
+    scenario: treeDataToUse?.scenario, // Add scenario from database tree data
+    justSwitchedView: viewModeHook?.justSwitchedView, // Add view switch flag
+    clearViewSwitchFlag: viewModeHook?.clearViewSwitchFlag, // Add clear function
+    setSelectedView,
     setSidebarTab,
     setShowSidebar,
     handleNodeClick,
