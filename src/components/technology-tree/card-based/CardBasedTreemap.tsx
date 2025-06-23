@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ScenarioCard } from './ScenarioCard';
 import { useCardExpansion } from './hooks/useCardExpansion';
@@ -138,7 +137,7 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
   return (
     <div className="h-full overflow-y-auto p-4">
       <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-        {sortedLevel1Items.map((scenario) => {
+        {level1Items.map((scenario) => {
           const scenarioLevel2Items = level2Items[scenario.id] || [];
           const isExpanded = isScenarioExpanded(scenario.id);
           // Remove full-width expansion - cards never take full width
