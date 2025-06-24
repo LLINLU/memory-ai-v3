@@ -109,15 +109,14 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     const scenarioLevel2Items = level2Items[scenarioId] || [];
     addKeysRecursively(scenarioLevel2Items, scenarioId, 2);
     return keys;
-  };
-  return <div className="h-full flex flex-col">
+  };  return <div className="h-full flex flex-col">
       {/* Fixed Layout Toggle at top */}
       <div className="flex-shrink-0 p-4 pb-0 py-0">
         <LayoutToggle cardLayout={cardLayout} onLayoutChange={setCardLayout} />
       </div>
 
       {/* Scrollable Cards Container */}
-      <div className="flex-1 treemap-scroll-container">
+      <div className="flex-1 min-h-0 treemap-scroll-container">
         <div className="p-4 pt-6">
           <CardContainer cardLayout={cardLayout} level1Items={level1Items} selectedPath={selectedPath} level2Items={level2Items} allLevelItems={allLevelItems} levelNames={levelNames} isScenarioExpanded={isScenarioExpanded} isLevelExpanded={isLevelExpanded} toggleScenarioExpansion={toggleScenarioExpansion} toggleLevelExpansion={toggleLevelExpansion} expandAll={expandAll} collapseAll={collapseAll} getAllLevelKeys={getAllLevelKeys} onNodeClick={onNodeClick} onEditNode={onEditNode} onDeleteNode={onDeleteNode} />
         </div>

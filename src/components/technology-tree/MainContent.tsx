@@ -128,10 +128,9 @@ export const MainContent = ({
       onToggleView();
     }
   };
-
   return (
     <div className={`h-full flex flex-col ${isMindmapView ? 'overflow-hidden' : ''}`}>
-      <div className="container mx-auto px-4 pt-2 pb-4 flex-shrink-0">
+      <div className="px-4 pt-2 pb-4 flex-shrink-0">
         {/* Query Display Section - appears first */}
         <QueryDisplay query={query} treeMode={treeMode} />
         {/* Title and Guidance Section */}
@@ -251,11 +250,9 @@ export const MainContent = ({
           lastVisibleLevel={lastVisibleLevel}
           viewMode={viewMode}
         />
-      </div>
-
-      {/* Main content area with different handling for treemap vs mindmap */}
+      </div>      {/* Main content area with different handling for treemap vs mindmap */}
       {isTreemapView ? (
-        <div className="flex-1 min-h-0">
+        <div className="flex-1 min-h-0 overflow-hidden">
           <CardBasedTreemap
             selectedPath={selectedPath}
             level1Items={level1Items}

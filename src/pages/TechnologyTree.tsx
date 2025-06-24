@@ -702,14 +702,16 @@ const TechnologyTree = () => {
             toggleSidebar={toggleSidebar}
             setShowSidebar={setShowSidebar}
             handlePanelResize={handlePanelResize}
-            sidebarContent={sidebarContent}
-          >
-            <div className="p-4">
-              <FallbackAlert
-                isVisible={showFallbackAlert}
-                onDismiss={() => setShowFallbackAlert(false)}
-              />
-              <TechTreeMainContent
+            sidebarContent={sidebarContent}          >
+            <div className="h-full flex flex-col">
+              <div className="p-4 pb-0 flex-shrink-0">
+                <FallbackAlert
+                  isVisible={showFallbackAlert}
+                  onDismiss={() => setShowFallbackAlert(false)}
+                />
+              </div>
+              <div className="flex-1 min-h-0">
+                <TechTreeMainContent
                 selectedPath={selectedPath}
                 level1Items={level1Items}
                 level2Items={level2Items}
@@ -741,10 +743,10 @@ const TechnologyTree = () => {
                 canScrollRight={canScrollRight}
                 lastVisibleLevel={lastVisibleLevel}
                 containerRef={containerRef}
-                triggerScrollUpdate={triggerScrollUpdate}
-                viewMode={viewMode}
+                triggerScrollUpdate={triggerScrollUpdate}                viewMode={viewMode}
                 onToggleView={toggleView}
               />
+              </div>
             </div>
           </TechTreeLayout>          <ChatBox
             messages={chatMessages}
