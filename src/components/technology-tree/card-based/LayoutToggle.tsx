@@ -26,16 +26,16 @@ export const LayoutToggle: React.FC<LayoutToggleProps> = ({
           onValueChange={(value) => value && onLayoutChange(value as CardLayoutMode)}
           className="bg-gray-50 p-1 rounded-lg"
         >
-          <ToggleGroupItem value="single-row" aria-label="Single row layout" className="data-[state=on]:bg-white">
+          <ToggleGroupItem value="single-row" aria-label="Single row layout" className="data-[state=on]:bg-white data-[state=off]:opacity-60">
             <SingleRowIcon className="h-4 w-4" />
           </ToggleGroupItem>
-          <ToggleGroupItem value="one-per-row" aria-label="One card per row" className="data-[state=on]:bg-white">
+          <ToggleGroupItem value="one-per-row" aria-label="One card per row" className="data-[state=on]:bg-white data-[state=off]:opacity-60">
             <ThreeColumnsIcon className="h-4 w-4" />
           </ToggleGroupItem>
-          <ToggleGroupItem value="two-per-row" aria-label="Two cards per row" className="data-[state=on]:bg-white">
+          <ToggleGroupItem value="two-per-row" aria-label="Two cards per row" className="data-[state=on]:bg-white data-[state=off]:opacity-60">
             <TwoByTwoGridIcon className="h-4 w-4" />
           </ToggleGroupItem>
-          <ToggleGroupItem value="three-per-row" aria-label="Three cards per row" className="data-[state=on]:bg-white">
+          <ToggleGroupItem value="three-per-row" aria-label="Three cards per row" className="data-[state=on]:bg-white data-[state=off]:opacity-60">
             <ThreeColumnsWideIcon className="h-4 w-4" />
           </ToggleGroupItem>
         </ToggleGroup>
