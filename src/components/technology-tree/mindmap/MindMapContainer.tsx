@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
@@ -53,6 +54,19 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   // Add layout state - default to horizontal to preserve current behavior
   const [layoutDirection, setLayoutDirection] = useState<'horizontal' | 'vertical'>('horizontal');
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Add document-level wheel event debugging
+  useEffect(() => {
+    const handleDocumentWheel = (e: WheelEvent) => {
+      console.log('🟡 Document wheel event - should NOT fire when scrolling mindmap');
+      console.log('Target:', e.target);
+      console.log('Target className:', (e.target as HTMLElement)?.className);
+      console.log('Event timestamp:', Date.now());
+    };
+    
+    document.addEventListener('wheel', handleDocumentWheel);
+    return () => document.removeEventListener('wheel', handleDocumentWheel);
+  }, []);
 
   const { nodes, connections } = useMemo(() => {
     return transformToMindMapData(
@@ -130,10 +144,36 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     getTransform,
   } = usePanZoom(containerWidth, containerHeight);
 
-  // Additional wheel event handler for container-level isolation
-  const handleContainerWheel = (event: React.WheelEvent) => {
-    event.stopPropagation();
-    event.preventDefault();
+  // Replace the conflicting wheel handlers with comprehensive debug version
+  const handleContainerWheel = (e: React.WheelEvent) => {
+    console.log('🔴 Mindmap onWheelCapture triggered');
+    console.log('Target:', e.target);
+    console.log('Target className:', (e.target as HTMLElement)?.className);
+    console.log('CurrentTarget:', e.currentTarget);
+    console.log('CurrentTarget className:', (e.currentTarget as HTMLElement)?.className);
+    console.log('Event phase:', e.eventPhase);
+    console.log('Event bubbles:', e.bubbles);
+    console.log('Event timestamp:', Date.now());
+    
+    // Try all possible ways to stop event propagation
+    e.stopPropagation();
+    e.preventDefault();
+    if (e.nativeEvent && e.nativeEvent.stopImmediatePropagation) {
+      e.nativeEvent.stopImmediatePropagation();
+    }
+    
+    console.log('🔴 Event propagation stopped, calling handleWheel');
+    
+    // Call the pan/zoom wheel handler
+    handleWheel(e);
+  };
+
+  const handleInnerWheel = (e: React.WheelEvent) => {
+    console.log('🔵 Inner container wheel triggered');
+    console.log('Target:', (e.target as HTMLElement)?.className);
+    console.log('Event timestamp:', Date.now());
+    e.stopPropagation();
+    e.preventDefault();
   };
 
   // Center on selected node when switching from treemap to mindmap
@@ -194,13 +234,13 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     <TooltipProvider delayDuration={300} skipDelayDuration={100}>
       <div 
         ref={containerRef} 
-        className="w-full h-full overflow-hidden bg-white relative"
+        className="w-full h-full overflow-hidden bg-white relative mindmap-outer-container"
         onWheelCapture={handleContainerWheel}
         style={{ touchAction: 'none' }}
       >
         <div
-          className="w-full h-full relative"
-          onWheel={handleWheel}
+          className="w-full h-full relative mindmap-inner-container"
+          onWheel={handleInnerWheel}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -212,7 +252,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
           }}
         >
           <div
-            className="relative origin-top-left transition-transform duration-200 ease-out"
+            className="relative origin-top-left transition-transform duration-200 ease-out mindmap-content"
             style={{
               width: containerWidth,
               height: containerHeight,

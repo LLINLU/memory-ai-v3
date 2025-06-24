@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -95,7 +96,14 @@
     @apply border-border;
   }
 
-  body {
+  html, body {
     @apply bg-background text-foreground;
+    overflow: hidden; /* Prevent page-level scrolling */
+    height: 100%;
+  }
+
+  #root {
+    height: 100%;
+    overflow: hidden;
   }
 }

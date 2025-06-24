@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -30,8 +30,24 @@ export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
   setShowSidebar,
   handlePanelResize,
 }) => {
+  // Add debug logging for layout-level wheel events
+  useEffect(() => {
+    const handleLayoutWheel = (e: WheelEvent) => {
+      console.log('🟠 TechTreeLayout wheel event detected');
+      console.log('Target:', e.target);
+      console.log('Target className:', (e.target as HTMLElement)?.className);
+      console.log('Should be isolated by mindmap handlers');
+    };
+    
+    const layoutElement = document.querySelector('.tech-tree-layout');
+    if (layoutElement) {
+      layoutElement.addEventListener('wheel', handleLayoutWheel);
+      return () => layoutElement.removeEventListener('wheel', handleLayoutWheel);
+    }
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-gray-50 flex flex-col overflow-hidden tech-tree-layout">
       <div className="flex flex-1 overflow-hidden">
         <ResizablePanelGroup
           direction="horizontal"

@@ -41,6 +41,11 @@ export const usePanZoom = (
   const ZOOM_STEP = 0.2;
 
   const handleWheel = useCallback((event: React.WheelEvent) => {
+    console.log('🟢 usePanZoom handleWheel called');
+    console.log('Event target:', (event.target as HTMLElement)?.className);
+    console.log('DeltaY:', event.deltaY);
+    console.log('Event timestamp:', Date.now());
+    
     event.preventDefault();
     event.stopPropagation(); // Prevent event from bubbling up to page level
     
@@ -72,6 +77,8 @@ export const usePanZoom = (
       const zoomChange = newZoom / prev.zoom;
       const newPanX = centerX - (centerX - prev.panX) * zoomChange;
       const newPanY = centerY - (centerY - prev.panY) * zoomChange;
+      
+      console.log('🟢 Zoom updated:', { newZoom, newPanX, newPanY });
       
       return {
         zoom: newZoom,
