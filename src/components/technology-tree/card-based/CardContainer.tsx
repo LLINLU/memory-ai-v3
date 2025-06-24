@@ -96,7 +96,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   };
 
   const getCardClasses = () => {
-    return cardLayout === "single-row" ? "flex-shrink-0 w-80 mr-4" : "";
+    return cardLayout === "single-row" ? "flex-shrink-0 w-80" : "";
   };
 
   return (
