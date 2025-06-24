@@ -3,6 +3,7 @@
 
 export interface QueuedEnrichmentRequest {
   nodeId: string;
+  nodeName: string;
   type: 'papers' | 'useCases';
   params: any;
   callback: (response: any) => void;
@@ -28,6 +29,24 @@ export interface QueueState {
   lastHealthCheck: number;
 }
 
+
+export const getQueueListFormatted = () => {
+  const displayList = enrichmentQueue.getDisplayQueue();
+  return displayList.map(request => {
+    const elapsedSeconds = request.startTime
+      ? Math.floor((Date.now() - request.startTime) / 1000)
+      : 0;
+    const typeReadable = request.type === 'papers' ? '論文検索' : '事例検索';
+    return {
+      name: request.nodeName,
+      type: typeReadable,
+      elapsedSeconds,
+      status: request.status // new!
+    }
+  });
+};
+
+
 class EnrichmentQueueManager {
   private state: QueueState = {
     queue: [],
@@ -42,8 +61,8 @@ class EnrichmentQueueManager {
   private readonly MAX_CONSECUTIVE_FAILURES = 5;
 
   // Configuration
-  private readonly MAX_CONCURRENT_PAPERS = 20;
-  private readonly MAX_CONCURRENT_USECASES = 15;
+  private readonly MAX_CONCURRENT_PAPERS = 1;
+  private readonly MAX_CONCURRENT_USECASES = 1;
   private readonly POLLING_TIMEOUT = 4 * 60 * 1000; // 4 minutes for database polling
   private readonly POLLING_INTERVAL = 5000; // Poll database every 5 seconds
 
@@ -358,9 +377,26 @@ class EnrichmentQueueManager {
   private completeProcessing(key: string, status: EnrichmentStatus): void {
     const request = this.state.processing.get(key);
     if (request) {
+      // If done, keep in recentlyCompleted for display
+      if (status === 'done') {
+        this.recentlyCompleted.push({
+          nodeId: request.nodeId,
+          type: request.type,
+          nodeName: request.nodeName,
+          doneAt: Date.now(),
+          startTime: request.startTime // <-- copy this over!
+        });
+      }
       // Remove only this specific request from processing
       this.state.processing.delete(key);
       this.updateStatus(request.nodeId, request.type, status);
+
+      // Remove old completed
+      const now = Date.now();
+      this.recentlyCompleted = this.recentlyCompleted.filter(
+        (item) => now - item.doneAt < this.COMPLETED_DISPLAY_TIME
+      );
+
 
       const elapsedTime = request.startTime ? Date.now() - request.startTime : 0;
       console.log(`[ENRICHMENT_QUEUE] Completed processing ${key} with status: ${status} (${elapsedTime}ms)`);
@@ -375,6 +411,7 @@ class EnrichmentQueueManager {
       console.warn(`[ENRICHMENT_QUEUE] Attempted to complete non-existent request: ${key}`);
     }
   }
+
 
   /**
    * Update status and notify listeners
@@ -505,6 +542,30 @@ class EnrichmentQueueManager {
       return false;
     }
   }
+
+  private recentlyCompleted: { nodeId: string; type: 'papers' | 'useCases'; nodeName: string; doneAt: number,   startTime?: number;
+  }[] = [];
+  private readonly COMPLETED_DISPLAY_TIME = 30000; // 30 seconds
+
+
+  getDisplayQueue() {
+    // Get queue (waiting), processing (fetching), and recentlyCompleted (done)
+    const waiting = this.state.queue.map(request => ({
+      ...request,
+      status: 'waiting'
+    }));
+    const processing = Array.from(this.state.processing.values()).map(request => ({
+      ...request,
+      status: 'fetching'
+    }));
+    const done = this.recentlyCompleted.map(request => ({
+      ...request,
+      status: 'done'
+    }));
+    // Combine and sort, or whatever you want
+    return [...processing, ...waiting, ...done];
+  }
+
 }
 
 // Singleton instance
@@ -535,12 +596,14 @@ export const cancelEnrichment = (nodeId: string, type: 'papers' | 'useCases') =>
 
 export const enqueueEnrichment = (
   nodeId: string,
+  nodeName: string,
   type: 'papers' | 'useCases',
   params: any,
   callback: (response: any) => void
 ) => {
   enrichmentQueue.enqueue({
     nodeId,
+    nodeName,
     type,
     params,
     callback

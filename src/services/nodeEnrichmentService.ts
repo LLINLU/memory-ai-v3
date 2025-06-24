@@ -245,12 +245,12 @@ const callPapersEnrichment = async (
   params: NodeEnrichmentRequest,
   callback: StreamingCallback
 ): Promise<void> => {
-  const { nodeId } = params;
+  const { nodeId, nodeTitle } = params;
 
   console.log('[PAPERS_ENRICHMENT] Queueing papers enrichment for:', nodeId);
 
   // Use the queue system instead of direct API call
-  enqueueEnrichment(nodeId, 'papers', params, (response) => {
+  enqueueEnrichment(nodeId, nodeTitle, 'papers', params, (response) => {
     console.log('[PAPERS_ENRICHMENT] Queue response:', {
       nodeId,
       type: response.type,
@@ -290,12 +290,12 @@ const callUseCasesEnrichment = async (
   params: NodeEnrichmentRequest,
   callback: StreamingCallback
 ): Promise<void> => {
-  const { nodeId } = params;
+  const { nodeId,nodeTitle } = params;
 
   console.log('[USECASES_ENRICHMENT] Queueing use cases enrichment for:', nodeId);
 
   // Use the queue system instead of direct API call
-  enqueueEnrichment(nodeId, 'useCases', params, (response) => {
+  enqueueEnrichment(nodeId, nodeTitle, 'useCases', params, (response) => {
     console.log('[USECASES_ENRICHMENT] Queue response:', {
       nodeId,
       type: response.type,
