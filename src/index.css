@@ -105,9 +105,13 @@
     height: 100vh;
   }
 
-  /* Page-specific class for technology tree to prevent scrolling */
-  .tech-tree-page {
+  /* Page-specific classes for technology tree with different overflow behaviors */
+  .tech-tree-page-mindmap {
     overflow: hidden;
+    height: 100vh;
+  }
+
+  .tech-tree-page-treemap {
     height: 100vh;
   }
 }
