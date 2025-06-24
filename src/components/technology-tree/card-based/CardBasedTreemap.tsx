@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { LayoutToggle } from './LayoutToggle';
 import { CardContainer } from './CardContainer';
@@ -87,19 +88,6 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     isLevelExpanded,
   } = useCardExpansion();
 
-  // Add document-level wheel event debugging (keep for testing)
-  useEffect(() => {
-    const handleDocumentWheel = (e: WheelEvent) => {
-      console.log('🟡 Document wheel event - TreeMap should allow scrolling');
-      console.log('Target:', e.target);
-      console.log('Target className:', (e.target as HTMLElement)?.className);
-      console.log('Event timestamp:', Date.now());
-    };
-    
-    document.addEventListener('wheel', handleDocumentWheel);
-    return () => document.removeEventListener('wheel', handleDocumentWheel);
-  }, []);
-
   const allLevelItems = {
     level3Items,
     level4Items,
@@ -140,16 +128,13 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
   };
 
   return (
-    <div className="h-full overflow-hidden p-4 treemap-outer-container">
+    <div className="flex-1 flex flex-col overflow-hidden p-4 treemap-outer-container">
       <LayoutToggle 
         cardLayout={cardLayout}
         onLayoutChange={setCardLayout}
       />
 
-      <div 
-        className="overflow-y-auto" 
-        style={{ height: 'calc(100% - 80px)' }}
-      >
+      <div className="flex-1 overflow-y-auto">
         <CardContainer
           cardLayout={cardLayout}
           level1Items={level1Items}
