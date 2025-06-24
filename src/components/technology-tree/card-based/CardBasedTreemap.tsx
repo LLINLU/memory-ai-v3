@@ -87,10 +87,10 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     isLevelExpanded,
   } = useCardExpansion();
 
-  // Add document-level wheel event debugging
+  // Add document-level wheel event debugging (keep for testing)
   useEffect(() => {
     const handleDocumentWheel = (e: WheelEvent) => {
-      console.log('🟡 Document wheel event - should NOT fire when scrolling treemap');
+      console.log('🟡 Document wheel event - TreeMap should allow scrolling');
       console.log('Target:', e.target);
       console.log('Target className:', (e.target as HTMLElement)?.className);
       console.log('Event timestamp:', Date.now());
@@ -161,34 +161,32 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
   };
 
   return (
-    <div 
-      className="h-full overflow-hidden p-4 treemap-outer-container"
-      onWheelCapture={handleContainerWheel}
-      style={{ touchAction: 'none' }}
-    >
+    <div className="h-full overflow-hidden p-4 treemap-outer-container">
       <LayoutToggle 
         cardLayout={cardLayout}
         onLayoutChange={setCardLayout}
       />
 
-      <CardContainer
-        cardLayout={cardLayout}
-        level1Items={level1Items}
-        selectedPath={selectedPath}
-        level2Items={level2Items}
-        allLevelItems={allLevelItems}
-        levelNames={levelNames}
-        isScenarioExpanded={isScenarioExpanded}
-        isLevelExpanded={isLevelExpanded}
-        toggleScenarioExpansion={toggleScenarioExpansion}
-        toggleLevelExpansion={toggleLevelExpansion}
-        expandAll={expandAll}
-        collapseAll={collapseAll}
-        getAllLevelKeys={getAllLevelKeys}
-        onNodeClick={onNodeClick}
-        onEditNode={onEditNode}
-        onDeleteNode={onDeleteNode}
-      />
+      <div className="overflow-y-auto h-full">
+        <CardContainer
+          cardLayout={cardLayout}
+          level1Items={level1Items}
+          selectedPath={selectedPath}
+          level2Items={level2Items}
+          allLevelItems={allLevelItems}
+          levelNames={levelNames}
+          isScenarioExpanded={isScenarioExpanded}
+          isLevelExpanded={isLevelExpanded}
+          toggleScenarioExpansion={toggleScenarioExpansion}
+          toggleLevelExpansion={toggleLevelExpansion}
+          expandAll={expandAll}
+          collapseAll={collapseAll}
+          getAllLevelKeys={getAllLevelKeys}
+          onNodeClick={onNodeClick}
+          onEditNode={onEditNode}
+          onDeleteNode={onDeleteNode}
+        />
+      </div>
     </div>
   );
 };
