@@ -65,7 +65,7 @@ async function callSearchArticleAPI(request: SearchArticleRequest): Promise<Sear
 
   const responseText = await res.text();
   console.log("[PAPERS_ONLY] Raw API response:", responseText);
-  
+
   let responseData;
   try {
     responseData = JSON.parse(responseText);
@@ -88,9 +88,9 @@ async function callSearchArticleAPI(request: SearchArticleRequest): Promise<Sear
 // Mock search_article API for fallback
 async function mockSearchArticleAPI(query: string): Promise<SearchArticleResponse> {
   console.log(`[PAPERS_ONLY] Generating mock papers for query: ${query}`);
-  
+
   await new Promise((resolve) => setTimeout(resolve, 500));
-  
+
   const paperCount = Math.floor(Math.random() * 5) + 1;
   const papers: Paper[] = [];
 
@@ -223,35 +223,37 @@ serve(async (req) => {
 
     // Frontend ensures we only get called when papers don't exist, so fetch and save directly
     const articleRequest: SearchArticleRequest = { query: searchQuery };
-    let paperResult: SearchArticleResponse;
-    
+    let paperResult: SearchArticleResponse | null;
+
     try {
       paperResult = await callSearchArticleAPI(articleRequest);
     } catch (error) {
       console.warn("[PAPERS_ONLY] Papers API failed, using mock:", error.message);
-      paperResult = await mockSearchArticleAPI(searchQuery);
+      paperResult = null;
     }
 
-    const papers = paperResult.papers || [];
+    const papers = paperResult!.papers || [];
     console.log(`[PAPERS_ONLY] Got ${papers.length} papers, saving to database`);
 
     // Save papers to database (frontend ensures this won't conflict with existing data)
-    await saveNodePapers(sb, nodeId, treeId, papers, team_id || null);
+    if (papers.length) {
+      await saveNodePapers(sb, nodeId, treeId, papers, team_id || null);
+      console.log(`[PAPERS_ONLY] Completed papers enrichment for node: ${nodeTitle}`, response);
+    }
 
     const response = {
-      success: true,
+      success: papers.length? true: false,
       nodeId,
       nodeTitle,
       results: {
         papers: {
           count: papers.length,
-          saved: true,
+          saved: papers.length? true: false,
         },
       },
       timestamp: new Date().toISOString(),
     };
 
-    console.log(`[PAPERS_ONLY] Completed papers enrichment for node: ${nodeTitle}`, response);
 
     return new Response(JSON.stringify(response), {
       status: 200,

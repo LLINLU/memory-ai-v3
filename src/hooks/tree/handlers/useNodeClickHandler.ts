@@ -32,8 +32,8 @@ export const useNodeClickHandler = (
       // Check if node is already loading (either individual enrichment or level 1 automatic enrichment)
       const isIndividuallyLoading = isNodeLoading(nodeId);
       const isLevel1AutoLoading = level === 'level1' && isLevel1Loading(nodeId);
-      
-      if (isIndividuallyLoading || isLevel1AutoLoading) {
+
+      if (isIndividuallyLoading) {
         console.log('[NODE_ENRICHMENT] Node already loading, skipping:', {
           nodeId,
           level,
@@ -44,7 +44,7 @@ export const useNodeClickHandler = (
       } else {
         // Immediately signal that enrichment might start for this node (for loading UI)
         triggerEnrichmentStart(nodeId);
-        
+
         // Check if node already has data (consider both individual enrichment and level 1 enrichment)
         if (level === 'level1' && hasLevel1CompleteData(nodeId)) {
           console.log('[NODE_ENRICHMENT] Level 1 node already has complete data, skipping API call:', nodeId);
@@ -60,15 +60,15 @@ export const useNodeClickHandler = (
             } else {
             // Start enrichment process in background
             console.log('[NODE_ENRICHMENT] Starting enrichment for node (may have partial data):', nodeId);
-            
-            // Get node details from the tree data 
+
+            // Get node details from the tree data
             const { title: nodeTitle, description: nodeDescription } = getNodeDetails(level, nodeId, initialPath, treeData);
             console.log('[NODE_ENRICHMENT] Extracted node details:', { nodeTitle, nodeDescription });
-            
+
             // Build parent titles array - simplified to empty array for now
             const parentTitles = buildParentTitles(level, nodeId, initialPath, treeData);
             console.log('[NODE_ENRICHMENT] Built parent titles:', parentTitles);
-            
+
             // Build query parameter (combining search theme + node title + description)
             const searchTheme = locationState.query || '';
             const query = [searchTheme, nodeTitle, nodeDescription]
@@ -86,7 +86,7 @@ export const useNodeClickHandler = (
               team_id: userDetails.team_id
             }, (response: StreamingResponse) => {
               console.log('[NODE_ENRICHMENT_STREAMING] Received response:', response);
-              
+
               if (response.type === 'papers') {
                 console.log('[NODE_ENRICHMENT_STREAMING] Papers received - triggering refresh');
                 triggerEnrichmentRefresh(nodeId);
@@ -119,7 +119,7 @@ export const useNodeClickHandler = (
         // Clear the selected level and all subsequent levels
         return clearPathFromLevel(prev, level);
       }
-      
+
       // MINDMAP MODE: Set only the selected level without auto-selection
       if (disableAutoSelection) {
         console.log("Mindmap mode: Setting selected node for", level, nodeId);

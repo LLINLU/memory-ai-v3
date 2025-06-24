@@ -70,11 +70,11 @@ export const hasNodeEnrichedData = async (nodeId: string): Promise<boolean> => {
 
     // Check database for existing data
     const [papersResult, useCasesResult] = await Promise.all([
-      supabase.from('node_papers').select('id').eq('node_id', nodeId).limit(1),
-      supabase.from('node_use_cases').select('id').eq('node_id', nodeId).limit(1)
+      supabase.from('node_papers').select('id').eq('node_id', nodeId).limit(20),
+      supabase.from('node_use_cases').select('id').eq('node_id', nodeId).limit(20)
     ]);
 
-    const hasCompleteData = (papersResult.data && papersResult.data.length > 0) && 
+    const hasCompleteData = (papersResult.data && papersResult.data.length > 0) &&
                            (useCasesResult.data && useCasesResult.data.length > 0);
 
     if (hasCompleteData) {
@@ -128,16 +128,16 @@ export const callNodeEnrichmentStreaming = async (
 
     // Only call APIs for data that doesn't exist yet
     const promises: Promise<void>[] = [];
-    
+
     if (!papersExist) {
       console.log('[NODE_ENRICHMENT_STREAMING] Papers missing, calling papers API');
       loadingPapers.add(nodeId); // Mark papers as loading
-      
+
       // Import and trigger papers start event for sidebar
       import('@/hooks/useEnrichedData').then(({ triggerPapersStart }) => {
         triggerPapersStart(nodeId);
       });
-      
+
       promises.push(callPapersEnrichment(params, callback));
     } else {
       console.log('[NODE_ENRICHMENT_STREAMING] Papers already exist, skipping papers API');
@@ -146,12 +146,12 @@ export const callNodeEnrichmentStreaming = async (
     if (!useCasesExist) {
       console.log('[NODE_ENRICHMENT_STREAMING] Use cases missing, calling use cases API');
       loadingUseCases.add(nodeId); // Mark use cases as loading
-      
+
       // Import and trigger use cases start event for sidebar
       import('@/hooks/useEnrichedData').then(({ triggerUseCasesStart }) => {
         triggerUseCasesStart(nodeId);
       });
-      
+
       promises.push(callUseCasesEnrichment(params, callback));
     } else {
       console.log('[NODE_ENRICHMENT_STREAMING] Use cases already exist, skipping use cases API');
@@ -173,7 +173,7 @@ export const callNodeEnrichmentStreaming = async (
     await Promise.allSettled(promises);
 
     console.log('[NODE_ENRICHMENT_STREAMING] All missing data processed');
-    
+
     // Add a small delay to ensure all callbacks have been processed
     setTimeout(() => {
       console.log('[NODE_ENRICHMENT_STREAMING] Triggering final completion callback');
@@ -213,7 +213,7 @@ const checkPapersExist = async (nodeId: string): Promise<boolean> => {
       return false;
     }
 
-    return (count ?? 0) > 0;
+    return (count ?? 0) > 10;
   } catch (error) {
     console.error('[CHECK_PAPERS] Error:', error);
     return false;
@@ -246,9 +246,9 @@ const callPapersEnrichment = async (
   callback: StreamingCallback
 ): Promise<void> => {
   const { nodeId } = params;
-  
+
   console.log('[PAPERS_ENRICHMENT] Queueing papers enrichment for:', nodeId);
-  
+
   // Use the queue system instead of direct API call
   enqueueEnrichment(nodeId, 'papers', params, (response) => {
     console.log('[PAPERS_ENRICHMENT] Queue response:', {
@@ -270,16 +270,16 @@ const callPapersEnrichment = async (
       console.log('[PAPERS_ENRICHMENT] Papers enrichment completed, triggering callback');
       callback({
         type: 'papers',
-        data: { 
+        data: {
           count: response.data?.count || 0,
           saved: response.data?.saved || false,
-          response: response.data 
+          response: response.data
         },
         nodeId,
         timestamp: new Date().toISOString()
       });
     }
-    
+
     // Always remove papers loading state when done
     loadingPapers.delete(nodeId);
   });
@@ -291,9 +291,9 @@ const callUseCasesEnrichment = async (
   callback: StreamingCallback
 ): Promise<void> => {
   const { nodeId } = params;
-  
+
   console.log('[USECASES_ENRICHMENT] Queueing use cases enrichment for:', nodeId);
-  
+
   // Use the queue system instead of direct API call
   enqueueEnrichment(nodeId, 'useCases', params, (response) => {
     console.log('[USECASES_ENRICHMENT] Queue response:', {
@@ -315,16 +315,16 @@ const callUseCasesEnrichment = async (
       console.log('[USECASES_ENRICHMENT] Use cases enrichment completed, triggering callback');
       callback({
         type: 'useCases',
-        data: { 
+        data: {
           count: response.data?.count || 0,
           saved: response.data?.saved || false,
-          response: response.data 
+          response: response.data
         },
         nodeId,
         timestamp: new Date().toISOString()
       });
     }
-    
+
     // Always remove use cases loading state when done
     loadingUseCases.delete(nodeId);
   });
@@ -433,36 +433,36 @@ export const getNodeDetails = (
   try {
     let nodeTitle = '';
     let nodeDescription = '';
-    
+
     console.log('[NODE_ENRICHMENT] Getting node details for:', {
       level,
       nodeId,
       selectedPath,
       treeDataKeys: Object.keys(treeData || {})
     });
-    
+
     if (level === 'level1') {
       // Level 1 nodes are in treeData.level1Items array
       const node = treeData?.level1Items?.find((item: any) => item.id === nodeId);
       nodeTitle = node?.name || '';
       nodeDescription = node?.description || '';
-      console.log('[NODE_ENRICHMENT] Found level1 node:', { 
+      console.log('[NODE_ENRICHMENT] Found level1 node:', {
         level1ItemsCount: treeData?.level1Items?.length || 0,
         searchingForId: nodeId,
-        node, 
-        nodeTitle, 
-        nodeDescription 
+        node,
+        nodeTitle,
+        nodeDescription
       });
     } else {
       // Level 2+ nodes are in treeData.levelXItems[parentId] arrays
       const levels = ['level1', 'level2', 'level3', 'level4', 'level5', 'level6', 'level7', 'level8', 'level9', 'level10'];
       const targetLevelIndex = levels.indexOf(level);
-      
+
       if (targetLevelIndex > 0) {
         const parentLevel = levels[targetLevelIndex - 1];
         const parentNodeId = selectedPath[parentLevel];
         const levelKey = `${level}Items`;
-        
+
         console.log('[NODE_ENRICHMENT] Looking for node in:', {
           parentLevel,
           parentNodeId,
@@ -471,20 +471,20 @@ export const getNodeDetails = (
           hasParentData: !!treeData?.[levelKey]?.[parentNodeId],
           allParentKeys: treeData?.[levelKey] ? Object.keys(treeData[levelKey]) : []
         });
-        
+
         // Look in the parent's children array
         const parentItems = treeData?.[levelKey]?.[parentNodeId] || [];
         const node = parentItems.find((item: any) => item.id === nodeId);
         nodeTitle = node?.name || '';
         nodeDescription = node?.description || '';
-        
-        console.log('[NODE_ENRICHMENT] Found node in parent children:', { 
+
+        console.log('[NODE_ENRICHMENT] Found node in parent children:', {
           parentItems: parentItems.length,
           parentItemIds: parentItems.map((item: any) => ({ id: item.id, name: item.name })),
           searchingForId: nodeId,
-          node, 
-          nodeTitle, 
-          nodeDescription 
+          node,
+          nodeTitle,
+          nodeDescription
         });
 
         // If not found in expected parent, let's search all parents for this level
@@ -506,17 +506,17 @@ export const getNodeDetails = (
             }
           }
         }
-        
+
         // If still not found, fall back to comprehensive search
         if (!nodeTitle && !nodeDescription) {
           console.log('[NODE_ENRICHMENT] Comprehensive search for node:', nodeId);
-          
+
           // Search through all levels to find this node
           const allLevelKeys = ['level1Items', 'level2Items', 'level3Items', 'level4Items', 'level5Items', 'level6Items', 'level7Items', 'level8Items', 'level9Items', 'level10Items'];
-          
+
           for (const levelKey of allLevelKeys) {
             if (!treeData?.[levelKey]) continue;
-            
+
             if (levelKey === 'level1Items') {
               // Level 1 is an array
               const foundNode = treeData[levelKey].find((item: any) => item.id === nodeId);

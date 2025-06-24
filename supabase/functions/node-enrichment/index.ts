@@ -288,7 +288,7 @@ async function checkPapersExist(
   }
 
   console.log(`[CHECK_PAPERS] Found ${count} existing papers for node ${nodeId}.`);
-  return (count ?? 0) > 0;
+  return (count ?? 0) > 10;
 }
 
 /**
@@ -656,11 +656,11 @@ serve(async (req) => {
       checkPapersExist(sb, nodeId),
       checkUseCasesExist(sb, nodeId),
     ]);
-    
+
     // Determine what to skip based on enrichType and existing data
     let skipPapers = papersExist;
     let skipUseCases = useCasesExist;
-    
+
     if (enrichType === 'papers') {
       skipUseCases = true; // Only process papers
     } else if (enrichType === 'useCases') {
@@ -668,12 +668,12 @@ serve(async (req) => {
     }
 
     console.log(
-      `[NODE_ENRICHMENT] Pre-flight check for node ${nodeId}:`, { 
-        skipPapers, 
-        skipUseCases, 
+      `[NODE_ENRICHMENT] Pre-flight check for node ${nodeId}:`, {
+        skipPapers,
+        skipUseCases,
         enrichType: enrichType || 'both',
         papersExist,
-        useCasesExist 
+        useCasesExist
       }
     );
 
@@ -684,14 +684,14 @@ serve(async (req) => {
     // Build the query string using the API format: query + "," + parentTitles.join(",") + nodeTitle + nodeDescription
     const nodeDesc = nodeDescription || "";
     const parentTitlesStr = Array.isArray(parentTitles) ? parentTitles.join(",") : "";
-    
+
     const searchQuery = [
       query,
       parentTitlesStr,
       nodeTitle,
       nodeDesc
     ].filter(part => part && part.trim() !== "").join(",");
-    
+
     console.log(`[NODE_ENRICHMENT] Built query: ${searchQuery}`);
 
     // Handle streaming vs non-streaming responses
@@ -748,11 +748,11 @@ async function handleStreamingResponse(
       // Process papers and use cases independently
       const processPapers = async () => {
         if (skipPapers) return;
-        
+
         try {
           console.log("[STREAMING] Starting papers API call");
           const articleRequest: SearchArticleRequest = { query: searchQuery };
-          
+
           let paperResult: SearchArticleResponse;
           try {
             paperResult = await callSearchArticleAPI(articleRequest);
@@ -763,10 +763,10 @@ async function handleStreamingResponse(
 
           const papers = paperResult.papers || [];
           console.log(`[STREAMING] Got ${papers.length} papers, saving to database`);
-          
+
           // Save papers to database
           await saveNodePapers(sb, nodeId, treeId, papers, team_id);
-          
+
           // Send papers response
           sendChunk({
             type: 'papers',
@@ -778,7 +778,7 @@ async function handleStreamingResponse(
             nodeId,
             timestamp: new Date().toISOString()
           });
-          
+
           console.log("[STREAMING] Papers completed and sent");
         } catch (error) {
           console.error("[STREAMING] Papers processing failed:", error);
@@ -793,11 +793,11 @@ async function handleStreamingResponse(
 
       const processUseCases = async () => {
         if (skipUseCases) return;
-        
+
         try {
           console.log("[STREAMING] Starting use cases API call");
           const marketImplRequest: SearchMarketImplRequest = { query: searchQuery };
-          
+
           let useCaseResult: SearchMarketImplResponse;
           try {
             useCaseResult = await callSearchMarketImplAPI(marketImplRequest);
@@ -808,10 +808,10 @@ async function handleStreamingResponse(
 
           const useCases = useCaseResult.use_cases || [];
           console.log(`[STREAMING] Got ${useCases.length} use cases, saving to database`);
-          
+
           // Save use cases to database
           await saveNodeUseCases(sb, nodeId, treeId, useCases, team_id);
-          
+
           // Send use cases response
           sendChunk({
             type: 'useCases',
@@ -823,7 +823,7 @@ async function handleStreamingResponse(
             nodeId,
             timestamp: new Date().toISOString()
           });
-          
+
           console.log("[STREAMING] Use cases completed and sent");
         } catch (error) {
           console.error("[STREAMING] Use cases processing failed:", error);
