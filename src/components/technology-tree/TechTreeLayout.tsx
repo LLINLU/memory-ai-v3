@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { CollapsedSidebar } from "@/components/technology-tree/CollapsedSidebar";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+
 interface TechTreeLayoutProps {
   children: React.ReactNode;
   sidebarContent: React.ReactNode;
@@ -13,6 +14,7 @@ interface TechTreeLayoutProps {
   setShowSidebar: (show: boolean) => void;
   handlePanelResize: () => void;
 }
+
 export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
   children,
   sidebarContent,
@@ -68,7 +70,7 @@ export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
         <ResizableHandle withHandle className="w-px transition-colors bg-slate-200" />
 
         {/* Sidebar panel */}
-        <ResizablePanel defaultSize={25} minSize={15} maxSize={40} className="bg-white border-l border-gray-200 shadow-lg">
+        <ResizablePanel defaultSize={25} minSize={15} maxSize={40} className="bg-white border-l border-gray-200">
           {sidebarContent}
         </ResizablePanel>
       </ResizablePanelGroup>
