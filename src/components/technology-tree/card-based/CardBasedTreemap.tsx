@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { LayoutToggle } from './LayoutToggle';
 import { CardContainer } from './CardContainer';
@@ -127,14 +128,18 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
   };
 
   return (
-    <div className="treemap-scroll-container">
-      <div className="p-4" style={{ minHeight: '150vh' }}>
+    <div className="h-full flex flex-col">
+      {/* Fixed Layout Toggle at top */}
+      <div className="flex-shrink-0 p-4 pb-0">
         <LayoutToggle 
           cardLayout={cardLayout}
           onLayoutChange={setCardLayout}
         />
+      </div>
 
-        <div className="mt-6">
+      {/* Scrollable Cards Container */}
+      <div className="flex-1 treemap-scroll-container">
+        <div className="p-4 pt-6">
           <CardContainer
             cardLayout={cardLayout}
             level1Items={level1Items}
