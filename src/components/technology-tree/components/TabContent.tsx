@@ -41,11 +41,6 @@ export const TabContent: React.FC<TabContentProps> = ({
 
   const paperListRef = useRef<HTMLDivElement>(null);
 
-  // Handle wheel events to prevent bubbling to main page
-  const handleContentWheel = (event: React.WheelEvent) => {
-    event.stopPropagation();
-  };
-
   useEffect(() => {
     // Expose the init function globally for Google
     (window as any).googleTranslateElementInit = function () {
@@ -102,9 +97,8 @@ export const TabContent: React.FC<TabContentProps> = ({
       </div>
       
       <div 
-        className="flex-1 overflow-auto px-4 pb-4" 
+        className="flex-1 overflow-y-auto px-4 pb-4" 
         data-papers-scroll
-        onWheel={handleContentWheel}
       >
         <div className="translate">
           {activeTab === "papers" ? (

@@ -130,13 +130,8 @@ export const MainContent = ({
     }
   };
 
-  // Handle wheel events to prevent bubbling to page level
-  const handleMainContentWheel = (event: React.WheelEvent) => {
-    event.stopPropagation();
-  };
-
   return (
-    <div className="h-full flex flex-col overflow-hidden" onWheel={handleMainContentWheel}>
+    <div className="h-full flex flex-col overflow-hidden">
       <div className="container mx-auto px-4 pt-2 pb-4 flex-shrink-0">
         {/* Query Display Section - appears first */}
         <QueryDisplay query={query} treeMode={treeMode} />

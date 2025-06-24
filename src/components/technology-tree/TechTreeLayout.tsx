@@ -1,10 +1,5 @@
 
 import React, { useEffect } from "react";
-import {
-  ResizablePanelGroup,
-  ResizablePanel,
-  ResizableHandle,
-} from "@/components/ui/resizable";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { CollapsedSidebar } from "@/components/technology-tree/CollapsedSidebar";
@@ -47,40 +42,32 @@ export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col overflow-hidden tech-tree-layout">
-      <div className="flex flex-1 overflow-hidden">
-        <ResizablePanelGroup
-          direction="horizontal"
-          onLayout={handlePanelResize}
-          className="overflow-hidden"
-        >
-          <ResizablePanel
-            defaultSize={isExpanded ? 20 : 60}
-            minSize={isExpanded ? 15 : 30}
-            maxSize={isExpanded ? 30 : 70}
-            className="overflow-hidden"
-            onResize={handlePanelResize}
-          >
-            <div className="h-full overflow-hidden">
-              {children}
-            </div>
-          </ResizablePanel>
-
-          <ResizableHandle withHandle />
-
-          {showSidebar && !collapsedSidebar && sidebarContent}
-        </ResizablePanelGroup>
-        {collapsedSidebar && <CollapsedSidebar toggleSidebar={toggleSidebar} />}
-        {!showSidebar && !collapsedSidebar && (
-          <Button
-            className="fixed right-4 bottom-4 rounded-full bg-blue-500 p-3"
-            onClick={() => setShowSidebar(true)}
-            size="icon"
-          >
-            <Search className="h-5 w-5" />
-          </Button>
-        )}
+    <div className="h-screen bg-gray-50 flex overflow-hidden tech-tree-layout">
+      {/* Left side - Mindmap/Treemap area */}
+      <div className="flex-1 overflow-hidden">
+        {children}
       </div>
+
+      {/* Right side - Papers panel */}
+      {showSidebar && !collapsedSidebar && (
+        <div className="w-96 h-full bg-white border-l border-gray-200 shadow-lg">
+          {sidebarContent}
+        </div>
+      )}
+
+      {/* Collapsed sidebar */}
+      {collapsedSidebar && <CollapsedSidebar toggleSidebar={toggleSidebar} />}
+
+      {/* Floating search button when sidebar is hidden */}
+      {!showSidebar && !collapsedSidebar && (
+        <Button
+          className="fixed right-4 bottom-4 rounded-full bg-blue-500 p-3"
+          onClick={() => setShowSidebar(true)}
+          size="icon"
+        >
+          <Search className="h-5 w-5" />
+        </Button>
+      )}
     </div>
   );
 };
