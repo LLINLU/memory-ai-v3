@@ -1,7 +1,7 @@
-
 import React from 'react';
-import { Square, RectangleVertical, Columns2, Columns3 } from 'lucide-react';
+import { RectangleVertical, Columns2, Columns3 } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { SingleRowIcon } from './SingleRowIcon';
 
 type CardLayoutMode = "single-row" | "one-per-row" | "two-per-row" | "three-per-row";
 
@@ -24,7 +24,7 @@ export const LayoutToggle: React.FC<LayoutToggleProps> = ({
           className="bg-gray-50 p-1 rounded-lg"
         >
           <ToggleGroupItem value="single-row" aria-label="Single row layout" className="data-[state=on]:bg-white">
-            <Square className="h-4 w-4" />
+            <SingleRowIcon className="h-4 w-4" />
           </ToggleGroupItem>
           <ToggleGroupItem value="one-per-row" aria-label="One card per row" className="data-[state=on]:bg-white">
             <RectangleVertical className="h-4 w-4" />
