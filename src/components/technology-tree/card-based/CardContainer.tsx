@@ -1,6 +1,21 @@
 
 import React from 'react';
-import { ScenarioCard } from './ScenarioCard';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  horizontalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { DraggableCard } from './DraggableCard';
 
 interface LevelItem {
   id: string;
@@ -61,6 +76,7 @@ interface CardContainerProps {
   onNodeClick: (level: string, nodeId: string) => void;
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
+  onCardReorder?: (newOrder: LevelItem[]) => void;
 }
 
 export const CardContainer: React.FC<CardContainerProps> = ({
@@ -80,7 +96,20 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   onNodeClick,
   onEditNode,
   onDeleteNode,
-}) => {  const getLayoutClasses = () => {
+  onCardReorder,
+}) => {
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const getLayoutClasses = () => {
     switch (cardLayout) {
       case "single-row":
         return "flex flex-nowrap overflow-x-auto overflow-y-visible";
@@ -99,35 +128,71 @@ export const CardContainer: React.FC<CardContainerProps> = ({
     return cardLayout === "single-row" ? "flex-shrink-0 w-80" : "";
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      const oldIndex = level1Items.findIndex(item => item.id === active.id);
+      const newIndex = level1Items.findIndex(item => item.id === over?.id);
+      
+      const newOrder = arrayMove(level1Items, oldIndex, newIndex);
+      onCardReorder?.(newOrder);
+    }
+  };
+
+  const isDraggable = cardLayout === "single-row" && level1Items.length > 1;
+
+  const renderCards = () => {
+    return level1Items.map((scenario) => {
+      const scenarioLevel2Items = level2Items[scenario.id] || [];
+      const isExpanded = isScenarioExpanded(scenario.id);
+      
+      return (
+        <div key={scenario.id} className={getCardClasses()}>
+          <DraggableCard
+            scenario={scenario}
+            selectedPath={selectedPath}
+            level2Items={scenarioLevel2Items}
+            allLevelItems={allLevelItems}
+            levelNames={levelNames}
+            isExpanded={isExpanded}
+            isLevelExpanded={(levelKey) => isLevelExpanded(scenario.id, levelKey)}
+            onToggleExpansion={() => toggleScenarioExpansion(scenario.id)}
+            onToggleLevelExpansion={(levelKey) => toggleLevelExpansion(scenario.id, levelKey)}
+            onExpandAll={() => expandAll(scenario.id, getAllLevelKeys(scenario.id))}
+            onCollapseAll={() => collapseAll(scenario.id)}
+            onNodeClick={onNodeClick}
+            onEditNode={onEditNode}
+            onDeleteNode={onDeleteNode}
+            isDraggable={isDraggable}
+          />
+        </div>
+      );
+    });
+  };
+
+  if (isDraggable) {
+    return (
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={level1Items.map(item => item.id)}
+          strategy={horizontalListSortingStrategy}
+        >
+          <div className={`${getLayoutClasses()} gap-4`}>
+            {renderCards()}
+          </div>
+        </SortableContext>
+      </DndContext>
+    );
+  }
+
   return (
     <div className={`${getLayoutClasses()} gap-4`}>
-      {level1Items.map((scenario) => {
-        const scenarioLevel2Items = level2Items[scenario.id] || [];
-        const isExpanded = isScenarioExpanded(scenario.id);
-        const shouldTakeFullWidth = false;
-        
-        return (
-          <div key={scenario.id} className={getCardClasses()}>
-            <ScenarioCard
-              scenario={scenario}
-              selectedPath={selectedPath}
-              level2Items={scenarioLevel2Items}
-              allLevelItems={allLevelItems}
-              levelNames={levelNames}
-              isExpanded={isExpanded}
-              isLevelExpanded={(levelKey) => isLevelExpanded(scenario.id, levelKey)}
-              onToggleExpansion={() => toggleScenarioExpansion(scenario.id)}
-              onToggleLevelExpansion={(levelKey) => toggleLevelExpansion(scenario.id, levelKey)}
-              onExpandAll={() => expandAll(scenario.id, getAllLevelKeys(scenario.id))}
-              onCollapseAll={() => collapseAll(scenario.id)}
-              onNodeClick={onNodeClick}
-              onEditNode={onEditNode}
-              onDeleteNode={onDeleteNode}
-              shouldTakeFullWidth={shouldTakeFullWidth}
-            />
-          </div>
-        );
-      })}
+      {renderCards()}
     </div>
   );
 };

@@ -1,7 +1,9 @@
+
 import React, { useState } from 'react';
 import { LayoutToggle } from './LayoutToggle';
 import { CardContainer } from './CardContainer';
 import { useCardExpansion } from './hooks/useCardExpansion';
+
 interface LevelItem {
   id: string;
   name: string;
@@ -10,6 +12,7 @@ interface LevelItem {
   description?: string;
   children_count?: number;
 }
+
 interface CardBasedTreemapProps {
   selectedPath: {
     level1: string;
@@ -52,7 +55,9 @@ interface CardBasedTreemapProps {
   }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
 }
+
 type CardLayoutMode = "single-row" | "one-per-row" | "two-per-row" | "three-per-row";
+
 export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
   selectedPath,
   level1Items,
@@ -76,6 +81,13 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
   onDeleteNode
 }) => {
   const [cardLayout, setCardLayout] = useState<CardLayoutMode>("three-per-row");
+  const [cardOrder, setCardOrder] = useState<LevelItem[]>(level1Items);
+
+  // Update card order when level1Items changes
+  React.useEffect(() => {
+    setCardOrder(level1Items);
+  }, [level1Items]);
+
   const {
     toggleScenarioExpansion,
     toggleLevelExpansion,
@@ -84,6 +96,7 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     isScenarioExpanded,
     isLevelExpanded
   } = useCardExpansion();
+
   const allLevelItems = {
     level3Items,
     level4Items,
@@ -94,6 +107,7 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     level9Items,
     level10Items
   };
+
   const getAllLevelKeys = (scenarioId: string): string[] => {
     const keys: string[] = [];
     const addKeysRecursively = (items: LevelItem[], prefix: string, level: number) => {
@@ -109,7 +123,14 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     const scenarioLevel2Items = level2Items[scenarioId] || [];
     addKeysRecursively(scenarioLevel2Items, scenarioId, 2);
     return keys;
-  };  return <div className="h-full flex flex-col">
+  };
+
+  const handleCardReorder = (newOrder: LevelItem[]) => {
+    setCardOrder(newOrder);
+  };
+
+  return (
+    <div className="h-full flex flex-col">
       {/* Fixed Layout Toggle at top */}
       <div className="flex-shrink-0 p-4 pb-0 py-0">
         <LayoutToggle cardLayout={cardLayout} onLayoutChange={setCardLayout} />
@@ -118,8 +139,27 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
       {/* Scrollable Cards Container */}
       <div className="flex-1 min-h-0 treemap-scroll-container">
         <div className="p-4 pt-6">
-          <CardContainer cardLayout={cardLayout} level1Items={level1Items} selectedPath={selectedPath} level2Items={level2Items} allLevelItems={allLevelItems} levelNames={levelNames} isScenarioExpanded={isScenarioExpanded} isLevelExpanded={isLevelExpanded} toggleScenarioExpansion={toggleScenarioExpansion} toggleLevelExpansion={toggleLevelExpansion} expandAll={expandAll} collapseAll={collapseAll} getAllLevelKeys={getAllLevelKeys} onNodeClick={onNodeClick} onEditNode={onEditNode} onDeleteNode={onDeleteNode} />
+          <CardContainer
+            cardLayout={cardLayout}
+            level1Items={cardOrder}
+            selectedPath={selectedPath}
+            level2Items={level2Items}
+            allLevelItems={allLevelItems}
+            levelNames={levelNames}
+            isScenarioExpanded={isScenarioExpanded}
+            isLevelExpanded={isLevelExpanded}
+            toggleScenarioExpansion={toggleScenarioExpansion}
+            toggleLevelExpansion={toggleLevelExpansion}
+            expandAll={expandAll}
+            collapseAll={collapseAll}
+            getAllLevelKeys={getAllLevelKeys}
+            onNodeClick={onNodeClick}
+            onEditNode={onEditNode}
+            onDeleteNode={onDeleteNode}
+            onCardReorder={handleCardReorder}
+          />
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
