@@ -692,9 +692,9 @@ const TechnologyTree = () => {
 
   return (
     <SidebarProvider defaultOpen={false}>
-      <div className={`min-h-screen flex w-full ${viewMode === 'mindmap' ? 'overflow-hidden tech-tree-page-mindmap' : 'tech-tree-page-treemap'}`}>
+      <div className="min-h-screen flex w-full overflow-hidden tech-tree-page">
         <AppSidebar />
-        <div className={`flex-1 ${viewMode === 'mindmap' ? 'overflow-hidden' : ''}`}>
+        <div className="flex-1 overflow-hidden">
           <TechTreeLayout
             showSidebar={showSidebar}
             collapsedSidebar={collapsedSidebar}
@@ -746,9 +746,7 @@ const TechnologyTree = () => {
                 onToggleView={toggleView}
               />
             </div>
-          </TechTreeLayout>
-          
-          <ChatBox
+          </TechTreeLayout>          <ChatBox
             messages={chatMessages}
             inputValue={inputValue}
             onInputChange={handleInputChange}
