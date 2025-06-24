@@ -1,11 +1,11 @@
 
 import React from 'react';
 
-interface SingleRowIconProps {
+interface HorizontalBarsIconProps {
   className?: string;
 }
 
-export const SingleRowIcon: React.FC<SingleRowIconProps> = ({ className = "" }) => {
+export const HorizontalBarsIcon: React.FC<HorizontalBarsIconProps> = ({ className = "" }) => {
   return (
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
