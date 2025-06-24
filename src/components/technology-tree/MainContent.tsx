@@ -1,4 +1,3 @@
-
 import React from "react";
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
@@ -254,7 +253,7 @@ export const MainContent = ({
         />
       </div>
 
-      <div className="flex-1 overflow-hidden">
+      <div className={`flex-1 ${isMindmapView ? 'overflow-hidden' : ''}`}>
         {isTreemapView ? (
           <CardBasedTreemap
             selectedPath={selectedPath}
