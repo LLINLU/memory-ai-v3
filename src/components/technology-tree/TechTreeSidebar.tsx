@@ -58,7 +58,22 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
   selectedPath,
 }) => {
   // Handle wheel events to prevent bubbling to main page level
+  // but allow scrolling within scrollable containers
   const handleSidebarWheel = (event: React.WheelEvent) => {
+    const target = event.target as HTMLElement;
+    
+    // Find if the target or any parent has overflow-auto or scroll capability
+    let current = target;
+    while (current && current !== event.currentTarget) {
+      const computedStyle = window.getComputedStyle(current);
+      if (computedStyle.overflowY === 'auto' || computedStyle.overflowY === 'scroll') {
+        // Allow natural scrolling within scrollable containers
+        return;
+      }
+      current = current.parentElement as HTMLElement;
+    }
+    
+    // Only stop propagation if not within a scrollable container
     event.stopPropagation();
   };
 
