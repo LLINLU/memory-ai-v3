@@ -1,5 +1,5 @@
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
 import { MindMapConnections } from "./MindMapConnections";
@@ -25,7 +25,9 @@ interface MindMapContainerProps {
   onNodeClick: (level: string, nodeId: string) => void;
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
-  treeMode?: string; // Add treeMode prop
+  treeMode?: string;
+  justSwitchedView?: boolean;
+  onViewSwitchHandled?: () => void;
 }
 
 export const MindMapContainer: React.FC<MindMapContainerProps> = ({
@@ -45,10 +47,26 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   onNodeClick,
   onEditNode,
   onDeleteNode,
-  treeMode, // Add treeMode parameter
+  treeMode,
+  justSwitchedView,
+  onViewSwitchHandled,
 }) => {
   // Add layout state - default to horizontal to preserve current behavior
   const [layoutDirection, setLayoutDirection] = useState<'horizontal' | 'vertical'>('horizontal');
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Add document-level wheel event debugging
+  useEffect(() => {
+    const handleDocumentWheel = (e: WheelEvent) => {
+      console.log('🟡 Document wheel event - should NOT fire when scrolling mindmap');
+      console.log('Target:', e.target);
+      console.log('Target className:', (e.target as HTMLElement)?.className);
+      console.log('Event timestamp:', Date.now());
+    };
+    
+    document.addEventListener('wheel', handleDocumentWheel);
+    return () => document.removeEventListener('wheel', handleDocumentWheel);
+  }, []);
 
   const { nodes, connections } = useMemo(() => {
     return transformToMindMapData(
@@ -122,13 +140,79 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     zoomIn,
     zoomOut,
     resetView,
+    centerOnNode,
     getTransform,
   } = usePanZoom(containerWidth, containerHeight);
 
+  // Replace the conflicting wheel handlers with comprehensive debug version
+  const handleContainerWheel = (e: React.WheelEvent) => {
+    console.log('🔴 Mindmap onWheelCapture triggered');
+    console.log('Target:', e.target);
+    console.log('Target className:', (e.target as HTMLElement)?.className);
+    console.log('CurrentTarget:', e.currentTarget);
+    console.log('CurrentTarget className:', (e.currentTarget as HTMLElement)?.className);
+    console.log('Event phase:', e.eventPhase);
+    console.log('Event bubbles:', e.bubbles);
+    console.log('Event timestamp:', Date.now());
+    
+    // Try all possible ways to stop event propagation
+    e.stopPropagation();
+    e.preventDefault();
+    if (e.nativeEvent && e.nativeEvent.stopImmediatePropagation) {
+      e.nativeEvent.stopImmediatePropagation();
+    }
+    
+    console.log('🔴 Event propagation stopped, calling handleWheel');
+    
+    // Call the pan/zoom wheel handler
+    handleWheel(e);
+  };
+
+  const handleInnerWheel = (e: React.WheelEvent) => {
+    console.log('🔵 Inner container wheel triggered');
+    console.log('Target:', (e.target as HTMLElement)?.className);
+    console.log('Event timestamp:', Date.now());
+    e.stopPropagation();
+    e.preventDefault();
+  };
+
+  // Center on selected node when switching from treemap to mindmap
+  useEffect(() => {
+    if (justSwitchedView && nodes.length > 0 && containerRef.current) {
+      // Find the selected node
+      const selectedNode = nodes.find(node => node.isSelected);
+      
+      if (selectedNode) {
+        const viewportWidth = containerRef.current.clientWidth;
+        const viewportHeight = containerRef.current.clientHeight;
+        
+        // Add a small delay to ensure the layout is complete
+        setTimeout(() => {
+          centerOnNode(
+            selectedNode.x,
+            selectedNode.y,
+            getNodeWidth(),
+            getNodeHeight(),
+            viewportWidth,
+            viewportHeight
+          );
+          
+          // Clear the switch flag
+          if (onViewSwitchHandled) {
+            onViewSwitchHandled();
+          }
+        }, 150);
+      } else if (onViewSwitchHandled) {
+        // Clear the flag even if no selected node is found
+        onViewSwitchHandled();
+      }
+    }
+  }, [justSwitchedView, nodes, centerOnNode, onViewSwitchHandled, getNodeWidth, getNodeHeight]);
+
   // Reset view when new tree data is loaded (new search/regeneration)
   useEffect(() => {
-    // Only reset if we have actual tree data
-    if (level1Items && level1Items.length > 0) {
+    // Only reset if we have actual tree data and it's not a view switch
+    if (level1Items && level1Items.length > 0 && !justSwitchedView) {
       // Add a small delay to ensure the mindmap data has been fully processed
       const timeoutId = setTimeout(() => {
         resetView();
@@ -136,7 +220,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
 
       return () => clearTimeout(timeoutId);
     }
-  }, [query, level1Items?.length, resetView]); // Reset when query changes or when level1Items count changes
+  }, [query, level1Items?.length, resetView, justSwitchedView]); // Add justSwitchedView to dependency
 
   const toggleLayout = () => {
     setLayoutDirection(prev => prev === 'horizontal' ? 'vertical' : 'horizontal');
@@ -148,10 +232,15 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
 
   return (
     <TooltipProvider delayDuration={300} skipDelayDuration={100}>
-      <div className="w-full h-full overflow-hidden bg-white relative">
+      <div 
+        ref={containerRef} 
+        className="w-full h-full overflow-hidden bg-white relative mindmap-outer-container"
+        onWheelCapture={handleContainerWheel}
+        style={{ touchAction: 'none' }}
+      >
         <div
-          className="w-full h-full relative"
-          onWheel={handleWheel}
+          className="w-full h-full relative mindmap-inner-container"
+          onWheel={handleInnerWheel}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -159,10 +248,11 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
           style={{
             cursor: isDragging ? 'grabbing' : 'grab',
             userSelect: isDragging ? 'none' : 'auto',
+            overflow: 'hidden', // Ensure no scrollbars appear
           }}
         >
           <div
-            className="relative origin-top-left transition-transform duration-200 ease-out"
+            className="relative origin-top-left transition-transform duration-200 ease-out mindmap-content"
             style={{
               width: containerWidth,
               height: containerHeight,

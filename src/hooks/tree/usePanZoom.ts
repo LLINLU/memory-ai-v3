@@ -19,6 +19,7 @@ interface UsePanZoomReturn {
   zoomIn: () => void;
   zoomOut: () => void;
   resetView: () => void;
+  centerOnNode: (nodeX: number, nodeY: number, nodeWidth: number, nodeHeight: number, viewportWidth: number, viewportHeight: number) => void;
   getTransform: () => string;
 }
 
@@ -40,7 +41,13 @@ export const usePanZoom = (
   const ZOOM_STEP = 0.2;
 
   const handleWheel = useCallback((event: React.WheelEvent) => {
+    console.log('🟢 usePanZoom handleWheel called');
+    console.log('Event target:', (event.target as HTMLElement)?.className);
+    console.log('DeltaY:', event.deltaY);
+    console.log('Event timestamp:', Date.now());
+    
     event.preventDefault();
+    event.stopPropagation(); // Prevent event from bubbling up to page level
     
     const rect = event.currentTarget.getBoundingClientRect();
     const centerX = rect.width / 2;
@@ -70,6 +77,8 @@ export const usePanZoom = (
       const zoomChange = newZoom / prev.zoom;
       const newPanX = centerX - (centerX - prev.panX) * zoomChange;
       const newPanY = centerY - (centerY - prev.panY) * zoomChange;
+      
+      console.log('🟢 Zoom updated:', { newZoom, newPanX, newPanY });
       
       return {
         zoom: newZoom,
@@ -132,6 +141,31 @@ export const usePanZoom = (
     });
   }, []);
 
+  const centerOnNode = useCallback((
+    nodeX: number, 
+    nodeY: number, 
+    nodeWidth: number, 
+    nodeHeight: number,
+    viewportWidth: number,
+    viewportHeight: number
+  ) => {
+    setState(prev => {
+      // Calculate the center of the node
+      const nodeCenterX = nodeX + nodeWidth / 2;
+      const nodeCenterY = nodeY + nodeHeight / 2;
+      
+      // Calculate pan values to center the node in the viewport
+      const newPanX = (viewportWidth / 2) - (nodeCenterX * prev.zoom);
+      const newPanY = (viewportHeight / 2) - (nodeCenterY * prev.zoom);
+      
+      return {
+        ...prev,
+        panX: newPanX,
+        panY: newPanY,
+      };
+    });
+  }, []);
+
   const getTransform = useCallback(() => {
     return `translate(${state.panX}px, ${state.panY}px) scale(${state.zoom})`;
   }, [state]);
@@ -149,6 +183,7 @@ export const usePanZoom = (
     zoomIn,
     zoomOut,
     resetView,
+    centerOnNode,
     getTransform,
   };
 };

@@ -14,6 +14,7 @@ import { useMindMapView } from "@/hooks/tree/useMindMapView";
 
 import { ChatBox } from "@/components/technology-tree/ChatBox";
 import { TechTreeMainContent } from "@/components/technology-tree/TechTreeMainContent";
+import { QueueStatusDisplay } from "@/components/technology-tree/QueueStatusDisplay";
 import { useScenarioState } from "@/hooks/tree/useScenarioState";
 import { useTreeGeneration } from "@/hooks/useTreeGeneration";
 import { convertDatabaseTreeToAppFormat } from "@/utils/databaseTreeConverter";
@@ -285,7 +286,7 @@ const TechnologyTree = () => {
                 description: result.treeData?.description,
                 search_theme: result.treeData?.search_theme,
                 name: result.treeData?.name,
-                mode: (result.treeData as any)?.mode, // Type assertion for mode field
+                mode: (result.treeData as any)?.mode,
               }
             );
             if (convertedData) {
@@ -691,7 +692,7 @@ const TechnologyTree = () => {
 
   return (
     <SidebarProvider defaultOpen={false}>
-      <div className="min-h-screen flex w-full overflow-hidden">
+      <div className={`min-h-screen flex w-full overflow-hidden ${viewMode === 'mindmap' ? 'tech-tree-page-mindmap' : 'tech-tree-page-treemap'}`}>
         <AppSidebar />
         <div className="flex-1 overflow-hidden">
           <TechTreeLayout
@@ -701,14 +702,16 @@ const TechnologyTree = () => {
             toggleSidebar={toggleSidebar}
             setShowSidebar={setShowSidebar}
             handlePanelResize={handlePanelResize}
-            sidebarContent={sidebarContent}
-          >
-            <div className="p-4">
-              <FallbackAlert
-                isVisible={showFallbackAlert}
-                onDismiss={() => setShowFallbackAlert(false)}
-              />
-              <TechTreeMainContent
+            sidebarContent={sidebarContent}          >
+            <div className="h-full flex flex-col">
+              <div className="p-4 pb-0 flex-shrink-0">
+                <FallbackAlert
+                  isVisible={showFallbackAlert}
+                  onDismiss={() => setShowFallbackAlert(false)}
+                />
+              </div>
+              <div className="flex-1 min-h-0">
+                <TechTreeMainContent
                 selectedPath={selectedPath}
                 level1Items={level1Items}
                 level2Items={level2Items}
@@ -740,14 +743,12 @@ const TechnologyTree = () => {
                 canScrollRight={canScrollRight}
                 lastVisibleLevel={lastVisibleLevel}
                 containerRef={containerRef}
-                triggerScrollUpdate={triggerScrollUpdate}
-                viewMode={viewMode}
+                triggerScrollUpdate={triggerScrollUpdate}                viewMode={viewMode}
                 onToggleView={toggleView}
               />
+              </div>
             </div>
-          </TechTreeLayout>
-
-          <ChatBox
+          </TechTreeLayout>          <ChatBox
             messages={chatMessages}
             inputValue={inputValue}
             onInputChange={handleInputChange}
@@ -761,6 +762,9 @@ const TechnologyTree = () => {
             onToggleOpen={toggleChatBoxOpen}
             onToggleExpand={toggleChatBoxExpand}
           />
+          
+          {/* Queue Status Display */}
+          <QueueStatusDisplay />
         </div>
       </div>
     </SidebarProvider>

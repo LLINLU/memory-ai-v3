@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ChevronDown, ChevronRight, Maximize, Minimize } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -68,6 +69,7 @@ interface ScenarioCardProps {
   onNodeClick: (level: string, nodeId: string) => void;
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
+  shouldTakeFullWidth?: boolean;
 }
 
 export const ScenarioCard: React.FC<ScenarioCardProps> = ({
@@ -90,6 +92,7 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
   onNodeClick,
   onEditNode,
   onDeleteNode,
+  shouldTakeFullWidth = false,
 }) => {
   const isSelected = selectedPath.level1 === scenario.id;
   const hasChildren = level2Items.length > 0;
@@ -150,7 +153,7 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
   };
 
   return (
-    <Card className="w-full relative">
+    <Card className={`w-full relative ${shouldTakeFullWidth ? 'col-span-full' : ''}`}>
       <CardHeader className="pb-3">
         {/* Top row: Expand/Collapse button positioned at top-right */}
         {hasChildren && (

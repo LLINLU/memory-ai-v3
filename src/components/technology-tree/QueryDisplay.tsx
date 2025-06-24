@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -23,22 +22,25 @@ export const QueryDisplay = ({ query, treeMode }: QueryDisplayProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { generateTree, isGenerating } = useTreeGeneration();
-  
+
   // State for the search interface
   const [inputQuery, setInputQuery] = useState(query || "");
   const [selectedMode, setSelectedMode] = useState<"TED" | "FAST">("TED");
-  
+
   // Get searchMode from location state - if it's "quick", hide the component
   const searchMode = location.state?.searchMode;
   const fromDatabase = location.state?.fromDatabase;
-  
   // Initialize the mode based on tree data or location state
   useEffect(() => {
+    console.log("[QueryDisplay] treeMode prop received:", treeMode);
     if (treeMode === "FAST") {
+      console.log("[QueryDisplay] Setting mode to FAST");
       setSelectedMode("FAST");
     } else if (treeMode === "TED") {
+      console.log("[QueryDisplay] Setting mode to TED");
       setSelectedMode("TED");
     } else {
+      console.log("[QueryDisplay] Using default TED mode");
       // Default to TED mode
       setSelectedMode("TED");
     }
@@ -58,14 +60,14 @@ export const QueryDisplay = ({ query, treeMode }: QueryDisplayProps) => {
   // 1. Query exists and is not empty, OR
   // 2. This is a database-loaded tree (from sidebar or direct navigation)
   const shouldShowSearchBar = (query && query.trim() !== "") || fromDatabase;
-  
+
   if (!shouldShowSearchBar) {
     return null;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!inputQuery.trim()) {
       toast({
         title: "エラー",
@@ -75,9 +77,12 @@ export const QueryDisplay = ({ query, treeMode }: QueryDisplayProps) => {
     }
 
     try {
-      console.log(`Generating tree with query: "${inputQuery}" in ${selectedMode} mode`);
-      
-      const result = await generateTree(inputQuery.trim(), selectedMode);      if (result) {
+      console.log(
+        `Generating tree with query: "${inputQuery}" in ${selectedMode} mode`
+      );
+
+      const result = await generateTree(inputQuery.trim(), selectedMode);
+      if (result) {
         // Navigate to new tree with the generated data
         navigate("/technology-tree", {
           state: {
@@ -123,7 +128,7 @@ export const QueryDisplay = ({ query, treeMode }: QueryDisplayProps) => {
             disabled={isGenerating}
             className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 pr-32"
           />
-          
+
           {/* Mode Selection Pill */}
           <div className="absolute right-12 flex items-center">
             <Select
@@ -131,7 +136,9 @@ export const QueryDisplay = ({ query, treeMode }: QueryDisplayProps) => {
               onValueChange={(value: "TED" | "FAST") => setSelectedMode(value)}
               disabled={isGenerating}
             >
-              <SelectTrigger className={`h-7 w-auto border-0 rounded-full px-3 text-xs focus:ring-0 focus:ring-offset-0 ${getModeStyles()}`}>
+              <SelectTrigger
+                className={`h-7 w-auto border-0 rounded-full px-3 text-xs focus:ring-0 focus:ring-offset-0 ${getModeStyles()}`}
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -140,7 +147,7 @@ export const QueryDisplay = ({ query, treeMode }: QueryDisplayProps) => {
               </SelectContent>
             </Select>
           </div>
-          
+
           {/* Submit Button */}
           <Button
             type="submit"

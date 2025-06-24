@@ -5,6 +5,7 @@ export type ViewMode = "treemap" | "mindmap";
 
 export const useMindMapView = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("mindmap");
+  const [justSwitchedView, setJustSwitchedView] = useState(false);
   
   // Separate path states for each view
   const [treemapPath, setTreemapPath] = useState({
@@ -33,12 +34,46 @@ export const useMindMapView = () => {
     level10: "",
   });
 
-  const toggleView = () => {
-    setViewMode(prev => prev === "treemap" ? "mindmap" : "treemap");
+  // Synchronize paths between views
+  const synchronizePaths = (fromView: ViewMode, toView: ViewMode) => {
+    if (fromView === "treemap" && toView === "mindmap") {
+      setMindmapPath({ ...treemapPath });
+    } else if (fromView === "mindmap" && toView === "treemap") {
+      setTreemapPath({ ...mindmapPath });
+    }
   };
 
-  const setTreemapView = () => setViewMode("treemap");
-  const setMindmapView = () => setViewMode("mindmap");
+  const toggleView = () => {
+    const currentView = viewMode;
+    const targetView = viewMode === "treemap" ? "mindmap" : "treemap";
+    
+    // Synchronize paths before switching
+    synchronizePaths(currentView, targetView);
+    
+    setViewMode(targetView);
+    setJustSwitchedView(true);
+  };
+
+  const setTreemapView = () => {
+    if (viewMode !== "treemap") {
+      synchronizePaths(viewMode, "treemap");
+      setViewMode("treemap");
+      setJustSwitchedView(true);
+    }
+  };
+
+  const setMindmapView = () => {
+    if (viewMode !== "mindmap") {
+      synchronizePaths(viewMode, "mindmap");
+      setViewMode("mindmap");
+      setJustSwitchedView(true);
+    }
+  };
+
+  // Function to clear the switch flag
+  const clearViewSwitchFlag = () => {
+    setJustSwitchedView(false);
+  };
 
   // Get the path for the current view
   const getCurrentPath = () => {
@@ -80,9 +115,11 @@ export const useMindMapView = () => {
     viewMode,
     isTreemapView: viewMode === "treemap",
     isMindmapView: viewMode === "mindmap",
+    justSwitchedView,
     toggleView,
     setTreemapView,
     setMindmapView,
+    clearViewSwitchFlag,
     getCurrentPath,
     setCurrentPath,
     initializeTreemapPath,

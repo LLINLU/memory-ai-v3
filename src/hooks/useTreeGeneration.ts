@@ -74,7 +74,7 @@ export const useTreeGeneration = () => {
         return null;
       } // Choose the appropriate edge function based on mode
       const functionName =
-        mode === "FAST" ? "generate-tree-fast" : "generate-tree-v3";
+        mode === "FAST" ? "generate-tree-fast-v3" : "generate-tree-v3";
 
       // Get team_id from user details
       const team_id = userDetails?.team_id;
@@ -96,26 +96,42 @@ export const useTreeGeneration = () => {
 
       if (!data) {
         throw new Error("No data returned from Edge Function");
-      } // For TED v2, start polling for subtree completion
-      if (mode === "TED" && data.treeId) {
+      } // For both TED v3 and FAST v3, start polling for subtree completion
+      if ((mode === "TED" || mode === "FAST") && data.treeId) {
         setPollingTreeId(data.treeId);
-        // For TED mode with background processing, create a placeholder tree structure
+        // For modes with background processing, create a placeholder tree structure
         if (data.status === "generating") {
           const placeholderTreeStructure = {
             root: {
               id: "root",
-              content: `Search Theme: ${searchTheme}`,
+              content:
+                mode === "FAST"
+                  ? `Technology Seed: ${searchTheme}`
+                  : `Search Theme: ${searchTheme}`,
               level: 0,
               children:
-                data.scenarios?.map((scenario: any) => ({
-                  id: scenario.id,
-                  content: scenario.name,
-                  level: 1,
-                  children: [], // Empty children for scenarios being generated
-                })) || [],
+                mode === "FAST"
+                  ? data.implementations?.map((implementation: any) => ({
+                      id: implementation.id,
+                      content: implementation.name,
+                      level: 1,
+                      children: [], // Empty children for implementations being generated
+                    })) || []
+                  : data.scenarios?.map((scenario: any) => ({
+                      id: scenario.id,
+                      content: scenario.name,
+                      level: 1,
+                      children: [], // Empty children for scenarios being generated
+                    })) || [],
             },
-            reasoning: `Generated TED tree for: ${searchTheme}`,
-            layer_config: ["Scenario", "Purpose", "Function", "Measure"],
+            reasoning:
+              mode === "FAST"
+                ? `Generated FAST tree for: ${searchTheme}`
+                : `Generated TED tree for: ${searchTheme}`,
+            layer_config:
+              mode === "FAST"
+                ? ["Technology", "How1", "How2", "How3", "How4"]
+                : ["Scenario", "Purpose", "Function", "Measure"],
             scenario_inputs: {
               what: null,
               who: null,
@@ -124,38 +140,46 @@ export const useTreeGeneration = () => {
             },
           };
 
-          const modeLabel = "TED（ニーズ深掘り）";
+          const modeLabel =
+            mode === "FAST" ? "FAST（シーズ深掘り）" : "TED（ニーズ深掘り）";
+          const generatingLabel =
+            mode === "FAST"
+              ? "実装方式の詳細を生成中..."
+              : "シナリオの詳細を生成中...";
           toast({
             title: "ツリー生成開始",
-            description: `「${searchTheme}」の${modeLabel}ツリーが生成開始されました。シナリオの詳細を生成中...`,
+            description: `「${searchTheme}」の${modeLabel}ツリーが生成開始されました。${generatingLabel}`,
           });
 
           return {
             success: true,
             treeId: data.treeId,
             treeStructure: placeholderTreeStructure,
-            mode: "TED",
+            mode: mode,
             status: "generating",
           } as any; // Use any to avoid type issues for now
         }
       }
       const modeLabel =
-        mode === "FAST" ? "FAST（シーズ深掘り）" : "TED（ニーズ深掘り）";
-
-      // Handle different completion states
+        mode === "FAST" ? "FAST（シーズ深掘り）" : "TED（ニーズ深掘り）"; // Handle different completion states
       let completionMessage;
-      if (mode === "TED" && data.status === "generating") {
+      if ((mode === "TED" || mode === "FAST") && data.status === "generating") {
         // Don't show completion toast here, it was already shown above
         completionMessage = null;
       } else if (mode === "TED") {
         completionMessage = `「${searchTheme}」の${modeLabel}ツリーが生成開始されました。シナリオの詳細を生成中...`;
+      } else if (mode === "FAST") {
+        completionMessage = `「${searchTheme}」の${modeLabel}ツリーが生成開始されました。実装方式の詳細を生成中...`;
       } else {
         completionMessage = `「${searchTheme}」の${modeLabel}ツリーが生成されました`;
       }
 
       if (completionMessage) {
         toast({
-          title: mode === "TED" ? "ツリー生成開始" : "ツリー生成完了",
+          title:
+            mode === "TED" || mode === "FAST"
+              ? "ツリー生成開始"
+              : "ツリー生成完了",
           description: completionMessage,
         });
       }
@@ -178,14 +202,26 @@ export const useTreeGeneration = () => {
       setIsGenerating(false);
     }
   };
-
-  // Function to check if all scenarios have completed subtree generation
+  // Function to check if all level 1 nodes (scenarios/implementations) have completed subtree generation
   const checkScenarioCompletion = useCallback(async (treeId: string) => {
     try {
       // Try multiple approaches to get fresh data
 
+      // First, get the tree mode to determine the correct terminology
+      const { data: treeData, error: treeError } = await supabase
+        .from("technology_trees")
+        .select("mode")
+        .eq("id", treeId)
+        .single();
+
+      if (treeError) {
+        console.error("[POLLING] Error getting tree mode:", treeError);
+      }
+
+      const treeMode = treeData?.mode || "TED";
+
       // Approach 1: Standard query with fresh timestamp
-      const { data: scenarios, error } = await supabase
+      const { data: level1Nodes, error } = await supabase
         .from("tree_nodes")
         .select("id, children_count, name, updated_at")
         .eq("tree_id", treeId)
@@ -193,12 +229,13 @@ export const useTreeGeneration = () => {
         .order("updated_at", { ascending: false }); // Order by updated_at to get freshest data first
 
       if (error) {
-        console.error("[POLLING] Error checking scenario completion:", error);
+        console.error("[POLLING] Error checking level 1 completion:", error);
         return {
           completed: false,
           scenarios: [],
           totalScenarios: 0,
           completedScenarios: 0,
+          treeMode,
         };
       }
 
@@ -207,7 +244,7 @@ export const useTreeGeneration = () => {
         .from("tree_nodes")
         .select("parent_id")
         .eq("tree_id", treeId)
-        .in("level", [2, 3, 4]); // Children of level 1 scenarios
+        .in("level", [2, 3, 4]); // Children of level 1 nodes
 
       if (!countError && childCountVerification) {
         const childrenByParent = childCountVerification.reduce((acc, node) => {
@@ -222,14 +259,15 @@ export const useTreeGeneration = () => {
       await supabase.from("tree_nodes").select("id").limit(1);
 
       const allCompleted =
-        scenarios?.every((s) => s.children_count > 0) || false;
+        level1Nodes?.every((s) => s.children_count > 0) || false;
 
       const result = {
         completed: allCompleted,
-        scenarios: scenarios || [],
-        totalScenarios: scenarios?.length || 0,
+        scenarios: level1Nodes || [], // Keep 'scenarios' for backward compatibility
+        totalScenarios: level1Nodes?.length || 0,
         completedScenarios:
-          scenarios?.filter((s) => s.children_count > 0).length || 0,
+          level1Nodes?.filter((s) => s.children_count > 0).length || 0,
+        treeMode,
       };
 
       return result;
@@ -240,6 +278,7 @@ export const useTreeGeneration = () => {
         scenarios: [],
         totalScenarios: 0,
         completedScenarios: 0,
+        treeMode: "TED",
       };
     }
   }, []);

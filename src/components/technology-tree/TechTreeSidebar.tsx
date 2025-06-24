@@ -1,5 +1,5 @@
+
 import React from "react";
-import { ResizablePanel } from "@/components/ui/resizable";
 import { SidebarControls } from "@/components/technology-tree/SidebarControls";
 import { SidebarContent } from "@/components/technology-tree/SidebarContent";
 import { NodeSuggestion } from "@/types/chat";
@@ -57,39 +57,32 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
   selectedPath,
 }) => {
   return (
-    <ResizablePanel
-      defaultSize={20}
-      minSize={20}
-      maxSize={isExpanded ? 80 : 50}
-      onResize={onResize}
-    >
-      <div className="h-full bg-white border-l border-gray-200 shadow-lg flex flex-col">
-        <SidebarControls
-          sidebarTab={sidebarTab}
-          setSidebarTab={setSidebarTab}
-          toggleSidebar={toggleSidebar}
-          isExpanded={isExpanded}
-          toggleExpand={toggleExpand}
-        />
+    <div className="h-full flex flex-col">
+      <SidebarControls
+        sidebarTab={sidebarTab}
+        setSidebarTab={setSidebarTab}
+        toggleSidebar={toggleSidebar}
+        isExpanded={isExpanded}
+        toggleExpand={toggleExpand}
+      />
 
-        <div className="flex-1 overflow-hidden">
-          <SidebarContent
-            sidebarTab={sidebarTab}
-            chatMessages={chatMessages}
-            inputValue={inputValue}
-            onInputChange={onInputChange}
-            onSendMessage={onSendMessage}
-            onUseNode={onUseNode}
-            onEditNode={onEditNode}
-            onRefine={onRefine}
-            onCheckResults={onCheckResults}
-            selectedNodeTitle={selectedNodeTitle}
-            selectedNodeDescription={selectedNodeDescription}
-            selectedNodeId={selectedNodeId}
-            selectedPath={selectedPath}
-          />
-        </div>
+      <div className="flex-1 overflow-hidden">
+        <SidebarContent
+          sidebarTab={sidebarTab}
+          chatMessages={chatMessages}
+          inputValue={inputValue}
+          onInputChange={onInputChange}
+          onSendMessage={onSendMessage}
+          onUseNode={onUseNode}
+          onEditNode={onEditNode}
+          onRefine={onRefine}
+          onCheckResults={onCheckResults}
+          selectedNodeTitle={selectedNodeTitle}
+          selectedNodeDescription={selectedNodeDescription}
+          selectedNodeId={selectedNodeId}
+          selectedPath={selectedPath}
+        />
       </div>
-    </ResizablePanel>
+    </div>
   );
 };

@@ -1,5 +1,7 @@
-import React from 'react';
-import { ScenarioCard } from './ScenarioCard';
+
+import React, { useState } from 'react';
+import { LayoutToggle } from './LayoutToggle';
+import { CardContainer } from './CardContainer';
 import { useCardExpansion } from './hooks/useCardExpansion';
 
 interface LevelItem {
@@ -47,9 +49,14 @@ interface CardBasedTreemapProps {
     level10?: string;
   };
   onNodeClick: (level: string, nodeId: string) => void;
-  onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
+  onEditNode?: (level: string, nodeId: string, updatedNode: {
+    title: string;
+    description: string;
+  }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
 }
+
+type CardLayoutMode = "single-row" | "one-per-row" | "two-per-row" | "three-per-row";
 
 export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
   selectedPath,
@@ -67,19 +74,27 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     level1: "シナリオ",
     level2: "目的",
     level3: "機能",
-    level4: "手段",
+    level4: "手段"
   },
   onNodeClick,
   onEditNode,
-  onDeleteNode,
+  onDeleteNode
 }) => {
+  const [cardLayout, setCardLayout] = useState<CardLayoutMode>("three-per-row");
+  const [cardOrder, setCardOrder] = useState<LevelItem[]>(level1Items);
+
+  // Update card order when level1Items changes
+  React.useEffect(() => {
+    setCardOrder(level1Items);
+  }, [level1Items]);
+
   const {
     toggleScenarioExpansion,
     toggleLevelExpansion,
     expandAll,
     collapseAll,
     isScenarioExpanded,
-    isLevelExpanded,
+    isLevelExpanded
   } = useCardExpansion();
 
   const allLevelItems = {
@@ -90,63 +105,60 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     level7Items,
     level8Items,
     level9Items,
-    level10Items,
+    level10Items
   };
 
   const getAllLevelKeys = (scenarioId: string): string[] => {
     const keys: string[] = [];
-    
     const addKeysRecursively = (items: LevelItem[], prefix: string, level: number) => {
       items.forEach(item => {
         const key = `${prefix}-${item.id}`;
         keys.push(key);
-        
-        const nextLevelItems = level === 2 ? level3Items[item.id] :
-                              level === 3 ? level4Items[item.id] :
-                              level === 4 ? level5Items[item.id] :
-                              level === 5 ? level6Items[item.id] :
-                              level === 6 ? level7Items[item.id] :
-                              level === 7 ? level8Items[item.id] :
-                              level === 8 ? level9Items[item.id] :
-                              level === 9 ? level10Items[item.id] : [];
-        
+        const nextLevelItems = level === 2 ? level3Items[item.id] : level === 3 ? level4Items[item.id] : level === 4 ? level5Items[item.id] : level === 5 ? level6Items[item.id] : level === 6 ? level7Items[item.id] : level === 7 ? level8Items[item.id] : level === 8 ? level9Items[item.id] : level === 9 ? level10Items[item.id] : [];
         if (nextLevelItems?.length > 0) {
           addKeysRecursively(nextLevelItems, key, level + 1);
         }
       });
     };
-
     const scenarioLevel2Items = level2Items[scenarioId] || [];
     addKeysRecursively(scenarioLevel2Items, scenarioId, 2);
     return keys;
   };
 
+  const handleCardReorder = (newOrder: LevelItem[]) => {
+    setCardOrder(newOrder);
+  };
+
   return (
-    <div className="h-full overflow-y-auto p-4">
-      <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-        {level1Items.map((scenario) => {
-          const scenarioLevel2Items = level2Items[scenario.id] || [];
-          
-          return (
-            <ScenarioCard
-              key={scenario.id}
-              scenario={scenario}
-              selectedPath={selectedPath}
-              level2Items={scenarioLevel2Items}
-              allLevelItems={allLevelItems}
-              levelNames={levelNames}
-              isExpanded={isScenarioExpanded(scenario.id)}
-              isLevelExpanded={(levelKey) => isLevelExpanded(scenario.id, levelKey)}
-              onToggleExpansion={() => toggleScenarioExpansion(scenario.id)}
-              onToggleLevelExpansion={(levelKey) => toggleLevelExpansion(scenario.id, levelKey)}
-              onExpandAll={() => expandAll(scenario.id, getAllLevelKeys(scenario.id))}
-              onCollapseAll={() => collapseAll(scenario.id)}
-              onNodeClick={onNodeClick}
-              onEditNode={onEditNode}
-              onDeleteNode={onDeleteNode}
-            />
-          );
-        })}
+    <div className="h-full flex flex-col">
+      {/* Fixed Layout Toggle at top */}
+      <div className="flex-shrink-0 p-4 pb-0 py-0">
+        <LayoutToggle cardLayout={cardLayout} onLayoutChange={setCardLayout} />
+      </div>
+
+      {/* Scrollable Cards Container */}
+      <div className="flex-1 min-h-0 treemap-scroll-container">
+        <div className="p-4 pt-6">
+          <CardContainer
+            cardLayout={cardLayout}
+            level1Items={cardOrder}
+            selectedPath={selectedPath}
+            level2Items={level2Items}
+            allLevelItems={allLevelItems}
+            levelNames={levelNames}
+            isScenarioExpanded={isScenarioExpanded}
+            isLevelExpanded={isLevelExpanded}
+            toggleScenarioExpansion={toggleScenarioExpansion}
+            toggleLevelExpansion={toggleLevelExpansion}
+            expandAll={expandAll}
+            collapseAll={collapseAll}
+            getAllLevelKeys={getAllLevelKeys}
+            onNodeClick={onNodeClick}
+            onEditNode={onEditNode}
+            onDeleteNode={onDeleteNode}
+            onCardReorder={handleCardReorder}
+          />
+        </div>
       </div>
     </div>
   );
