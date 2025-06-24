@@ -100,27 +100,6 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     return () => document.removeEventListener('wheel', handleDocumentWheel);
   }, []);
 
-  // Add wheel event handler for treemap (same as mindmap)
-  const handleContainerWheel = (e: React.WheelEvent) => {
-    console.log('🔴 TreeMap onWheelCapture triggered');
-    console.log('Target:', e.target);
-    console.log('Target className:', (e.target as HTMLElement)?.className);
-    console.log('CurrentTarget:', e.currentTarget);
-    console.log('CurrentTarget className:', (e.currentTarget as HTMLElement)?.className);
-    console.log('Event phase:', e.eventPhase);
-    console.log('Event bubbles:', e.bubbles);
-    console.log('Event timestamp:', Date.now());
-    
-    // Try all possible ways to stop event propagation
-    e.stopPropagation();
-    e.preventDefault();
-    if (e.nativeEvent && e.nativeEvent.stopImmediatePropagation) {
-      e.nativeEvent.stopImmediatePropagation();
-    }
-    
-    console.log('🔴 TreeMap event propagation stopped');
-  };
-
   const allLevelItems = {
     level3Items,
     level4Items,
@@ -167,7 +146,10 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
         onLayoutChange={setCardLayout}
       />
 
-      <div className="overflow-y-auto h-full">
+      <div 
+        className="overflow-y-auto" 
+        style={{ height: 'calc(100% - 80px)' }}
+      >
         <CardContainer
           cardLayout={cardLayout}
           level1Items={level1Items}
