@@ -86,7 +86,7 @@ export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
         </ResizablePanel>
 
         {/* Resizable handle */}
-        <ResizableHandle withHandle className="w-2 bg-gray-200 hover:bg-gray-300 transition-colors" />
+        <ResizableHandle withHandle className="w-px bg-gray-200 hover:bg-gray-300 transition-colors" />
 
         {/* Sidebar panel */}
         <ResizablePanel
