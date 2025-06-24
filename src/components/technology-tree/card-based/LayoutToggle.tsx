@@ -15,7 +15,7 @@ export const LayoutToggle: React.FC<LayoutToggleProps> = ({
   onLayoutChange,
 }) => {
   return (
-    <div className="mb-6">
+    <div>
       <div className="flex items-center justify-end">
         <ToggleGroup 
           type="single" 
