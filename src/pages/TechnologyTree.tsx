@@ -692,7 +692,7 @@ const TechnologyTree = () => {
 
   return (
     <SidebarProvider defaultOpen={false}>
-      <div className="min-h-screen flex w-full overflow-hidden tech-tree-page">
+      <div className={`min-h-screen flex w-full overflow-hidden ${viewMode === 'mindmap' ? 'tech-tree-page-mindmap' : 'tech-tree-page-treemap'}`}>
         <AppSidebar />
         <div className="flex-1 overflow-hidden">
           <TechTreeLayout

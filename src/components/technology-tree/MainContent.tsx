@@ -1,4 +1,3 @@
-
 import React from "react";
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
@@ -256,7 +255,7 @@ export const MainContent = ({
 
       {/* Main content area with different handling for treemap vs mindmap */}
       {isTreemapView ? (
-        <div className="flex-1 min-h-0 overflow-hidden">
+        <div className="flex-1 min-h-0">
           <CardBasedTreemap
             selectedPath={selectedPath}
             level1Items={level1Items}
