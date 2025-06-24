@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
@@ -70,7 +71,7 @@ export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
         <ResizableHandle withHandle className="w-px transition-colors bg-slate-200" />
 
         {/* Sidebar panel */}
-        <ResizablePanel defaultSize={25} minSize={15} maxSize={40} className="bg-white border-l border-gray-200">
+        <ResizablePanel defaultSize={25} minSize={15} maxSize={40} className="bg-white">
           {sidebarContent}
         </ResizablePanel>
       </ResizablePanelGroup>
