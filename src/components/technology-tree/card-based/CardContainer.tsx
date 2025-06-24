@@ -80,11 +80,10 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   onNodeClick,
   onEditNode,
   onDeleteNode,
-}) => {
-  const getLayoutClasses = () => {
+}) => {  const getLayoutClasses = () => {
     switch (cardLayout) {
       case "single-row":
-        return "flex flex-nowrap overflow-x-auto";
+        return "flex flex-nowrap overflow-x-auto overflow-y-visible";
       case "one-per-row":
         return "grid grid-cols-1";
       case "two-per-row":
