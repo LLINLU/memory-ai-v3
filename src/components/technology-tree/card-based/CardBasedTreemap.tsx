@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { LayoutToggle } from './LayoutToggle';
 import { CardContainer } from './CardContainer';
 import { useCardExpansion } from './hooks/useCardExpansion';
@@ -128,31 +127,33 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden p-4 treemap-outer-container">
-      <LayoutToggle 
-        cardLayout={cardLayout}
-        onLayoutChange={setCardLayout}
-      />
-
-      <div className="flex-1 overflow-y-auto">
-        <CardContainer
+    <div className="treemap-scroll-container">
+      <div className="p-4" style={{ minHeight: '150vh' }}>
+        <LayoutToggle 
           cardLayout={cardLayout}
-          level1Items={level1Items}
-          selectedPath={selectedPath}
-          level2Items={level2Items}
-          allLevelItems={allLevelItems}
-          levelNames={levelNames}
-          isScenarioExpanded={isScenarioExpanded}
-          isLevelExpanded={isLevelExpanded}
-          toggleScenarioExpansion={toggleScenarioExpansion}
-          toggleLevelExpansion={toggleLevelExpansion}
-          expandAll={expandAll}
-          collapseAll={collapseAll}
-          getAllLevelKeys={getAllLevelKeys}
-          onNodeClick={onNodeClick}
-          onEditNode={onEditNode}
-          onDeleteNode={onDeleteNode}
+          onLayoutChange={setCardLayout}
         />
+
+        <div className="mt-6">
+          <CardContainer
+            cardLayout={cardLayout}
+            level1Items={level1Items}
+            selectedPath={selectedPath}
+            level2Items={level2Items}
+            allLevelItems={allLevelItems}
+            levelNames={levelNames}
+            isScenarioExpanded={isScenarioExpanded}
+            isLevelExpanded={isLevelExpanded}
+            toggleScenarioExpansion={toggleScenarioExpansion}
+            toggleLevelExpansion={toggleLevelExpansion}
+            expandAll={expandAll}
+            collapseAll={collapseAll}
+            getAllLevelKeys={getAllLevelKeys}
+            onNodeClick={onNodeClick}
+            onEditNode={onEditNode}
+            onDeleteNode={onDeleteNode}
+          />
+        </div>
       </div>
     </div>
   );

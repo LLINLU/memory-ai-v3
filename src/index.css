@@ -107,3 +107,23 @@
     overflow: hidden;
   }
 }
+
+/* TreeMap scroll container styles */
+.treemap-scroll-container {
+  height: 100%;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+.treemap-scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.treemap-scroll-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.treemap-scroll-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
