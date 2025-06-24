@@ -4,13 +4,17 @@ import { useEnrichmentQueue } from "@/hooks/useEnrichmentQueue";
 
 interface NodeEnrichmentIndicatorProps {
   nodeId?: string;
+  showTime?: boolean;
   size?: "sm" | "md" | "lg";
   loadingPapers?: boolean;
   loadingUseCases?: boolean;
 }
 
-export const NodeEnrichmentIndicator: React.FC<NodeEnrichmentIndicatorProps> = ({
+export const NodeEnrichmentIndicator: React.FC<
+  NodeEnrichmentIndicatorProps
+> = ({
   nodeId,
+  showTime = true,
   size = "sm",
   loadingPapers = false,
   loadingUseCases = false,
@@ -20,16 +24,25 @@ export const NodeEnrichmentIndicator: React.FC<NodeEnrichmentIndicatorProps> = (
 
   // Use queue system if nodeId is provided, otherwise fall back to legacy props
   const queueStatus = useEnrichmentQueue(nodeId || null);
-  
+
   // Determine what to show based on queue status or legacy props
-  const showQueueStatus = nodeId && queueStatus;
-  const actualLoadingPapers = showQueueStatus ? queueStatus.isPapersLoading : loadingPapers;
-  const actualLoadingUseCases = showQueueStatus ? queueStatus.isUseCasesLoading : loadingUseCases;
+  const showQueueStatus = showTime;
+  const actualLoadingPapers = showQueueStatus
+    ? queueStatus.isPapersLoading
+    : loadingPapers;
+  const actualLoadingUseCases = showQueueStatus
+    ? queueStatus.isUseCasesLoading
+    : loadingUseCases;
   const isWaiting = showQueueStatus ? queueStatus.isWaiting : false;
   const hasError = showQueueStatus ? queueStatus.hasError : false;
 
   // Don't show anything if nothing is happening
-  if (!actualLoadingPapers && !actualLoadingUseCases && !isWaiting && !hasError) {
+  if (
+    !actualLoadingPapers &&
+    !actualLoadingUseCases &&
+    !isWaiting &&
+    !hasError
+  ) {
     return null;
   }
 
@@ -38,9 +51,7 @@ export const NodeEnrichmentIndicator: React.FC<NodeEnrichmentIndicatorProps> = (
     return (
       <div className="flex items-center justify-center text-red-600">
         <AlertTriangle className={`mr-2 ${sizeClasses}`} />
-        <span className={`${textSizeClass} font-semibold`}>
-          取得失敗
-        </span>
+        <span className={`${textSizeClass} font-semibold`}>取得失敗</span>
       </div>
     );
   }
@@ -50,9 +61,7 @@ export const NodeEnrichmentIndicator: React.FC<NodeEnrichmentIndicatorProps> = (
     return (
       <div className="flex items-center justify-center text-yellow-600">
         <Clock className={`mr-2 ${sizeClasses}`} />
-        <span className={`${textSizeClass} font-semibold`}>
-          待機中
-        </span>
+        <span className={`${textSizeClass} font-semibold`}>待機中</span>
       </div>
     );
   }
@@ -71,20 +80,20 @@ export const NodeEnrichmentIndicator: React.FC<NodeEnrichmentIndicatorProps> = (
   }
 
   // Show elapsed time if available
-  const elapsedTime = showQueueStatus ? (
-    actualLoadingPapers ? queueStatus.formatElapsedTime(queueStatus.papersElapsedTime) :
-    actualLoadingUseCases ? queueStatus.formatElapsedTime(queueStatus.useCasesElapsedTime) :
-    null
-  ) : null;
+  const elapsedTime = showQueueStatus
+    ? actualLoadingPapers
+      ? queueStatus.formatElapsedTime(queueStatus.papersElapsedTime)
+      : actualLoadingUseCases
+      ? queueStatus.formatElapsedTime(queueStatus.useCasesElapsedTime)
+      : queueStatus.formatElapsedTime(queueStatus.useCasesElapsedTime)
+    : queueStatus.formatElapsedTime(queueStatus.papersElapsedTime);
 
   return (
     <div className="flex items-center justify-center text-red-600">
       <Loader2 className={`animate-spin mr-2 ${sizeClasses}`} />
       <span className={`${textSizeClass} font-semibold`}>
         {loadingMessage}
-        {elapsedTime && (
-          <span className="ml-1 text-gray-500">({elapsedTime})</span>
-        )}
+        {<span className="ml-1 text-gray-500">({elapsedTime})</span>}
       </span>
     </div>
   );
