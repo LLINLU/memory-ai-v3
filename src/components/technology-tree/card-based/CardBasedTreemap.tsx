@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LayoutToggle } from './LayoutToggle';
 import { CardContainer } from './CardContainer';
 import { useCardExpansion } from './hooks/useCardExpansion';
@@ -88,6 +87,40 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     isLevelExpanded,
   } = useCardExpansion();
 
+  // Add document-level wheel event debugging
+  useEffect(() => {
+    const handleDocumentWheel = (e: WheelEvent) => {
+      console.log('🟡 Document wheel event - should NOT fire when scrolling treemap');
+      console.log('Target:', e.target);
+      console.log('Target className:', (e.target as HTMLElement)?.className);
+      console.log('Event timestamp:', Date.now());
+    };
+    
+    document.addEventListener('wheel', handleDocumentWheel);
+    return () => document.removeEventListener('wheel', handleDocumentWheel);
+  }, []);
+
+  // Add wheel event handler for treemap (same as mindmap)
+  const handleContainerWheel = (e: React.WheelEvent) => {
+    console.log('🔴 TreeMap onWheelCapture triggered');
+    console.log('Target:', e.target);
+    console.log('Target className:', (e.target as HTMLElement)?.className);
+    console.log('CurrentTarget:', e.currentTarget);
+    console.log('CurrentTarget className:', (e.currentTarget as HTMLElement)?.className);
+    console.log('Event phase:', e.eventPhase);
+    console.log('Event bubbles:', e.bubbles);
+    console.log('Event timestamp:', Date.now());
+    
+    // Try all possible ways to stop event propagation
+    e.stopPropagation();
+    e.preventDefault();
+    if (e.nativeEvent && e.nativeEvent.stopImmediatePropagation) {
+      e.nativeEvent.stopImmediatePropagation();
+    }
+    
+    console.log('🔴 TreeMap event propagation stopped');
+  };
+
   const allLevelItems = {
     level3Items,
     level4Items,
@@ -128,7 +161,11 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
   };
 
   return (
-    <div className="h-full overflow-y-auto p-4">
+    <div 
+      className="h-full overflow-hidden p-4 treemap-outer-container"
+      onWheelCapture={handleContainerWheel}
+      style={{ touchAction: 'none' }}
+    >
       <LayoutToggle 
         cardLayout={cardLayout}
         onLayoutChange={setCardLayout}
