@@ -286,7 +286,7 @@ const TechnologyTree = () => {
                 description: result.treeData?.description,
                 search_theme: result.treeData?.search_theme,
                 name: result.treeData?.name,
-                mode: (result.treeData as any)?.mode, // Type assertion for mode field
+                mode: (result.treeData as any)?.mode,
               }
             );
             if (convertedData) {
@@ -692,7 +692,7 @@ const TechnologyTree = () => {
 
   return (
     <SidebarProvider defaultOpen={false}>
-      <div className="min-h-screen flex w-full overflow-hidden">
+      <div className="min-h-screen flex w-full overflow-hidden tech-tree-page">
         <AppSidebar />
         <div className="flex-1 overflow-hidden">
           <TechTreeLayout
