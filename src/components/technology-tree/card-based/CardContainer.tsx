@@ -91,16 +91,16 @@ export const CardContainer: React.FC<CardContainerProps> = ({
       case "three-per-row":
         return "grid grid-cols-3";
       default:
-        return "grid gap-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3";
+        return "grid gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3";
     }
   };
 
   const getCardClasses = () => {
-    return cardLayout === "single-row" ? "flex-shrink-0 w-80 mr-2" : "";
+    return cardLayout === "single-row" ? "flex-shrink-0 w-80 mr-4" : "";
   };
 
   return (
-    <div className={`${getLayoutClasses()} gap-2`}>
+    <div className={`${getLayoutClasses()} gap-4`}>
       {level1Items.map((scenario) => {
         const scenarioLevel2Items = level2Items[scenario.id] || [];
         const isExpanded = isScenarioExpanded(scenario.id);
