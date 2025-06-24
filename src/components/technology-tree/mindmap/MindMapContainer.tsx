@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import { transformToMindMapData } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
@@ -7,19 +6,34 @@ import { MindMapControls } from "./MindMapControls";
 import { MindMapLegend } from "./MindMapLegend";
 import { usePanZoom } from "@/hooks/tree/usePanZoom";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { TreeNode } from "@/types/tree";
+
+// Define proper types for selectedPath matching the type used in mindMapDataTransform
+interface SelectedPath {
+  level1?: string;
+  level2?: string;
+  level3?: string;
+  level4?: string;
+  level5?: string;
+  level6?: string;
+  level7?: string;
+  level8?: string;
+  level9?: string;
+  level10?: string;
+}
 
 interface MindMapContainerProps {
-  selectedPath: any;
-  level1Items: any[];
-  level2Items: Record<string, any[]>;
-  level3Items: Record<string, any[]>;
-  level4Items: Record<string, any[]>;
-  level5Items: Record<string, any[]>;
-  level6Items: Record<string, any[]>;
-  level7Items: Record<string, any[]>;
-  level8Items: Record<string, any[]>;
-  level9Items: Record<string, any[]>;
-  level10Items: Record<string, any[]>;
+  selectedPath: SelectedPath;
+  level1Items: TreeNode[];
+  level2Items: Record<string, TreeNode[]>;
+  level3Items: Record<string, TreeNode[]>;
+  level4Items: Record<string, TreeNode[]>;
+  level5Items: Record<string, TreeNode[]>;
+  level6Items: Record<string, TreeNode[]>;
+  level7Items: Record<string, TreeNode[]>;
+  level8Items: Record<string, TreeNode[]>;
+  level9Items: Record<string, TreeNode[]>;
+  level10Items: Record<string, TreeNode[]>;
   levelNames: Record<string, string>;
   query?: string;
   onNodeClick: (level: string, nodeId: string) => void;
@@ -53,6 +67,10 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
 }) => {
   // Add layout state - default to horizontal to preserve current behavior
   const [layoutDirection, setLayoutDirection] = useState<'horizontal' | 'vertical'>('horizontal');
+  
+  // 新しく追加：選択されたノードのIDを管理
+  const [selectedNodeForHighlight, setSelectedNodeForHighlight] = useState<string | null>(null);
+  
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Add document-level wheel event debugging
@@ -109,6 +127,10 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
       return;
     }
     
+    // 選択されたノードのIDを設定（エッジハイライト用）
+    setSelectedNodeForHighlight(nodeId);
+    
+    // 既存のクリック処理
     onNodeClick(`level${level}`, nodeId);
   };
 
@@ -261,7 +283,11 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
               transform: getTransform(),
             }}
           >
-            <MindMapConnections connections={connections} layoutDirection={layoutDirection} />
+            <MindMapConnections 
+              connections={connections} 
+              layoutDirection={layoutDirection} 
+              selectedNodeId={selectedNodeForHighlight}
+            />
             
             {nodes.map((node) => (
               <MindMapNodeComponent

@@ -1,4 +1,3 @@
-
 import { TreeNode } from "@/types/tree";
 import * as d3 from "d3";
 
@@ -37,8 +36,35 @@ const MARGIN_LEFT = 50; // Reduced from 300 to 50 to move root node to the LEFT 
 const MARGIN_RIGHT = 100;
 const MARGIN_BOTTOM = 50;
 
+// Define proper types for selectedPath
+interface SelectedPath {
+  level1?: string;
+  level2?: string;
+  level3?: string;
+  level4?: string;
+  level5?: string;
+  level6?: string;
+  level7?: string;
+  level8?: string;
+  level9?: string;
+  level10?: string;
+}
+
+// Define type for hierarchical node data
+interface HierarchicalNode {
+  id: string;
+  name: string;
+  description: string;
+  level: number;
+  levelName: string;
+  isSelected: boolean;
+  isCustom: boolean;
+  children_count?: number;
+  children: HierarchicalNode[];
+}
+
 // Helper function to find the last selected node ID and level
-const findLastSelectedNode = (selectedPath: any) => {
+const findLastSelectedNode = (selectedPath: SelectedPath) => {
   // Check from highest level down to find the last non-empty selection
   if (selectedPath.level10) return { id: selectedPath.level10, level: 10 };
   if (selectedPath.level9) return { id: selectedPath.level9, level: 9 };
@@ -66,14 +92,14 @@ const buildHierarchy = (
   level9Items: Record<string, TreeNode[]>,
   level10Items: Record<string, TreeNode[]>,
   levelNames: Record<string, string>,
-  selectedPath: any,
+  selectedPath: SelectedPath,
   query: string
-) => {
+): HierarchicalNode => {
   // Find the single node that should be selected
   const lastSelectedNode = findLastSelectedNode(selectedPath);
   //console.log("MindMap Selection: Last selected node:", lastSelectedNode);
 
-  const hierarchy: any = {
+  const hierarchy: HierarchicalNode = {
     id: "root",
     name: query || "Research Query",
     description: "Your research query",
@@ -164,7 +190,7 @@ const buildHierarchy = (
 
 // Helper function to recursively add children for levels 4-10
 const addChildrenRecursively = (
-  parentNode: any,
+  parentNode: HierarchicalNode,
   parentId: string,
   currentLevel: number,
   levelItemsArray: Record<string, TreeNode[]>[],
@@ -202,7 +228,7 @@ const addChildrenRecursively = (
 };
 
 // Helper function to create D3 nodes from hierarchical data
-const createD3Nodes = (hierarchicalData: any, layoutDirection: 'horizontal' | 'vertical' = 'horizontal'): MindMapNode[] => {
+const createD3Nodes = (hierarchicalData: HierarchicalNode, layoutDirection: 'horizontal' | 'vertical' = 'horizontal'): MindMapNode[] => {
   if (!hierarchicalData.children || hierarchicalData.children.length === 0) {
     return [];
   }
@@ -282,7 +308,7 @@ const createD3Nodes = (hierarchicalData: any, layoutDirection: 'horizontal' | 'v
 };
 
 // Helper function to create connections from D3 hierarchy
-const createD3Connections = (hierarchicalData: any, layoutDirection: 'horizontal' | 'vertical' = 'horizontal'): MindMapConnection[] => {
+const createD3Connections = (hierarchicalData: HierarchicalNode, layoutDirection: 'horizontal' | 'vertical' = 'horizontal'): MindMapConnection[] => {
   if (!hierarchicalData.children || hierarchicalData.children.length === 0) {
     return [];
   }
@@ -401,7 +427,7 @@ export const transformToMindMapData = (
   level9Items: Record<string, TreeNode[]>,
   level10Items: Record<string, TreeNode[]>,
   levelNames: Record<string, string>,
-  selectedPath: any,
+  selectedPath: SelectedPath,
   query: string = "Research Query",
   layoutDirection: 'horizontal' | 'vertical' = 'horizontal'  // Add layout direction parameter
 ) => {
@@ -426,13 +452,6 @@ export const transformToMindMapData = (
   const nodes = createD3Nodes(hierarchicalData, layoutDirection);
   const connections = createD3Connections(hierarchicalData, layoutDirection);
 
-  // console.log("Level breakdown:", {
-  //   root: nodes.filter((n) => n.level === 0).length,
-  //   level1: nodes.filter((n) => n.level === 1).length,
-  //   level2: nodes.filter((n) => n.level === 2).length,
-  //   level3: nodes.filter((n) => n.level === 3).length,
-  //   level4: nodes.filter((n) => n.level === 4).length,
-  // });
 
   return { nodes, connections };
 };
