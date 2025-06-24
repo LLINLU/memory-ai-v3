@@ -50,7 +50,6 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
   onEditNode,
   onRefine,
   onCheckResults,
-  onResize,
   selectedNodeTitle,
   selectedNodeDescription,
   selectedNodeId,

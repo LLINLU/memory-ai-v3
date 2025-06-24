@@ -20,27 +20,9 @@ export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
   sidebarContent,
   showSidebar,
   collapsedSidebar,
-  isExpanded,
   toggleSidebar,
   setShowSidebar,
-  handlePanelResize,
 }) => {
-  // Add debug logging for layout-level wheel events
-  useEffect(() => {
-    const handleLayoutWheel = (e: WheelEvent) => {
-      console.log('🟠 TechTreeLayout wheel event detected');
-      console.log('Target:', e.target);
-      console.log('Target className:', (e.target as HTMLElement)?.className);
-      console.log('Should be isolated by mindmap handlers');
-    };
-    
-    const layoutElement = document.querySelector('.tech-tree-layout');
-    if (layoutElement) {
-      layoutElement.addEventListener('wheel', handleLayoutWheel);
-      return () => layoutElement.removeEventListener('wheel', handleLayoutWheel);
-    }
-  }, []);
-
   return (
     <div className="h-screen bg-gray-50 flex overflow-hidden tech-tree-layout">
       {/* Left side - Mindmap/Treemap area */}
@@ -50,7 +32,7 @@ export const TechTreeLayout: React.FC<TechTreeLayoutProps> = ({
 
       {/* Right side - Papers panel */}
       {showSidebar && !collapsedSidebar && (
-        <div className="w-96 h-full bg-white border-l border-gray-200 shadow-lg">
+        <div className="w-96 h-full bg-white border-l border-gray-200 shadow-lg overflow-y-auto">
           {sidebarContent}
         </div>
       )}
