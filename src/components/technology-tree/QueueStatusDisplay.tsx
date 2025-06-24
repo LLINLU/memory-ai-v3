@@ -29,7 +29,7 @@ export const QueueStatusDisplay: React.FC = () => {
     status.processing.useCases > 0 ||
     !status.apiHealthy;
 
-  if (!hasActivity && !isVisible) {
+  if (!isVisible) {
     return (
       <div className="fixed bottom-4 right-4 z-50">
         <button
@@ -44,15 +44,6 @@ export const QueueStatusDisplay: React.FC = () => {
 
   const queueList = getQueueListFormatted();
   queueList.forEach((item) => console.log(item));
-
-  function getPercent(item) {
-    const maxTime = item.type === "論文検索" ? 10 : 60;
-    const percent = Math.min(
-      100,
-      Math.floor((item.elapsedSeconds / maxTime) * 100)
-    );
-    return percent;
-  }
 
   function QueList() {
     // Separate lists
@@ -73,7 +64,7 @@ export const QueueStatusDisplay: React.FC = () => {
       );
 
     const renderQueueItem = (item, index, section) => {
-      const maxTime = item.type === "論文検索" ? 20 : 120;
+      const maxTime = item.type === "論文検索" ? 20 : 180;
       const percent =
         section === "done"
           ? 100
@@ -200,7 +191,7 @@ export const QueueStatusDisplay: React.FC = () => {
       <Card className="w-64">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm">Enrichment Queue</CardTitle>
+            <CardTitle className="text-sm">検索状況</CardTitle>
             <button
               onClick={() => setIsVisible(false)}
               className="text-gray-500 hover:text-gray-700 text-xs"
@@ -215,7 +206,7 @@ export const QueueStatusDisplay: React.FC = () => {
               }`}
               onClick={() => setActiveTab("summary")}
             >
-              Summary
+              全体
             </button>
             <button
               className={`px-2 py-1 rounded ${
@@ -223,47 +214,14 @@ export const QueueStatusDisplay: React.FC = () => {
               }`}
               onClick={() => setActiveTab("queue")}
             >
-              Queue
+              各検索
             </button>
           </div>
         </CardHeader>{" "}
         {activeTab === "summary" && (
           <CardContent className="text-xs space-y-2">
             <div className="flex items-center justify-between">
-              <span>Queue:</span>
-              <Badge variant={status.queueLength > 0 ? "default" : "secondary"}>
-                {status.queueLength}
-              </Badge>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span>Papers:</span>
-              <Badge
-                variant={status.processing.papers > 0 ? "default" : "secondary"}
-              >
-                {status.processing.papers}/{status.maxConcurrent.papers}
-              </Badge>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span>Use Cases:</span>
-              <Badge
-                variant={
-                  status.processing.useCases > 0 ? "default" : "secondary"
-                }
-              >
-                {status.processing.useCases}/{status.maxConcurrent.useCases}
-              </Badge>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span>API Health:</span>
-              <Badge variant={status.apiHealthy ? "default" : "destructive"}>
-                {status.apiHealthy ? "Healthy" : "Failed"}
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>Total Processing:</span>
+              <span>検索中</span>
               <Badge
                 variant={
                   status.processing.papers + status.processing.useCases > 0
@@ -271,15 +229,40 @@ export const QueueStatusDisplay: React.FC = () => {
                     : "secondary"
                 }
               >
-                {status.processing.papers + status.processing.useCases}
+                {status.processing.papers + status.processing.useCases}件
               </Badge>
             </div>
-            {(status as any).polling > 0 && (
-              <div className="flex items-center justify-between">
-                <span>Polling DB:</span>
-                <Badge variant="outline">{(status as any).polling}</Badge>
-              </div>
-            )}
+            <div className="flex items-center justify-between">
+              <span>論文検索実行中</span>
+              <Badge
+                variant={status.processing.papers > 0 ? "default" : "secondary"}
+              >
+                {status.processing.papers}件 / {status.maxConcurrent.papers}
+              </Badge>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span>事例検索実行中</span>
+              <Badge
+                variant={
+                  status.processing.useCases > 0 ? "default" : "secondary"
+                }
+              >
+                {status.processing.useCases}件 / {status.maxConcurrent.useCases}
+              </Badge>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>検索待機</span>
+              <Badge variant={status.queueLength > 0 ? "default" : "secondary"}>
+                {status.queueLength}件
+              </Badge>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>API Health:</span>
+              <Badge variant={status.apiHealthy ? "default" : "destructive"}>
+                {status.apiHealthy ? "Healthy" : "Failed"}
+              </Badge>
+            </div>
 
             {(status as any).consecutiveFailures > 0 && (
               <div className="flex items-center justify-between">

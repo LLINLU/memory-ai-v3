@@ -61,8 +61,8 @@ class EnrichmentQueueManager {
   private readonly MAX_CONSECUTIVE_FAILURES = 5;
 
   // Configuration
-  private readonly MAX_CONCURRENT_PAPERS = 1;
-  private readonly MAX_CONCURRENT_USECASES = 1;
+  private readonly MAX_CONCURRENT_PAPERS = 10;
+  private readonly MAX_CONCURRENT_USECASES = 15;
   private readonly POLLING_TIMEOUT = 4 * 60 * 1000; // 4 minutes for database polling
   private readonly POLLING_INTERVAL = 5000; // Poll database every 5 seconds
 
