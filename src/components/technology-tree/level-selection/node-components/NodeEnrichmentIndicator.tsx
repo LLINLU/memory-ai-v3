@@ -94,7 +94,7 @@ export const NodeEnrichmentIndicator: React.FC<
       <Loader2 className={`animate-spin mr-2 ${sizeClasses}`} />
       <span className={`${textSizeClass} font-semibold`}>
         {loadingMessage}
-        {<span className="ml-1 text-gray-500">({elapsedTime})</span>}
+        {<span className="ml-1 text-white">({elapsedTime})</span>}
       </span>
     </div>
   );
