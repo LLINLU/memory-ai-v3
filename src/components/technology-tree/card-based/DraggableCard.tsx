@@ -1,14 +1,10 @@
+
 import React from 'react';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { GripVertical } from 'lucide-react';
-import { ScenarioCard } from './ScenarioCard';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { ScenarioCard } from './ScenarioCard';
 
 interface LevelItem {
   id: string;
@@ -65,13 +61,29 @@ interface DraggableCardProps {
   onNodeClick: (level: string, nodeId: string) => void;
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
-  isDraggable?: boolean;
+  isDraggable: boolean;
+  level2Layout: "vertical" | "horizontal";
+  onToggleLevel2Layout: () => void;
 }
 
 export const DraggableCard: React.FC<DraggableCardProps> = ({
   scenario,
-  isDraggable = false,
-  ...cardProps
+  selectedPath,
+  level2Items,
+  allLevelItems,
+  levelNames,
+  isExpanded,
+  isLevelExpanded,
+  onToggleExpansion,
+  onToggleLevelExpansion,
+  onExpandAll,
+  onCollapseAll,
+  onNodeClick,
+  onEditNode,
+  onDeleteNode,
+  isDraggable,
+  level2Layout,
+  onToggleLevel2Layout,
 }) => {
   const {
     attributes,
@@ -88,45 +100,34 @@ export const DraggableCard: React.FC<DraggableCardProps> = ({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.8 : 1,
   };
-
-  if (!isDraggable) {
-    return (
-      <ScenarioCard
-        scenario={scenario}
-        {...cardProps}
-      />
-    );
-  }
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="relative group"
+      {...attributes}
+      {...(isDraggable ? listeners : {})}
+      className={isDragging ? 'z-50' : ''}
     >
-      {/* Drag Handle - improved visibility for grid layouts */}
-      <TooltipProvider delayDuration={200} skipDelayDuration={100}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div
-              {...attributes}
-              {...listeners}
-              className="absolute top-2 left-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing bg-white/95 backdrop-blur-sm rounded-md p-1.5 shadow-md border border-gray-200 hover:border-gray-300"
-            >
-              <GripVertical className="h-4 w-4 text-gray-600" />
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>ご自由にカードをドラッグしてください。</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-
       <ScenarioCard
         scenario={scenario}
-        {...cardProps}
+        selectedPath={selectedPath}
+        level2Items={level2Items}
+        allLevelItems={allLevelItems}
+        levelNames={levelNames}
+        isExpanded={isExpanded}
+        isLevelExpanded={isLevelExpanded}
+        onToggleExpansion={onToggleExpansion}
+        onToggleLevelExpansion={onToggleLevelExpansion}
+        onExpandAll={onExpandAll}
+        onCollapseAll={onCollapseAll}
+        onNodeClick={onNodeClick}
+        onEditNode={onEditNode}
+        onDeleteNode={onDeleteNode}
+        level2Layout={level2Layout}
+        onToggleLevel2Layout={onToggleLevel2Layout}
       />
     </div>
   );

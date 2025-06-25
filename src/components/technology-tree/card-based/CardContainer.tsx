@@ -77,6 +77,9 @@ interface CardContainerProps {
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
   onCardReorder?: (newOrder: LevelItem[]) => void;
+  level2LayoutPreferences: Record<string, "vertical" | "horizontal">;
+  onToggleLevel2Layout: (scenarioId: string) => void;
+  getLevel2Layout: (scenarioId: string) => "vertical" | "horizontal";
 }
 
 export const CardContainer: React.FC<CardContainerProps> = ({
@@ -97,6 +100,9 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   onEditNode,
   onDeleteNode,
   onCardReorder,
+  level2LayoutPreferences,
+  onToggleLevel2Layout,
+  getLevel2Layout,
 }) => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -171,6 +177,8 @@ export const CardContainer: React.FC<CardContainerProps> = ({
             onEditNode={onEditNode}
             onDeleteNode={onDeleteNode}
             isDraggable={isDraggable}
+            level2Layout={getLevel2Layout(scenario.id)}
+            onToggleLevel2Layout={() => onToggleLevel2Layout(scenario.id)}
           />
         </div>
       );

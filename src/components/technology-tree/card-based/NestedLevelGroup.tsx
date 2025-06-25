@@ -1,7 +1,7 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, LayoutGrid, List } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -69,6 +69,8 @@ interface NestedLevelGroupProps {
   onDeleteNode?: (level: string, nodeId: string) => void;
   isLevelExpanded: (levelKey: string) => boolean;
   toggleLevelExpansion: (levelKey: string) => void;
+  level2Layout?: "vertical" | "horizontal";
+  onToggleLevel2Layout?: () => void;
 }
 
 export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
@@ -90,6 +92,8 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
   onDeleteNode,
   isLevelExpanded,
   toggleLevelExpansion,
+  level2Layout = "vertical",
+  onToggleLevel2Layout,
 }) => {
   const levelNames2 = {
     2: "level2",
@@ -280,6 +284,7 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     }
     return { level2Parent: null, level3Parent: null };
   };
+
   const renderNode = (item: LevelItem) => {
     const hasChildren = hasChildrenForNode(item);
     const childLevelKey = `${levelKey}-${item.id}`;
@@ -328,6 +333,7 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
         nextLevelItemsForChildren = getLevelItems(currentLevel + 2); // next level items for children
       }
     }
+
     return (
       <ExpandableNode
         key={item.id}
@@ -457,8 +463,24 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     );
   };
 
+  // Determine the container classes based on level and layout
+  const getContainerClasses = () => {
+    if (currentLevel === 2 && level2Layout === "horizontal") {
+      return "flex flex-wrap gap-2";
+    }
+    return "space-y-2";
+  };
+
+  // For Level 2 nodes in horizontal layout, add width constraints
+  const getNodeWrapperClasses = () => {
+    if (currentLevel === 2 && level2Layout === "horizontal") {
+      return "min-w-[300px] max-w-[400px] flex-1";
+    }
+    return "";
+  };
+
   return (
-    <div className="space-y-2">
+    <div className={getContainerClasses()}>
       <div className="mb-3 flex items-center gap-2">
         <Badge
           variant="outline"
@@ -482,8 +504,39 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
+        {/* Add layout toggle button for Level 2 only */}
+        {currentLevel === 2 && onToggleLevel2Layout && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="sm"
+                  onClick={onToggleLevel2Layout}
+                  className="h-6 w-6 p-0 rounded-full bg-gray-100 hover:bg-gray-200 border-0"
+                >
+                  {level2Layout === "horizontal" ? (
+                    <List className="h-3 w-3 text-gray-600" />
+                  ) : (
+                    <LayoutGrid className="h-3 w-3 text-gray-600" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>
+                  {level2Layout === "horizontal"
+                    ? "縦表示に切り替え"
+                    : "横表示に切り替え"}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
       </div>
-      {items.map(renderNode)}
+      {items.map((item) => (
+        <div key={item.id} className={getNodeWrapperClasses()}>
+          {renderNode(item)}
+        </div>
+      ))}
     </div>
   );
 };

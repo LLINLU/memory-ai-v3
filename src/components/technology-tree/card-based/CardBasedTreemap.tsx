@@ -89,6 +89,9 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
 }) => {
   const [cardLayout, setCardLayout] = useState<CardLayoutMode>("three-per-row");
   
+  // Add state to track Level 2 layout preferences per scenario
+  const [level2LayoutPreferences, setLevel2LayoutPreferences] = useState<Record<string, "vertical" | "horizontal">>({});
+  
   // Add state to track reordered items
   const [reorderedItems, setReorderedItems] = useState<LevelItem[]>(level1Items);
 
@@ -96,6 +99,19 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
   useEffect(() => {
     setReorderedItems(level1Items);
   }, [level1Items]);
+
+  // Function to toggle Level 2 layout for a specific scenario
+  const toggleLevel2Layout = (scenarioId: string) => {
+    setLevel2LayoutPreferences(prev => ({
+      ...prev,
+      [scenarioId]: prev[scenarioId] === "horizontal" ? "vertical" : "horizontal"
+    }));
+  };
+
+  // Function to get Level 2 layout for a specific scenario
+  const getLevel2Layout = (scenarioId: string): "vertical" | "horizontal" => {
+    return level2LayoutPreferences[scenarioId] || "vertical";
+  };
 
   // Calculate total node count across all levels
   const calculateTotalNodeCount = () => {
@@ -266,6 +282,9 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
             onEditNode={onEditNode}
             onDeleteNode={onDeleteNode}
             onCardReorder={handleCardReorder}
+            level2LayoutPreferences={level2LayoutPreferences}
+            onToggleLevel2Layout={toggleLevel2Layout}
+            getLevel2Layout={getLevel2Layout}
           />
         </div>
       </div>

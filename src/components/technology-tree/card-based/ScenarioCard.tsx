@@ -73,6 +73,8 @@ interface ScenarioCardProps {
   ) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
   shouldTakeFullWidth?: boolean;
+  level2Layout: "vertical" | "horizontal";
+  onToggleLevel2Layout: () => void;
 }
 
 export const ScenarioCard: React.FC<ScenarioCardProps> = ({
@@ -96,6 +98,8 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
   onEditNode,
   onDeleteNode,
   shouldTakeFullWidth = false,
+  level2Layout,
+  onToggleLevel2Layout,
 }) => {
   const isSelected = selectedPath.level1 === scenario.id;
   const hasChildren = level2Items.length > 0;
@@ -106,6 +110,7 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
       `[SCENARIO_CARD] ${scenario.id} (${scenario.name}): isSelected=${isSelected}, selectedPath.level1=${selectedPath.level1}`
     );
   }, [isSelected, selectedPath.level1, scenario.id, scenario.name]);
+  
   const handleScenarioClick = () => {
     console.log(
       `[SCENARIO_CLICK] Clicking scenario ${scenario.id} (${scenario.name})`
@@ -289,6 +294,8 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
             onDeleteNode={onDeleteNode}
             isLevelExpanded={isLevelExpanded}
             toggleLevelExpansion={onToggleLevelExpansion}
+            level2Layout={level2Layout}
+            onToggleLevel2Layout={onToggleLevel2Layout}
           />
         </CardContent>
       )}
