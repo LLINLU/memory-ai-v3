@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { getLevelColor } from '@/components/technology-tree/utils/levelColors';
@@ -11,7 +10,7 @@ interface MindMapLegendProps {
 const MindMapLegendComponent: React.FC<MindMapLegendProps> = ({
   treeMode,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   // Define static legend labels based on framework
   const getLegendLabels = () => {
