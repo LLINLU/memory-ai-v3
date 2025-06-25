@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Badge } from '@/components/ui/badge';
@@ -31,7 +30,6 @@ export const LayoutToggle: React.FC<LayoutToggleProps> = ({
           >
             {totalNodeCount}ノード
           </Badge>
-          <span>)</span>
         </div>
         <ToggleGroup type="single" value={cardLayout} onValueChange={value => value && onLayoutChange(value as CardLayoutMode)} className="p-1 rounded-lg bg-white">
           <ToggleGroupItem value="single-row" aria-label="Single row layout" className="data-[state=on]:bg-white data-[state=off]:opacity-60">
