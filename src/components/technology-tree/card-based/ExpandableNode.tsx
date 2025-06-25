@@ -52,9 +52,35 @@ export const ExpandableNode: React.FC<ExpandableNodeProps> = ({
     // TODO: Implement AI assist functionality for card-based view
   };
 
+  // Get progressive width constraints for the node content
+  const getNodeWidthClass = () => {
+    switch (level) {
+      case 2:
+        return "max-w-[95%]";
+      case 3:
+        return "max-w-[90%]";
+      case 4:
+        return "max-w-[85%]";
+      case 5:
+        return "max-w-[80%]";
+      case 6:
+        return "max-w-[75%]";
+      case 7:
+        return "max-w-[70%]";
+      case 8:
+        return "max-w-[65%]";
+      case 9:
+        return "max-w-[60%]";
+      case 10:
+        return "max-w-[55%]";
+      default:
+        return "w-full";
+    }
+  };
+
   return (
     <div className="w-full">
-      <div className="flex items-center gap-2">
+      <div className={`flex items-center gap-2 ${getNodeWidthClass()}`}>
         {hasChildren && (
           <button
             onClick={handleExpansionClick}
@@ -69,7 +95,7 @@ export const ExpandableNode: React.FC<ExpandableNodeProps> = ({
         )}
         {!hasChildren && <div className="w-6" />}
         
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <TreeNode
             item={item}
             isSelected={isSelected}
@@ -87,7 +113,7 @@ export const ExpandableNode: React.FC<ExpandableNodeProps> = ({
       </div>
       
       {isExpanded && children && (
-        <div className="ml-8 mt-2 space-y-2">
+        <div className="mt-2">
           {children}
         </div>
       )}

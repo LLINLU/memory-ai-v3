@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -222,6 +221,35 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     document.dispatchEvent(addNodeEvent);
   };
 
+  // Get progressive styling based on current level
+  const getContainerStyling = () => {
+    const baseClasses = "space-y-2";
+    
+    // Progressive indentation and width constraints
+    switch (currentLevel) {
+      case 2:
+        return `${baseClasses} ml-2 max-w-[95%]`;
+      case 3:
+        return `${baseClasses} ml-4 max-w-[90%]`;
+      case 4:
+        return `${baseClasses} ml-6 max-w-[85%]`;
+      case 5:
+        return `${baseClasses} ml-8 max-w-[80%]`;
+      case 6:
+        return `${baseClasses} ml-10 max-w-[75%]`;
+      case 7:
+        return `${baseClasses} ml-12 max-w-[70%]`;
+      case 8:
+        return `${baseClasses} ml-14 max-w-[65%]`;
+      case 9:
+        return `${baseClasses} ml-16 max-w-[60%]`;
+      case 10:
+        return `${baseClasses} ml-18 max-w-[55%]`;
+      default:
+        return baseClasses;
+    }
+  };
+
   const renderNode = (item: LevelItem) => {
     const hasChildren = hasChildrenForNode(item);
     const childLevelKey = `${levelKey}-${item.id}`;
@@ -294,7 +322,7 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
   };
 
   return (
-    <div className="space-y-2">
+    <div className={getContainerStyling()}>
       <div className="mb-3 flex items-center gap-2">
         <Badge variant="outline" className={`text-xs ${getLevelBadgeStyle(currentLevel)}`}>
           {getLevelLabel(currentLevel)}
