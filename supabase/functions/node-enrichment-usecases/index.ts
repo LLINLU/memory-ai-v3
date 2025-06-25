@@ -5,11 +5,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 interface NodeEnrichmentRequest {
   nodeId: string;
   treeId: string;
-  nodeTitle: string;
-  nodeDescription?: string;
+  enrichNode: string;
   query: string;
-  parentTitles: string[];
+  parentNodes: string[];
   team_id?: string | null;
+  treeType: string;
 }
 
 interface UseCase {
@@ -34,6 +34,60 @@ function makeBasicAuthHeader(): string {
   const user = Deno.env.get("SEARCH_API_USER") ?? "admin";
   const pass = Deno.env.get("SEARCH_API_PASS") ?? "adminpassword";
   return "Basic " + btoa(`${user}:${pass}`);
+}
+
+// Build sophisticated query based on tree type and parent nodes
+function buildEnrichmentQuery(enrichNode: string, query: string, parentNodes: string[], treeType: string): string {
+  // Create the full hierarchy by adding enrichNode to the end of parentNodes
+  const fullHierarchy = [...parentNodes, enrichNode];
+  const hierarchyLength = fullHierarchy.length;
+  
+  if (treeType.toLowerCase() === "ted") {
+    // TED generation query format for use cases
+    let queryParts = [`We want to find Implementation in ${query}`];
+    
+    if (hierarchyLength >= 1) {
+      queryParts.push(`tackling ${fullHierarchy[0]}`); // Scenario
+    }
+    if (hierarchyLength >= 2) {
+      queryParts.push(`that aims for ${fullHierarchy[1]}`); // Purpose
+    }
+    if (hierarchyLength >= 3) {
+      queryParts.push(`by using ${fullHierarchy[2]}`); // Function
+    }
+    if (hierarchyLength >= 4) {
+      queryParts.push(`such as ${fullHierarchy[3]}`); // Measure
+    }
+    if (hierarchyLength >= 5) {
+      queryParts.push(`especially ${fullHierarchy[4]}`); // Measure2/3/4/5
+    }
+    
+    return queryParts.join(" / ");
+  } else if (treeType.toLowerCase() === "fast") {
+    // Fast generation query format for use cases
+    let queryParts = [`We want to find Market Implementation by breaking down the ${query}`];
+    
+    if (hierarchyLength >= 1) {
+      queryParts.push(`into ${fullHierarchy[0]}`); // How1
+    }
+    if (hierarchyLength >= 2) {
+      queryParts.push(`focusing on ${fullHierarchy[1]}`); // How2
+    }
+    if (hierarchyLength >= 3) {
+      queryParts.push(`especially in ${fullHierarchy[2]}`); // How3
+    }
+    if (hierarchyLength >= 4) {
+      queryParts.push(`especially in ${fullHierarchy[3]}`); // How4
+    }
+    if (hierarchyLength >= 5) {
+      queryParts.push(`especially in ${fullHierarchy[4]}`); // How5
+    }
+    
+    return queryParts.join(" / ");
+  }
+  
+  // Fallback to simple query if tree type is not recognized
+  return `${query} ${parentNodes.join(" ")} ${enrichNode}`;
 }
 
 // Call search_market_impl API for use cases
@@ -142,26 +196,27 @@ serve(async (req) => {
     const {
       nodeId,
       treeId,
-      nodeTitle,
-      nodeDescription,
+      enrichNode,
       query,
-      parentTitles,
+      parentNodes,
       team_id,
+      treeType,
     } = requestBody as NodeEnrichmentRequest;
 
     // Validate required parameters
-    if (!nodeId || !treeId || !nodeTitle || !query || parentTitles === undefined) {
+    if (!nodeId || !treeId || !enrichNode || !query || parentNodes === undefined || !treeType) {
       console.error(`[USECASES_ONLY] Missing required parameters:`, {
         hasNodeId: !!nodeId,
         hasTreeId: !!treeId,
-        hasNodeTitle: !!nodeTitle,
+        hasEnrichNode: !!enrichNode,
         hasQuery: !!query,
-        hasParentTitles: parentTitles !== undefined
+        hasParentNodes: parentNodes !== undefined,
+        hasTreeType: !!treeType
       });
       return new Response(
         JSON.stringify({
           error: "Missing required parameters",
-          required: ["nodeId", "treeId", "nodeTitle", "query", "parentTitles"],
+          required: ["nodeId", "treeId", "enrichNode", "query", "parentNodes", "treeType"],
         }),
         {
           status: 400,
@@ -181,11 +236,8 @@ serve(async (req) => {
 
     const sb = createClient(SUPABASE_URL, SUPABASE_ROLE_KEY);
 
-    // Build search query - query already contains nodeTitle and nodeDescription from frontend
-    const parentTitlesStr = Array.isArray(parentTitles) ? parentTitles.join(",") : "";
-    const searchQuery = [query, parentTitlesStr]
-      .filter(part => part && part.trim() !== "")
-      .join(",");
+    // Build sophisticated search query based on tree type and parent nodes
+    const searchQuery = buildEnrichmentQuery(enrichNode, query, parentNodes, treeType);
 
     console.log(`[USECASES_ONLY] Built query: ${searchQuery}`);    // Frontend ensures we only get called when use cases don't exist, so fetch and save directly
     const marketImplRequest: SearchMarketImplRequest = { query: searchQuery };
@@ -207,7 +259,7 @@ serve(async (req) => {
     const response = {
       success: true,
       nodeId,
-      nodeTitle,
+      enrichNode,
       results: {
         useCases: {
           count: useCases.length,
@@ -217,7 +269,7 @@ serve(async (req) => {
       timestamp: new Date().toISOString(),
     };
 
-    console.log(`[USECASES_ONLY] Completed use cases enrichment for node: ${nodeTitle}`, response);
+    console.log(`[USECASES_ONLY] Completed use cases enrichment for node: ${enrichNode}`, response);
 
     return new Response(JSON.stringify(response), {
       status: 200,

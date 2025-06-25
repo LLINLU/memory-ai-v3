@@ -34,6 +34,7 @@ interface TechTreeSidebarProps {
     level9?: string;
     level10?: string;
   };
+  parentTitles?: string[];
 }
 
 export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
@@ -55,6 +56,7 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
   selectedNodeDescription,
   selectedNodeId,
   selectedPath,
+  parentTitles,
 }) => {
   return (
     <div className="h-full flex flex-col">
@@ -81,6 +83,7 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
           selectedNodeDescription={selectedNodeDescription}
           selectedNodeId={selectedNodeId}
           selectedPath={selectedPath}
+          parentTitles={parentTitles}
         />
       </div>
     </div>

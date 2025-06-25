@@ -8,12 +8,14 @@ interface SearchResultsProps {
   selectedNodeTitle?: string;
   selectedNodeDescription?: string;
   selectedNodeId?: string;
+  parentTitles?: string[];
 }
 
 export const SearchResults = ({
   selectedNodeTitle,
   selectedNodeDescription,
   selectedNodeId,
+  parentTitles,
 }: SearchResultsProps) => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = React.useState("papers");
@@ -45,6 +47,7 @@ export const SearchResults = ({
         <SelectedNodeInfo
           title={selectedNodeTitle}
           description={selectedNodeDescription}
+          parentTitles={parentTitles}
         />
       </div>
       <div className="flex-1 overflow-hidden">

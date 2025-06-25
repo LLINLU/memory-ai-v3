@@ -8,11 +8,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 interface NodeEnrichmentRequest {
   nodeId: string;
   treeId: string;
-  nodeTitle: string;
-  nodeDescription?: string;
+  enrichNode: string;
   query: string;
-  parentTitles: string[];
+  parentNodes: string[];
   team_id?: string | null;
+  treeType: string;
 }
 
 interface Paper {
@@ -46,20 +46,93 @@ function makeBasicAuthHeader(): string {
   return "Basic " + btoa(`${user}:${pass}`);
 }
 
-// Call search_article API for papers
-async function callSearchArticleAPI(request: SearchArticleRequest): Promise<SearchArticleResponse> {
-  console.log(`[PAPERS_ONLY] Calling search_article API with query: ${request.query}`);
+// Build sophisticated query based on tree type and parent nodes
+function buildEnrichmentQuery(
+  enrichNode: string,
+  query: string,
+  parentNodes: string[],
+  treeType: string
+): string {
+  // Create the full hierarchy by adding enrichNode to the end of parentNodes
+  const fullHierarchy = [...parentNodes, enrichNode];
+  const hierarchyLength = fullHierarchy.length;
 
-  const res = await fetch(`https://search-api.memoryai.jp/search_article?query=${encodeURIComponent(request.query)}`, {
-    method: "GET",
-    headers: {
-      Authorization: makeBasicAuthHeader(),
-    },
-  });
+  if (treeType.toLowerCase() === "ted") {
+    // TED generation query format
+    let queryParts = [`We want to find Research in [${query}]`];
+
+    if (hierarchyLength >= 1) {
+      queryParts.push(`tackling [${fullHierarchy[0]}]`); // Scenario
+    }
+    if (hierarchyLength >= 2) {
+      queryParts.push(`that aims for [${fullHierarchy[1]}]`); // Purpose
+    }
+    if (hierarchyLength >= 3) {
+      queryParts.push(`by using [${fullHierarchy[2]}]`); // Function
+    }
+    if (hierarchyLength >= 4) {
+      queryParts.push(`such as [${fullHierarchy[3]}]`); // Measure
+    }
+    if (hierarchyLength >= 5) {
+      queryParts.push(`especially [${fullHierarchy[4]}]`); // Measure2/3/4/5
+    }
+
+    return queryParts.join(" / ");
+  } else if (treeType.toLowerCase() === "fast") {
+    // Fast generation query format
+    let queryParts = [
+      `We want to find Research Papers by breaking down ${query}`,
+    ];
+
+    if (hierarchyLength >= 1) {
+      queryParts.push(`into ${fullHierarchy[0]}`); // How1
+    }
+    if (hierarchyLength >= 2) {
+      queryParts.push(`focusing on ${fullHierarchy[1]}`); // How2
+    }
+    if (hierarchyLength >= 3) {
+      queryParts.push(`especially in ${fullHierarchy[2]}`); // How3
+    }
+    if (hierarchyLength >= 4) {
+      queryParts.push(`especially in ${fullHierarchy[3]}`); // How4
+    }
+    if (hierarchyLength >= 5) {
+      queryParts.push(`especially in ${fullHierarchy[4]}`); // How5
+    }
+
+    return queryParts.join(" / ");
+  }
+
+  // Fallback to simple query if tree type is not recognized
+  return `${query} ${parentNodes.join(" ")} ${enrichNode}`;
+}
+
+// Call search_article API for papers
+async function callSearchArticleAPI(
+  request: SearchArticleRequest
+): Promise<SearchArticleResponse> {
+  console.log(
+    `[PAPERS_ONLY] Calling search_article API with query: ${request.query}`
+  );
+
+  const res = await fetch(
+    `https://search-api.memoryai.jp/search_article?query=${encodeURIComponent(
+      request.query
+    )}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: makeBasicAuthHeader(),
+      },
+    }
+  );
 
   if (!res.ok) {
     const text = await res.text();
-    console.error(`[PAPERS_ONLY] API call failed with status ${res.status}:`, text);
+    console.error(
+      `[PAPERS_ONLY] API call failed with status ${res.status}:`,
+      text
+    );
     throw new Error(`search_article API ${res.status}: ${text}`);
   }
 
@@ -81,7 +154,9 @@ async function callSearchArticleAPI(request: SearchArticleRequest): Promise<Sear
     };
   }
 
-  console.log(`[PAPERS_ONLY] Received ${responseData.papers?.length || 0} papers`);
+  console.log(
+    `[PAPERS_ONLY] Received ${responseData.papers?.length || 0} papers`
+  );
   return responseData;
 }
 
@@ -102,7 +177,10 @@ async function saveNodePapers(
     .eq("node_id", nodeId);
 
   if (deleteError) {
-    console.warn(`[PAPERS_ONLY] Failed to delete existing papers for node ${nodeId}:`, deleteError);
+    console.warn(
+      `[PAPERS_ONLY] Failed to delete existing papers for node ${nodeId}:`,
+      deleteError
+    );
   }
 
   const papersToInsert = papers.map((paper) => ({
@@ -128,15 +206,20 @@ async function saveNodePapers(
     .insert(papersToInsert);
 
   if (error) {
-    throw new Error(`Failed to save papers for node ${nodeId}: ${error.message}`);
+    throw new Error(
+      `Failed to save papers for node ${nodeId}: ${error.message}`
+    );
   }
 
-  console.log(`[PAPERS_ONLY] Successfully saved ${papers.length} papers for node: ${nodeId}`);
+  console.log(
+    `[PAPERS_ONLY] Successfully saved ${papers.length} papers for node: ${nodeId}`
+  );
 }
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
@@ -152,19 +235,33 @@ serve(async (req) => {
     const {
       nodeId,
       treeId,
-      nodeTitle,
-      nodeDescription,
+      enrichNode,
       query,
-      parentTitles,
+      parentNodes,
       team_id,
+      treeType,
     } = requestBody as NodeEnrichmentRequest;
 
     // Validate required parameters
-    if (!nodeId || !treeId || !nodeTitle || !query || parentTitles === undefined) {
+    if (
+      !nodeId ||
+      !treeId ||
+      !enrichNode ||
+      !query ||
+      parentNodes === undefined ||
+      !treeType
+    ) {
       return new Response(
         JSON.stringify({
           error: "Missing required parameters",
-          required: ["nodeId", "treeId", "nodeTitle", "query", "parentTitles"],
+          required: [
+            "nodeId",
+            "treeId",
+            "enrichNode",
+            "query",
+            "parentNodes",
+            "treeType",
+          ],
         }),
         {
           status: 400,
@@ -183,13 +280,15 @@ serve(async (req) => {
 
     const sb = createClient(SUPABASE_URL, SUPABASE_ROLE_KEY);
 
-    // Build search query - query already contains nodeTitle and nodeDescription from frontend
-    const parentTitlesStr = Array.isArray(parentTitles) ? parentTitles.join(",") : "";
-    const searchQuery = [query, parentTitlesStr]
-      .filter(part => part && part.trim() !== "")
-      .join(",");
+    // Build sophisticated search query based on tree type and parent nodes
+    const searchQuery = buildEnrichmentQuery(
+      enrichNode,
+      query,
+      parentNodes,
+      treeType
+    );
 
-    console.log(`[PAPERS_ONLY] Built query: ${searchQuery}`);    // Frontend ensures we only get called when papers don't exist, so fetch and save directly
+    console.log(`[PAPERS_ONLY] Built query: ${searchQuery}`); // Frontend ensures we only get called when papers don't exist, so fetch and save directly
     const articleRequest: SearchArticleRequest = { query: searchQuery };
     let paperResult: SearchArticleResponse | null;
 
@@ -201,33 +300,37 @@ serve(async (req) => {
     }
 
     const papers = paperResult!.papers || [];
-    console.log(`[PAPERS_ONLY] Got ${papers.length} papers, saving to database`);
+    console.log(
+      `[PAPERS_ONLY] Got ${papers.length} papers, saving to database`
+    );
 
     // Save papers to database (frontend ensures this won't conflict with existing data)
     if (papers.length) {
       await saveNodePapers(sb, nodeId, treeId, papers, team_id || null);
-      console.log(`[PAPERS_ONLY] Completed papers enrichment for node: ${nodeTitle}`, response);
     }
 
     const response = {
-      success: papers.length? true: false,
+      success: papers.length ? true : false,
       nodeId,
-      nodeTitle,
+      enrichNode,
       results: {
         papers: {
           count: papers.length,
-          saved: papers.length? true: false,
+          saved: papers.length ? true : false,
         },
       },
       timestamp: new Date().toISOString(),
     };
 
+    console.log(
+      `[PAPERS_ONLY] Completed papers enrichment for node: ${enrichNode}`,
+      response
+    );
 
     return new Response(JSON.stringify(response), {
       status: 200,
       headers: { ...CORS, "Content-Type": "application/json" },
     });
-
   } catch (err: any) {
     console.error("=== PAPERS ENRICHMENT ERROR ===");
     console.error("Error details:", {

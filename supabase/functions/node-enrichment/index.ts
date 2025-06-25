@@ -78,12 +78,17 @@ async function callSearchArticleAPI(
 ): Promise<SearchArticleResponse> {
   console.log(`[SEARCH_ARTICLE] Calling API with query: ${request.query}`);
 
-  const res = await fetch(`https://search-api.memoryai.jp/search_article?query=${encodeURIComponent(request.query)}`, {
-    method: "GET",
-    headers: {
-      Authorization: makeBasicAuthHeader(),
-    },
-  });
+  const res = await fetch(
+    `https://search-api.memoryai.jp/search_article?query=${encodeURIComponent(
+      request.query
+    )}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: makeBasicAuthHeader(),
+      },
+    }
+  );
 
   if (!res.ok) {
     const text = await res.text();
@@ -129,12 +134,12 @@ async function callSearchArticleAPI(
 async function callSearchMarketImplAPI(
   request: SearchMarketImplRequest
 ): Promise<SearchMarketImplResponse> {
-  console.log(
-    `[SEARCH_MARKET_IMPL] Calling API with query: ${request.query}`
-  );
+  console.log(`[SEARCH_MARKET_IMPL] Calling API with query: ${request.query}`);
 
   const res = await fetch(
-    `https://search-api.memoryai.jp/search_market_impl?query=${encodeURIComponent(request.query)}`,
+    `https://search-api.memoryai.jp/search_market_impl?query=${encodeURIComponent(
+      request.query
+    )}`,
     {
       method: "GET",
       headers: {
@@ -229,7 +234,6 @@ async function mockSearchMarketImplAPI(
     `[MOCK SEARCH_MARKET_IMPL] Generating mock use cases for query: ${query}`
   );
 
-
   const useCaseCount = Math.floor(Math.random() * 3) + 1;
   const useCases: UseCase[] = [];
 
@@ -287,7 +291,9 @@ async function checkPapersExist(
     return false; // Assume they don't exist on error
   }
 
-  console.log(`[CHECK_PAPERS] Found ${count} existing papers for node ${nodeId}.`);
+  console.log(
+    `[CHECK_PAPERS] Found ${count} existing papers for node ${nodeId}.`
+  );
   return (count ?? 0) > 10;
 }
 
@@ -310,11 +316,11 @@ async function checkUseCasesExist(
     );
     return false; // Assume they don't exist on error
   }
-  console.log(`[CHECK_USECASES] Found ${count} existing use cases for node ${nodeId}.`);
+  console.log(
+    `[CHECK_USECASES] Found ${count} existing use cases for node ${nodeId}.`
+  );
   return (count ?? 0) > 0;
 }
-
-
 
 function generateMockAuthors(): string {
   const firstNames = ["Alice", "Bob", "Charlie", "Diana", "Eric", "Fiona"];
@@ -578,7 +584,7 @@ const CORS = {
 
 // Streaming response types
 interface StreamingResponse {
-  type: 'papers' | 'useCases' | 'complete' | 'error';
+  type: "papers" | "useCases" | "complete" | "error";
   data?: any;
   error?: string;
   nodeId: string;
@@ -611,10 +617,20 @@ serve(async (req) => {
       team_id,
       streaming = false, // Add streaming parameter
       enrichType, // Add enrichType parameter: 'papers', 'useCases', or undefined (both)
-    } = requestBody as NodeEnrichmentRequest & { streaming?: boolean; enrichType?: 'papers' | 'useCases' };
+    } = requestBody as NodeEnrichmentRequest & {
+      streaming?: boolean;
+      enrichType?: "papers" | "useCases";
+    };
 
     // Validate required parameters
-    if (!nodeId || !treeId || !nodeTitle || !query || parentTitles === undefined || parentTitles === null) {
+    if (
+      !nodeId ||
+      !treeId ||
+      !nodeTitle ||
+      !query ||
+      parentTitles === undefined ||
+      parentTitles === null
+    ) {
       return new Response(
         JSON.stringify({
           error: "Missing required parameters",
@@ -661,21 +677,19 @@ serve(async (req) => {
     let skipPapers = papersExist;
     let skipUseCases = useCasesExist;
 
-    if (enrichType === 'papers') {
+    if (enrichType === "papers") {
       skipUseCases = true; // Only process papers
-    } else if (enrichType === 'useCases') {
+    } else if (enrichType === "useCases") {
       skipPapers = true; // Only process use cases
     }
 
-    console.log(
-      `[NODE_ENRICHMENT] Pre-flight check for node ${nodeId}:`, {
-        skipPapers,
-        skipUseCases,
-        enrichType: enrichType || 'both',
-        papersExist,
-        useCasesExist
-      }
-    );
+    console.log(`[NODE_ENRICHMENT] Pre-flight check for node ${nodeId}:`, {
+      skipPapers,
+      skipUseCases,
+      enrichType: enrichType || "both",
+      papersExist,
+      useCasesExist,
+    });
 
     console.log(
       `[NODE_ENRICHMENT] Starting enrichment for node: ${nodeTitle} (ID: ${nodeId})`
@@ -683,22 +697,38 @@ serve(async (req) => {
 
     // Build the query string using the API format: query + "," + parentTitles.join(",") + nodeTitle + nodeDescription
     const nodeDesc = nodeDescription || "";
-    const parentTitlesStr = Array.isArray(parentTitles) ? parentTitles.join(",") : "";
+    const parentTitlesStr = Array.isArray(parentTitles)
+      ? parentTitles.join(",")
+      : "";
 
-    const searchQuery = [
-      query,
-      parentTitlesStr,
-      nodeTitle,
-      nodeDesc
-    ].filter(part => part && part.trim() !== "").join(",");
+    const searchQuery = [query, parentTitlesStr, nodeTitle, nodeDesc]
+      .filter((part) => part && part.trim() !== "")
+      .join(",");
 
     console.log(`[NODE_ENRICHMENT] Built query: ${searchQuery}`);
 
     // Handle streaming vs non-streaming responses
     if (streaming) {
-      return handleStreamingResponse(sb, nodeId, treeId, searchQuery, team_id || null, skipPapers, skipUseCases);
+      return handleStreamingResponse(
+        sb,
+        nodeId,
+        treeId,
+        searchQuery,
+        team_id || null,
+        skipPapers,
+        skipUseCases
+      );
     } else {
-      return handleTraditionalResponse(sb, nodeId, treeId, nodeTitle, searchQuery, team_id || null, skipPapers, skipUseCases);
+      return handleTraditionalResponse(
+        sb,
+        nodeId,
+        treeId,
+        nodeTitle,
+        searchQuery,
+        team_id || null,
+        skipPapers,
+        skipUseCases
+      );
     }
   } catch (err: any) {
     console.error("=== NODE ENRICHMENT ERROR ===");
@@ -757,36 +787,41 @@ async function handleStreamingResponse(
           try {
             paperResult = await callSearchArticleAPI(articleRequest);
           } catch (error) {
-            console.warn("[STREAMING] Papers API failed, using mock:", error.message);
+            console.warn(
+              "[STREAMING] Papers API failed, using mock:",
+              error.message
+            );
             paperResult = await mockSearchArticleAPI(searchQuery);
           }
 
           const papers = paperResult.papers || [];
-          console.log(`[STREAMING] Got ${papers.length} papers, saving to database`);
+          console.log(
+            `[STREAMING] Got ${papers.length} papers, saving to database`
+          );
 
           // Save papers to database
           await saveNodePapers(sb, nodeId, treeId, papers, team_id);
 
           // Send papers response
           sendChunk({
-            type: 'papers',
+            type: "papers",
             data: {
               papers,
               count: papers.length,
-              saved: true
+              saved: true,
             },
             nodeId,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           });
 
           console.log("[STREAMING] Papers completed and sent");
         } catch (error) {
           console.error("[STREAMING] Papers processing failed:", error);
           sendChunk({
-            type: 'error',
+            type: "error",
             error: `Papers processing failed: ${error.message}`,
             nodeId,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           });
         }
       };
@@ -796,74 +831,83 @@ async function handleStreamingResponse(
 
         try {
           console.log("[STREAMING] Starting use cases API call");
-          const marketImplRequest: SearchMarketImplRequest = { query: searchQuery };
+          const marketImplRequest: SearchMarketImplRequest = {
+            query: searchQuery,
+          };
 
           let useCaseResult: SearchMarketImplResponse;
           try {
             useCaseResult = await callSearchMarketImplAPI(marketImplRequest);
           } catch (error) {
-            console.warn("[STREAMING] Use cases API failed, using mock:", error.message);
+            console.warn(
+              "[STREAMING] Use cases API failed, using mock:",
+              error.message
+            );
             useCaseResult = await mockSearchMarketImplAPI(searchQuery);
           }
 
           const useCases = useCaseResult.use_cases || [];
-          console.log(`[STREAMING] Got ${useCases.length} use cases, saving to database`);
+          console.log(
+            `[STREAMING] Got ${useCases.length} use cases, saving to database`
+          );
 
           // Save use cases to database
           await saveNodeUseCases(sb, nodeId, treeId, useCases, team_id);
 
           // Send use cases response
           sendChunk({
-            type: 'useCases',
+            type: "useCases",
             data: {
               useCases,
               count: useCases.length,
-              saved: true
+              saved: true,
             },
             nodeId,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           });
 
           console.log("[STREAMING] Use cases completed and sent");
         } catch (error) {
           console.error("[STREAMING] Use cases processing failed:", error);
           sendChunk({
-            type: 'error',
+            type: "error",
             error: `Use cases processing failed: ${error.message}`,
             nodeId,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           });
         }
       };
 
       // Run both processes concurrently
-      Promise.all([processPapers(), processUseCases()]).then(() => {
-        // Send completion signal
-        sendChunk({
-          type: 'complete',
-          nodeId,
-          timestamp: new Date().toISOString()
+      Promise.all([processPapers(), processUseCases()])
+        .then(() => {
+          // Send completion signal
+          sendChunk({
+            type: "complete",
+            nodeId,
+            timestamp: new Date().toISOString(),
+          });
+          controller.close();
+        })
+        .catch((error) => {
+          console.error("[STREAMING] Fatal error:", error);
+          sendChunk({
+            type: "error",
+            error: `Fatal error: ${error.message}`,
+            nodeId,
+            timestamp: new Date().toISOString(),
+          });
+          controller.close();
         });
-        controller.close();
-      }).catch((error) => {
-        console.error("[STREAMING] Fatal error:", error);
-        sendChunk({
-          type: 'error',
-          error: `Fatal error: ${error.message}`,
-          nodeId,
-          timestamp: new Date().toISOString()
-        });
-        controller.close();
-      });
     },
   });
 
   return new Response(stream, {
     headers: {
       ...CORS,
-      'Content-Type': 'text/plain; charset=utf-8',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
     },
   });
 }

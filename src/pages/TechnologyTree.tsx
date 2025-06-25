@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
 import { TechTreeLayout } from "@/components/technology-tree/TechTreeLayout";
@@ -25,7 +25,7 @@ import { FallbackAlert } from "@/components/technology-tree/FallbackAlert";
 import { enrichmentEventBus } from "@/hooks/useEnrichedData";
 import { useLevel1EnrichmentPolling } from "@/hooks/useLevel1EnrichmentPolling";
 import {
-  callNodeEnrichmentStreaming,
+  enrichNodeWithNewStructure,
   buildParentTitles,
   getNodeDetails,
   isNodeLoading,
@@ -289,33 +289,23 @@ const TechnologyTree = () => {
         nodeDescription,
       });
 
-      // Build parent titles array
-      const parentTitles = buildParentTitles(
-        level as any,
-        nodeId,
-        currentPath,
-        databaseTreeData
-      );
-      console.log("[CUSTOM_ENRICHMENT] Built parent titles:", parentTitles);
-
-      // Build query parameter
+      // Build query parameter - use only the user-inputted theme
       const searchTheme = locationState.query || currentQuery || "";
-      const query = [searchTheme, nodeTitle, nodeDescription]
-        .filter(Boolean)
-        .join(", ");
+      const query = searchTheme;
 
-      // Call the streaming enrichment API
+      // Determine tree type for enrichment
+      const treeType = (databaseTreeData?.mode || locationState?.treeData?.mode || "TED").toLowerCase();
+
+      // Call the new enrichment API with proper structure
       try {
-        await callNodeEnrichmentStreaming(
-          {
-            nodeId,
-            treeId: locationState.treeId,
-            nodeTitle,
-            nodeDescription,
-            query,
-            parentTitles,
-            team_id: userDetails.team_id,
-          },
+        await enrichNodeWithNewStructure(
+          nodeId,
+          locationState.treeId,
+          level as any,
+          currentPath,
+          databaseTreeData,
+          query,
+          treeType,
           (response: StreamingResponse) => {
             console.log(
               "[CUSTOM_ENRICHMENT_STREAMING] Received response:",
@@ -341,7 +331,8 @@ const TechnologyTree = () => {
                 response.error
               );
             }
-          }
+          },
+          userDetails.team_id
         );
       } catch (error) {
         console.error(
@@ -968,6 +959,41 @@ const TechnologyTree = () => {
     level10Items
   );
 
+  // Helper function to determine current level from selectedPath
+  const getCurrentLevel = (selectedPath: any, nodeId: string): string | null => {
+    if (!selectedPath || !nodeId) return null;
+    
+    const levels = ['level1', 'level2', 'level3', 'level4', 'level5', 'level6', 'level7', 'level8', 'level9', 'level10'];
+    
+    // Find the level where the nodeId matches
+    for (const level of levels) {
+      if (selectedPath[level] === nodeId) {
+        return level;
+      }
+    }
+    
+    return null;
+  };
+
+  // Calculate parent titles for the selected node
+  const parentTitles = useMemo(() => {
+    if (!selectedNodeInfo.nodeId || !selectedPath || !databaseTreeData) {
+      return [];
+    }
+    
+    const currentLevel = getCurrentLevel(selectedPath, selectedNodeInfo.nodeId);
+    if (!currentLevel) {
+      return [];
+    }
+    
+    return buildParentTitles(
+      currentLevel,
+      selectedNodeInfo.nodeId,
+      selectedPath,
+      databaseTreeData
+    );
+  }, [selectedNodeInfo.nodeId, selectedPath, databaseTreeData]);
+
   // Extract level 1 node IDs for enrichment polling
   const level1NodeIds = level1Items?.map((item) => item.id) || [];
 
@@ -1058,6 +1084,7 @@ const TechnologyTree = () => {
       selectedNodeDescription={selectedNodeInfo.description}
       selectedNodeId={selectedNodeInfo.nodeId}
       selectedPath={selectedPath}
+      parentTitles={parentTitles}
     />
   ); // Polling effect for TED v2 scenario completion with progressive display
   useEffect(() => {

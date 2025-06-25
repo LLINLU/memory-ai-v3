@@ -1,7 +1,7 @@
 import { PathLevel } from "@/types/tree";
 import { PathState } from "../state/usePathState";
 import { clearPathFromLevel, autoSelectChildren } from "../utils/pathUtils";
-import { callNodeEnrichmentStreaming, buildParentTitles, getNodeDetails, isNodeLoading, hasNodeEnrichedData, StreamingResponse } from "@/services/nodeEnrichmentService";
+import { callNodeEnrichmentStreaming, buildParentTitles, getNodeDetails, isNodeLoading, hasNodeEnrichedData, StreamingResponse, enrichNodeWithNewStructure } from "@/services/nodeEnrichmentService";
 import { triggerEnrichmentRefresh, triggerEnrichmentStart } from "@/hooks/useEnrichedData";
 import { useUserDetail } from "@/hooks/useUserDetail";
 import { useLocation } from "react-router-dom";
@@ -43,7 +43,7 @@ export const useNodeClickHandler = (
         triggerEnrichmentStart(nodeId);
 
         // Check if node already has data (same logic for all levels)
-        hasNodeEnrichedData(nodeId).then((hasData) => {
+        hasNodeEnrichedData(nodeId).then(async (hasData) => {
           if (hasData) {
             console.log('[NODE_ENRICHMENT] Node already has complete data (both papers and use cases), skipping API call:', nodeId);
             // Just trigger refresh to show existing data (this will turn off loading)
@@ -60,22 +60,23 @@ export const useNodeClickHandler = (
             const parentTitles = buildParentTitles(level, nodeId, initialPath, treeData);
             console.log('[NODE_ENRICHMENT] Built parent titles:', parentTitles);
 
-            // Build query parameter (combining search theme + node title + description)
+            // Build query parameter - use only the user-inputted theme
             const searchTheme = locationState.query || '';
-            const query = [searchTheme, nodeTitle, nodeDescription]
-              .filter(Boolean)
-              .join(', ');
+            const query = searchTheme;
 
-            // Call the streaming enrichment API (non-blocking)
-            callNodeEnrichmentStreaming({
+            // Determine tree type for enrichment
+            const treeType = (treeData?.mode || "TED").toLowerCase();
+
+            // Call the new enrichment API with proper structure
+            await enrichNodeWithNewStructure(
               nodeId,
-              treeId: locationState.treeId,
-              nodeTitle,
-              nodeDescription,
+              locationState.treeId,
+              level,
+              initialPath,
+              treeData,
               query,
-              parentTitles,
-              team_id: userDetails.team_id
-            }, (response: StreamingResponse) => {
+              treeType,
+              (response: StreamingResponse) => {
               console.log('[NODE_ENRICHMENT_STREAMING] Received response:', response);
 
               if (response.type === 'papers') {
@@ -90,9 +91,9 @@ export const useNodeClickHandler = (
               } else if (response.type === 'error') {
                 console.warn('[NODE_ENRICHMENT_STREAMING] Enrichment error:', response.error);
               }
-            }).catch((error) => {
-              console.error('[NODE_ENRICHMENT_STREAMING] Error during streaming enrichment:', error);
-            });
+            },
+            userDetails.team_id
+          );
           }
         });
       }

@@ -30,6 +30,7 @@ interface SidebarContentProps {
     level9?: string;
     level10?: string;
   };
+  parentTitles?: string[];
 }
 
 export const SidebarContent = ({
@@ -46,6 +47,7 @@ export const SidebarContent = ({
   selectedNodeDescription,
   selectedNodeId,
   selectedPath,
+  parentTitles,
 }: SidebarContentProps) => {
   if (sidebarTab === "chat") {
     return (
@@ -71,6 +73,7 @@ export const SidebarContent = ({
         selectedNodeTitle={selectedNodeTitle}
         selectedNodeDescription={selectedNodeDescription}
         selectedNodeId={selectedNodeId}
+        parentTitles={parentTitles}
       />
     </div>
   );
