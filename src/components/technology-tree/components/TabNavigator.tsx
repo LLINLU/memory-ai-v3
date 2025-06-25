@@ -32,7 +32,7 @@ export const TabNavigator = ({
           ) : (
             <FileText className="w-4 h-4 mr-2" />
           )}
-          論文 {loadingPapers ? "(生成中...)" : `(${papersCount})`}
+          論文 {loadingPapers ? "(検索中...)" : `(${papersCount})`}
         </TabsTrigger>
         <TabsTrigger
           value="implementation"
@@ -43,7 +43,7 @@ export const TabNavigator = ({
           ) : (
             <Code className="w-4 h-4 mr-2" />
           )}
-          事例 {loadingUseCases ? "(生成中...)" : `(${useCasesCount})`}
+          事例 {loadingUseCases ? "(検索中...)" : `(${useCasesCount})`}
         </TabsTrigger>
       </TabsList>
     </Tabs>

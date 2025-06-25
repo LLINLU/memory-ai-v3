@@ -85,36 +85,6 @@ async function callSearchArticleAPI(request: SearchArticleRequest): Promise<Sear
   return responseData;
 }
 
-// Mock search_article API for fallback
-async function mockSearchArticleAPI(query: string): Promise<SearchArticleResponse> {
-  console.log(`[PAPERS_ONLY] Generating mock papers for query: ${query}`);
-
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  const paperCount = Math.floor(Math.random() * 5) + 1;
-  const papers: Paper[] = [];
-
-  for (let i = 0; i < paperCount; i++) {
-    const paperId = crypto.randomUUID();
-    papers.push({
-      id: paperId,
-      title: `${query}: Research Paper ${i + 1}`,
-      authors: "Mock Author",
-      journal: "Mock Journal",
-      tags: ["research", "mock"],
-      abstract: `This paper explores ${query.toLowerCase()}.`,
-      date: new Date().toISOString().split("T")[0],
-      citations: Math.floor(Math.random() * 200) + 10,
-      region: "international",
-      doi: `10.1000/mock.${paperId.split("-")[0]}`,
-      url: `https://example.com/paper/${paperId}`,
-      score: Math.random() * 100,
-    });
-  }
-
-  return { papers, total_count: papers.length };
-}
-
 // Save papers for a specific node
 async function saveNodePapers(
   supabaseClient: any,
@@ -219,17 +189,15 @@ serve(async (req) => {
       .filter(part => part && part.trim() !== "")
       .join(",");
 
-    console.log(`[PAPERS_ONLY] Built query: ${searchQuery}`);
-
-    // Frontend ensures we only get called when papers don't exist, so fetch and save directly
+    console.log(`[PAPERS_ONLY] Built query: ${searchQuery}`);    // Frontend ensures we only get called when papers don't exist, so fetch and save directly
     const articleRequest: SearchArticleRequest = { query: searchQuery };
     let paperResult: SearchArticleResponse | null;
 
     try {
       paperResult = await callSearchArticleAPI(articleRequest);
     } catch (error) {
-      console.warn("[PAPERS_ONLY] Papers API failed, using mock:", error.message);
-      paperResult = null;
+      console.error("[PAPERS_ONLY] Papers API failed:", error.message);
+      throw new Error(`Papers API failed: ${error.message}`);
     }
 
     const papers = paperResult!.papers || [];

@@ -6,7 +6,13 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-export const QueueStatusDisplay: React.FC = () => {
+interface QueueStatusDisplayProps {
+  onNodeSelect?: (nodeId: string) => void;
+}
+
+export const QueueStatusDisplay: React.FC<QueueStatusDisplayProps> = ({ 
+  onNodeSelect 
+}) => {
   const [status, setStatus] = useState(getQueueStatus());
   const [isVisible, setIsVisible] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(Date.now());
@@ -61,27 +67,42 @@ export const QueueStatusDisplay: React.FC = () => {
           {items.map(renderItem)}
           <div className="h-2" />
         </>
-      );
-
-    const renderQueueItem = (item, index, section) => {
+      );    const renderQueueItem = (item, index, section) => {
       const maxTime = item.type === "論文検索" ? 20 : 180;
       const percent =
         section === "done"
           ? 100
           : Math.min(100, Math.floor((item.elapsedSeconds / maxTime) * 100));
-      return (
-        <div
+      
+      const handleItemClick = () => {
+        if (onNodeSelect && item.nodeId) {
+          onNodeSelect(item.nodeId);
+        }
+      };
+
+      return (        <div
           key={index}
-          className="border-b pb-1 flex items-center justify-between gap-2 bg-white"
-        >
-          <div className="flex flex-col flex-1">
-            <span
-              className={`text-xs ${
-                item.type === "論文検索" ? "text-blue-600" : "text-green-600"
-              }`}
-            >
-              {item.type}
-            </span>
+          className={`border-b pb-2 pt-1 flex items-center justify-between gap-2 rounded-sm px-2 ${
+            onNodeSelect && item.nodeId 
+              ? "cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-all duration-200 active:bg-blue-100" 
+              : "bg-white"
+          }`}
+          onClick={handleItemClick}
+          title={onNodeSelect && item.nodeId ? `クリックして「${item.name}」ノードに移動` : ""}
+        ><div className="flex flex-col flex-1">            <div className="flex items-center gap-1">
+              <span
+                className={`text-xs ${
+                  item.type === "論文検索" ? "text-blue-600" : "text-green-600"
+                }`}
+              >
+                {item.type}
+              </span>
+              {onNodeSelect && item.nodeId && (
+                <span className="text-blue-500 text-xs" title="クリック可能">
+                  ↗
+                </span>
+              )}
+            </div>
             <span className="text-gray-800 font-medium">{item.name}</span>
           </div>
           <div className="flex flex-col items-center gap-1">

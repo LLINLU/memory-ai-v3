@@ -78,29 +78,6 @@ async function callSearchMarketImplAPI(request: SearchMarketImplRequest): Promis
   return responseData;
 }
 
-// Mock search_market_impl API for fallback
-async function mockSearchMarketImplAPI(query: string): Promise<SearchMarketImplResponse> {
-  console.log(`[USECASES_ONLY] Generating mock use cases for query: ${query}`);
-
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  const useCaseCount = Math.floor(Math.random() * 3) + 1;
-  const useCases: UseCase[] = [];
-
-  for (let i = 0; i < useCaseCount; i++) {
-    const useCaseId = crypto.randomUUID();
-    useCases.push({
-      id: useCaseId,
-      product: `${query} Solution ${i + 1}`,
-      company: ["Mock Company"],
-      description: `Real-world implementation of ${query.toLowerCase()} technology.`,
-      press_releases: [`${query} Implementation News ${i + 1}`],
-    });
-  }
-
-  return { use_cases: useCases, total_count: useCases.length };
-}
-
 // Save use cases for a specific node
 async function saveNodeUseCases(
   supabaseClient: any,
@@ -210,17 +187,15 @@ serve(async (req) => {
       .filter(part => part && part.trim() !== "")
       .join(",");
 
-    console.log(`[USECASES_ONLY] Built query: ${searchQuery}`);
-
-    // Frontend ensures we only get called when use cases don't exist, so fetch and save directly
+    console.log(`[USECASES_ONLY] Built query: ${searchQuery}`);    // Frontend ensures we only get called when use cases don't exist, so fetch and save directly
     const marketImplRequest: SearchMarketImplRequest = { query: searchQuery };
     let useCaseResult: SearchMarketImplResponse;
     
     try {
       useCaseResult = await callSearchMarketImplAPI(marketImplRequest);
     } catch (error) {
-      console.warn("[USECASES_ONLY] Use cases API failed, using mock:", error.message);
-      useCaseResult = await mockSearchMarketImplAPI(searchQuery);
+      console.error("[USECASES_ONLY] Use cases API failed:", error.message);
+      throw new Error(`Use Cases API failed: ${error.message}`);
     }
 
     const useCases = useCaseResult.use_cases || [];
