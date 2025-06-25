@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from "react";
 import { NodeActions } from "./node-components/NodeActions";
 import { NodeContent } from "./node-components/NodeContent";
@@ -160,7 +159,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
     <div
       ref={nodeRef}
       className={`
-        py-6 px-3 rounded-lg cursor-pointer transition-all relative
+        py-4 px-3 rounded-lg cursor-pointer transition-all relative
         w-full h-auto min-h-[120px]
         ${nodeStyleClass}
         group
