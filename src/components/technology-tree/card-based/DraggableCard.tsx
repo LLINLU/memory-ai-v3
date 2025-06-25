@@ -4,7 +4,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Move } from 'lucide-react';
+import { GripVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScenarioCard } from './ScenarioCard';
@@ -124,7 +124,7 @@ export const DraggableCard: React.FC<DraggableCardProps> = ({
                   {...attributes}
                   {...listeners}
                 >
-                  <Move className="h-3 w-3 text-gray-600" />
+                  <GripVertical className="h-3 w-3 text-gray-600" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
