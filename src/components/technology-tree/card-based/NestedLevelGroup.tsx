@@ -463,10 +463,10 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     );
   };
 
-  // Determine the container classes based on level and layout
-  const getContainerClasses = () => {
+  // Determine the container classes for nodes only
+  const getNodesContainerClasses = () => {
     if (currentLevel === 2 && level2Layout === "horizontal") {
-      return "flex flex-wrap gap-2";
+      return "flex flex-nowrap gap-2 overflow-x-auto";
     }
     return "space-y-2";
   };
@@ -474,13 +474,14 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
   // For Level 2 nodes in horizontal layout, add width constraints
   const getNodeWrapperClasses = () => {
     if (currentLevel === 2 && level2Layout === "horizontal") {
-      return "min-w-[300px] max-w-[400px] flex-1";
+      return "min-w-[300px] max-w-[400px] flex-shrink-0";
     }
     return "";
   };
 
   return (
-    <div className={getContainerClasses()}>
+    <div>
+      {/* Fixed header - always stays in the same position */}
       <div className="mb-3 flex items-center gap-2">
         <Badge
           variant="outline"
@@ -532,11 +533,15 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
           </TooltipProvider>
         )}
       </div>
-      {items.map((item) => (
-        <div key={item.id} className={getNodeWrapperClasses()}>
-          {renderNode(item)}
-        </div>
-      ))}
+
+      {/* Nodes container - applies layout-specific styling */}
+      <div className={getNodesContainerClasses()}>
+        {items.map((item) => (
+          <div key={item.id} className={getNodeWrapperClasses()}>
+            {renderNode(item)}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
