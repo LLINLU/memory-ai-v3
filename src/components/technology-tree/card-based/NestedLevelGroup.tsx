@@ -2,15 +2,9 @@ import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plus, LayoutGrid, List } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { ExpandableNode } from "./ExpandableNode";
 import { getLevelBadgeStyle } from "../utils/levelColors";
-
 interface LevelItem {
   id: string;
   name: string;
@@ -19,7 +13,6 @@ interface LevelItem {
   description?: string;
   children_count?: number;
 }
-
 interface NestedLevelGroupProps {
   items: LevelItem[];
   selectedPath: {
@@ -61,18 +54,16 @@ interface NestedLevelGroupProps {
     level10?: string;
   };
   onNodeClick: (level: string, nodeId: string) => void;
-  onEditNode?: (
-    level: string,
-    nodeId: string,
-    updatedNode: { title: string; description: string }
-  ) => void;
+  onEditNode?: (level: string, nodeId: string, updatedNode: {
+    title: string;
+    description: string;
+  }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
   isLevelExpanded: (levelKey: string) => boolean;
   toggleLevelExpansion: (levelKey: string) => void;
   level2Layout?: "vertical" | "horizontal";
   onToggleLevel2Layout?: () => void;
 }
-
 export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
   items,
   selectedPath,
@@ -85,7 +76,7 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     level1: "シナリオ",
     level2: "目的",
     level3: "機能",
-    level4: "手段",
+    level4: "手段"
   },
   onNodeClick,
   onEditNode,
@@ -93,7 +84,7 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
   isLevelExpanded,
   toggleLevelExpansion,
   level2Layout = "vertical",
-  onToggleLevel2Layout,
+  onToggleLevel2Layout
 }) => {
   const levelNames2 = {
     2: "level2",
@@ -104,9 +95,8 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     7: "level7",
     8: "level8",
     9: "level9",
-    10: "level10",
+    10: "level10"
   } as const;
-
   const getLevelLabel = (level: number): string => {
     switch (level) {
       case 2:
@@ -131,7 +121,6 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
         return `レベル${level}`;
     }
   };
-
   const getLevelItems = (level: number): Record<string, LevelItem[]> => {
     switch (level) {
       case 3:
@@ -172,7 +161,6 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
       const nextLevelChildren = nextLevelItemsMap[item.id]?.length > 0;
       return directChildren || nextLevelChildren;
     }
-
     return directChildren;
   };
 
@@ -199,21 +187,17 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
       }
       // Check if this level 3 item exists under the selected level 2 item
       const level2Items = allLevelItems.level3Items[selectedPath.level2] || [];
-      return level2Items.some((l3Item) => l3Item.id === item.id);
+      return level2Items.some(l3Item => l3Item.id === item.id);
     }
 
     // For level 4, must have valid level 1, 2, and 3 selections
     if (currentLevel === 4) {
-      if (
-        selectedPath.level1 !== scenarioId ||
-        !selectedPath.level2 ||
-        !selectedPath.level3
-      ) {
+      if (selectedPath.level1 !== scenarioId || !selectedPath.level2 || !selectedPath.level3) {
         return false;
       }
       // Check if this level 4 item exists under the selected level 3 item
       const level3Items = allLevelItems.level4Items[selectedPath.level3] || [];
-      return level3Items.some((l4Item) => l4Item.id === item.id);
+      return level3Items.some(l4Item => l4Item.id === item.id);
     }
 
     // For higher levels, follow the same pattern
@@ -223,7 +207,6 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
       for (let i = 5; i < currentLevel; i++) {
         requiredLevels.push(`level${i}` as keyof typeof selectedPath);
       }
-
       for (const level of requiredLevels) {
         if (!selectedPath[level as keyof typeof selectedPath]) {
           return false;
@@ -234,35 +217,29 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
       const parentLevel = currentLevel - 1;
       const parentKey = `level${parentLevel}` as keyof typeof selectedPath;
       const parentId = selectedPath[parentKey];
-
       if (!parentId) return false;
-
       const parentLevelItems = getLevelItems(currentLevel);
       const currentLevelItems = parentLevelItems[parentId] || [];
-      return currentLevelItems.some((item_check) => item_check.id === item.id);
+      return currentLevelItems.some(item_check => item_check.id === item.id);
     }
-
     return false;
   };
-
   const handleAddClick = () => {
     // Create custom event to add node with the level information
     const addNodeEvent = new CustomEvent("add-node", {
       detail: {
         levelNumber: currentLevel.toString(),
         title: "",
-        description: "",
-      },
+        description: ""
+      }
     });
     document.dispatchEvent(addNodeEvent);
   };
 
   // Helper function to find the level 2 parent of a level 3 node
   const findLevel2Parent = (level3NodeId: string): string | null => {
-    for (const [level2Id, level3Items] of Object.entries(
-      allLevelItems.level3Items
-    )) {
-      if (level3Items.some((item) => item.id === level3NodeId)) {
+    for (const [level2Id, level3Items] of Object.entries(allLevelItems.level3Items)) {
+      if (level3Items.some(item => item.id === level3NodeId)) {
         return level2Id;
       }
     }
@@ -270,21 +247,25 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
   };
 
   // Helper function to find the level 2 and level 3 parents of a level 4 node
-  const findLevel3And2Parents = (
-    level4NodeId: string
-  ): { level2Parent: string | null; level3Parent: string | null } => {
-    for (const [level3Id, level4Items] of Object.entries(
-      allLevelItems.level4Items
-    )) {
-      if (level4Items.some((item) => item.id === level4NodeId)) {
+  const findLevel3And2Parents = (level4NodeId: string): {
+    level2Parent: string | null;
+    level3Parent: string | null;
+  } => {
+    for (const [level3Id, level4Items] of Object.entries(allLevelItems.level4Items)) {
+      if (level4Items.some(item => item.id === level4NodeId)) {
         // Found the level 3 parent, now find its level 2 parent
         const level2Parent = findLevel2Parent(level3Id);
-        return { level2Parent, level3Parent: level3Id };
+        return {
+          level2Parent,
+          level3Parent: level3Id
+        };
       }
     }
-    return { level2Parent: null, level3Parent: null };
+    return {
+      level2Parent: null,
+      level3Parent: null
+    };
   };
-
   const renderNode = (item: LevelItem) => {
     const hasChildren = hasChildrenForNode(item);
     const childLevelKey = `${levelKey}-${item.id}`;
@@ -292,24 +273,16 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     const isExpanded = isLevelExpanded(childLevelKey);
 
     // Debug logging for selection state
-    console.log(
-      `[NESTED_LEVEL] Level ${currentLevel} node ${item.id} (${
-        item.name
-      }): isSelected=${isSelected}, selectedPath=${JSON.stringify(
-        selectedPath
-      )}`
-    );
-
+    console.log(`[NESTED_LEVEL] Level ${currentLevel} node ${item.id} (${item.name}): isSelected=${isSelected}, selectedPath=${JSON.stringify(selectedPath)}`);
     const handleEditClick = (e: React.MouseEvent) => {
       e.stopPropagation();
       if (onEditNode) {
         onEditNode(levelNames2[currentLevel], item.id, {
           title: item.name,
-          description: item.description || "",
+          description: item.description || ""
         });
       }
     };
-
     const handleDeleteClick = (e: React.MouseEvent) => {
       e.stopPropagation();
       if (onDeleteNode) {
@@ -320,7 +293,6 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     // Get the correct children for rendering
     let childrenToRender: LevelItem[] = [];
     let nextLevelItemsForChildren: Record<string, LevelItem[]> = {};
-
     if (hasChildren && isExpanded) {
       // First try to get children from nextLevelItems
       childrenToRender = nextLevelItems[item.id] || [];
@@ -333,134 +305,97 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
         nextLevelItemsForChildren = getLevelItems(currentLevel + 2); // next level items for children
       }
     }
-
-    return (
-      <ExpandableNode
-        key={item.id}
-        item={item}
-        isSelected={isSelected}
-        isExpanded={isExpanded}
-        hasChildren={hasChildren}
-        onToggleExpansion={() => toggleLevelExpansion(childLevelKey)}
-        onNodeClick={() => {
-          // When clicking a node in the card view, we need to ensure the full parent path is selected
-          // Build the complete path from the scenario down to this node
-          const currentLevelName = levelNames2[currentLevel];
-
-          console.log(
-            `[CARD_CLICK] Clicking ${currentLevelName} node ${item.id} in scenario ${scenarioId}`
-          );
-          console.log(`[CARD_CLICK] Current selectedPath:`, selectedPath);
-          // For levels 2-4, use custom path selection to bypass auto-selection entirely
-          // This prevents the "blink" issue where the correct selection shows briefly then gets overridden
-          if (currentLevel === 2) {
-            // Level 2: set complete path with level1 and level2
-            console.log(
-              `[CARD_CLICK] Setting custom path for level 2: ${scenarioId} -> ${item.id}`
-            );
-            const completePathEvent = new CustomEvent("set-complete-path", {
-              detail: {
-                level1: scenarioId,
-                level2: item.id,
-                level3: "",
-                level4: "",
-                level5: "",
-                level6: "",
-                level7: "",
-                level8: "",
-                level9: "",
-                level10: "",
-                nodeId: item.id, // Pass the clicked node ID for enrichment
-                level: "level2", // Pass the level for enrichment
-              },
-            });
-            document.dispatchEvent(completePathEvent);
-            return; // Important: return early to prevent normal click handler
-          } else if (currentLevel === 3) {
-            // Level 3: find level2 parent and set complete path
-            const level2Parent = findLevel2Parent(item.id);
-            if (level2Parent) {
-              console.log(
-                `[CARD_CLICK] Setting custom path for level 3: ${scenarioId} -> ${level2Parent} -> ${item.id}`
-              );
-              const completePathEvent = new CustomEvent("set-complete-path", {
-                detail: {
-                  level1: scenarioId,
-                  level2: level2Parent,
-                  level3: item.id,
-                  level4: "",
-                  level5: "",
-                  level6: "",
-                  level7: "",
-                  level8: "",
-                  level9: "",
-                  level10: "",
-                  nodeId: item.id, // Pass the clicked node ID for enrichment
-                  level: "level3", // Pass the level for enrichment
-                },
-              });
-              document.dispatchEvent(completePathEvent);
-              return; // Important: return early to prevent normal click handler
-            }
-          } else if (currentLevel === 4) {
-            // Level 4: find parents and set complete path
-            const { level2Parent, level3Parent } = findLevel3And2Parents(
-              item.id
-            );
-            if (level2Parent && level3Parent) {
-              console.log(
-                `[CARD_CLICK] Setting custom path for level 4: ${scenarioId} -> ${level2Parent} -> ${level3Parent} -> ${item.id}`
-              );
-              const completePathEvent = new CustomEvent("set-complete-path", {
-                detail: {
-                  level1: scenarioId,
-                  level2: level2Parent,
-                  level3: level3Parent,
-                  level4: item.id,
-                  level5: "",
-                  level6: "",
-                  level7: "",
-                  level8: "",
-                  level9: "",
-                  level10: "",
-                  nodeId: item.id, // Pass the clicked node ID for enrichment
-                  level: "level4", // Pass the level for enrichment
-                },
-              });
-              document.dispatchEvent(completePathEvent);
-              return; // Important: return early to prevent normal click handler
-            }
+    return <ExpandableNode key={item.id} item={item} isSelected={isSelected} isExpanded={isExpanded} hasChildren={hasChildren} onToggleExpansion={() => toggleLevelExpansion(childLevelKey)} onNodeClick={() => {
+      // When clicking a node in the card view, we need to ensure the full parent path is selected
+      // Build the complete path from the scenario down to this node
+      const currentLevelName = levelNames2[currentLevel];
+      console.log(`[CARD_CLICK] Clicking ${currentLevelName} node ${item.id} in scenario ${scenarioId}`);
+      console.log(`[CARD_CLICK] Current selectedPath:`, selectedPath);
+      // For levels 2-4, use custom path selection to bypass auto-selection entirely
+      // This prevents the "blink" issue where the correct selection shows briefly then gets overridden
+      if (currentLevel === 2) {
+        // Level 2: set complete path with level1 and level2
+        console.log(`[CARD_CLICK] Setting custom path for level 2: ${scenarioId} -> ${item.id}`);
+        const completePathEvent = new CustomEvent("set-complete-path", {
+          detail: {
+            level1: scenarioId,
+            level2: item.id,
+            level3: "",
+            level4: "",
+            level5: "",
+            level6: "",
+            level7: "",
+            level8: "",
+            level9: "",
+            level10: "",
+            nodeId: item.id,
+            // Pass the clicked node ID for enrichment
+            level: "level2" // Pass the level for enrichment
           }
+        });
+        document.dispatchEvent(completePathEvent);
+        return; // Important: return early to prevent normal click handler
+      } else if (currentLevel === 3) {
+        // Level 3: find level2 parent and set complete path
+        const level2Parent = findLevel2Parent(item.id);
+        if (level2Parent) {
+          console.log(`[CARD_CLICK] Setting custom path for level 3: ${scenarioId} -> ${level2Parent} -> ${item.id}`);
+          const completePathEvent = new CustomEvent("set-complete-path", {
+            detail: {
+              level1: scenarioId,
+              level2: level2Parent,
+              level3: item.id,
+              level4: "",
+              level5: "",
+              level6: "",
+              level7: "",
+              level8: "",
+              level9: "",
+              level10: "",
+              nodeId: item.id,
+              // Pass the clicked node ID for enrichment
+              level: "level3" // Pass the level for enrichment
+            }
+          });
+          document.dispatchEvent(completePathEvent);
+          return; // Important: return early to prevent normal click handler
+        }
+      } else if (currentLevel === 4) {
+        // Level 4: find parents and set complete path
+        const {
+          level2Parent,
+          level3Parent
+        } = findLevel3And2Parents(item.id);
+        if (level2Parent && level3Parent) {
+          console.log(`[CARD_CLICK] Setting custom path for level 4: ${scenarioId} -> ${level2Parent} -> ${level3Parent} -> ${item.id}`);
+          const completePathEvent = new CustomEvent("set-complete-path", {
+            detail: {
+              level1: scenarioId,
+              level2: level2Parent,
+              level3: level3Parent,
+              level4: item.id,
+              level5: "",
+              level6: "",
+              level7: "",
+              level8: "",
+              level9: "",
+              level10: "",
+              nodeId: item.id,
+              // Pass the clicked node ID for enrichment
+              level: "level4" // Pass the level for enrichment
+            }
+          });
+          document.dispatchEvent(completePathEvent);
+          return; // Important: return early to prevent normal click handler
+        }
+      }
 
-          // For level 1 or other levels, or if parent lookup failed, use normal click
-          console.log(
-            `[CARD_CLICK] Using normal click for ${currentLevelName}: ${item.id}`
-          );
-          onNodeClick(currentLevelName, item.id);
-        }}
-        onEditClick={handleEditClick}
-        onDeleteClick={handleDeleteClick}
-        level={currentLevel}
-      >
-        {hasChildren && isExpanded && childrenToRender.length > 0 && (
-          <NestedLevelGroup
-            items={childrenToRender}
-            selectedPath={selectedPath}
-            scenarioId={scenarioId}
-            currentLevel={currentLevel + 1}
-            levelKey={childLevelKey}
-            nextLevelItems={nextLevelItemsForChildren}
-            allLevelItems={allLevelItems}
-            levelNames={levelNames}
-            onNodeClick={onNodeClick}
-            onEditNode={onEditNode}
-            onDeleteNode={onDeleteNode}
-            isLevelExpanded={isLevelExpanded}
-            toggleLevelExpansion={toggleLevelExpansion}
-          />
-        )}
-      </ExpandableNode>
-    );
+      // For level 1 or other levels, or if parent lookup failed, use normal click
+      console.log(`[CARD_CLICK] Using normal click for ${currentLevelName}: ${item.id}`);
+      onNodeClick(currentLevelName, item.id);
+    }} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} level={currentLevel}>
+        {hasChildren && isExpanded && childrenToRender.length > 0 && <NestedLevelGroup items={childrenToRender} selectedPath={selectedPath} scenarioId={scenarioId} currentLevel={currentLevel + 1} levelKey={childLevelKey} nextLevelItems={nextLevelItemsForChildren} allLevelItems={allLevelItems} levelNames={levelNames} onNodeClick={onNodeClick} onEditNode={onEditNode} onDeleteNode={onDeleteNode} isLevelExpanded={isLevelExpanded} toggleLevelExpansion={toggleLevelExpansion} />}
+      </ExpandableNode>;
   };
 
   // Determine the container classes for nodes only
@@ -478,25 +413,16 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     }
     return "";
   };
-
-  return (
-    <div>
+  return <div>
       {/* Fixed header - always stays in the same position */}
       <div className="mb-3 flex items-center gap-2">
-        <Badge
-          variant="outline"
-          className={`text-xs border-0 ${getLevelBadgeStyle(currentLevel)}`}
-        >
+        <Badge variant="outline" className={`text-xs border-0 ${getLevelBadgeStyle(currentLevel)}`}>
           {getLevelLabel(currentLevel)}
         </Badge>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                size="sm"
-                onClick={handleAddClick}
-                className="h-6 w-6 p-0 rounded-full bg-gray-100 hover:bg-gray-200 border-0"
-              >
+              <Button size="sm" onClick={handleAddClick} className="h-6 w-6 p-0 rounded-full border-0 bg-[#f4f7fe]">
                 <Plus className="h-3 w-3 text-gray-600" />
               </Button>
             </TooltipTrigger>
@@ -506,42 +432,27 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
           </Tooltip>
         </TooltipProvider>
         {/* Add layout toggle button for Level 2 only */}
-        {currentLevel === 2 && onToggleLevel2Layout && (
-          <TooltipProvider>
+        {currentLevel === 2 && onToggleLevel2Layout && <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  size="sm"
-                  onClick={onToggleLevel2Layout}
-                  className="h-6 w-6 p-0 rounded-full bg-gray-100 hover:bg-gray-200 border-0"
-                >
-                  {level2Layout === "horizontal" ? (
-                    <List className="h-3 w-3 text-gray-600" />
-                  ) : (
-                    <LayoutGrid className="h-3 w-3 text-gray-600" />
-                  )}
+                <Button size="sm" onClick={onToggleLevel2Layout} className="h-6 w-6 p-0 rounded-full bg-gray-100 hover:bg-gray-200 border-0">
+                  {level2Layout === "horizontal" ? <List className="h-3 w-3 text-gray-600" /> : <LayoutGrid className="h-3 w-3 text-gray-600" />}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
                 <p>
-                  {level2Layout === "horizontal"
-                    ? "縦表示に切り替え"
-                    : "横表示に切り替え"}
+                  {level2Layout === "horizontal" ? "縦表示に切り替え" : "横表示に切り替え"}
                 </p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
-        )}
+          </TooltipProvider>}
       </div>
 
       {/* Nodes container - applies layout-specific styling */}
       <div className={getNodesContainerClasses()}>
-        {items.map((item) => (
-          <div key={item.id} className={getNodeWrapperClasses()}>
+        {items.map(item => <div key={item.id} className={getNodeWrapperClasses()}>
             {renderNode(item)}
-          </div>
-        ))}
+          </div>)}
       </div>
-    </div>
-  );
+    </div>;
 };
