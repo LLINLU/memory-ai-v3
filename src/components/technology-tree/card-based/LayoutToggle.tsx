@@ -23,7 +23,7 @@ export const LayoutToggle: React.FC<LayoutToggleProps> = ({
 }) => {
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between bg-white px-4 rounded-lg">
         <div className="text-sm font-medium" style={{ color: '#5F729F' }}>
           {scenarioCount}シナリオ({totalNodeCount}ノード)
         </div>
