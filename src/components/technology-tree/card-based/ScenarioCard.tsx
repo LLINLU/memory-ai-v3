@@ -80,7 +80,7 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
   levelNames = {
     level1: "シナリオ",
     level2: "目的",
-    level3: "機能", 
+    level3: "機能",
     level4: "手段",
   },
   isExpanded,
@@ -220,7 +220,7 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
       </CardHeader>
       
       {isExpanded && hasChildren && (
-        <CardContent className="pt-0 pl-6 pr-4 pb-4">
+        <CardContent className="pt-0">
           <NestedLevelGroup
             items={level2Items}
             selectedPath={selectedPath}
