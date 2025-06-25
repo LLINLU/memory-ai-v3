@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -73,7 +72,7 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
   allLevelItems,
   levelNames = {
     level1: "シナリオ",
-    level2: "目的",
+    level2: "目的", 
     level3: "機能",
     level4: "手段",
   },
@@ -293,8 +292,24 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     );
   };
 
+  // Calculate indentation based on current level
+  const getIndentationClass = () => {
+    switch (currentLevel) {
+      case 2: return 'ml-4 pl-2'; // Level 2: moderate indentation
+      case 3: return 'ml-6 pl-3'; // Level 3: more indentation
+      case 4: return 'ml-8 pl-4'; // Level 4: even more indentation
+      case 5: return 'ml-10 pl-5'; // Level 5: progressive indentation
+      case 6: return 'ml-12 pl-6'; // Level 6: progressive indentation
+      case 7: return 'ml-14 pl-7'; // Level 7: progressive indentation
+      case 8: return 'ml-16 pl-8'; // Level 8: progressive indentation
+      case 9: return 'ml-18 pl-9'; // Level 9: progressive indentation
+      case 10: return 'ml-20 pl-10'; // Level 10: maximum indentation
+      default: return ''; // Level 1: no indentation
+    }
+  };
+
   return (
-    <div className="space-y-2">
+    <div className={`space-y-2 ${getIndentationClass()}`}>
       <div className="mb-3 flex items-center gap-2">
         <Badge variant="outline" className={`text-xs ${getLevelBadgeStyle(currentLevel)}`}>
           {getLevelLabel(currentLevel)}
