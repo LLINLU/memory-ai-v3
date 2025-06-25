@@ -462,7 +462,7 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
       <div className="mb-3 flex items-center gap-2">
         <Badge
           variant="outline"
-          className={`text-xs ${getLevelBadgeStyle(currentLevel)}`}
+          className={`text-xs border-0 ${getLevelBadgeStyle(currentLevel)}`}
         >
           {getLevelLabel(currentLevel)}
         </Badge>
