@@ -5,6 +5,7 @@ import { GripVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScenarioCard } from './ScenarioCard';
+
 interface LevelItem {
   id: string;
   name: string;
@@ -66,6 +67,7 @@ interface DraggableCardProps {
   level2Layout: "vertical" | "horizontal";
   onToggleLevel2Layout: () => void;
 }
+
 export const DraggableCard: React.FC<DraggableCardProps> = ({
   scenario,
   selectedPath,
@@ -96,19 +98,28 @@ export const DraggableCard: React.FC<DraggableCardProps> = ({
     id: scenario.id,
     disabled: !isDraggable
   });
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.8 : 1
   };
-  return <div ref={setNodeRef} style={style} className={`relative group ${isDragging ? 'z-50' : ''}`}>
+
+  return (
+    <div ref={setNodeRef} style={style} className={`relative group ${isDragging ? 'z-50' : ''}`}>
       {/* Drag Handle - appears on hover in top-left */}
-      {isDraggable && <div className="absolute top-2 left-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+      {isDraggable && (
+        <div className="absolute top-2 left-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button size="sm" className="h-6 w-6 p-0 bg-white/90 hover:bg-white border border-gray-200 shadow-sm rounded">
-                  <GripVertical className="h-3 w-3 text-gray-600" />
+                <Button
+                  size="sm"
+                  className="h-6 w-6 p-0 bg-white/90 hover:bg-white border border-gray-200 shadow-sm rounded"
+                  {...attributes}
+                  {...listeners}
+                >
+                  <GripVertical className="h-2.5 w-2.5 text-gray-600" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -116,8 +127,27 @@ export const DraggableCard: React.FC<DraggableCardProps> = ({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        </div>}
+        </div>
+      )}
       
-      <ScenarioCard scenario={scenario} selectedPath={selectedPath} level2Items={level2Items} allLevelItems={allLevelItems} levelNames={levelNames} isExpanded={isExpanded} isLevelExpanded={isLevelExpanded} onToggleExpansion={onToggleExpansion} onToggleLevelExpansion={onToggleLevelExpansion} onExpandAll={onExpandAll} onCollapseAll={onCollapseAll} onNodeClick={onNodeClick} onEditNode={onEditNode} onDeleteNode={onDeleteNode} level2Layout={level2Layout} onToggleLevel2Layout={onToggleLevel2Layout} />
-    </div>;
+      <ScenarioCard
+        scenario={scenario}
+        selectedPath={selectedPath}
+        level2Items={level2Items}
+        allLevelItems={allLevelItems}
+        levelNames={levelNames}
+        isExpanded={isExpanded}
+        isLevelExpanded={isLevelExpanded}
+        onToggleExpansion={onToggleExpansion}
+        onToggleLevelExpansion={onToggleLevelExpansion}
+        onExpandAll={onExpandAll}
+        onCollapseAll={onCollapseAll}
+        onNodeClick={onNodeClick}
+        onEditNode={onEditNode}
+        onDeleteNode={onDeleteNode}
+        level2Layout={level2Layout}
+        onToggleLevel2Layout={onToggleLevel2Layout}
+      />
+    </div>
+  );
 };
