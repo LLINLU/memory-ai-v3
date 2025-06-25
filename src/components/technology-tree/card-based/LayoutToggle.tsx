@@ -1,38 +1,30 @@
-
 import React from 'react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { SingleRowIcon } from './SingleRowIcon';
 import { ThreeColumnsIcon } from './ThreeColumnsIcon';
 import { TwoByTwoGridIcon } from './TwoByTwoGridIcon';
 import { ThreeColumnsWideIcon } from './ThreeColumnsWideIcon';
-
 type CardLayoutMode = "single-row" | "one-per-row" | "two-per-row" | "three-per-row";
-
 interface LayoutToggleProps {
   cardLayout: CardLayoutMode;
   onLayoutChange: (layout: CardLayoutMode) => void;
   scenarioCount: number;
   totalNodeCount: number;
 }
-
 export const LayoutToggle: React.FC<LayoutToggleProps> = ({
   cardLayout,
   onLayoutChange,
   scenarioCount,
-  totalNodeCount,
+  totalNodeCount
 }) => {
-  return (
-    <div>
-      <div className="flex items-center justify-between bg-white px-4 rounded-lg">
-        <div className="text-sm font-medium" style={{ color: '#5F729F' }}>
+  return <div>
+      <div className="flex items-center justify-between">
+        <div className="text-sm font-medium" style={{
+        color: '#5F729F'
+      }}>
           {scenarioCount}シナリオ({totalNodeCount}ノード)
         </div>
-        <ToggleGroup 
-          type="single" 
-          value={cardLayout} 
-          onValueChange={(value) => value && onLayoutChange(value as CardLayoutMode)}
-          className="bg-gray-50 p-1 rounded-lg"
-        >
+        <ToggleGroup type="single" value={cardLayout} onValueChange={value => value && onLayoutChange(value as CardLayoutMode)} className="p-1 rounded-lg bg-white">
           <ToggleGroupItem value="single-row" aria-label="Single row layout" className="data-[state=on]:bg-white data-[state=off]:opacity-60">
             <SingleRowIcon className="h-4 w-4" />
           </ToggleGroupItem>
@@ -47,6 +39,5 @@ export const LayoutToggle: React.FC<LayoutToggleProps> = ({
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
-    </div>
-  );
+    </div>;
 };
