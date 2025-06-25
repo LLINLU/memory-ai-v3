@@ -4,6 +4,9 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { Move } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScenarioCard } from './ScenarioCard';
 
 interface LevelItem {
@@ -107,10 +110,31 @@ export const DraggableCard: React.FC<DraggableCardProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...(isDraggable ? listeners : {})}
-      className={isDragging ? 'z-50' : ''}
+      className={`relative group ${isDragging ? 'z-50' : ''}`}
     >
+      {/* Drag Handle - appears on hover in top-left */}
+      {isDraggable && (
+        <div className="absolute top-2 left-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="sm"
+                  className="h-6 w-6 p-0 rounded-full bg-white/90 hover:bg-white border border-gray-200 shadow-sm"
+                  {...attributes}
+                  {...listeners}
+                >
+                  <Move className="h-3 w-3 text-gray-600" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>ドラッグして並び替え</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      )}
+      
       <ScenarioCard
         scenario={scenario}
         selectedPath={selectedPath}
