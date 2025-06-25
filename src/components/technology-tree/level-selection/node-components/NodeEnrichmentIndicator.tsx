@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Loader2, Clock, AlertTriangle } from "lucide-react";
 import { useEnrichmentQueue } from "@/hooks/useEnrichmentQueue";
@@ -89,7 +90,7 @@ export const NodeEnrichmentIndicator: React.FC<
     : queueStatus.formatElapsedTime(queueStatus.papersElapsedTime);
 
   return (
-    <div className="flex items-center justify-center text-red-600">
+    <div className="flex items-center justify-center text-white">
       <Loader2 className={`animate-spin mr-2 ${sizeClasses}`} />
       <span className={`${textSizeClass} font-semibold`}>
         {loadingMessage}
