@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -110,7 +111,7 @@ export const DraggableCard: React.FC<DraggableCardProps> = ({
       {/* Drag Handle - appears on hover in top-left */}
       {isDraggable && (
         <div className="absolute top-2 left-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <TooltipProvider>
+          <TooltipProvider delayDuration={150} skipDelayDuration={300}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
