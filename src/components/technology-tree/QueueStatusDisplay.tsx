@@ -16,7 +16,7 @@ export const QueueStatusDisplay: React.FC<QueueStatusDisplayProps> = ({
   const [status, setStatus] = useState(getQueueStatus());
   const [isVisible, setIsVisible] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(Date.now());
-  const [activeTab, setActiveTab] = useState<"summary" | "queue">("summary");
+  const [activeTab, setActiveTab] = useState<"summary" | "queue">("queue"); // Start with queue tab when auto-expanded
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -28,14 +28,28 @@ export const QueueStatusDisplay: React.FC<QueueStatusDisplayProps> = ({
     return () => clearInterval(interval);
   }, []);
 
-  // Only show when there's activity or when explicitly toggled
+  // Auto-expand when there's backend searching activity
+  useEffect(() => {
+    const hasActivity =
+      status.queueLength > 0 ||
+      status.processing.papers > 0 ||
+      status.processing.useCases > 0;
+
+    // Automatically show the panel when there's activity
+    if (hasActivity && !isVisible) {
+      setIsVisible(true);
+      setActiveTab("queue"); // Show the queue tab to display the active searches
+    }
+  }, [status.queueLength, status.processing.papers, status.processing.useCases, isVisible]);
+
+  // Only show manual button when there's no activity and panel is hidden
   const hasActivity =
     status.queueLength > 0 ||
     status.processing.papers > 0 ||
     status.processing.useCases > 0 ||
     !status.apiHealthy;
 
-  if (!isVisible) {
+  if (!isVisible && !hasActivity) {
     return (
       <div className="fixed bottom-4 right-4 z-50">
         <button
@@ -46,6 +60,11 @@ export const QueueStatusDisplay: React.FC<QueueStatusDisplayProps> = ({
         </button>
       </div>
     );
+  }
+
+  // Don't show anything if there's no activity and panel is manually closed
+  if (!isVisible && !hasActivity) {
+    return null;
   }
 
   const queueList = getQueueListFormatted();
