@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   DndContext,
@@ -113,7 +112,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   const getLayoutClasses = () => {
     switch (cardLayout) {
       case "single-row":
-        return "flex flex-nowrap overflow-x-auto overflow-y-hidden";
+        return "flex flex-nowrap overflow-x-auto overflow-y-auto";
       case "one-per-row":
         return "grid grid-cols-1";
       case "two-per-row":
@@ -180,10 +179,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
 
   const getContainerClasses = () => {
     const baseClasses = `${getLayoutClasses()} gap-4`;
-    // Add height constraint for single-row to prevent overflow
-    if (cardLayout === "single-row") {
-      return `${baseClasses} max-h-screen`;
-    }
+    // Remove height constraint for single-row to allow vertical scrolling
     return baseClasses;
   };
 
