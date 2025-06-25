@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from "react";
 
 interface ExpansionState {
@@ -73,6 +74,7 @@ export const useCardExpansion = () => {
     },
     [expansionState]
   );
+
   const isLevelExpanded = useCallback(
     (scenarioId: string, levelKey: string) => {
       return expansionState[scenarioId]?.expandedLevels?.[levelKey] || false;
@@ -91,6 +93,7 @@ export const useCardExpansion = () => {
       },
     }));
   }, []);
+
   const expandLevel = useCallback((scenarioId: string, levelKey: string) => {
     setExpansionState((prev) => ({
       ...prev,
@@ -111,5 +114,7 @@ export const useCardExpansion = () => {
     collapseAll,
     isScenarioExpanded,
     isLevelExpanded,
+    expandScenario,
+    expandLevel,
   };
 };
