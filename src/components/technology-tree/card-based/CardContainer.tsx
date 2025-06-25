@@ -125,7 +125,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   };
 
   const getCardClasses = () => {
-    return cardLayout === "single-row" ? "flex-shrink-0 min-w-80 max-w-96" : "";
+    return cardLayout === "single-row" ? "flex-shrink-0 min-w-64 max-w-80" : "";
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
