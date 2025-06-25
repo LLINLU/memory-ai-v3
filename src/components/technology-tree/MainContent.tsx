@@ -130,7 +130,7 @@ export const MainContent = ({
   };
   return (
     <div className={`h-full flex flex-col ${isMindmapView ? 'overflow-hidden' : ''}`}>
-      <div className="px-4 pt-2 pb-4 flex-shrink-0">
+      <div className="px-4 pt-2 pb-2 flex-shrink-0">
         {/* Query Display Section - appears first */}
         <QueryDisplay query={query} treeMode={treeMode} />
         {/* Title and Guidance Section */}
