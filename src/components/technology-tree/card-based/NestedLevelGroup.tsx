@@ -474,7 +474,7 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
   // For Level 2 nodes in horizontal layout, add width constraints
   const getNodeWrapperClasses = () => {
     if (currentLevel === 2 && level2Layout === "horizontal") {
-      return "min-w-[300px] max-w-[400px] flex-shrink-0";
+      return "min-w-[200px] max-w-[280px] flex-shrink-0";
     }
     return "";
   };
