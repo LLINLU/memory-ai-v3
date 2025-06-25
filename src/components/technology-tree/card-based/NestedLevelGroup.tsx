@@ -413,7 +413,8 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
     }
     return "";
   };
-  return <div>
+  return (
+    <div>
       {/* Fixed header - always stays in the same position */}
       <div className="mb-3 flex items-center gap-2">
         <Badge variant="outline" className={`text-xs border-0 ${getLevelBadgeStyle(currentLevel)}`}>
@@ -422,7 +423,11 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button size="sm" onClick={handleAddClick} className="h-6 w-6 p-0 rounded-full border-0 bg-[#f4f7fe]">
+              <Button 
+                size="sm" 
+                onClick={handleAddClick} 
+                className="h-6 w-6 p-0 rounded-full border-0 bg-[#f4f7fe] hover:bg-[#e8f0ff] transition-colors duration-200"
+              >
                 <Plus className="h-3 w-3 text-gray-600" />
               </Button>
             </TooltipTrigger>
@@ -432,11 +437,19 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
           </Tooltip>
         </TooltipProvider>
         {/* Add layout toggle button for Level 2 only */}
-        {currentLevel === 2 && onToggleLevel2Layout && <TooltipProvider>
+        {currentLevel === 2 && onToggleLevel2Layout && (
+          <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button size="sm" onClick={onToggleLevel2Layout} className="h-6 w-6 p-0 rounded-full border-0 bg-[#f4f7fe]">
-                  {level2Layout === "horizontal" ? <List className="h-3 w-3 text-gray-600" /> : <LayoutGrid className="h-3 w-3 text-gray-600" />}
+                <Button 
+                  size="sm" 
+                  onClick={onToggleLevel2Layout} 
+                  className="h-6 w-6 p-0 rounded-full border-0 bg-[#f4f7fe] hover:bg-[#e8f0ff] transition-colors duration-200"
+                >
+                  {level2Layout === "horizontal" ? 
+                    <List className="h-3 w-3 text-gray-600" /> : 
+                    <LayoutGrid className="h-3 w-3 text-gray-600" />
+                  }
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -445,14 +458,18 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
                 </p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>}
+          </TooltipProvider>
+        )}
       </div>
 
       {/* Nodes container - applies layout-specific styling */}
       <div className={getNodesContainerClasses()}>
-        {items.map(item => <div key={item.id} className={getNodeWrapperClasses()}>
+        {items.map(item => (
+          <div key={item.id} className={getNodeWrapperClasses()}>
             {renderNode(item)}
-          </div>)}
+          </div>
+        ))}
       </div>
-    </div>;
+    </div>
+  );
 };
