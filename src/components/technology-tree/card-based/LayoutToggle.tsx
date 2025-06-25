@@ -11,15 +11,22 @@ type CardLayoutMode = "single-row" | "one-per-row" | "two-per-row" | "three-per-
 interface LayoutToggleProps {
   cardLayout: CardLayoutMode;
   onLayoutChange: (layout: CardLayoutMode) => void;
+  scenarioCount: number;
+  totalNodeCount: number;
 }
 
 export const LayoutToggle: React.FC<LayoutToggleProps> = ({
   cardLayout,
   onLayoutChange,
+  scenarioCount,
+  totalNodeCount,
 }) => {
   return (
     <div>
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-between">
+        <div className="text-sm font-medium" style={{ color: '#5F729F' }}>
+          {scenarioCount}シナリオ({totalNodeCount}ノード)
+        </div>
         <ToggleGroup 
           type="single" 
           value={cardLayout} 

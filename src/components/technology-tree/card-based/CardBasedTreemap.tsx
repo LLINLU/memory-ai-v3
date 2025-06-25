@@ -97,6 +97,29 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     setReorderedItems(level1Items);
   }, [level1Items]);
 
+  // Calculate total node count across all levels
+  const calculateTotalNodeCount = () => {
+    const countItemsInRecord = (items: Record<string, LevelItem[]>) => {
+      return Object.values(items).reduce((total, itemArray) => total + itemArray.length, 0);
+    };
+
+    return (
+      reorderedItems.length +
+      countItemsInRecord(level2Items) +
+      countItemsInRecord(level3Items) +
+      countItemsInRecord(level4Items) +
+      countItemsInRecord(level5Items) +
+      countItemsInRecord(level6Items) +
+      countItemsInRecord(level7Items) +
+      countItemsInRecord(level8Items) +
+      countItemsInRecord(level9Items) +
+      countItemsInRecord(level10Items)
+    );
+  };
+
+  const scenarioCount = reorderedItems.length;
+  const totalNodeCount = calculateTotalNodeCount();
+
   // Debug logging for selectedPath changes
   useEffect(() => {
     console.log("[CARD_VIEW] selectedPath changed:", selectedPath);
@@ -213,7 +236,12 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
     <div className="h-full flex flex-col">
       {/* Fixed Layout Toggle at top */}
       <div className="flex-shrink-0 p-4 pb-0 py-0">
-        <LayoutToggle cardLayout={cardLayout} onLayoutChange={setCardLayout} />
+        <LayoutToggle 
+          cardLayout={cardLayout} 
+          onLayoutChange={setCardLayout}
+          scenarioCount={scenarioCount}
+          totalNodeCount={totalNodeCount}
+        />
       </div>
       
       {/* Scrollable Cards Container */}
