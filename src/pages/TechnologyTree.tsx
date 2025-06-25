@@ -36,10 +36,6 @@ import {
   triggerEnrichmentRefresh,
   triggerEnrichmentStart,
 } from "@/hooks/useEnrichedData";
-import {
-  isLevel1Loading,
-  hasLevel1CompleteData,
-} from "@/hooks/useLevel1EnrichmentPolling";
 import { useUserDetail } from "@/hooks/useUserDetail";
 
 const TechnologyTree = () => {
@@ -238,16 +234,14 @@ const TechnologyTree = () => {
   const triggerNodeEnrichment = async (level: string, nodeId: string) => {
     // Check if we should proceed with enrichment
     if (locationState?.treeId && userDetails?.team_id && databaseTreeData) {
-      // Check if node is already loading
+      // Check if node is already loading (use same logic for all levels)
       const isIndividuallyLoading = isNodeLoading(nodeId);
-      const isLevel1AutoLoading = level === "level1" && isLevel1Loading(nodeId);
 
-      if (isIndividuallyLoading || isLevel1AutoLoading) {
+      if (isIndividuallyLoading) {
         console.log("[CUSTOM_ENRICHMENT] Node already loading, skipping:", {
           nodeId,
           level,
           isIndividuallyLoading,
-          isLevel1AutoLoading,
         });
         return;
       }
@@ -255,17 +249,7 @@ const TechnologyTree = () => {
       // Immediately signal that enrichment might start for this node
       triggerEnrichmentStart(nodeId);
 
-      // Check if node already has data
-      if (level === "level1" && hasLevel1CompleteData(nodeId)) {
-        console.log(
-          "[CUSTOM_ENRICHMENT] Level 1 node already has complete data, skipping API call:",
-          nodeId
-        );
-        triggerEnrichmentRefresh(nodeId);
-        return;
-      }
-
-      // For non-level1 nodes or level1 nodes without complete data, check individual enrichment
+      // Check if node already has data (same logic for all levels)
       const hasData = await hasNodeEnrichedData(nodeId);
       if (hasData) {
         console.log(

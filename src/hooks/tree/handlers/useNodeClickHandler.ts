@@ -3,7 +3,6 @@ import { PathState } from "../state/usePathState";
 import { clearPathFromLevel, autoSelectChildren } from "../utils/pathUtils";
 import { callNodeEnrichmentStreaming, buildParentTitles, getNodeDetails, isNodeLoading, hasNodeEnrichedData, StreamingResponse } from "@/services/nodeEnrichmentService";
 import { triggerEnrichmentRefresh, triggerEnrichmentStart } from "@/hooks/useEnrichedData";
-import { isLevel1Loading, hasLevel1CompleteData } from "@/hooks/useLevel1EnrichmentPolling";
 import { useUserDetail } from "@/hooks/useUserDetail";
 import { useLocation } from "react-router-dom";
 
@@ -29,35 +28,27 @@ export const useNodeClickHandler = (
 
     // Check if we should proceed with enrichment
     if (locationState?.treeId && userDetails?.team_id && treeData) {
-      // Check if node is already loading (either individual enrichment or level 1 automatic enrichment)
+      // Check if node is already loading (same logic for all levels)
       const isIndividuallyLoading = isNodeLoading(nodeId);
-      const isLevel1AutoLoading = level === 'level1' && isLevel1Loading(nodeId);
 
       if (isIndividuallyLoading) {
         console.log('[NODE_ENRICHMENT] Node already loading, skipping:', {
           nodeId,
           level,
-          isIndividuallyLoading,
-          isLevel1AutoLoading
+          isIndividuallyLoading
         });
         // Still update the UI selection but don't call API
       } else {
         // Immediately signal that enrichment might start for this node (for loading UI)
         triggerEnrichmentStart(nodeId);
 
-        // Check if node already has data (consider both individual enrichment and level 1 enrichment)
-        if (level === 'level1' && hasLevel1CompleteData(nodeId)) {
-          console.log('[NODE_ENRICHMENT] Level 1 node already has complete data, skipping API call:', nodeId);
-          // Just trigger refresh to show existing data (this will turn off loading)
-          triggerEnrichmentRefresh(nodeId);
-        } else {
-          // For non-level1 nodes or level1 nodes without complete data, check individual enrichment
-          hasNodeEnrichedData(nodeId).then((hasData) => {
-            if (hasData) {
-              console.log('[NODE_ENRICHMENT] Node already has complete data (both papers and use cases), skipping API call:', nodeId);
-              // Just trigger refresh to show existing data (this will turn off loading)
-              triggerEnrichmentRefresh(nodeId);
-            } else {
+        // Check if node already has data (same logic for all levels)
+        hasNodeEnrichedData(nodeId).then((hasData) => {
+          if (hasData) {
+            console.log('[NODE_ENRICHMENT] Node already has complete data (both papers and use cases), skipping API call:', nodeId);
+            // Just trigger refresh to show existing data (this will turn off loading)
+            triggerEnrichmentRefresh(nodeId);
+          } else {
             // Start enrichment process in background
             console.log('[NODE_ENRICHMENT] Starting enrichment for node (may have partial data):', nodeId);
 
@@ -102,9 +93,8 @@ export const useNodeClickHandler = (
             }).catch((error) => {
               console.error('[NODE_ENRICHMENT_STREAMING] Error during streaming enrichment:', error);
             });
-            }
-          });
-        }
+          }
+        });
       }
     } else {
       console.log('[NODE_ENRICHMENT] Skipping enrichment - missing required context:', {
