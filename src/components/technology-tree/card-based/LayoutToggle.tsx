@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Badge } from '@/components/ui/badge';
@@ -25,7 +26,7 @@ export const LayoutToggle: React.FC<LayoutToggleProps> = ({
       }}>
           <span>{scenarioCount}シナリオ</span>
           <Badge 
-            className="text-xs px-2 py-0.5 text-white border-0" 
+            className="text-xs px-2 py-0.5 text-white border-0 font-light" 
             style={{ backgroundColor: '#5F729E' }}
           >
             {totalNodeCount}ノード
