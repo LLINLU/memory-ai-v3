@@ -435,7 +435,7 @@ export const NestedLevelGroup: React.FC<NestedLevelGroupProps> = ({
         {currentLevel === 2 && onToggleLevel2Layout && <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button size="sm" onClick={onToggleLevel2Layout} className="h-6 w-6 p-0 rounded-full bg-gray-100 hover:bg-gray-200 border-0">
+                <Button size="sm" onClick={onToggleLevel2Layout} className="h-6 w-6 p-0 rounded-full border-0 bg-[#f4f7fe]">
                   {level2Layout === "horizontal" ? <List className="h-3 w-3 text-gray-600" /> : <LayoutGrid className="h-3 w-3 text-gray-600" />}
                 </Button>
               </TooltipTrigger>
