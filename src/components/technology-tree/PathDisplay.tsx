@@ -99,7 +99,7 @@ export const PathDisplay = ({
     <div className="mb-0" style={{ paddingTop: "0rem" }}>
       {/* Breadcrumb path - always visible */}
       <div className="mb-2">
-        <p className="text-gray-600 flex items-center flex-wrap" style={{ fontSize: "14px" }}>
+        <p className="text-gray-600 flex items-center flex-wrap" style={{ fontSize: "14px", lineHeight: "28px" }}>
           {level1Name && (
             <span className="flex items-center">
               <LevelCircle level={1} />
