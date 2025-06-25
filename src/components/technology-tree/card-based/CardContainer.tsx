@@ -14,6 +14,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   horizontalListSortingStrategy,
+  rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import { DraggableCard } from './DraggableCard';
 
@@ -140,7 +141,13 @@ export const CardContainer: React.FC<CardContainerProps> = ({
     }
   };
 
-  const isDraggable = cardLayout === "single-row" && level1Items.length > 1;
+  // Enable drag-and-drop for single-row, two-per-row, and three-per-row layouts
+  const isDraggable = (cardLayout === "single-row" || cardLayout === "two-per-row" || cardLayout === "three-per-row") && level1Items.length > 1;
+
+  // Use horizontal strategy for single-row, rectangular strategy for grid layouts
+  const getSortingStrategy = () => {
+    return cardLayout === "single-row" ? horizontalListSortingStrategy : rectSortingStrategy;
+  };
 
   const renderCards = () => {
     return level1Items.map((scenario) => {
@@ -180,7 +187,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
       >
         <SortableContext
           items={level1Items.map(item => item.id)}
-          strategy={horizontalListSortingStrategy}
+          strategy={getSortingStrategy()}
         >
           <div className={`${getLayoutClasses()} gap-4`}>
             {renderCards()}

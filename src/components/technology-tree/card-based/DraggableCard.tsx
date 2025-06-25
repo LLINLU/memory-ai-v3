@@ -101,13 +101,13 @@ export const DraggableCard: React.FC<DraggableCardProps> = ({
       style={style}
       className="relative group"
     >
-      {/* Drag Handle */}
+      {/* Drag Handle - improved visibility for grid layouts */}
       <div
         {...attributes}
         {...listeners}
-        className="absolute top-2 left-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing bg-white/90 backdrop-blur-sm rounded p-1 shadow-sm border"
+        className="absolute top-2 left-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing bg-white/95 backdrop-blur-sm rounded-md p-1.5 shadow-md border border-gray-200 hover:border-gray-300"
       >
-        <GripVertical className="h-4 w-4 text-gray-500" />
+        <GripVertical className="h-4 w-4 text-gray-600" />
       </div>
 
       <ScenarioCard
