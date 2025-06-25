@@ -16,7 +16,7 @@ export const QueueStatusDisplay: React.FC<QueueStatusDisplayProps> = ({
   const [status, setStatus] = useState(getQueueStatus());
   const [isVisible, setIsVisible] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(Date.now());
-  const [activeTab, setActiveTab] = useState<"summary" | "queue">("summary");
+  const [activeTab, setActiveTab] = useState<"summary" | "queue">("queue");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -67,7 +67,9 @@ export const QueueStatusDisplay: React.FC<QueueStatusDisplayProps> = ({
           {items.map(renderItem)}
           <div className="h-2" />
         </>
-      );    const renderQueueItem = (item, index, section) => {
+      );
+
+    const renderQueueItem = (item, index, section) => {
       const maxTime = item.type === "論文検索" ? 20 : 180;
       const percent =
         section === "done"
@@ -80,7 +82,8 @@ export const QueueStatusDisplay: React.FC<QueueStatusDisplayProps> = ({
         }
       };
 
-      return (        <div
+      return (
+        <div
           key={index}
           className={`border-b pb-2 pt-1 flex items-center justify-between gap-2 rounded-sm px-2 ${
             onNodeSelect && item.nodeId 
@@ -89,7 +92,9 @@ export const QueueStatusDisplay: React.FC<QueueStatusDisplayProps> = ({
           }`}
           onClick={handleItemClick}
           title={onNodeSelect && item.nodeId ? `クリックして「${item.name}」ノードに移動` : ""}
-        ><div className="flex flex-col flex-1">            <div className="flex items-center gap-1">
+        >
+          <div className="flex flex-col flex-1">
+            <div className="flex items-center gap-1">
               <span
                 className={`text-xs ${
                   item.type === "論文検索" ? "text-blue-600" : "text-green-600"
@@ -223,22 +228,22 @@ export const QueueStatusDisplay: React.FC<QueueStatusDisplayProps> = ({
           <div className="flex gap-1 text-xs">
             <button
               className={`px-2 py-1 rounded ${
-                activeTab === "summary" ? "bg-gray-200" : "hover:bg-gray-100"
-              }`}
-              onClick={() => setActiveTab("summary")}
-            >
-              全体
-            </button>
-            <button
-              className={`px-2 py-1 rounded ${
                 activeTab === "queue" ? "bg-gray-200" : "hover:bg-gray-100"
               }`}
               onClick={() => setActiveTab("queue")}
             >
               各検索
             </button>
+            <button
+              className={`px-2 py-1 rounded ${
+                activeTab === "summary" ? "bg-gray-200" : "hover:bg-gray-100"
+              }`}
+              onClick={() => setActiveTab("summary")}
+            >
+              全体
+            </button>
           </div>
-        </CardHeader>{" "}
+        </CardHeader>
         {activeTab === "summary" && (
           <CardContent className="text-xs space-y-2">
             <div className="flex items-center justify-between">
@@ -306,7 +311,7 @@ export const QueueStatusDisplay: React.FC<QueueStatusDisplayProps> = ({
             </div>
           </CardContent>
         )}
-        {activeTab === "queue" && QueList()}{" "}
+        {activeTab === "queue" && QueList()}
       </Card>
     </div>
   );
