@@ -251,7 +251,7 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
             <div className="mb-2">
               <Badge
                 variant="outline"
-                className={`text-xs ${getLevelBadgeStyle(1)}`}
+                className={`text-xs border-0 ${getLevelBadgeStyle(1)}`}
               >
                 レベル1:{levelNames.level1}
               </Badge>
