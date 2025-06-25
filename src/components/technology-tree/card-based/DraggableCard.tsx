@@ -1,14 +1,10 @@
-
 import React from 'react';
-import {
-  useSortable,
-} from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScenarioCard } from './ScenarioCard';
-
 interface LevelItem {
   id: string;
   name: string;
@@ -17,7 +13,6 @@ interface LevelItem {
   description?: string;
   children_count?: number;
 }
-
 interface DraggableCardProps {
   scenario: LevelItem;
   selectedPath: {
@@ -62,13 +57,15 @@ interface DraggableCardProps {
   onExpandAll: () => void;
   onCollapseAll: () => void;
   onNodeClick: (level: string, nodeId: string) => void;
-  onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
+  onEditNode?: (level: string, nodeId: string, updatedNode: {
+    title: string;
+    description: string;
+  }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
   isDraggable: boolean;
   level2Layout: "vertical" | "horizontal";
   onToggleLevel2Layout: () => void;
 }
-
 export const DraggableCard: React.FC<DraggableCardProps> = ({
   scenario,
   selectedPath,
@@ -86,7 +83,7 @@ export const DraggableCard: React.FC<DraggableCardProps> = ({
   onDeleteNode,
   isDraggable,
   level2Layout,
-  onToggleLevel2Layout,
+  onToggleLevel2Layout
 }) => {
   const {
     attributes,
@@ -94,36 +91,23 @@ export const DraggableCard: React.FC<DraggableCardProps> = ({
     setNodeRef,
     transform,
     transition,
-    isDragging,
+    isDragging
   } = useSortable({
     id: scenario.id,
-    disabled: !isDraggable,
+    disabled: !isDraggable
   });
-
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.8 : 1,
+    opacity: isDragging ? 0.8 : 1
   };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`relative group ${isDragging ? 'z-50' : ''}`}
-    >
+  return <div ref={setNodeRef} style={style} className={`relative group ${isDragging ? 'z-50' : ''}`}>
       {/* Drag Handle - appears on hover in top-left */}
-      {isDraggable && (
-        <div className="absolute top-2 left-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+      {isDraggable && <div className="absolute top-2 left-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  size="sm"
-                  className="h-6 w-6 p-0 rounded-full bg-white/90 hover:bg-white border border-gray-200 shadow-sm"
-                  {...attributes}
-                  {...listeners}
-                >
+                <Button size="sm" className="h-6 w-6 p-0 bg-white/90 hover:bg-white border border-gray-200 shadow-sm rounded">
                   <GripVertical className="h-3 w-3 text-gray-600" />
                 </Button>
               </TooltipTrigger>
@@ -132,27 +116,8 @@ export const DraggableCard: React.FC<DraggableCardProps> = ({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        </div>
-      )}
+        </div>}
       
-      <ScenarioCard
-        scenario={scenario}
-        selectedPath={selectedPath}
-        level2Items={level2Items}
-        allLevelItems={allLevelItems}
-        levelNames={levelNames}
-        isExpanded={isExpanded}
-        isLevelExpanded={isLevelExpanded}
-        onToggleExpansion={onToggleExpansion}
-        onToggleLevelExpansion={onToggleLevelExpansion}
-        onExpandAll={onExpandAll}
-        onCollapseAll={onCollapseAll}
-        onNodeClick={onNodeClick}
-        onEditNode={onEditNode}
-        onDeleteNode={onDeleteNode}
-        level2Layout={level2Layout}
-        onToggleLevel2Layout={onToggleLevel2Layout}
-      />
-    </div>
-  );
+      <ScenarioCard scenario={scenario} selectedPath={selectedPath} level2Items={level2Items} allLevelItems={allLevelItems} levelNames={levelNames} isExpanded={isExpanded} isLevelExpanded={isLevelExpanded} onToggleExpansion={onToggleExpansion} onToggleLevelExpansion={onToggleLevelExpansion} onExpandAll={onExpandAll} onCollapseAll={onCollapseAll} onNodeClick={onNodeClick} onEditNode={onEditNode} onDeleteNode={onDeleteNode} level2Layout={level2Layout} onToggleLevel2Layout={onToggleLevel2Layout} />
+    </div>;
 };
