@@ -16,12 +16,6 @@ import {
 } from "@/hooks/useLevel1EnrichmentPolling";
 import { NodeEnrichmentIndicator } from "./node-components/NodeEnrichmentIndicator";
 import { useEnrichmentQueue } from "@/hooks/useEnrichmentQueue";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 interface TreeNodeProps {
   item: TreeNodeType;
@@ -152,10 +146,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   const showEnrichmentIndicator =
     loadingPapers || loadingUseCases || hasQueueActivity;
 
-  // Determine if tooltip should be shown
-  const shouldShowTooltip = !isSelected && !isLastLevel && subNodeCount > 0;
-
-  const nodeContent = (
+  return (
     <div
       ref={nodeRef}
       className={`
@@ -209,20 +200,4 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       </div>
     </div>
   );
-
-  // Wrap with tooltip if conditions are met
-  if (shouldShowTooltip) {
-    return (
-      <TooltipProvider delayDuration={50} skipDelayDuration={50}>
-        <Tooltip>
-          <TooltipTrigger asChild>{nodeContent}</TooltipTrigger>
-          <TooltipContent>
-            <p>サブカテゴリが{subNodeCount}つあります。クリックで表示。</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
-  }
-
-  return nodeContent;
 };
