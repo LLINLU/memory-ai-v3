@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useState } from "react";
 import { NodeActions } from "./node-components/NodeActions";
 import { NodeContent } from "./node-components/NodeContent";
@@ -67,9 +68,11 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
 
     return () => window.removeEventListener("resize", updateWidth);
   }, []);
+  
   const nodeStyleClass = getNodeStyle(item, isSelected, level);
   // Force white text for selected nodes to ensure visibility
   const descriptionTextColor = isSelected ? "text-gray-100" : "text-gray-600";
+  
   // Check if this node is being enriched
   const isEnriching = isNodeLoading(item.id);
 
@@ -157,8 +160,8 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
     <div
       ref={nodeRef}
       className={`
-        py-4 px-4 rounded-lg cursor-pointer transition-all relative
-        min-w-[200px] w-full
+        py-6 px-3 rounded-lg cursor-pointer transition-all relative
+        w-full h-auto min-h-[120px]
         ${nodeStyleClass}
         group
       `}
@@ -166,7 +169,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex flex-col relative z-10 min-w-0">
+      <div className="flex flex-col relative z-10 min-w-0 h-full">
         <NodeContent
           item={item}
           isSelected={isSelected}
@@ -176,7 +179,7 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
         {/* Show description when showDescription is true */}
         {showDescription && item.description && (
           <div
-            className={`mt-3 text-sm ${descriptionTextColor} border-t pt-2 border-gray-100 overflow-hidden`}
+            className={`mt-3 text-sm ${descriptionTextColor} border-t pt-2 border-gray-100 overflow-hidden break-words`}
           >
             {item.description}
           </div>
