@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { getLevelColor } from '@/components/technology-tree/utils/levelColors';
@@ -40,7 +39,7 @@ const MindMapLegendComponent: React.FC<MindMapLegendProps> = ({
   return (
     <div className="absolute bottom-4 left-4 z-[50]">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+        <div className="bg-white border border-gray-300 rounded-lg shadow-xl overflow-hidden">
           <CollapsibleTrigger asChild>
             <button className="w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors">
               <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
