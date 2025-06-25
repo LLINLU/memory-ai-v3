@@ -1,9 +1,14 @@
-
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
 import { ScenarioCard } from './ScenarioCard';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface LevelItem {
   id: string;
@@ -102,13 +107,22 @@ export const DraggableCard: React.FC<DraggableCardProps> = ({
       className="relative group"
     >
       {/* Drag Handle - improved visibility for grid layouts */}
-      <div
-        {...attributes}
-        {...listeners}
-        className="absolute top-2 left-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing bg-white/95 backdrop-blur-sm rounded-md p-1.5 shadow-md border border-gray-200 hover:border-gray-300"
-      >
-        <GripVertical className="h-4 w-4 text-gray-600" />
-      </div>
+      <TooltipProvider delayDuration={200} skipDelayDuration={100}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div
+              {...attributes}
+              {...listeners}
+              className="absolute top-2 left-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing bg-white/95 backdrop-blur-sm rounded-md p-1.5 shadow-md border border-gray-200 hover:border-gray-300"
+            >
+              <GripVertical className="h-4 w-4 text-gray-600" />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>ご自由にカードをドラッグしてください。</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       <ScenarioCard
         scenario={scenario}
