@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Badge } from '@/components/ui/badge';
 import { SingleRowIcon } from './SingleRowIcon';
 import { ThreeColumnsIcon } from './ThreeColumnsIcon';
 import { TwoByTwoGridIcon } from './TwoByTwoGridIcon';
@@ -20,10 +20,17 @@ export const LayoutToggle: React.FC<LayoutToggleProps> = ({
 }) => {
   return <div>
       <div className="flex items-center justify-between bg-white px-4 rounded-lg">
-        <div className="text-sm font-medium" style={{
+        <div className="flex items-center gap-1 text-sm font-medium" style={{
         color: '#5F729F'
       }}>
-          {scenarioCount}シナリオ({totalNodeCount}ノード)
+          <span>{scenarioCount}シナリオ(</span>
+          <Badge 
+            className="text-xs px-2 py-0.5 text-white border-0" 
+            style={{ backgroundColor: '#5F729E' }}
+          >
+            {totalNodeCount}ノード
+          </Badge>
+          <span>)</span>
         </div>
         <ToggleGroup type="single" value={cardLayout} onValueChange={value => value && onLayoutChange(value as CardLayoutMode)} className="p-1 rounded-lg bg-white">
           <ToggleGroupItem value="single-row" aria-label="Single row layout" className="data-[state=on]:bg-white data-[state=off]:opacity-60">
