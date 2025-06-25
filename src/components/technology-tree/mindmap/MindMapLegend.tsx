@@ -1,5 +1,8 @@
-import React from 'react';
+
+import React, { useState } from 'react';
+import { ChevronUp, ChevronDown } from 'lucide-react';
 import { getLevelColor } from '@/components/technology-tree/utils/levelColors';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface MindMapLegendProps {
   treeMode?: string;
@@ -8,6 +11,8 @@ interface MindMapLegendProps {
 const MindMapLegendComponent: React.FC<MindMapLegendProps> = ({
   treeMode,
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   // Define static legend labels based on framework
   const getLegendLabels = () => {
     if (treeMode === "FAST") {
@@ -33,28 +38,42 @@ const MindMapLegendComponent: React.FC<MindMapLegendProps> = ({
   const legendItems = getLegendLabels();
 
   return (
-    <div className="fixed bottom-4 left-4 z-[9999] pointer-events-none">
-      <div className="bg-white border border-gray-300 rounded-lg shadow-xl p-4 min-w-[200px] pointer-events-auto">
-        <div className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
-          Legend
+    <div className="absolute bottom-4 left-4 z-[50]">
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+        <div className="bg-white border border-gray-300 rounded-lg shadow-xl overflow-hidden">
+          <CollapsibleTrigger asChild>
+            <button className="w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Legend
+              </span>
+              {isOpen ? (
+                <ChevronUp className="h-3 w-3 text-gray-500" />
+              ) : (
+                <ChevronDown className="h-3 w-3 text-gray-500" />
+              )}
+            </button>
+          </CollapsibleTrigger>
+          
+          <CollapsibleContent>
+            <div className="px-3 pb-3 pt-0 space-y-2 min-w-[200px]">
+              {legendItems.map(({ level, label }) => {
+                const { bg } = getLevelColor(level);
+                
+                return (
+                  <div key={level} className="flex items-center gap-2 text-sm">
+                    <div 
+                      className={`w-3 h-3 rounded-full ${bg} border border-gray-400 flex-shrink-0`}
+                    />
+                    <span className="text-gray-800 font-medium">
+                      レベル{level}: {label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </CollapsibleContent>
         </div>
-        <div className="space-y-2">
-          {legendItems.map(({ level, label }) => {
-            const { bg } = getLevelColor(level);
-            
-            return (
-              <div key={level} className="flex items-center gap-2 text-sm">
-                <div 
-                  className={`w-3 h-3 rounded-full ${bg} border border-gray-400 flex-shrink-0`}
-                />
-                <span className="text-gray-800 font-medium">
-                  レベル{level}: {label}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      </Collapsible>
     </div>
   );
 };
