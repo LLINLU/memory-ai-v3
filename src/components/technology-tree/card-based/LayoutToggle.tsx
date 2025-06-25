@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { SingleRowIcon } from './SingleRowIcon';
@@ -18,7 +19,7 @@ export const LayoutToggle: React.FC<LayoutToggleProps> = ({
   totalNodeCount
 }) => {
   return <div>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between bg-white px-4 rounded-lg">
         <div className="text-sm font-medium" style={{
         color: '#5F729F'
       }}>
