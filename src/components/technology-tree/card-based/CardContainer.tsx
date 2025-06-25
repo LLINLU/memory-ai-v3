@@ -113,7 +113,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   const getLayoutClasses = () => {
     switch (cardLayout) {
       case "single-row":
-        return "flex flex-nowrap overflow-x-auto overflow-y-visible";
+        return "flex flex-nowrap overflow-x-auto overflow-y-hidden";
       case "one-per-row":
         return "grid grid-cols-1";
       case "two-per-row":
@@ -126,7 +126,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   };
 
   const getCardClasses = () => {
-    return cardLayout === "single-row" ? "flex-shrink-0 w-80" : "";
+    return cardLayout === "single-row" ? "flex-shrink-0 min-w-80 max-w-96" : "";
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -178,6 +178,15 @@ export const CardContainer: React.FC<CardContainerProps> = ({
     });
   };
 
+  const getContainerClasses = () => {
+    const baseClasses = `${getLayoutClasses()} gap-4`;
+    // Add height constraint for single-row to prevent overflow
+    if (cardLayout === "single-row") {
+      return `${baseClasses} max-h-screen`;
+    }
+    return baseClasses;
+  };
+
   if (isDraggable) {
     return (
       <DndContext
@@ -189,7 +198,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
           items={level1Items.map(item => item.id)}
           strategy={getSortingStrategy()}
         >
-          <div className={`${getLayoutClasses()} gap-4`}>
+          <div className={getContainerClasses()}>
             {renderCards()}
           </div>
         </SortableContext>
@@ -198,7 +207,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   }
 
   return (
-    <div className={`${getLayoutClasses()} gap-4`}>
+    <div className={getContainerClasses()}>
       {renderCards()}
     </div>
   );
