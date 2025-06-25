@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Info } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -90,7 +89,7 @@ export const PathDisplay = ({
 
   // Component to render level number in a circle
   const LevelCircle = ({ level }: { level: number }) => (
-    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-level-circle text-white font-medium mr-1 text-xs">
+    <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-level-circle text-white font-medium mr-1" style={{ fontSize: "10px" }}>
       {level}
     </span>
   );
