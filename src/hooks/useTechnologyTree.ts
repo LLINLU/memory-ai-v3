@@ -87,8 +87,6 @@ export const useTechnologyTree = (
     }));
 
   const initialPath = getCurrentPath();
-  
-  console.log(`[TECH_TREE] Initial path for ${isMindmapView ? 'mindmap' : 'treemap'} view:`, initialPath);
 
   // Track if treemap initialization has been done to prevent infinite loops
   const [treemapInitialized, setTreemapInitialized] = useState(false);
@@ -134,18 +132,19 @@ export const useTechnologyTree = (
     userClickedNode, // NEW: Get the user's actual clicked node
   } = usePathSelection(initialPath, treeDataToUse, isMindmapView);
 
-  // Sync selectedPath changes back to the view-specific state
-  useEffect(() => {
-    if (viewModeHook?.setCurrentPath && selectedPath) {
-      console.log(`[PATH_SYNC] Syncing selectedPath to ${isMindmapView ? 'mindmap' : 'treemap'} view:`, selectedPath);
-      viewModeHook.setCurrentPath(selectedPath);
-    }
-  }, [selectedPath, viewModeHook, isMindmapView]);
-
-  // Wrap the handleNodeClick to maintain the same interface
+  // Wrap the handleNodeClick to update the view-specific path
   const handleNodeClick = (level: string, nodeId: string) => {
-    console.log(`[PATH_SYNC] Node clicked: ${level} - ${nodeId} in ${isMindmapView ? 'mindmap' : 'treemap'} view`);
     originalHandleNodeClick(level as PathLevel, nodeId);
+
+    // If we have the view mode hook, update the current view's path
+    if (viewModeHook?.setCurrentPath) {
+      // Get the updated path after the click
+      setTimeout(() => {
+        // This will be called after the path state has been updated
+        const updatedPath = getCurrentPath();
+        viewModeHook.setCurrentPath(updatedPath);
+      }, 0);
+    }
   };
 
   const {

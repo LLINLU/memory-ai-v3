@@ -1,6 +1,6 @@
 import { PathLevel } from "@/types/tree";
 import { PathState } from "../state/usePathState";
-import { clearPathFromLevel, autoSelectChildren, findCompletePath } from "../utils/pathUtils";
+import { clearPathFromLevel, autoSelectChildren } from "../utils/pathUtils";
 import { callNodeEnrichmentStreaming, buildParentTitles, getNodeDetails, isNodeLoading, hasNodeEnrichedData, StreamingResponse, enrichNodeWithNewStructure } from "@/services/nodeEnrichmentService";
 import { triggerEnrichmentRefresh, triggerEnrichmentStart } from "@/hooks/useEnrichedData";
 import { useUserDetail } from "@/hooks/useUserDetail";
@@ -111,26 +111,26 @@ export const useNodeClickHandler = (
         return clearPathFromLevel(prev, level);
       }
 
+      // MINDMAP MODE: Set only the selected level without auto-selection
       if (disableAutoSelection) {
-        // In mindmap view, use findCompletePath to establish the correct hierarchy
-        console.log("[MINDMAP_SELECTION] Finding complete path for node:", { level, nodeId });
-        const completePath = findCompletePath(level, nodeId, treeData, initialPath);
-        console.log("[MINDMAP_SELECTION] Complete path found:", completePath);
-        return completePath;
-      } else {
-        // In treemap view, use the original auto-selection logic
-        console.log("[TREEMAP_SELECTION] Auto-selection enabled for", level, nodeId);
+        console.log("Mindmap mode: Setting selected node for", level, nodeId);
         const newPath = { ...prev };
-
-        // Clear current and all subsequent levels
-        const clearedPath = clearPathFromLevel(newPath, level);
-
-        // Set the selected level
-        clearedPath[level] = nodeId;
-
-        // Auto-select children
-        return autoSelectChildren(clearedPath, level, nodeId, treeData);
+        newPath[level] = nodeId;
+        return newPath;
       }
+
+      // TREEMAP MODE: Auto-selection enabled
+      console.log("Treemap mode: Auto-selection enabled for", level, nodeId);
+      const newPath = { ...prev };
+
+      // Clear current and all subsequent levels
+      const clearedPath = clearPathFromLevel(newPath, level);
+
+      // Set the selected level
+      clearedPath[level] = nodeId;
+
+      // Auto-select children
+      return autoSelectChildren(clearedPath, level, nodeId, treeData);
     });
   };
 
