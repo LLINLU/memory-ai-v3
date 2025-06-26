@@ -3,179 +3,8 @@ import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 // =============================================================================
-// MOCK API FUNCTIONS (for Papers and Use Cases)
+// PRODUCTION API FUNCTIONS
 // =============================================================================
-
-/**
- * Mock function to simulate Python API call for tree papers enrichment
- * Returns tree data enriched with papers only
- */
-async function callPythonPapersAPI(
-  scenarioTree: ScenarioTreeInput
-): Promise<any> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
-  console.log(`[MOCK PAPERS API] Scenario: ${scenarioTree.scenarioNode.title}`);
-
-  // Generate papers-only enriched data for the entire subtree
-  const enrichedNode = enrichNodeWithPapers(scenarioTree.scenarioNode);
-
-  return {
-    treeId: scenarioTree.treeId,
-    scenarioNode: enrichedNode,
-  };
-}
-
-async function callPythonUseCasesAPI(
-  scenarioTree: ScenarioTreeInput
-): Promise<any> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1200));
-
-  console.log(
-    `[MOCK USECASES API] Scenario: ${scenarioTree.scenarioNode.title}`
-  );
-
-  // Generate use cases-only enriched data for the entire subtree
-  const enrichedNode = enrichNodeWithUseCases(scenarioTree.scenarioNode);
-
-  return {
-    treeId: scenarioTree.treeId,
-    scenarioNode: enrichedNode,
-  };
-}
-
-function generateMockPapers(nodeTitle: string, level: number): Paper[] {
-  const paperCount = Math.floor(Math.random() * 5) + 1;
-  const papers: Paper[] = [];
-
-  for (let i = 0; i < paperCount; i++) {
-    const paperId = crypto.randomUUID();
-    papers.push({
-      id: paperId,
-      title: `${nodeTitle}: Research Paper ${i + 1}`,
-      authors: generateMockAuthors(),
-      journal: generateMockJournal(),
-      tags: generateMockTags(nodeTitle),
-      abstract: `This paper explores advanced techniques in ${nodeTitle.toLowerCase()}. The research demonstrates significant improvements in performance and efficiency through innovative approaches.`,
-      date: generateRandomDate(),
-      citations: Math.floor(Math.random() * 200) + 10,
-      region: Math.random() > 0.5 ? "international" : "domestic",
-      doi: `10.1000/mock.${paperId.split("-")[0]}`,
-      url: `https://example.com/paper/${paperId}`,
-      score: 0,
-    });
-  }
-
-  return papers;
-}
-
-function generateMockCompanies(): string[] {
-  const companies = [
-    "TechCorp Inc.",
-    "Innovation Labs",
-    "Future Systems",
-    "Digital Solutions Ltd.",
-    "Advanced Technologies",
-    "Smart Industries",
-    "NextGen Corp",
-    "Global Tech Solutions",
-  ];
-
-  const companyCount = Math.floor(Math.random() * 3) + 1;
-  const selectedCompanies: string[] = [];
-
-  for (let i = 0; i < companyCount; i++) {
-    const company = companies[Math.floor(Math.random() * companies.length)];
-    if (!selectedCompanies.includes(company)) {
-      selectedCompanies.push(company);
-    }
-  }
-
-  return selectedCompanies;
-}
-
-function generateMockUseCases(nodeTitle: string, level: number): UseCase[] {
-  const useCaseCount = Math.floor(Math.random() * 3) + 1;
-  const useCases: UseCase[] = [];
-
-  for (let i = 0; i < useCaseCount; i++) {
-    const useCaseId = crypto.randomUUID();
-    const pressReleasesCount = Math.floor(Math.random() * 3) + 1;
-
-    const pressReleases: string[] = [];
-    for (let j = 0; j < pressReleasesCount; j++) {
-      pressReleases.push(
-        `${nodeTitle} Implementation News ${
-          j + 1
-        }: Revolutionary breakthrough in practical applications`
-      );
-    }
-
-    const companies = generateMockCompanies();
-
-    useCases.push({
-      id: useCaseId,
-      product: `${nodeTitle} Solution ${i + 1}`, // Changed from 'title' to 'product'
-      company: companies, // New field - array of companies
-      description: `Real-world implementation of ${nodeTitle.toLowerCase()} technology demonstrating practical applications and measurable results.`,
-      press_releases: pressReleases, // Changed to simple string array
-    });
-  }
-
-  return useCases;
-}
-
-function generateMockAuthors(): string {
-  const firstNames = ["Alice", "Bob", "Charlie", "Diana", "Eric", "Fiona"];
-  const lastNames = [
-    "Smith",
-    "Johnson",
-    "Williams",
-    "Brown",
-    "Jones",
-    "Garcia",
-  ];
-
-  const authorCount = Math.floor(Math.random() * 3) + 1;
-  const authors: string[] = [];
-
-  for (let i = 0; i < authorCount; i++) {
-    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-    authors.push(`${firstName} ${lastName}`);
-  }
-
-  return authors.join(", ");
-}
-
-function generateMockJournal(): string {
-  const journals = [
-    "Nature Technology",
-    "Science Advances",
-    "IEEE Transactions on Technology",
-    "Journal of Applied Sciences",
-    "Technology Review",
-  ];
-
-  return journals[Math.floor(Math.random() * journals.length)];
-}
-
-function generateMockTags(nodeTitle: string): string[] {
-  const baseTags = ["research", "innovation", "technology"];
-  const specificTags = nodeTitle.toLowerCase().split(" ").slice(0, 3);
-  return [...baseTags, ...specificTags].slice(0, 5);
-}
-
-function generateRandomDate(): string {
-  const start = new Date(2020, 0, 1);
-  const end = new Date();
-  const randomDate = new Date(
-    start.getTime() + Math.random() * (end.getTime() - start.getTime())
-  );
-  return randomDate.toISOString().split("T")[0];
-}
 
 // ---------------------------------------------------------------------------
 // Production use cases API call (with new structure)
@@ -202,44 +31,6 @@ async function callUseCasesAPI(request: UseCasesApiRequest): Promise<any> {
   console.log(`[USECASES_API DEBUG] Raw response from tree_usecases API:`, JSON.stringify(response, null, 2));
   
   return response;
-}
-
-/**
- * Recursively enrich each node with papers only
- */
-function enrichNodeWithPapers(node: any): any {
-  const papers = generateMockPapers(node.title, node.level);
-
-  const enrichedChildren = node.children.map((child: any) =>
-    enrichNodeWithPapers(child)
-  );
-
-  return {
-    ...node,
-    papers,
-    children: enrichedChildren,
-  };
-}
-
-/**
- * Recursively enrich each node with use cases only
- *
- * 🚫 TEMPORARILY DISABLED - Use Cases API not production ready
- * This function is commented out until the use cases API is ready for production
- */
-
-function enrichNodeWithUseCases(node: any): any {
-  const useCases = generateMockUseCases(node.title, node.level);
-
-  const enrichedChildren = node.children.map((child: any) =>
-    enrichNodeWithUseCases(child)
-  );
-
-  return {
-    ...node,
-    useCases,
-    children: enrichedChildren,
-  };
 }
 
 // =============================================================================
@@ -556,15 +347,14 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
       children: subtreeWithIds,
     },
   };
-
   // Call Papers API (now after tree is already saved)
   console.log(`[STEP 2 INTERNAL] Calling papers API...`);
   let enrichedResponse: EnrichedScenarioResponse;
   try {
     enrichedResponse = await callTreePapersAPI(scenarioTreeInput, searchTheme);
   } catch (apiErr) {
-    console.error("[tree_papers] prod API failed, using mock:", apiErr.message);
-    enrichedResponse = await callPythonPapersAPI(scenarioTreeInput);
+    console.error("[tree_papers] API failed:", apiErr.message);
+    throw new Error(`Papers API failed: ${apiErr.message}`);
   }
   console.log(`=== Papers enrichment completed ===`);
 
@@ -907,9 +697,7 @@ async function startUseCasesEnrichmentAsync(
       scenarioTreeInput.treeId,
       scenarioTreeInput.scenarioNode.title, // Use scenario title as query
       scenarioTreeInput.scenarioNode
-    );
-
-    let useCasesResponse;
+    );    let useCasesResponse;
     try {
       // Try production use cases API first
       useCasesResponse = await callUseCasesAPI(useCasesRequest);
@@ -918,11 +706,10 @@ async function startUseCasesEnrichmentAsync(
       );
     } catch (apiErr) {
       console.error(
-        "[ASYNC USECASES] Production API failed, using mock:",
+        "[ASYNC USECASES] Production API failed:",
         apiErr.message
       );
-      // Fallback to mock use cases API
-      useCasesResponse = await callPythonUseCasesAPI(scenarioTreeInput);
+      throw new Error(`Use Cases API failed: ${apiErr.message}`);
     }
 
     // Save use cases data for all nodes in the scenario tree
@@ -1286,8 +1073,7 @@ serve(async (req) => {
           scenarioNodeForUseCases
         );
 
-        let useCasesResponse;
-        try {
+        let useCasesResponse;        try {
           // Try production use cases API first
           useCasesResponse = await callUseCasesAPI(useCasesRequest);
           console.log(
@@ -1295,15 +1081,19 @@ serve(async (req) => {
           );
         } catch (apiErr) {
           console.error(
-            "[STEP 1 USECASES] Production API failed, using mock:",
+            "[STEP 1 USECASES] Production API failed:",
             apiErr.message
           );
-          // Fallback to mock use cases API
-          const mockScenarioTreeInput = {
-            treeId: tt.id,
-            scenarioNode: scenarioNodeForUseCases,
+          // Don't throw here - use cases are optional at Step 1
+          // Just log the error and continue without use cases data
+          console.log(
+            `[STEP 1 USECASES] Skipping use cases for scenario: ${scenario.name}`
+          );
+          return {
+            scenario: scenario.name,
+            success: false,
+            error: `Use Cases API failed: ${apiErr.message}`,
           };
-          useCasesResponse = await callPythonUseCasesAPI(mockScenarioTreeInput);
         }
 
         // Save use cases data for the scenario node

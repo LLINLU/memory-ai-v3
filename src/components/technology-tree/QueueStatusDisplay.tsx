@@ -6,9 +6,15 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-export const QueueStatusDisplay: React.FC = () => {
+interface QueueStatusDisplayProps {
+  onNodeSelect?: (nodeId: string) => void;
+}
+
+export const QueueStatusDisplay: React.FC<QueueStatusDisplayProps> = ({
+  onNodeSelect,
+}) => {
   const [status, setStatus] = useState(getQueueStatus());
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(Date.now());
   const [activeTab, setActiveTab] = useState<"summary" | "queue">("summary");
 
@@ -69,19 +75,43 @@ export const QueueStatusDisplay: React.FC = () => {
         section === "done"
           ? 100
           : Math.min(100, Math.floor((item.elapsedSeconds / maxTime) * 100));
+
+      const handleItemClick = () => {
+        if (onNodeSelect && item.nodeId) {
+          onNodeSelect(item.nodeId);
+        }
+      };
+
       return (
         <div
           key={index}
-          className="border-b pb-1 flex items-center justify-between gap-2 bg-white"
+          className={`border-b pb-2 pt-1 flex items-center justify-between gap-2 rounded-sm px-2 ${
+            onNodeSelect && item.nodeId
+              ? "cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-all duration-200 active:bg-blue-100"
+              : "bg-white"
+          }`}
+          onClick={handleItemClick}
+          title={
+            onNodeSelect && item.nodeId
+              ? `クリックして「${item.name}」ノードに移動`
+              : ""
+          }
         >
           <div className="flex flex-col flex-1">
-            <span
-              className={`text-xs ${
-                item.type === "論文検索" ? "text-blue-600" : "text-green-600"
-              }`}
-            >
-              {item.type}
-            </span>
+            <div className="flex items-center gap-1">
+              <span
+                className={`text-xs ${
+                  item.type === "論文検索" ? "text-blue-600" : "text-green-600"
+                }`}
+              >
+                {item.type}
+              </span>
+              {onNodeSelect && item.nodeId && (
+                <span className="text-blue-500 text-xs" title="クリック可能">
+                  ↗
+                </span>
+              )}
+            </div>
             <span className="text-gray-800 font-medium">{item.name}</span>
           </div>
           <div className="flex flex-col items-center gap-1">
@@ -202,22 +232,22 @@ export const QueueStatusDisplay: React.FC = () => {
           <div className="flex gap-1 text-xs">
             <button
               className={`px-2 py-1 rounded ${
-                activeTab === "summary" ? "bg-gray-200" : "hover:bg-gray-100"
-              }`}
-              onClick={() => setActiveTab("summary")}
-            >
-              全体
-            </button>
-            <button
-              className={`px-2 py-1 rounded ${
                 activeTab === "queue" ? "bg-gray-200" : "hover:bg-gray-100"
               }`}
               onClick={() => setActiveTab("queue")}
             >
               各検索
             </button>
+            <button
+              className={`px-2 py-1 rounded ${
+                activeTab === "summary" ? "bg-gray-200" : "hover:bg-gray-100"
+              }`}
+              onClick={() => setActiveTab("summary")}
+            >
+              全体
+            </button>
           </div>
-        </CardHeader>{" "}
+        </CardHeader>
         {activeTab === "summary" && (
           <CardContent className="text-xs space-y-2">
             <div className="flex items-center justify-between">
@@ -285,7 +315,7 @@ export const QueueStatusDisplay: React.FC = () => {
             </div>
           </CardContent>
         )}
-        {activeTab === "queue" && QueList()}{" "}
+        {activeTab === "queue" && QueList()}
       </Card>
     </div>
   );

@@ -320,7 +320,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
           </div>
         </div>
 
-        {/* Move legend outside the transformed container so it stays fixed in viewport */}
+        {/* Legend positioned inside container but outside transformed content */}
         <MindMapLegend treeMode={treeMode} />
 
         <MindMapControls

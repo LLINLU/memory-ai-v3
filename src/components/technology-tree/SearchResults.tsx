@@ -1,19 +1,21 @@
-
 import React, { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { TabContent } from "./components/TabContent";
 import { SelectedNodeInfo } from "./components/SelectedNodeInfo";
+import { NodeInfo } from "@/services/nodeEnrichmentService.ts";
 
 interface SearchResultsProps {
   selectedNodeTitle?: string;
   selectedNodeDescription?: string;
   selectedNodeId?: string;
+  parentNodes?: NodeInfo[];
 }
 
 export const SearchResults = ({
   selectedNodeTitle,
   selectedNodeDescription,
   selectedNodeId,
+  parentNodes,
 }: SearchResultsProps) => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = React.useState("papers");
@@ -23,7 +25,7 @@ export const SearchResults = ({
       console.log("SearchResults component detected refresh event:", event);
 
       // Reset scroll position for the papers list container
-      const papersContainer = document.querySelector('[data-papers-scroll]');
+      const papersContainer = document.querySelector("[data-papers-scroll]");
       if (papersContainer) {
         papersContainer.scrollTop = 0;
       }
@@ -45,6 +47,7 @@ export const SearchResults = ({
         <SelectedNodeInfo
           title={selectedNodeTitle}
           description={selectedNodeDescription}
+          parentNodes={parentNodes}
         />
       </div>
       <div className="flex-1 overflow-hidden">

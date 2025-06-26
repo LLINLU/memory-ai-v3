@@ -75,13 +75,10 @@ interface UseCase {
 }
 
 // =============================================================================
-// MOCK API FUNCTIONS (for Papers and Use Cases)
+// PRODUCTION API FUNCTIONS
 // =============================================================================
 
-/**
- * Mock function to simulate Python API call for tree papers enrichment
- * Returns tree data enriched with papers only
- */
+// Basic-Auth helper (prod tree_papers)
 async function callPythonPapersAPI(
   scenarioTree: ScenarioTreeInput
 ): Promise<any> {
@@ -114,169 +111,7 @@ async function callPythonUseCasesAPI(
 
   return {
     treeId: scenarioTree.treeId,
-    scenarioNode: enrichedNode,
-  };
-}
-
-function generateMockPapers(nodeTitle: string, level: number): Paper[] {
-  const paperCount = Math.floor(Math.random() * 5) + 1;
-  const papers: Paper[] = [];
-
-  for (let i = 0; i < paperCount; i++) {
-    const paperId = crypto.randomUUID();
-    papers.push({
-      id: paperId,
-      title: `${nodeTitle}: Research Paper ${i + 1}`,
-      authors: generateMockAuthors(),
-      journal: generateMockJournal(),
-      tags: generateMockTags(nodeTitle),
-      abstract: `This paper explores advanced techniques in ${nodeTitle.toLowerCase()}. The research demonstrates significant improvements in performance and efficiency through innovative approaches.`,
-      date: generateRandomDate(),
-      citations: Math.floor(Math.random() * 200) + 10,
-      region: Math.random() > 0.5 ? "international" : "domestic",
-      doi: `10.1000/mock.${paperId.split("-")[0]}`,
-      url: `https://example.com/paper/${paperId}`,
-      score: 0,
-    });
-  }
-
-  return papers;
-}
-
-function generateMockCompanies(): string[] {
-  const companies = [
-    "TechCorp Inc.",
-    "Innovation Labs",
-    "Future Systems",
-    "Digital Solutions Ltd.",
-    "Advanced Technologies",
-    "Smart Industries",
-    "NextGen Corp",
-    "Global Tech Solutions",
-  ];
-
-  const companyCount = Math.floor(Math.random() * 3) + 1;
-  const selectedCompanies: string[] = [];
-
-  for (let i = 0; i < companyCount; i++) {
-    const company = companies[Math.floor(Math.random() * companies.length)];
-    if (!selectedCompanies.includes(company)) {
-      selectedCompanies.push(company);
-    }
-  }
-
-  return selectedCompanies;
-}
-
-function generateMockUseCases(nodeTitle: string, level: number): UseCase[] {
-  const useCaseCount = Math.floor(Math.random() * 3) + 1;
-  const useCases: UseCase[] = [];
-
-  for (let i = 0; i < useCaseCount; i++) {
-    const useCaseId = crypto.randomUUID();
-    const pressReleasesCount = Math.floor(Math.random() * 3) + 1;
-
-    const pressReleases: string[] = [];
-    for (let j = 0; j < pressReleasesCount; j++) {
-      pressReleases.push(`Press Release ${j + 1} for ${nodeTitle}`);
-    }
-
-    const companies = generateMockCompanies();
-
-    useCases.push({
-      id: useCaseId,
-      product: `${nodeTitle} Solution ${i + 1}`,
-      company: companies,
-      description: `Real-world implementation of ${nodeTitle.toLowerCase()} technology demonstrating practical applications and measurable results.`,
-      press_releases: pressReleases,
-    });
-  }
-
-  return useCases;
-}
-
-function generateMockAuthors(): string {
-  const firstNames = ["Alice", "Bob", "Charlie", "Diana", "Eric", "Fiona"];
-  const lastNames = [
-    "Smith",
-    "Johnson",
-    "Williams",
-    "Brown",
-    "Jones",
-    "Garcia",
-  ];
-
-  const authorCount = Math.floor(Math.random() * 3) + 1;
-  const authors: string[] = [];
-
-  for (let i = 0; i < authorCount; i++) {
-    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-    authors.push(`${firstName} ${lastName}`);
-  }
-
-  return authors.join(", ");
-}
-
-function generateMockJournal(): string {
-  const journals = [
-    "Nature Technology",
-    "Science Advances",
-    "IEEE Transactions on Technology",
-    "Journal of Applied Sciences",
-    "Technology Review",
-  ];
-
-  return journals[Math.floor(Math.random() * journals.length)];
-}
-
-function generateMockTags(nodeTitle: string): string[] {
-  const baseTags = ["research", "innovation", "technology"];
-  const specificTags = nodeTitle.toLowerCase().split(" ").slice(0, 3);
-  return [...baseTags, ...specificTags].slice(0, 5);
-}
-
-function generateRandomDate(): string {
-  const start = new Date(2020, 0, 1);
-  const end = new Date();
-  const randomDate = new Date(
-    start.getTime() + Math.random() * (end.getTime() - start.getTime())
-  );
-  return randomDate.toISOString().split("T")[0];
-}
-
-/**
- * Recursively enrich each node with papers only
- */
-function enrichNodeWithPapers(node: any): any {
-  const papers = generateMockPapers(node.title, node.level);
-
-  const enrichedChildren = node.children.map((child: any) =>
-    enrichNodeWithPapers(child)
-  );
-
-  return {
-    ...node,
-    papers,
-    children: enrichedChildren,
-  };
-}
-
-/**
- * Recursively enrich each node with use cases only
- */
-function enrichNodeWithUseCases(node: any): any {
-  const useCases = generateMockUseCases(node.title, node.level);
-
-  const enrichedChildren = node.children.map((child: any) =>
-    enrichNodeWithUseCases(child)
-  );
-
-  return {
-    ...node,
-    useCases,
-    children: enrichedChildren,
-  };
+    scenarioNode: enrichedNode,  };
 }
 
 // =============================================================================
@@ -786,8 +621,8 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
       searchTheme
     );
   } catch (apiErr) {
-    console.error("[tree_papers] prod API failed, using mock:", apiErr.message);
-    enrichedResponse = await callPythonPapersAPI(implementationTreeInput);
+    console.error("[tree_papers] API failed:", apiErr.message);
+    throw new Error(`Papers API failed: ${apiErr.message}`);
   }
   console.log(`=== Papers enrichment completed ===`);
 
@@ -1298,17 +1133,19 @@ serve(async (req) => {
           );
         } catch (apiErr) {
           console.error(
-            "[STEP 1 USECASES] Production API failed, using mock:",
+            "[STEP 1 USECASES] Production API failed:",
             apiErr.message
           );
-          // Fallback to mock use cases API
-          const mockImplementationTreeInput = {
-            treeId: tt.id,
-            scenarioNode: implementationNodeForUseCases,
-          };
-          useCasesResponse = await callPythonUseCasesAPI(
-            mockImplementationTreeInput
+          // Don't throw here - use cases are optional at Step 1
+          // Just log the error and continue without use cases data
+          console.log(
+            `[STEP 1 USECASES] Skipping use cases for implementation: ${implementation.name}`
           );
+          return {
+            implementation: implementation.name,
+            success: false,
+            error: `Use Cases API failed: ${apiErr.message}`,
+          };
         }
 
         // Save use cases data for the implementation node

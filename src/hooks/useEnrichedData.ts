@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { getEnrichmentStatus } from "@/services/enrichmentQueue";
+import type { EnrichmentStatus } from "@/services/enrichmentQueue";
 
 interface Paper {
   id: string;
@@ -115,39 +117,47 @@ export const useEnrichedData = (nodeId: string | null): EnrichedData => {
       }
     });
     
-    const unsubscribeStart = enrichmentStartEventBus.subscribe((enrichedNodeId) => {
-      if (enrichedNodeId === nodeId) {
-        console.log(`[useEnrichedData] Enrichment start triggered for nodeId: ${nodeId}`);
-        setLoadingPapers(true);
-        setLoadingUseCases(true);
-        setInitialLoad(false);
-      }
-    });
-    
-    // Listen for specific papers and use cases start events
-    const unsubscribePapersStart = enrichmentEventBus.subscribe((eventId) => {
-      if (eventId === `${nodeId}:papers:start`) {
-        console.log(`[useEnrichedData] Papers start triggered for nodeId: ${nodeId}`);
-        setLoadingPapers(true);
-        setInitialLoad(false);
-      }
-    });
-    
-    const unsubscribeUseCasesStart = enrichmentEventBus.subscribe((eventId) => {
-      if (eventId === `${nodeId}:usecases:start`) {
-        console.log(`[useEnrichedData] Use cases start triggered for nodeId: ${nodeId}`);
-        setLoadingUseCases(true);
-        setInitialLoad(false);
-      }
-    });
+    // We no longer need the start event listeners since we're using queue status
+    // The queue status effect will handle loading states more accurately
     
     return () => {
       unsubscribeRefresh();
-      unsubscribeStart();
-      unsubscribePapersStart();
-      unsubscribeUseCasesStart();
     };
   }, [nodeId]);
+
+  // Effect to check enrichment queue status and update loading states
+  useEffect(() => {
+    if (!nodeId) return;
+
+    const checkQueueStatus = () => {
+      const papersStatus = getEnrichmentStatus(nodeId, 'papers');
+      const useCasesStatus = getEnrichmentStatus(nodeId, 'useCases');
+      
+      // Update papers loading state based on queue status
+      const isPapersLoading = papersStatus === 'waiting' || papersStatus === 'fetching';
+      setLoadingPapers(isPapersLoading);
+      
+      // Update use cases loading state based on queue status  
+      const isUseCasesLoading = useCasesStatus === 'waiting' || useCasesStatus === 'fetching';
+      setLoadingUseCases(isUseCasesLoading);
+      
+      console.log(`[useEnrichedData] Queue status check for ${nodeId}:`, {
+        papersStatus,
+        useCasesStatus,
+        isPapersLoading,
+        isUseCasesLoading
+      });
+    };
+
+    // Check immediately
+    checkQueueStatus();
+
+    // Set up interval to check queue status regularly
+    const interval = setInterval(checkQueueStatus, 1000);
+
+    return () => clearInterval(interval);
+  }, [nodeId]);
+
   useEffect(() => {
     if (!nodeId) {
       setPapers([]);
@@ -170,12 +180,6 @@ export const useEnrichedData = (nodeId: string | null): EnrichedData => {
     
     const loadEnrichedData = async () => {
       setLoading(true);
-      // Only set individual loading states on initial load
-      if (initialLoad) {
-        setLoadingPapers(true);
-        setLoadingUseCases(true);
-        setInitialLoad(false);
-      }
       setError(null);
 
       try {
@@ -208,17 +212,14 @@ export const useEnrichedData = (nodeId: string | null): EnrichedData => {
             const papersList = (papersData as any) || [];
             setPapers(papersList);
             console.log(`[useEnrichedData] Papers set to state:`, papersList);
-            // Turn off loading if we got data, or if this is a refresh (regardless of data)
+            // Only turn off loading if we actually have data
+            // Let the queue status effect handle loading states based on actual queue status
             if (papersList.length > 0) {
-              setLoadingPapers(false);
-            } else if (refreshTrigger > 0) {
-              // This is a refresh but no data - likely means enrichment failed or no data exists
               setLoadingPapers(false);
             }
           }
         } else {
           console.error("Papers query failed:", papersResult.reason);
-          setLoadingPapers(false);
         }
 
         // Handle use cases result
@@ -236,17 +237,14 @@ export const useEnrichedData = (nodeId: string | null): EnrichedData => {
             const useCasesList = (useCasesData as any) || [];
             setUseCases(useCasesList);
             console.log(`[useEnrichedData] Use cases set to state:`, useCasesList);
-            // Turn off loading if we got data, or if this is a refresh (regardless of data)
+            // Only turn off loading if we actually have data
+            // Let the queue status effect handle loading states based on actual queue status
             if (useCasesList.length > 0) {
-              setLoadingUseCases(false);
-            } else if (refreshTrigger > 0) {
-              // This is a refresh but no data - likely means enrichment failed or no data exists
               setLoadingUseCases(false);
             }
           }
         } else {
           console.error("Use cases query failed:", useCasesResult.reason);
-          setLoadingUseCases(false);
         }
 
       } catch (err) {
@@ -254,8 +252,7 @@ export const useEnrichedData = (nodeId: string | null): EnrichedData => {
         setError(err instanceof Error ? err.message : "Unknown error");
         setPapers([]);
         setUseCases([]);
-        setLoadingPapers(false);
-        setLoadingUseCases(false);
+        // Don't override loading states here - let queue status handle them
       } finally {
         setLoading(false);
       }

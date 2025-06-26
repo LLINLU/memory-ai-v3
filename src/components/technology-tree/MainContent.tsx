@@ -1,3 +1,5 @@
+
+
 import React from "react";
 import { PathDisplay } from "./PathDisplay";
 import { LevelSelection } from "./LevelSelection";
@@ -130,7 +132,7 @@ export const MainContent = ({
   };
   return (
     <div className={`h-full flex flex-col ${isMindmapView ? 'overflow-hidden' : ''}`}>
-      <div className="px-4 pt-2 pb-4 flex-shrink-0">
+      <div className="px-4 pt-2 pb-2 flex-shrink-0">
         {/* Query Display Section - appears first */}
         <QueryDisplay query={query} treeMode={treeMode} />
         {/* Title and Guidance Section */}
@@ -272,7 +274,7 @@ export const MainContent = ({
           />
         </div>
       ) : (
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden px-4">
           <MindMapContainer
             selectedPath={selectedPath}
             level1Items={level1Items}
@@ -297,3 +299,4 @@ export const MainContent = ({
     </div>
   );
 };
+

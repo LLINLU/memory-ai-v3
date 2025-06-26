@@ -38,6 +38,7 @@ export const getQueueListFormatted = () => {
       : 0;
     const typeReadable = request.type === 'papers' ? '論文検索' : '事例検索';
     return {
+      nodeId: request.nodeId, // Include nodeId for navigation
       name: request.nodeName,
       type: typeReadable,
       elapsedSeconds,
