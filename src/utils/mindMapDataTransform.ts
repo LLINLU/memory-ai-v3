@@ -12,7 +12,10 @@ export interface MindMapNode {
   parentId?: string;
   isSelected?: boolean;
   isCustom?: boolean;
-  children_count?: number; // Number of children nodes, 0 indicates generation in progress
+  children_count?: number; 
+  isExpanded?: boolean; 
+  hasChildren?: boolean; 
+  hasChildrenInOriginalData?: boolean; 
 }
 
 export interface MindMapConnection {
@@ -79,8 +82,8 @@ const findLastSelectedNode = (selectedPath: SelectedPath) => {
   return null;
 };
 
-// Helper function to build hierarchical data structure from flat level data
-const buildHierarchy = (
+// Helper function to build hierarchical data structure from flat level data with expand state
+const buildHierarchyWithExpandState = (
   level1Items: TreeNode[],
   level2Items: Record<string, TreeNode[]>,
   level3Items: Record<string, TreeNode[]>,
@@ -93,11 +96,11 @@ const buildHierarchy = (
   level10Items: Record<string, TreeNode[]>,
   levelNames: Record<string, string>,
   selectedPath: SelectedPath,
-  query: string
+  query: string,
+  expandedNodes?: Set<string>
 ): HierarchicalNode => {
   // Find the single node that should be selected
   const lastSelectedNode = findLastSelectedNode(selectedPath);
-  //console.log("MindMap Selection: Last selected node:", lastSelectedNode);
 
   const hierarchy: HierarchicalNode = {
     id: "root",
@@ -109,6 +112,7 @@ const buildHierarchy = (
     isCustom: false,
     children: [],
   };
+
   // Add level 1 items as direct children of root
   level1Items.forEach((item) => {
     const level1Node = {
@@ -124,63 +128,71 @@ const buildHierarchy = (
       children: [],
     };
 
-    // Add level 2 items for this level 1 item
-    const level2Children = level2Items[item.id] || [];
-    level2Children.forEach((level2Item) => {
-      const level2Node = {
-        id: level2Item.id,
-        name: level2Item.name,
-        description: level2Item.description || "",
-        level: 2,
-        levelName: levelNames.level2 || "Level 2",
-        isSelected:
-          lastSelectedNode?.id === level2Item.id &&
-          lastSelectedNode?.level === 2,
-        isCustom: level2Item.isCustom || false,
-        children_count: level2Item.children_count,
-        children: [],
-      };
-
-      // Add level 3 items for this level 2 item
-      const level3Children = level3Items[level2Item.id] || [];
-      level3Children.forEach((level3Item) => {
-        const level3Node = {
-          id: level3Item.id,
-          name: level3Item.name,
-          description: level3Item.description || "",
-          level: 3,
-          levelName: levelNames.level3 || "Level 3",
+    const isLevel1Expanded = !expandedNodes || expandedNodes.size === 0 || expandedNodes.has(item.id);
+    
+    if (isLevel1Expanded) {
+      // Add level 2 items for this level 1 item
+      const level2Children = level2Items[item.id] || [];
+      level2Children.forEach((level2Item) => {
+        const level2Node = {
+          id: level2Item.id,
+          name: level2Item.name,
+          description: level2Item.description || "",
+          level: 2,
+          levelName: levelNames.level2 || "Level 2",
           isSelected:
-            lastSelectedNode?.id === level3Item.id &&
-            lastSelectedNode?.level === 3,
-          isCustom: level3Item.isCustom || false,
-          children_count: level3Item.children_count,
+            lastSelectedNode?.id === level2Item.id &&
+            lastSelectedNode?.level === 2,
+          isCustom: level2Item.isCustom || false,
+          children_count: level2Item.children_count,
           children: [],
         };
 
-        // Add level 4+ items recursively
-        addChildrenRecursively(
-          level3Node,
-          level3Item.id,
-          4,
-          [
-            level4Items,
-            level5Items,
-            level6Items,
-            level7Items,
-            level8Items,
-            level9Items,
-            level10Items,
-          ],
-          levelNames,
-          lastSelectedNode
-        );
+        const isLevel2Expanded = !expandedNodes || expandedNodes.size === 0 || expandedNodes.has(level2Item.id);
+        
+        if (isLevel2Expanded) {
+          // Add level 3 items for this level 2 item
+          const level3Children = level3Items[level2Item.id] || [];
+          level3Children.forEach((level3Item) => {
+            const level3Node = {
+              id: level3Item.id,
+              name: level3Item.name,
+              description: level3Item.description || "",
+              level: 3,
+              levelName: levelNames.level3 || "Level 3",
+              isSelected:
+                lastSelectedNode?.id === level3Item.id &&
+                lastSelectedNode?.level === 3,
+              isCustom: level3Item.isCustom || false,
+              children_count: level3Item.children_count,
+              children: [],
+            };
 
-        level2Node.children.push(level3Node);
+            addChildrenRecursivelyWithExpandState(
+              level3Node,
+              level3Item.id,
+              4,
+              [
+                level4Items,
+                level5Items,
+                level6Items,
+                level7Items,
+                level8Items,
+                level9Items,
+                level10Items,
+              ],
+              levelNames,
+              lastSelectedNode,
+              expandedNodes
+            );
+
+            level2Node.children.push(level3Node);
+          });
+        }
+
+        level1Node.children.push(level2Node);
       });
-
-      level1Node.children.push(level2Node);
-    });
+    }
 
     hierarchy.children.push(level1Node);
   });
@@ -188,16 +200,20 @@ const buildHierarchy = (
   return hierarchy;
 };
 
-// Helper function to recursively add children for levels 4-10
-const addChildrenRecursively = (
+const addChildrenRecursivelyWithExpandState = (
   parentNode: HierarchicalNode,
   parentId: string,
   currentLevel: number,
   levelItemsArray: Record<string, TreeNode[]>[],
   levelNames: Record<string, string>,
-  lastSelectedNode: { id: string; level: number } | null
+  lastSelectedNode: { id: string; level: number } | null,
+  expandedNodes?: Set<string>
 ) => {
   if (currentLevel > 10 || currentLevel - 4 >= levelItemsArray.length) return;
+  
+  const isParentExpanded = !expandedNodes || expandedNodes.size === 0 || expandedNodes.has(parentId);
+  if (!isParentExpanded) return;
+  
   const currentLevelItems = levelItemsArray[currentLevel - 4][parentId] || [];
   currentLevelItems.forEach((item) => {
     const childNode = {
@@ -214,21 +230,41 @@ const addChildrenRecursively = (
       children: [],
     };
 
-    // Recursively add children for the next level
-    addChildrenRecursively(
+    addChildrenRecursivelyWithExpandState(
       childNode,
       item.id,
       currentLevel + 1,
       levelItemsArray,
       levelNames,
-      lastSelectedNode
+      lastSelectedNode,
+      expandedNodes
     );
     parentNode.children.push(childNode);
   });
 };
 
+const hasChildrenInOriginalHierarchy = (nodeId: string, originalHierarchy: HierarchicalNode): boolean => {
+  const findNodeAndCheckChildren = (node: HierarchicalNode): boolean | undefined => {
+    if (node.id === nodeId) {
+      return node.children && node.children.length > 0;
+    }
+    
+    for (const child of node.children || []) {
+      const result = findNodeAndCheckChildren(child);
+      if (result !== undefined) {
+        return result;
+      }
+    }
+    
+    return undefined;
+  };
+  
+  const result = findNodeAndCheckChildren(originalHierarchy);
+  return result === true;
+};
+
 // Helper function to create D3 nodes from hierarchical data
-const createD3Nodes = (hierarchicalData: HierarchicalNode, layoutDirection: 'horizontal' | 'vertical' = 'horizontal'): MindMapNode[] => {
+const createD3Nodes = (hierarchicalData: HierarchicalNode, layoutDirection: 'horizontal' | 'vertical' = 'horizontal', originalHierarchy?: HierarchicalNode): MindMapNode[] => {
   if (!hierarchicalData.children || hierarchicalData.children.length === 0) {
     return [];
   }
@@ -277,15 +313,21 @@ const createD3Nodes = (hierarchicalData: HierarchicalNode, layoutDirection: 'hor
       isSelected: node.data.isSelected,
       isCustom: node.data.isCustom,
       children_count: node.data.children_count,
+      hasChildren: node.children && node.children.length > 0, // 子ノードがあるかどうか
+      hasChildrenInOriginalData: originalHierarchy ? hasChildrenInOriginalHierarchy(node.data.id, originalHierarchy) : (node.children && node.children.length > 0), // 元データで子ノードがあるかどうか
+      isExpanded: true, // デフォルトで全て展開状態
     }));
   } else {
     // IMPROVED vertical layout - increased spacing to prevent overlaps
     const treeLayout = d3
       .tree()
-      .nodeSize([100, 200]) // Increased from [80, 150] to [100, 200] for more horizontal space
+      .nodeSize([150, 200])
       .separation((a, b) => {
-        // Improved separation to prevent overlapping
-        return a.parent === b.parent ? 1.0 : 1.2; // Increased from 0.6:0.8 to 1.0:1.2
+        if (a.parent === b.parent) {
+          return 1.5;
+        } else {
+          return 2.0;
+        }
       });
 
     treeLayout(root);
@@ -303,6 +345,9 @@ const createD3Nodes = (hierarchicalData: HierarchicalNode, layoutDirection: 'hor
       isSelected: node.data.isSelected,
       isCustom: node.data.isCustom,
       children_count: node.data.children_count,
+      hasChildren: node.children && node.children.length > 0, // 子ノードがあるかどうか
+      hasChildrenInOriginalData: originalHierarchy ? hasChildrenInOriginalHierarchy(node.data.id, originalHierarchy) : (node.children && node.children.length > 0), // 元データで子ノードがあるかどうか
+      isExpanded: true, // デフォルトで全て展開状態
     }));
   }
 };
@@ -375,10 +420,13 @@ const createD3Connections = (hierarchicalData: HierarchicalNode, layoutDirection
     // IMPROVED vertical connection logic with better spacing
     const treeLayout = d3
       .tree()
-      .nodeSize([100, 200]) // Updated to match node layout spacing
+      .nodeSize([150, 200])
       .separation((a, b) => {
-        // Improved separation matching node layout
-        return a.parent === b.parent ? 1.0 : 1.2;
+        if (a.parent === b.parent) {
+          return 1.5;
+        } else {
+          return 2.0;
+        }
       });
 
     treeLayout(root);
@@ -429,10 +477,10 @@ export const transformToMindMapData = (
   levelNames: Record<string, string>,
   selectedPath: SelectedPath,
   query: string = "Research Query",
-  layoutDirection: 'horizontal' | 'vertical' = 'horizontal'  // Add layout direction parameter
+  layoutDirection: 'horizontal' | 'vertical' = 'horizontal',
+  expandedNodes?: Set<string> 
 ) => {
-  // Build hierarchical data structure with proper root
-  const hierarchicalData = buildHierarchy(
+  const originalHierarchicalData = buildHierarchyWithExpandState(
     level1Items,
     level2Items,
     level3Items,
@@ -445,11 +493,30 @@ export const transformToMindMapData = (
     level10Items,
     levelNames,
     selectedPath,
-    query
+    query,
+    undefined // Pass undefined to get complete hierarchy
+  );
+
+  // Build filtered hierarchical data structure with expand state
+  const hierarchicalData = buildHierarchyWithExpandState(
+    level1Items,
+    level2Items,
+    level3Items,
+    level4Items,
+    level5Items,
+    level6Items,
+    level7Items,
+    level8Items,
+    level9Items,
+    level10Items,
+    levelNames,
+    selectedPath,
+    query,
+    expandedNodes
   );
 
   // Create nodes and connections using D3 tree layout with layout direction
-  const nodes = createD3Nodes(hierarchicalData, layoutDirection);
+  const nodes = createD3Nodes(hierarchicalData, layoutDirection, originalHierarchicalData);
   const connections = createD3Connections(hierarchicalData, layoutDirection);
 
 
