@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { TechTreeLayout } from "@/components/technology-tree/TechTreeLayout";
@@ -10,13 +11,12 @@ import { useScrollNavigation } from "@/hooks/tree/useScrollNavigation";
 import { useTreeDataLoader } from "@/hooks/tree/useTreeDataLoader";
 import { useLevel1EnrichmentPolling } from "@/hooks/useLevel1EnrichmentPolling";
 import { useTechTreeSidebarActions } from "@/components/technology-tree/hooks/useTechTreeSidebarActions";
-import { useLocation as useLocationHook } from "react-router-dom";
 
 interface TechnologyTreeProps {
   treeId?: string;
 }
 
-export const TechnologyTree: React.FC<TechnologyTreeProps> = ({ treeId: propTreeId }) => {
+const TechnologyTree: React.FC<TechnologyTreeProps> = ({ treeId: propTreeId }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -84,22 +84,27 @@ export const TechnologyTree: React.FC<TechnologyTreeProps> = ({ treeId: propTree
   } = useTechnologyTree(databaseTreeData, viewModeHook);
 
   const {
-    onScrollToStart,
-    onScrollToEnd,
+    containerRef: scrollContainerRef,
     canScrollLeft,
     canScrollRight,
     lastVisibleLevel,
+    handleScrollToStart,
+    handleScrollToEnd,
     triggerScrollUpdate,
-  } = useScrollNavigation(containerRef, selectedPath);
+  } = useScrollNavigation();
 
-  const { handleGuidanceClick, handleEditScenario } = useTechTreeSidebarActions({
-    setQuery,
+  const { 
+    isExpanded,
+    toggleExpand,
+    handleCheckResults,
+    handleUseNode,
+    handleEditNodeFromChat,
+    handleRefineNode,
+  } = useTechTreeSidebarActions(
     setChatMessages,
-    setInputValue,
-    toggleSidebar,
-    setSidebarTab: () => {},
-    refetchTreeData,
-  });
+    addCustomNode,
+    () => {} // setSidebarTab placeholder
+  );
 
   useLevel1EnrichmentPolling(finalTreeId);
 
@@ -128,64 +133,73 @@ export const TechnologyTree: React.FC<TechnologyTreeProps> = ({ treeId: propTree
     <TechTreeLayout
       showSidebar={showSidebar}
       collapsedSidebar={collapsedSidebar}
-      sidebar={
+      isExpanded={isExpanded}
+      toggleSidebar={toggleSidebar}
+      setShowSidebar={() => {}}
+      handlePanelResize={() => {}}
+      sidebarContent={
         <TechTreeSidebar
           sidebarTab={sidebarTab}
-          inputValue={inputValue}
-          query={query}
+          setSidebarTab={() => {}}
+          toggleSidebar={toggleSidebar}
+          isExpanded={isExpanded}
+          toggleExpand={toggleExpand}
           chatMessages={chatMessages}
-          selectedPath={selectedPath}
+          inputValue={inputValue}
           onInputChange={handleInputChange}
-          onToggleSidebar={toggleSidebar}
-          showSidebar={showSidebar}
-          collapsedSidebar={collapsedSidebar}
-          userClickedNode={userClickedNode}
-        />
-      }
-      mainContent={
-        <TechTreeMainContent
+          onSendMessage={() => {}}
+          onUseNode={handleUseNode}
+          onEditNode={handleEditNodeFromChat}
+          onRefine={handleRefineNode}
+          onCheckResults={handleCheckResults}
+          onResize={() => {}}
           selectedPath={selectedPath}
-          level1Items={level1Items}
-          level2Items={level2Items}
-          level3Items={level3Items}
-          level4Items={level4Items}
-          level5Items={level5Items}
-          level6Items={level6Items}
-          level7Items={level7Items}
-          level8Items={level8Items}
-          level9Items={level9Items}
-          level10Items={level10Items}
-          showLevel4={showLevel4}
-          handleNodeClick={handleNodeClick}
-          editNode={editNode}
-          deleteNode={deleteNode}
-          levelNames={levelNames}
-          hasUserMadeSelection={hasUserMadeSelection}
-          scenario={scenario}
-          onEditScenario={handleEditScenario}
-          conversationHistory={locationState?.conversationHistory}
-          handleAddLevel4={handleAddLevel4}
-          searchMode={searchMode}
-          onGuidanceClick={handleGuidanceClick}
-          query={query}
-          treeMode={databaseTreeData?.mode || "TED"}
-          onScrollToStart={onScrollToStart}
-          onScrollToEnd={onScrollToEnd}
-          canScrollLeft={canScrollLeft}
-          canScrollRight={canScrollRight}
-          lastVisibleLevel={lastVisibleLevel}
-          containerRef={containerRef}
-          triggerScrollUpdate={triggerScrollUpdate}
-          viewMode={viewModeHook.viewMode}
-          onToggleView={viewModeHook.toggleView}
-          justSwitchedView={justSwitchedView}
-          onViewSwitchHandled={clearViewSwitchFlag}
         />
       }
     >
+      <TechTreeMainContent
+        selectedPath={selectedPath}
+        level1Items={level1Items}
+        level2Items={level2Items}
+        level3Items={level3Items}
+        level4Items={level4Items}
+        level5Items={level5Items}
+        level6Items={level6Items}
+        level7Items={level7Items}
+        level8Items={level8Items}
+        level9Items={level9Items}
+        level10Items={level10Items}
+        showLevel4={showLevel4}
+        handleNodeClick={handleNodeClick}
+        editNode={editNode}
+        deleteNode={deleteNode}
+        levelNames={levelNames}
+        hasUserMadeSelection={hasUserMadeSelection}
+        scenario={scenario}
+        onEditScenario={() => {}}
+        conversationHistory={locationState?.conversationHistory}
+        handleAddLevel4={handleAddLevel4}
+        searchMode={searchMode}
+        onGuidanceClick={() => {}}
+        query={query}
+        treeMode={databaseTreeData?.mode || "TED"}
+        onScrollToStart={handleScrollToStart}
+        onScrollToEnd={handleScrollToEnd}
+        canScrollLeft={canScrollLeft}
+        canScrollRight={canScrollRight}
+        lastVisibleLevel={lastVisibleLevel}
+        containerRef={containerRef}
+        triggerScrollUpdate={triggerScrollUpdate}
+        viewMode={viewModeHook.viewMode}
+        onToggleView={viewModeHook.toggleView}
+        justSwitchedView={justSwitchedView}
+        onViewSwitchHandled={clearViewSwitchFlag}
+      />
       <QueueStatusDisplay 
         userClickedNode={userClickedNode}
       />
     </TechTreeLayout>
   );
 };
+
+export default TechnologyTree;
