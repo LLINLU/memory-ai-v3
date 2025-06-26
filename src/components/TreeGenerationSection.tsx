@@ -1,3 +1,4 @@
+
 import { ArrowUp, Target, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -186,21 +187,6 @@ export const TreeGenerationSection = () => {
               </div>
             </div>
           </div>
-          
-          {/* Progress indicator */}
-          {isGenerating && (
-            <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <div className="flex items-center space-x-3">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-                <span className="text-blue-700 font-medium">
-                  {selectedMode === "TED" ? "TED手法" : "FAST手法"}を使用してツリーを生成しています...
-                </span>
-              </div>
-              <p className="text-sm text-blue-600 mt-2">
-                高品質な技術ツリーを生成しています...
-              </p>
-            </div>
-          )}
         </div>
         
         <div className="flex flex-col">
