@@ -8,13 +8,15 @@ import { Badge } from "@/components/ui/badge";
 
 interface QueueStatusDisplayProps {
   onNodeSelect?: (nodeId: string) => void;
+  userClickedNode?: { level: string; nodeId: string } | null;
 }
 
 export const QueueStatusDisplay: React.FC<QueueStatusDisplayProps> = ({
   onNodeSelect,
+  userClickedNode,
 }) => {
   const [status, setStatus] = useState(getQueueStatus());
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false); // Start hidden
   const [lastUpdate, setLastUpdate] = useState(Date.now());
   const [activeTab, setActiveTab] = useState<"summary" | "queue">("summary");
 
@@ -23,33 +25,28 @@ export const QueueStatusDisplay: React.FC<QueueStatusDisplayProps> = ({
       const newStatus = getQueueStatus();
       setStatus(newStatus);
       setLastUpdate(Date.now());
-    }, 500); // Check more frequently for better debugging
+    }, 500);
 
     return () => clearInterval(interval);
   }, []);
 
-  // Only show when there's activity or when explicitly toggled
-  const hasActivity =
-    status.queueLength > 0 ||
-    status.processing.papers > 0 ||
-    status.processing.useCases > 0 ||
-    !status.apiHealthy;
+  // Auto-show/hide based on enrichment activity
+  useEffect(() => {
+    const hasActivity =
+      status.queueLength > 0 ||
+      status.processing.papers > 0 ||
+      status.processing.useCases > 0;
 
+    // Show if there's activity, hide if no activity
+    setIsVisible(hasActivity);
+  }, [status]);
+
+  // Don't render anything if not visible
   if (!isVisible) {
-    return (
-      <div className="fixed bottom-4 right-4 z-50">
-        <button
-          onClick={() => setIsVisible(true)}
-          className="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600"
-        >
-          Queue Status
-        </button>
-      </div>
-    );
+    return null;
   }
 
   const queueList = getQueueListFormatted();
-  queueList.forEach((item) => console.log(item));
 
   function QueList() {
     // Separate lists
