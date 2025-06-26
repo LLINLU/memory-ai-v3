@@ -12,7 +12,7 @@ export interface NodeEnrichmentRequest {
   treeId: string;
   enrichNode: string;
   query: string;
-  parentNodes: string[];
+  parentNodes: NodeInfo[];
   team_id?: string | null;
   treeType: string;
 }
@@ -32,6 +32,11 @@ export interface StreamingResponse {
   error?: string;
   nodeId: string;
   timestamp: string;
+}
+
+
+export interface NodeInfo {
+  name: string; description: string; level: string;
 }
 
 export type StreamingCallback = (response: StreamingResponse) => void;
@@ -380,6 +385,55 @@ export const buildParentTitles = (
   }
 };
 
+
+export const buildParentInfo = (
+  treeMode: string,
+  level: string,
+  nodeId: string,
+  selectedPath: any,
+  treeData: any
+): NodeInfo[] => {
+
+  try {
+    const parentNodes: NodeInfo[] = [];
+    const levels = ['level1', 'level2', 'level3', 'level4', 'level5', 'level6', 'level7', 'level8', 'level9', 'level10'];
+    const targetLevelIndex = levels.indexOf(level);
+
+    console.log('[PARENT_TITLES] Building parent titles for:', {
+      level,
+      nodeId,
+      targetLevelIndex,
+      selectedPath
+    });
+    console.log("[PARENT_SELECTED_PATH]", selectedPath);
+    // Build parent hierarchy up to the target level (excluding the current node)
+    for (let i = 0; i < targetLevelIndex && i < 4; i++) { // Max 4 parents as per requirements
+      const currentLevel = levels[i];
+      const parentNodeId = selectedPath[currentLevel];
+
+      if (!parentNodeId) {
+        console.log(`[PARENT_TITLES] No parent node for ${currentLevel}, stopping`);
+        break;
+      }
+
+      // Get the parent node title
+      const parentNode = getNodeInfo(treeMode, currentLevel, parentNodeId, treeData);
+      if (parentNode) {
+        parentNodes.push(parentNode);
+        console.log(`[PARENT_TITLES] Added parent ${i + 1}: ${parentNodes} (from ${currentLevel})`);
+      } else {
+        console.warn(`[PARENT_TITLES] Could not find title for ${currentLevel}: ${parentNodeId}`);
+      }
+    }
+
+    console.log('[PARENT_TITLES] Final parent titles:', parentNodes);
+    return parentNodes;
+  } catch (error) {
+    console.error('[PARENT_TITLES] Error building parent titles:', error);
+    return [];
+  }
+};
+
 /**
  * Helper function to get node title from tree data
  */
@@ -392,7 +446,7 @@ const getNodeTitle = (level: string, nodeId: string, treeData: any): string => {
     } else {
       // Level 2+ nodes are in treeData.levelXItems[parentId] arrays
       const levelKey = `${level}Items`;
-      
+
       // Search through all parent groups for this level
       if (treeData?.[levelKey]) {
         for (const [parentId, items] of Object.entries(treeData[levelKey])) {
@@ -405,11 +459,73 @@ const getNodeTitle = (level: string, nodeId: string, treeData: any): string => {
         }
       }
     }
-    
+
     return '';
   } catch (error) {
     console.error(`[GET_NODE_TITLE] Error getting title for ${level}:${nodeId}:`, error);
     return '';
+  }
+};
+
+const getNodeInfo = (treeMode:string, level: string, nodeId: string, treeData: any): NodeInfo | null  => {
+  const labels = treeMode === "FAST" ?
+    {
+      "level1": 'How1',
+      "level2": 'How2',
+      "level3": 'How3',
+      "level4": 'How4',
+      "level5": 'How5',
+      "level6": 'How6',
+      "level7": 'How7',
+      "level8": 'How8',
+      "level9": 'How9',
+      "level10": 'How10',
+    }
+  : treeMode === "TED" ?
+    {
+      "level1": 'シナリオ',
+      "level2": '目的',
+      "level3": '機能',
+      "level4": '手段',
+      "level5": '手段2',
+      "level6": '手段3',
+      "level7": '手段4',
+      "level8": '手段5',
+      "level9": '手段6',
+      "level10":'手段7',
+
+    }
+     : []
+
+  try {
+    if (level === 'level1') {
+      // Level 1 nodes are in treeData.level1Items array
+      const node = treeData?.level1Items?.find((item: any) => item.id === nodeId);
+      if (node) {
+        return {name: node.name, description: node.description, level: labels[level]}
+      }
+      return null
+    } else {
+      // Level 2+ nodes are in treeData.levelXItems[parentId] arrays
+      const levelKey = `${level}Items`;
+
+      // Search through all parent groups for this level
+      if (treeData?.[levelKey]) {
+        for (const items of Object.values(treeData[levelKey])) {
+          if (Array.isArray(items)) {
+            const foundNode = items.find((item: any) => item.id === nodeId);
+            if (foundNode) {
+              return {name: foundNode.name, description: foundNode.description, level: labels[level]}
+            }
+          }
+        }
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.error(`[GET_NODE_TITLE] Error getting title for ${level}:${nodeId}:`, error);
+    return null;
   }
 };
 
@@ -568,7 +684,7 @@ export const createEnrichmentRequest = (
   try {
     // Get the node details (title will be used as enrichNode)
     const { title: enrichNode } = getNodeDetails(level, nodeId, selectedPath, treeData);
-    
+
     // Build parent titles array
     const parentNodes = buildParentTitles(level, nodeId, selectedPath, treeData);
 

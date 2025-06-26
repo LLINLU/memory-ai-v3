@@ -1,8 +1,8 @@
-
 import React from "react";
 import { SidebarControls } from "@/components/technology-tree/SidebarControls";
 import { SidebarContent } from "@/components/technology-tree/SidebarContent";
 import { NodeSuggestion } from "@/types/chat";
+import { NodeInfo } from "@/services/nodeEnrichmentService.ts";
 
 interface TechTreeSidebarProps {
   sidebarTab: string;
@@ -34,7 +34,7 @@ interface TechTreeSidebarProps {
     level9?: string;
     level10?: string;
   };
-  parentTitles?: string[];
+  parentNodes?: NodeInfo[];
 }
 
 export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
@@ -56,7 +56,7 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
   selectedNodeDescription,
   selectedNodeId,
   selectedPath,
-  parentTitles,
+  parentNodes,
 }) => {
   return (
     <div className="h-full flex flex-col">
@@ -83,7 +83,7 @@ export const TechTreeSidebar: React.FC<TechTreeSidebarProps> = ({
           selectedNodeDescription={selectedNodeDescription}
           selectedNodeId={selectedNodeId}
           selectedPath={selectedPath}
-          parentTitles={parentTitles}
+          parentNodes={parentNodes}
         />
       </div>
     </div>
