@@ -1270,6 +1270,8 @@ const TechnologyTree = () => {
                   triggerScrollUpdate={triggerScrollUpdate}
                   viewMode={viewMode}
                   onToggleView={toggleView}
+                  justSwitchedView={viewModeHook.justSwitchedView}
+                  onViewSwitchHandled={viewModeHook.clearViewSwitchFlag}
                 />
               </div>
             </div>

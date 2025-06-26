@@ -82,6 +82,7 @@ export const useMindMapView = () => {
 
   // Set the path for the current view
   const setCurrentPath = (newPath: typeof treemapPath) => {
+    console.log(`[VIEW_SYNC] Setting path for ${viewMode} view:`, newPath);
     if (viewMode === "treemap") {
       setTreemapPath(newPath);
     } else {

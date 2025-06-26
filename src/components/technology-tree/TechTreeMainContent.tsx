@@ -64,6 +64,9 @@ interface TechTreeMainContentProps {
   // View mode props
   viewMode: "treemap" | "mindmap";
   onToggleView: () => void;
+  // View switching props for mindmap
+  justSwitchedView?: boolean;
+  onViewSwitchHandled?: () => void;
 }
 
 export const TechTreeMainContent = ({
@@ -101,6 +104,8 @@ export const TechTreeMainContent = ({
   triggerScrollUpdate,
   viewMode,
   onToggleView,
+  justSwitchedView,
+  onViewSwitchHandled,
 }: TechTreeMainContentProps) => {
   // Note: triggerScrollUpdate is now handled by TechnologyTree.tsx to avoid duplicates
 
@@ -139,6 +144,8 @@ export const TechTreeMainContent = ({
       containerRef={containerRef}
       viewMode={viewMode}
       onToggleView={onToggleView}
+      justSwitchedView={justSwitchedView}
+      onViewSwitchHandled={onViewSwitchHandled}
     />
   );
 };
