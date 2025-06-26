@@ -161,9 +161,12 @@ const buildHierarchyWithExpandState = (
     const currentLevelData = allLevelItems[currentLevel - 1];
     let itemsForParent: TreeNode[] = [];
 
-    if (currentLevel === 1) {
-      // level 1のノードデータは直接取得
-      itemsForParent = currentLevelData as TreeNode[];
+          if (currentLevel === 1) {
+        if (isNodeExpanded("root", expandedNodes)) {
+          itemsForParent = currentLevelData as TreeNode[];
+        } else {
+          itemsForParent = []; // rootがcollapseされている場合は子ノードを表示しない
+        }
     } else {
       // level 2+のノードデータは親ノードのIDで取得
       const levelItemsRecord = currentLevelData as Record<string, TreeNode[]>;
@@ -245,11 +248,35 @@ const countTotalChildrenInOriginalHierarchy = (nodeId: string, originalHierarchy
 
 // Helper function to create D3 nodes from hierarchical data
 const createD3Nodes = (hierarchicalData: HierarchicalNode, layoutDirection: 'horizontal' | 'vertical' = 'horizontal', originalHierarchy?: HierarchicalNode, expandedNodes?: Set<string>): MindMapNode[] => {
-  if (!hierarchicalData.children || hierarchicalData.children.length === 0) {
+  const root = d3.hierarchy(hierarchicalData);
+
+  // 初期化時（expandedNodesがundefined）は空配列を返し、全てのノードをexpandする
+  if (!expandedNodes && (!hierarchicalData.children || hierarchicalData.children.length === 0)) {
     return [];
   }
 
-  const root = d3.hierarchy(hierarchicalData);
+  // rootノードがcollapseされている場合でも、rootノード自体は表示する
+  if (!hierarchicalData.children || hierarchicalData.children.length === 0) {
+    // rootノードのみを返す
+    return [{
+      id: hierarchicalData.id,
+      name: hierarchicalData.name,
+      description: hierarchicalData.description,
+      level: hierarchicalData.level,
+      levelName: hierarchicalData.levelName,
+      x: MARGIN_LEFT,
+      y: MARGIN_TOP,
+      parentId: undefined,
+      isSelected: hierarchicalData.isSelected,
+      isCustom: hierarchicalData.isCustom,
+      children_count: hierarchicalData.children_count,
+      hasChildren: false,
+      hasChildrenInOriginalData: originalHierarchy ? hasChildrenInOriginalHierarchy(hierarchicalData.id, originalHierarchy) : false,
+      isExpanded: !expandedNodes || expandedNodes.size === 0 || expandedNodes.has(hierarchicalData.id),
+      totalChildrenCount: originalHierarchy ? countTotalChildrenInOriginalHierarchy(hierarchicalData.id, originalHierarchy) : 0,
+    }];
+  }
+  
 
   if (layoutDirection === 'horizontal') {
     // KEEP EXACTLY AS IS - don't change anything for horizontal layout
@@ -480,6 +507,9 @@ export const transformToMindMapData = (
   );
 
   // Build filtered hierarchical data structure with expand state
+  // デフォルトで全展開：expandedNodesがundefinedまたは空の場合はundefinedを渡す
+  const effectiveExpandedNodes = (!expandedNodes || expandedNodes.size === 0) ? undefined : expandedNodes;
+  
   const hierarchicalData = buildHierarchyWithExpandState(
     level1Items,
     level2Items,
@@ -494,11 +524,11 @@ export const transformToMindMapData = (
     levelNames,
     selectedPath,
     query,
-    expandedNodes
+    effectiveExpandedNodes
   );
 
   // Create nodes and connections using D3 tree layout with layout direction
-  const nodes = createD3Nodes(hierarchicalData, layoutDirection, originalHierarchicalData, expandedNodes);
+  const nodes = createD3Nodes(hierarchicalData, layoutDirection, originalHierarchicalData, effectiveExpandedNodes);
   const connections = createD3Connections(hierarchicalData, layoutDirection);
 
 
