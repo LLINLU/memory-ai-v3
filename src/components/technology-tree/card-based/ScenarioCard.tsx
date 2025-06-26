@@ -1,18 +1,17 @@
-
-import React from 'react';
-import { ChevronDown, ChevronRight, Maximize, Minimize } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import React, { useEffect } from "react";
+import { ChevronDown, ChevronRight, Maximize, Minimize } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { TreeNode } from '../level-selection/TreeNode';
-import { NestedLevelGroup } from './NestedLevelGroup';
-import { getLevelBadgeStyle } from '../utils/levelColors';
+} from "@/components/ui/tooltip";
+import { TreeNode } from "../level-selection/TreeNode";
+import { NestedLevelGroup } from "./NestedLevelGroup";
+import { getLevelBadgeStyle } from "../utils/levelColors";
 
 interface LevelItem {
   id: string;
@@ -67,9 +66,15 @@ interface ScenarioCardProps {
   onExpandAll: () => void;
   onCollapseAll: () => void;
   onNodeClick: (level: string, nodeId: string) => void;
-  onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
+  onEditNode?: (
+    level: string,
+    nodeId: string,
+    updatedNode: { title: string; description: string }
+  ) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
   shouldTakeFullWidth?: boolean;
+  level2Layout: "vertical" | "horizontal";
+  onToggleLevel2Layout: () => void;
 }
 
 export const ScenarioCard: React.FC<ScenarioCardProps> = ({
@@ -93,25 +98,58 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
   onEditNode,
   onDeleteNode,
   shouldTakeFullWidth = false,
+  level2Layout,
+  onToggleLevel2Layout,
 }) => {
   const isSelected = selectedPath.level1 === scenario.id;
   const hasChildren = level2Items.length > 0;
 
+  // Debug logging for selection state
+  useEffect(() => {
+    console.log(
+      `[SCENARIO_CARD] ${scenario.id} (${scenario.name}): isSelected=${isSelected}, selectedPath.level1=${selectedPath.level1}`
+    );
+  }, [isSelected, selectedPath.level1, scenario.id, scenario.name]);
+  
   const handleScenarioClick = () => {
-    onNodeClick('level1', scenario.id);
+    console.log(
+      `[SCENARIO_CLICK] Clicking scenario ${scenario.id} (${scenario.name})`
+    );
+
+    // Use custom event for level 1 as well to ensure consistency
+    const completePathEvent = new CustomEvent("set-complete-path", {
+      detail: {
+        level1: scenario.id,
+        level2: "",
+        level3: "",
+        level4: "",
+        level5: "",
+        level6: "",
+        level7: "",
+        level8: "",
+        level9: "",
+        level10: "",
+        nodeId: scenario.id, // Pass the clicked node ID for enrichment
+        level: "level1", // Pass the level for enrichment
+      },
+    });
+    document.dispatchEvent(completePathEvent);
   };
 
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (onEditNode) {
-      onEditNode('level1', scenario.id, { title: scenario.name, description: scenario.description || '' });
+      onEditNode("level1", scenario.id, {
+        title: scenario.name,
+        description: scenario.description || "",
+      });
     }
   };
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (onDeleteNode) {
-      onDeleteNode('level1', scenario.id);
+      onDeleteNode("level1", scenario.id);
     }
   };
 
@@ -127,21 +165,35 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
 
   const getAllLevelKeys = (): string[] => {
     const keys: string[] = [];
-    
-    const addKeysRecursively = (items: LevelItem[], prefix: string, level: number) => {
-      items.forEach(item => {
+
+    const addKeysRecursively = (
+      items: LevelItem[],
+      prefix: string,
+      level: number
+    ) => {
+      items.forEach((item) => {
         const key = `${prefix}-${item.id}`;
         keys.push(key);
-        
-        const nextLevelItems = level === 2 ? allLevelItems.level3Items[item.id] :
-                              level === 3 ? allLevelItems.level4Items[item.id] :
-                              level === 4 ? allLevelItems.level5Items[item.id] :
-                              level === 5 ? allLevelItems.level6Items[item.id] :
-                              level === 6 ? allLevelItems.level7Items[item.id] :
-                              level === 7 ? allLevelItems.level8Items[item.id] :
-                              level === 8 ? allLevelItems.level9Items[item.id] :
-                              level === 9 ? allLevelItems.level10Items[item.id] : [];
-        
+
+        const nextLevelItems =
+          level === 2
+            ? allLevelItems.level3Items[item.id]
+            : level === 3
+            ? allLevelItems.level4Items[item.id]
+            : level === 4
+            ? allLevelItems.level5Items[item.id]
+            : level === 5
+            ? allLevelItems.level6Items[item.id]
+            : level === 6
+            ? allLevelItems.level7Items[item.id]
+            : level === 7
+            ? allLevelItems.level8Items[item.id]
+            : level === 8
+            ? allLevelItems.level9Items[item.id]
+            : level === 9
+            ? allLevelItems.level10Items[item.id]
+            : [];
+
         if (nextLevelItems?.length > 0) {
           addKeysRecursively(nextLevelItems, key, level + 1);
         }
@@ -153,7 +205,11 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
   };
 
   return (
-    <Card className={`w-full relative ${shouldTakeFullWidth ? 'col-span-full' : ''}`}>
+    <Card
+      className={`w-full relative ${
+        shouldTakeFullWidth ? "col-span-full" : ""
+      }`}
+    >
       <CardHeader className="pb-3">
         {/* Top row: Expand/Collapse button positioned at top-right */}
         {hasChildren && (
@@ -181,7 +237,7 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
             </TooltipProvider>
           </div>
         )}
-        
+
         {/* Main content row */}
         <div className="flex items-center gap-2">
           {hasChildren && (
@@ -198,7 +254,10 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
           )}
           <div className="flex-1">
             <div className="mb-2">
-              <Badge variant="outline" className={`text-xs ${getLevelBadgeStyle(1)}`}>
+              <Badge
+                variant="outline"
+                className={`text-xs border-0 ${getLevelBadgeStyle(1)}`}
+              >
                 レベル1:{levelNames.level1}
               </Badge>
             </div>
@@ -218,7 +277,7 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
           </div>
         </div>
       </CardHeader>
-      
+
       {isExpanded && hasChildren && (
         <CardContent className="pt-0">
           <NestedLevelGroup
@@ -235,6 +294,8 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({
             onDeleteNode={onDeleteNode}
             isLevelExpanded={isLevelExpanded}
             toggleLevelExpansion={onToggleLevelExpansion}
+            level2Layout={level2Layout}
+            onToggleLevel2Layout={onToggleLevel2Layout}
           />
         </CardContent>
       )}

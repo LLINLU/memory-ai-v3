@@ -1,31 +1,39 @@
 
+
 import React from 'react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Badge } from '@/components/ui/badge';
 import { SingleRowIcon } from './SingleRowIcon';
 import { ThreeColumnsIcon } from './ThreeColumnsIcon';
 import { TwoByTwoGridIcon } from './TwoByTwoGridIcon';
 import { ThreeColumnsWideIcon } from './ThreeColumnsWideIcon';
-
 type CardLayoutMode = "single-row" | "one-per-row" | "two-per-row" | "three-per-row";
-
 interface LayoutToggleProps {
   cardLayout: CardLayoutMode;
   onLayoutChange: (layout: CardLayoutMode) => void;
+  scenarioCount: number;
+  totalNodeCount: number;
 }
-
 export const LayoutToggle: React.FC<LayoutToggleProps> = ({
   cardLayout,
   onLayoutChange,
+  scenarioCount,
+  totalNodeCount
 }) => {
-  return (
-    <div>
-      <div className="flex items-center justify-end">
-        <ToggleGroup 
-          type="single" 
-          value={cardLayout} 
-          onValueChange={(value) => value && onLayoutChange(value as CardLayoutMode)}
-          className="bg-gray-50 p-1 rounded-lg"
-        >
+  return <div>
+      <div className="flex items-center justify-between bg-white px-4 rounded-lg">
+        <div className="flex items-center gap-1 text-sm font-medium" style={{
+        color: '#5F729F'
+      }}>
+          <span className="text-base font-normal">{scenarioCount}シナリオ</span>
+          <Badge 
+            className="text-xs px-2 py-0.5 text-white border-0 font-light" 
+            style={{ backgroundColor: '#5F729E' }}
+          >
+            {totalNodeCount}ノード
+          </Badge>
+        </div>
+        <ToggleGroup type="single" value={cardLayout} onValueChange={value => value && onLayoutChange(value as CardLayoutMode)} className="p-1 rounded-lg bg-white">
           <ToggleGroupItem value="single-row" aria-label="Single row layout" className="data-[state=on]:bg-white data-[state=off]:opacity-60">
             <SingleRowIcon className="h-4 w-4" />
           </ToggleGroupItem>
@@ -40,6 +48,6 @@ export const LayoutToggle: React.FC<LayoutToggleProps> = ({
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
-    </div>
-  );
+    </div>;
 };
+

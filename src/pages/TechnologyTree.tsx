@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { updateTabsHorizontalState } from "@/components/ui/tabs";
 import { TechTreeLayout } from "@/components/technology-tree/TechTreeLayout";
@@ -24,6 +24,19 @@ import { useNodeSelectionEffect } from "@/hooks/tree/useNodeSelectionEffect";
 import { FallbackAlert } from "@/components/technology-tree/FallbackAlert";
 import { enrichmentEventBus } from "@/hooks/useEnrichedData";
 import { useLevel1EnrichmentPolling } from "@/hooks/useLevel1EnrichmentPolling";
+import {
+  enrichNodeWithNewStructure,
+  buildParentInfo,
+  getNodeDetails,
+  isNodeLoading,
+  hasNodeEnrichedData,
+  StreamingResponse,
+} from "@/services/nodeEnrichmentService";
+import {
+  triggerEnrichmentRefresh,
+  triggerEnrichmentStart,
+} from "@/hooks/useEnrichedData";
+import { useUserDetail } from "@/hooks/useUserDetail";
 
 const TechnologyTree = () => {
   const location = useLocation();
@@ -87,7 +100,9 @@ const TechnologyTree = () => {
 
     const refreshTreeData = async () => {
       try {
-        console.log('[TREE_REFRESH] Refreshing tree data due to enrichment completion');
+        console.log(
+          "[TREE_REFRESH] Refreshing tree data due to enrichment completion"
+        );
         const result = await loadTreeFromDatabase(locationState.treeId!);
         if (result?.treeStructure) {
           const convertedData = await convertDatabaseTreeToAppFormat(
@@ -106,17 +121,21 @@ const TechnologyTree = () => {
               _timestamp: Date.now(),
             };
             setDatabaseTreeData(timestampedData);
-            console.log('[TREE_REFRESH] Tree data refreshed successfully');
+            console.log("[TREE_REFRESH] Tree data refreshed successfully");
           }
         }
       } catch (error) {
-        console.error('[TREE_REFRESH] Error refreshing tree data:', error);
+        console.error("[TREE_REFRESH] Error refreshing tree data:", error);
       }
     };
 
     // Subscribe to enrichment refresh events and refresh immediately
     const unsubscribe = enrichmentEventBus.subscribe((nodeId: string) => {
-      console.log('[TREE_REFRESH] Enrichment event received for node:', nodeId, '- refreshing tree data immediately');
+      console.log(
+        "[TREE_REFRESH] Enrichment event received for node:",
+        nodeId,
+        "- refreshing tree data immediately"
+      );
       refreshTreeData();
     });
 
@@ -180,6 +199,9 @@ const TechnologyTree = () => {
       </div>
     );
   }
+  // Initialize user details
+  const { userDetails } = useUserDetail();
+
   const {
     selectedPath,
     userClickedNode,
@@ -208,6 +230,448 @@ const TechnologyTree = () => {
     handleAddLevel4,
     scenario: databaseScenario, // Get scenario from database tree data
   } = useTechnologyTree(databaseTreeData, viewModeHook); // Pass viewModeHook here
+
+  // Function to handle node enrichment without affecting path selection
+  const triggerNodeEnrichment = async (level: string, nodeId: string) => {
+    // Check if we should proceed with enrichment
+    if (locationState?.treeId && userDetails?.team_id && databaseTreeData) {
+      // Check if node is already loading (use same logic for all levels)
+      const isIndividuallyLoading = isNodeLoading(nodeId);
+
+      if (isIndividuallyLoading) {
+        console.log("[CUSTOM_ENRICHMENT] Node already loading, skipping:", {
+          nodeId,
+          level,
+          isIndividuallyLoading,
+        });
+        return;
+      }
+
+      // Immediately signal that enrichment might start for this node
+      triggerEnrichmentStart(nodeId);
+
+      // Check if node already has data (same logic for all levels)
+      const hasData = await hasNodeEnrichedData(nodeId);
+      if (hasData) {
+        console.log(
+          "[CUSTOM_ENRICHMENT] Node already has complete data, skipping API call:",
+          nodeId
+        );
+        triggerEnrichmentRefresh(nodeId);
+        return;
+      }
+
+      // Start enrichment process
+      console.log("[CUSTOM_ENRICHMENT] Starting enrichment for node:", nodeId);
+
+      // Create a simple path object for getNodeDetails
+      const currentPath = {
+        level1: selectedPath.level1,
+        level2: selectedPath.level2,
+        level3: selectedPath.level3,
+        level4: selectedPath.level4,
+        level5: selectedPath.level5,
+        level6: selectedPath.level6,
+        level7: selectedPath.level7,
+        level8: selectedPath.level8,
+        level9: selectedPath.level9,
+        level10: selectedPath.level10,
+      };
+
+      // Get node details from the tree data
+      const { title: nodeTitle, description: nodeDescription } = getNodeDetails(
+        level as any,
+        nodeId,
+        currentPath,
+        databaseTreeData
+      );
+      console.log("[CUSTOM_ENRICHMENT] Extracted node details:", {
+        nodeTitle,
+        nodeDescription,
+      });
+
+      // Build query parameter - use only the user-inputted theme
+      const searchTheme = locationState.query || currentQuery || "";
+      const query = searchTheme;
+
+      // Determine tree type for enrichment
+      const treeType = (
+        databaseTreeData?.mode ||
+        locationState?.treeData?.mode ||
+        "TED"
+      ).toLowerCase();
+
+      // Call the new enrichment API with proper structure
+      try {
+        await enrichNodeWithNewStructure(
+          nodeId,
+          locationState.treeId,
+          level as any,
+          currentPath,
+          databaseTreeData,
+          query,
+          treeType,
+          (response: StreamingResponse) => {
+            console.log(
+              "[CUSTOM_ENRICHMENT_STREAMING] Received response:",
+              response
+            );
+
+            if (response.type === "papers") {
+              console.log(
+                "[CUSTOM_ENRICHMENT_STREAMING] Papers received - triggering refresh"
+              );
+              triggerEnrichmentRefresh(nodeId);
+            } else if (response.type === "useCases") {
+              console.log(
+                "[CUSTOM_ENRICHMENT_STREAMING] Use cases received - triggering refresh"
+              );
+              triggerEnrichmentRefresh(nodeId);
+            } else if (response.type === "complete") {
+              console.log("[CUSTOM_ENRICHMENT_STREAMING] Enrichment complete");
+              triggerEnrichmentRefresh(nodeId);
+            } else if (response.type === "error") {
+              console.warn(
+                "[CUSTOM_ENRICHMENT_STREAMING] Enrichment error:",
+                response.error
+              );
+            }
+          },
+          userDetails.team_id
+        );
+      } catch (error) {
+        console.error(
+          "[CUSTOM_ENRICHMENT_STREAMING] Error during streaming enrichment:",
+          error
+        );
+      }
+    } else {
+      console.log(
+        "[CUSTOM_ENRICHMENT] Skipping enrichment - missing required context:",
+        {
+          hasTreeId: !!locationState?.treeId,
+          hasTeamId: !!userDetails?.team_id,
+          hasTreeData: !!databaseTreeData,
+        }
+      );
+    }
+  }; // Add event listener for custom complete path selection (bypasses auto-selection)
+  useEffect(() => {
+    const handleCompletePathSelection = (event: CustomEvent) => {
+      const newPath = event.detail;
+      const nodeId = event.detail.nodeId; // Get the clicked node ID
+      const level = event.detail.level; // Get the level name
+
+      console.log("[COMPLETE_PATH] Setting complete path directly:", newPath);
+      console.log("[COMPLETE_PATH] Node clicked:", { level, nodeId });
+
+      // Remove extra properties before setting path
+      const pathToSet = {
+        level1: newPath.level1,
+        level2: newPath.level2,
+        level3: newPath.level3,
+        level4: newPath.level4,
+        level5: newPath.level5,
+        level6: newPath.level6,
+        level7: newPath.level7,
+        level8: newPath.level8,
+        level9: newPath.level9,
+        level10: newPath.level10,
+      };
+
+      // Set the path directly using a custom event that the hook can listen to
+      const setPathEvent = new CustomEvent("set-path-direct", {
+        detail: pathToSet,
+      });
+      document.dispatchEvent(setPathEvent);
+
+      // Trigger node enrichment for the clicked node (restored functionality)
+      if (nodeId && level) {
+        console.log("[COMPLETE_PATH] Triggering enrichment for node:", {
+          level,
+          nodeId,
+        });
+        // Use our custom enrichment function that doesn't affect path selection
+        setTimeout(() => {
+          triggerNodeEnrichment(level, nodeId);
+        }, 100);
+      }
+
+      // Prevent any other selection events from firing for a short time
+      const preventOtherEvents = () => {
+        console.log(
+          "[COMPLETE_PATH] Custom path selection complete - preventing interference"
+        );
+      };
+
+      // Small delay to ensure this completes before any other potential handlers
+      setTimeout(preventOtherEvents, 50);
+    };
+
+    document.addEventListener(
+      "set-complete-path",
+      handleCompletePathSelection as EventListener
+    );
+
+    return () => {
+      document.removeEventListener(
+        "set-complete-path",
+        handleCompletePathSelection as EventListener
+      );
+    };
+  }, [
+    selectedPath,
+    locationState,
+    userDetails,
+    databaseTreeData,
+    currentQuery,
+  ]);
+  // Function to handle navigation from queue to specific node
+  const handleQueueNodeSelect = (nodeId: string) => {
+    console.log("[QUEUE_NAVIGATION] Attempting to navigate to node:", nodeId);
+
+    // First, open the sidebar to show the node details
+    setShowSidebar(true);
+    setSidebarTab("nodeinfo");
+    // Helper function to trigger card expansion for card-based view
+    const triggerCardExpansion = (
+      level1Id: string,
+      level2Id?: string,
+      level3Id?: string
+    ) => {
+      // Create custom events to trigger card expansion in the card-based view
+      // This ensures that the node will be visible when selected
+
+      // Always expand the scenario card first
+      const expandScenarioEvent = new CustomEvent("expand-scenario-card", {
+        detail: { scenarioId: level1Id },
+      });
+      document.dispatchEvent(expandScenarioEvent);
+
+      // If we need to expand level 2 items
+      if (level2Id) {
+        setTimeout(() => {
+          const expandLevel2Event = new CustomEvent("expand-level-card", {
+            detail: {
+              scenarioId: level1Id,
+              levelKey: `${level1Id}-${level2Id}`,
+            },
+          });
+          document.dispatchEvent(expandLevel2Event);
+        }, 50);
+      }
+
+      // If we need to expand level 3 items
+      if (level3Id && level2Id) {
+        setTimeout(() => {
+          const expandLevel3Event = new CustomEvent("expand-level-card", {
+            detail: {
+              scenarioId: level1Id,
+              levelKey: `${level1Id}-${level2Id}-${level3Id}`,
+            },
+          });
+          document.dispatchEvent(expandLevel3Event);
+        }, 100);
+      }
+    };
+    // Try to find the node in current tree data and determine its path
+    const findNodePath = (targetNodeId: string) => {
+      console.log("[QUEUE_NAVIGATION] Searching for node path:", targetNodeId);
+
+      // Helper function to find complete path for a node
+      const findCompleteNodePath = (
+        nodeId: string
+      ): { level: string; path: string[] } | null => {
+        // Check level 1
+        const level1Node = level1Items.find((item) => item.id === nodeId);
+        if (level1Node) {
+          console.log("[QUEUE_NAVIGATION] Found node at level 1:", nodeId);
+          return { level: "level1", path: [nodeId] };
+        }
+
+        // Check level 2
+        for (const [level1Id, level2List] of Object.entries(level2Items)) {
+          const level2Node = level2List.find((item) => item.id === nodeId);
+          if (level2Node) {
+            console.log(
+              "[QUEUE_NAVIGATION] Found node at level 2:",
+              nodeId,
+              "parent:",
+              level1Id
+            );
+            return { level: "level2", path: [level1Id, nodeId] };
+          }
+        }
+
+        // Check level 3
+        for (const [level1Id, level2List] of Object.entries(level2Items)) {
+          for (const level2Item of level2List) {
+            const level3List = level3Items[level2Item.id] || [];
+            const level3Node = level3List.find((item) => item.id === nodeId);
+            if (level3Node) {
+              console.log(
+                "[QUEUE_NAVIGATION] Found node at level 3:",
+                nodeId,
+                "path:",
+                [level1Id, level2Item.id, nodeId]
+              );
+              return {
+                level: "level3",
+                path: [level1Id, level2Item.id, nodeId],
+              };
+            }
+          }
+        }
+
+        // Check level 4
+        for (const [level1Id, level2List] of Object.entries(level2Items)) {
+          for (const level2Item of level2List) {
+            const level3List = level3Items[level2Item.id] || [];
+            for (const level3Item of level3List) {
+              const level4List = level4Items[level3Item.id] || [];
+              const level4Node = level4List.find((item) => item.id === nodeId);
+              if (level4Node) {
+                console.log(
+                  "[QUEUE_NAVIGATION] Found node at level 4:",
+                  nodeId,
+                  "path:",
+                  [level1Id, level2Item.id, level3Item.id, nodeId]
+                );
+                return {
+                  level: "level4",
+                  path: [level1Id, level2Item.id, level3Item.id, nodeId],
+                };
+              }
+            }
+          }
+        }
+
+        return null;
+      };
+      const result = findCompleteNodePath(targetNodeId);
+      if (!result) {
+        console.warn(
+          "[QUEUE_NAVIGATION] Could not find path for node:",
+          targetNodeId
+        );
+        // Fallback: try to select as level1 using custom event
+        const completePathEvent = new CustomEvent("set-complete-path", {
+          detail: {
+            level1: targetNodeId,
+            level2: "",
+            level3: "",
+            level4: "",
+            level5: "",
+            level6: "",
+            level7: "",
+            level8: "",
+            level9: "",
+            level10: "",
+            nodeId: targetNodeId,
+            level: "level1",
+          },
+        });
+        document.dispatchEvent(completePathEvent);
+        return;
+      }
+
+      const { level, path } = result;
+      console.log("[QUEUE_NAVIGATION] Found complete path:", { level, path });
+      // Trigger card expansion based on the path
+      if (level === "level1") {
+        triggerCardExpansion(path[0]);
+        setTimeout(() => {
+          // Use custom event for level 1
+          const completePathEvent = new CustomEvent("set-complete-path", {
+            detail: {
+              level1: path[0],
+              level2: "",
+              level3: "",
+              level4: "",
+              level5: "",
+              level6: "",
+              level7: "",
+              level8: "",
+              level9: "",
+              level10: "",
+              nodeId: path[0],
+              level: "level1",
+            },
+          });
+          document.dispatchEvent(completePathEvent);
+        }, 150);
+      } else if (level === "level2") {
+        triggerCardExpansion(path[0], path[1]);
+        setTimeout(() => {
+          // Use custom event for level 2
+          const completePathEvent = new CustomEvent("set-complete-path", {
+            detail: {
+              level1: path[0],
+              level2: path[1],
+              level3: "",
+              level4: "",
+              level5: "",
+              level6: "",
+              level7: "",
+              level8: "",
+              level9: "",
+              level10: "",
+              nodeId: path[1],
+              level: "level2",
+            },
+          });
+          document.dispatchEvent(completePathEvent);
+        }, 150);
+      } else if (level === "level3") {
+        triggerCardExpansion(path[0], path[1], path[2]);
+        setTimeout(() => {
+          // Use custom event for level 3
+          const completePathEvent = new CustomEvent("set-complete-path", {
+            detail: {
+              level1: path[0],
+              level2: path[1],
+              level3: path[2],
+              level4: "",
+              level5: "",
+              level6: "",
+              level7: "",
+              level8: "",
+              level9: "",
+              level10: "",
+              nodeId: path[2],
+              level: "level3",
+            },
+          });
+          document.dispatchEvent(completePathEvent);
+        }, 200);
+      } else if (level === "level4") {
+        triggerCardExpansion(path[0], path[1], path[2]);
+        setTimeout(() => {
+          // Use custom event for level 4
+          const completePathEvent = new CustomEvent("set-complete-path", {
+            detail: {
+              level1: path[0],
+              level2: path[1],
+              level3: path[2],
+              level4: path[3],
+              level5: "",
+              level6: "",
+              level7: "",
+              level8: "",
+              level9: "",
+              level10: "",
+              nodeId: path[3],
+              level: "level4",
+            },
+          });
+          document.dispatchEvent(completePathEvent);
+        }, 250);
+      }
+    };
+
+    findNodePath(nodeId);
+  };
+
   // Update last visible level when tree data changes and trigger scroll update (debounced)
   useEffect(() => {
     updateLastVisibleLevel({
@@ -500,17 +964,69 @@ const TechnologyTree = () => {
     level10Items
   );
 
+  const treeMode =
+    databaseTreeData?.mode || locationState?.treeData?.mode || "TED";
+
+  // Helper function to determine current level from selectedPath
+  const getCurrentLevel = (
+    selectedPath: any,
+    nodeId: string
+  ): string | null => {
+    if (!selectedPath || !nodeId) return null;
+
+    const levels = [
+      "level1",
+      "level2",
+      "level3",
+      "level4",
+      "level5",
+      "level6",
+      "level7",
+      "level8",
+      "level9",
+      "level10",
+    ];
+
+    // Find the level where the nodeId matches
+    for (const level of levels) {
+      if (selectedPath[level] === nodeId) {
+        return level;
+      }
+    }
+
+    return null;
+  };
+
+  // Calculate parent titles for the selected node
+  const parentNodes = useMemo(() => {
+    if (!selectedNodeInfo.nodeId || !selectedPath || !databaseTreeData) {
+      return [];
+    }
+
+    const currentLevel = getCurrentLevel(selectedPath, selectedNodeInfo.nodeId);
+    if (!currentLevel) {
+      return [];
+    }
+
+    return buildParentInfo(
+      treeMode,
+      currentLevel,
+      selectedNodeInfo.nodeId,
+      selectedPath,
+      databaseTreeData
+    );
+  }, [selectedNodeInfo.nodeId, selectedPath, databaseTreeData]);
+
   // Extract level 1 node IDs for enrichment polling
-  const level1NodeIds = level1Items?.map(item => item.id) || [];
-  
+  const level1NodeIds = level1Items?.map((item) => item.id) || [];
+
   // Use level 1 enrichment polling for automatic papers/use cases loading
   // Use treeId from location state instead of pollingTreeId to continue polling even after tree generation completes
   const enrichmentTreeId = locationState?.treeId || null;
   useLevel1EnrichmentPolling(enrichmentTreeId, level1NodeIds);
 
   // Dynamic level names based on tree mode
-  const treeMode =
-    databaseTreeData?.mode || locationState?.treeData?.mode || "TED";
+
   const levelNames =
     treeMode === "FAST"
       ? {
@@ -590,6 +1106,7 @@ const TechnologyTree = () => {
       selectedNodeDescription={selectedNodeInfo.description}
       selectedNodeId={selectedNodeInfo.nodeId}
       selectedPath={selectedPath}
+      parentNodes={parentNodes}
     />
   ); // Polling effect for TED v2 scenario completion with progressive display
   useEffect(() => {
@@ -692,7 +1209,13 @@ const TechnologyTree = () => {
 
   return (
     <SidebarProvider defaultOpen={false}>
-      <div className={`min-h-screen flex w-full overflow-hidden ${viewMode === 'mindmap' ? 'tech-tree-page-mindmap' : 'tech-tree-page-treemap'}`}>
+      <div
+        className={`min-h-screen flex w-full overflow-hidden ${
+          viewMode === "mindmap"
+            ? "tech-tree-page-mindmap"
+            : "tech-tree-page-treemap"
+        }`}
+      >
         <AppSidebar />
         <div className="flex-1 overflow-hidden">
           <TechTreeLayout
@@ -702,7 +1225,8 @@ const TechnologyTree = () => {
             toggleSidebar={toggleSidebar}
             setShowSidebar={setShowSidebar}
             handlePanelResize={handlePanelResize}
-            sidebarContent={sidebarContent}          >
+            sidebarContent={sidebarContent}
+          >
             <div className="h-full flex flex-col">
               <div className="p-4 pb-0 flex-shrink-0">
                 <FallbackAlert
@@ -712,43 +1236,45 @@ const TechnologyTree = () => {
               </div>
               <div className="flex-1 min-h-0">
                 <TechTreeMainContent
-                selectedPath={selectedPath}
-                level1Items={level1Items}
-                level2Items={level2Items}
-                level3Items={level3Items}
-                level4Items={level4Items}
-                level5Items={level5Items}
-                level6Items={level6Items}
-                level7Items={level7Items}
-                level8Items={level8Items}
-                level9Items={level9Items}
-                level10Items={level10Items}
-                showLevel4={showLevel4}
-                handleNodeClick={handleNodeClick}
-                editNode={editNode}
-                deleteNode={deleteNode}
-                levelNames={levelNames}
-                hasUserMadeSelection={hasUserMadeSelection}
-                scenario={databaseScenario || scenario}
-                onEditScenario={handleEditScenario}
-                conversationHistory={savedConversationHistory}
-                handleAddLevel4={handleAddLevel4}
-                searchMode={searchMode}
-                onGuidanceClick={handleGuidanceClick}
-                query={currentQuery || locationState?.query}
-                treeMode={treeMode}
-                onScrollToStart={handleScrollToStart}
-                onScrollToEnd={handleScrollToEnd}
-                canScrollLeft={canScrollLeft}
-                canScrollRight={canScrollRight}
-                lastVisibleLevel={lastVisibleLevel}
-                containerRef={containerRef}
-                triggerScrollUpdate={triggerScrollUpdate}                viewMode={viewMode}
-                onToggleView={toggleView}
-              />
+                  selectedPath={selectedPath}
+                  level1Items={level1Items}
+                  level2Items={level2Items}
+                  level3Items={level3Items}
+                  level4Items={level4Items}
+                  level5Items={level5Items}
+                  level6Items={level6Items}
+                  level7Items={level7Items}
+                  level8Items={level8Items}
+                  level9Items={level9Items}
+                  level10Items={level10Items}
+                  showLevel4={showLevel4}
+                  handleNodeClick={handleNodeClick}
+                  editNode={editNode}
+                  deleteNode={deleteNode}
+                  levelNames={levelNames}
+                  hasUserMadeSelection={hasUserMadeSelection}
+                  scenario={databaseScenario || scenario}
+                  onEditScenario={handleEditScenario}
+                  conversationHistory={savedConversationHistory}
+                  handleAddLevel4={handleAddLevel4}
+                  searchMode={searchMode}
+                  onGuidanceClick={handleGuidanceClick}
+                  query={currentQuery || locationState?.query}
+                  treeMode={treeMode}
+                  onScrollToStart={handleScrollToStart}
+                  onScrollToEnd={handleScrollToEnd}
+                  canScrollLeft={canScrollLeft}
+                  canScrollRight={canScrollRight}
+                  lastVisibleLevel={lastVisibleLevel}
+                  containerRef={containerRef}
+                  triggerScrollUpdate={triggerScrollUpdate}
+                  viewMode={viewMode}
+                  onToggleView={toggleView}
+                />
               </div>
             </div>
-          </TechTreeLayout>          <ChatBox
+          </TechTreeLayout>{" "}
+          <ChatBox
             messages={chatMessages}
             inputValue={inputValue}
             onInputChange={handleInputChange}
@@ -762,9 +1288,8 @@ const TechnologyTree = () => {
             onToggleOpen={toggleChatBoxOpen}
             onToggleExpand={toggleChatBoxExpand}
           />
-          
           {/* Queue Status Display */}
-          <QueueStatusDisplay />
+          <QueueStatusDisplay onNodeSelect={handleQueueNodeSelect} />
         </div>
       </div>
     </SidebarProvider>

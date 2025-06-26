@@ -1,19 +1,21 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { NodeActions } from './node-components/NodeActions';
-import { NodeContent } from './node-components/NodeContent';
-import { getNodeStyle } from './node-utils/nodeStyles';
-import { TreeNode as TreeNodeType } from '@/types/tree';
-import { Loader2 } from 'lucide-react';
-import { isNodeLoading, isPapersLoading, isUseCasesLoading } from '@/services/nodeEnrichmentService';
-import { isLevel1Loading, isLevel1PapersLoading, isLevel1UseCasesLoading } from '@/hooks/useLevel1EnrichmentPolling';
-import { NodeEnrichmentIndicator } from './node-components/NodeEnrichmentIndicator';
-import { useEnrichmentQueue } from '@/hooks/useEnrichmentQueue';
+import React, { useRef, useEffect, useState } from "react";
+import { NodeActions } from "./node-components/NodeActions";
+import { NodeContent } from "./node-components/NodeContent";
+import { getNodeStyle } from "./node-utils/nodeStyles";
+import { TreeNode as TreeNodeType } from "@/types/tree";
+import { Loader2 } from "lucide-react";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  isNodeLoading,
+  isPapersLoading,
+  isUseCasesLoading,
+} from "@/services/nodeEnrichmentService";
+import {
+  isLevel1Loading,
+  isLevel1PapersLoading,
+  isLevel1UseCasesLoading,
+} from "@/hooks/useLevel1EnrichmentPolling";
+import { NodeEnrichmentIndicator } from "./node-components/NodeEnrichmentIndicator";
+import { useEnrichmentQueue } from "@/hooks/useEnrichmentQueue";
 
 interface TreeNodeProps {
   item: TreeNodeType;
@@ -55,36 +57,38 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
     };
 
     updateWidth();
-    window.addEventListener('resize', updateWidth);
-    
-    return () => window.removeEventListener('resize', updateWidth);
+    window.addEventListener("resize", updateWidth);
+
+    return () => window.removeEventListener("resize", updateWidth);
   }, []);
+  
   const nodeStyleClass = getNodeStyle(item, isSelected, level);
   // Force white text for selected nodes to ensure visibility
   const descriptionTextColor = isSelected ? "text-gray-100" : "text-gray-600";
+  
   // Check if this node is being enriched
   const isEnriching = isNodeLoading(item.id);
-  
+
   // For level 1 nodes (scenarios), use the new level 1 enrichment polling
   // For other levels, use the existing individual node enrichment
   const isLevel1Node = level === 1;
-  
+
   // Get queue status for this node
   const queueStatus = useEnrichmentQueue(item.id);
-  
+
   let loadingPapers: boolean;
   let loadingUseCases: boolean;
-  
+
   if (isLevel1Node) {
     // Level 1 nodes use the new polling system
     loadingPapers = isLevel1PapersLoading(item.id);
     loadingUseCases = isLevel1UseCasesLoading(item.id);
-    
+
     // Always check the node's info string for the true counts
     // The info string contains the actual counts from the database converter
     let infoPaperCount = 0;
     let infoUseCaseCount = 0;
-    
+
     if (item.info) {
       const infoMatch = item.info.match(/(\d+)論文・(\d+)事例/);
       if (infoMatch) {
@@ -92,53 +96,62 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
         infoUseCaseCount = parseInt(infoMatch[2]);
       }
     }
-    
+
     // If polling system says not loading but info shows 0 counts, override to show loading
     // This handles the case where polling hasn't initialized yet or missed updates
     if (!loadingPapers && infoPaperCount === 0) {
       loadingPapers = true;
-      console.log(`[TREE_NODE] Override: forcing papers loading for ${item.id} (info shows 0 papers)`);
+      console.log(
+        `[TREE_NODE] Override: forcing papers loading for ${item.id} (info shows 0 papers)`
+      );
     }
-    
+
     if (!loadingUseCases && infoUseCaseCount === 0) {
       loadingUseCases = true;
-      console.log(`[TREE_NODE] Override: forcing use cases loading for ${item.id} (info shows 0 use cases)`);
+      console.log(
+        `[TREE_NODE] Override: forcing use cases loading for ${item.id} (info shows 0 use cases)`
+      );
     }
-    
+
     // If polling system says loading but info shows >0 counts, override to stop loading
     // This handles the case where polling system hasn't updated yet but data is available
     if (loadingPapers && infoPaperCount > 0) {
       loadingPapers = false;
-      console.log(`[TREE_NODE] Override: stopping papers loading for ${item.id} (info shows ${infoPaperCount} papers)`);
+      console.log(
+        `[TREE_NODE] Override: stopping papers loading for ${item.id} (info shows ${infoPaperCount} papers)`
+      );
     }
-    
+
     if (loadingUseCases && infoUseCaseCount > 0) {
       loadingUseCases = false;
-      console.log(`[TREE_NODE] Override: stopping use cases loading for ${item.id} (info shows ${infoUseCaseCount} use cases)`);
+      console.log(
+        `[TREE_NODE] Override: stopping use cases loading for ${item.id} (info shows ${infoUseCaseCount} use cases)`
+      );
     }
-    
-    console.log(`[TREE_NODE] Level 1 node ${item.id} (${item.name}): loadingPapers=${loadingPapers}, loadingUseCases=${loadingUseCases}, info="${item.info}" (${infoPaperCount} papers, ${infoUseCaseCount} use cases)`);
+
+    console.log(
+      `[TREE_NODE] Level 1 node ${item.id} (${item.name}): loadingPapers=${loadingPapers}, loadingUseCases=${loadingUseCases}, info="${item.info}" (${infoPaperCount} papers, ${infoUseCaseCount} use cases)`
+    );
   } else {
     // Other levels use the existing individual enrichment system
     loadingPapers = isPapersLoading(item.id);
     loadingUseCases = isUseCasesLoading(item.id);
   }
-  
+
   // Also consider queue status for any level
-  const hasQueueActivity = queueStatus.isLoading || queueStatus.isWaiting || queueStatus.hasError;
-  
+  const hasQueueActivity =
+    queueStatus.isLoading || queueStatus.isWaiting || queueStatus.hasError;
+
   // Show enrichment indicator if either papers or use cases are loading, or there's queue activity
-  const showEnrichmentIndicator = loadingPapers || loadingUseCases || hasQueueActivity;
+  const showEnrichmentIndicator =
+    loadingPapers || loadingUseCases || hasQueueActivity;
 
-  // Determine if tooltip should be shown
-  const shouldShowTooltip = !isSelected && !isLastLevel && subNodeCount > 0;
-
-  const nodeContent = (
+  return (
     <div
       ref={nodeRef}
       className={`
-        py-4 px-4 rounded-lg cursor-pointer transition-all relative
-        min-w-[200px] w-full
+        py-4 px-3 rounded-lg cursor-pointer transition-all relative
+        w-full h-auto min-h-[120px]
         ${nodeStyleClass}
         group
       `}
@@ -146,36 +159,38 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex flex-col relative z-10 min-w-0">
-        <NodeContent 
-          item={item} 
-          isSelected={isSelected} 
-          isHovered={isHovered} 
-          level={level} 
+      <div className="flex flex-col relative z-10 min-w-0 h-full">
+        <NodeContent
+          item={item}
+          isSelected={isSelected}
+          isHovered={isHovered}
+          level={level}
         />
-          {/* Show description when showDescription is true */}
+        {/* Show description when showDescription is true */}
         {showDescription && item.description && (
-          <div className={`mt-3 text-sm ${descriptionTextColor} border-t pt-2 border-gray-100 overflow-hidden`}>
+          <div
+            className={`mt-3 text-sm ${descriptionTextColor} border-t pt-2 border-gray-100 overflow-hidden break-words`}
+          >
             {item.description}
           </div>
-        )}          {/* Show enrichment loading indicator */}
-        {showEnrichmentIndicator && (
+        )}{" "}
+        {/* Show enrichment loading indicator */}
+        {
           <div className="mt-2">
-            <NodeEnrichmentIndicator 
+            <NodeEnrichmentIndicator
               nodeId={item.id}
-              size="sm" 
+              size="sm"
               loadingPapers={loadingPapers}
               loadingUseCases={loadingUseCases}
             />
           </div>
-        )}
-        
+        }
         {/* Show actions when hovered - positioned to not affect width */}
         {isHovered && (
           <div className="mt-2 flex justify-end">
-            <NodeActions 
-              itemName={item.name} 
-              onEditClick={onEditClick} 
+            <NodeActions
+              itemName={item.name}
+              onEditClick={onEditClick}
               onDeleteClick={onDeleteClick}
               onAddClick={onAddClick}
               onAiAssistClick={onAiAssistClick}
@@ -185,22 +200,4 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
       </div>
     </div>
   );
-
-  // Wrap with tooltip if conditions are met
-  if (shouldShowTooltip) {
-    return (
-      <TooltipProvider delayDuration={50} skipDelayDuration={50}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            {nodeContent}
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>サブカテゴリが{subNodeCount}つあります。クリックで表示。</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
-  }
-
-  return nodeContent;
 };

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   DndContext,
@@ -14,6 +13,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   horizontalListSortingStrategy,
+  rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import { DraggableCard } from './DraggableCard';
 
@@ -77,6 +77,9 @@ interface CardContainerProps {
   onEditNode?: (level: string, nodeId: string, updatedNode: { title: string; description: string }) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
   onCardReorder?: (newOrder: LevelItem[]) => void;
+  level2LayoutPreferences: Record<string, "vertical" | "horizontal">;
+  onToggleLevel2Layout: (scenarioId: string) => void;
+  getLevel2Layout: (scenarioId: string) => "vertical" | "horizontal";
 }
 
 export const CardContainer: React.FC<CardContainerProps> = ({
@@ -97,6 +100,9 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   onEditNode,
   onDeleteNode,
   onCardReorder,
+  level2LayoutPreferences,
+  onToggleLevel2Layout,
+  getLevel2Layout,
 }) => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -112,7 +118,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   const getLayoutClasses = () => {
     switch (cardLayout) {
       case "single-row":
-        return "flex flex-nowrap overflow-x-auto overflow-y-visible";
+        return "flex flex-nowrap overflow-x-auto overflow-y-auto";
       case "one-per-row":
         return "grid grid-cols-1";
       case "two-per-row":
@@ -125,7 +131,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   };
 
   const getCardClasses = () => {
-    return cardLayout === "single-row" ? "flex-shrink-0 w-80" : "";
+    return cardLayout === "single-row" ? "flex-shrink-0 min-w-52 max-w-64" : "";
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -140,7 +146,13 @@ export const CardContainer: React.FC<CardContainerProps> = ({
     }
   };
 
-  const isDraggable = cardLayout === "single-row" && level1Items.length > 1;
+  // Enable drag-and-drop for single-row, two-per-row, and three-per-row layouts
+  const isDraggable = (cardLayout === "single-row" || cardLayout === "two-per-row" || cardLayout === "three-per-row") && level1Items.length > 1;
+
+  // Use horizontal strategy for single-row, rectangular strategy for grid layouts
+  const getSortingStrategy = () => {
+    return cardLayout === "single-row" ? horizontalListSortingStrategy : rectSortingStrategy;
+  };
 
   const renderCards = () => {
     return level1Items.map((scenario) => {
@@ -165,10 +177,18 @@ export const CardContainer: React.FC<CardContainerProps> = ({
             onEditNode={onEditNode}
             onDeleteNode={onDeleteNode}
             isDraggable={isDraggable}
+            level2Layout={getLevel2Layout(scenario.id)}
+            onToggleLevel2Layout={() => onToggleLevel2Layout(scenario.id)}
           />
         </div>
       );
     });
+  };
+
+  const getContainerClasses = () => {
+    const baseClasses = `${getLayoutClasses()} gap-4`;
+    // Remove height constraint for single-row to allow vertical scrolling
+    return baseClasses;
   };
 
   if (isDraggable) {
@@ -180,9 +200,9 @@ export const CardContainer: React.FC<CardContainerProps> = ({
       >
         <SortableContext
           items={level1Items.map(item => item.id)}
-          strategy={horizontalListSortingStrategy}
+          strategy={getSortingStrategy()}
         >
-          <div className={`${getLayoutClasses()} gap-4`}>
+          <div className={getContainerClasses()}>
             {renderCards()}
           </div>
         </SortableContext>
@@ -191,7 +211,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   }
 
   return (
-    <div className={`${getLayoutClasses()} gap-4`}>
+    <div className={getContainerClasses()}>
       {renderCards()}
     </div>
   );

@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from "react";
 
 interface ExpansionState {
   [scenarioId: string]: {
@@ -14,7 +14,7 @@ export const useCardExpansion = () => {
   const [expansionState, setExpansionState] = useState<ExpansionState>({});
 
   const toggleScenarioExpansion = useCallback((scenarioId: string) => {
-    setExpansionState(prev => ({
+    setExpansionState((prev) => ({
       ...prev,
       [scenarioId]: {
         ...prev[scenarioId],
@@ -24,24 +24,27 @@ export const useCardExpansion = () => {
     }));
   }, []);
 
-  const toggleLevelExpansion = useCallback((scenarioId: string, levelKey: string) => {
-    setExpansionState(prev => ({
-      ...prev,
-      [scenarioId]: {
-        ...prev[scenarioId],
-        isExpanded: prev[scenarioId]?.isExpanded || false,
-        expandedLevels: {
-          ...prev[scenarioId]?.expandedLevels,
-          [levelKey]: !prev[scenarioId]?.expandedLevels?.[levelKey],
+  const toggleLevelExpansion = useCallback(
+    (scenarioId: string, levelKey: string) => {
+      setExpansionState((prev) => ({
+        ...prev,
+        [scenarioId]: {
+          ...prev[scenarioId],
+          isExpanded: prev[scenarioId]?.isExpanded || false,
+          expandedLevels: {
+            ...prev[scenarioId]?.expandedLevels,
+            [levelKey]: !prev[scenarioId]?.expandedLevels?.[levelKey],
+          },
         },
-      },
-    }));
-  }, []);
+      }));
+    },
+    []
+  );
 
   const expandAll = useCallback((scenarioId: string, levelKeys: string[]) => {
-    setExpansionState(prev => {
+    setExpansionState((prev) => {
       const expandedLevels: { [key: string]: boolean } = {};
-      levelKeys.forEach(key => {
+      levelKeys.forEach((key) => {
         expandedLevels[key] = true;
       });
 
@@ -56,7 +59,7 @@ export const useCardExpansion = () => {
   }, []);
 
   const collapseAll = useCallback((scenarioId: string) => {
-    setExpansionState(prev => ({
+    setExpansionState((prev) => ({
       ...prev,
       [scenarioId]: {
         isExpanded: false,
@@ -65,13 +68,44 @@ export const useCardExpansion = () => {
     }));
   }, []);
 
-  const isScenarioExpanded = useCallback((scenarioId: string) => {
-    return expansionState[scenarioId]?.isExpanded || false;
-  }, [expansionState]);
+  const isScenarioExpanded = useCallback(
+    (scenarioId: string) => {
+      return expansionState[scenarioId]?.isExpanded || false;
+    },
+    [expansionState]
+  );
 
-  const isLevelExpanded = useCallback((scenarioId: string, levelKey: string) => {
-    return expansionState[scenarioId]?.expandedLevels?.[levelKey] || false;
-  }, [expansionState]);
+  const isLevelExpanded = useCallback(
+    (scenarioId: string, levelKey: string) => {
+      return expansionState[scenarioId]?.expandedLevels?.[levelKey] || false;
+    },
+    [expansionState]
+  );
+
+  // Helper functions for programmatic expansion (for queue navigation)
+  const expandScenario = useCallback((scenarioId: string) => {
+    setExpansionState((prev) => ({
+      ...prev,
+      [scenarioId]: {
+        ...prev[scenarioId],
+        isExpanded: true,
+        expandedLevels: prev[scenarioId]?.expandedLevels || {},
+      },
+    }));
+  }, []);
+
+  const expandLevel = useCallback((scenarioId: string, levelKey: string) => {
+    setExpansionState((prev) => ({
+      ...prev,
+      [scenarioId]: {
+        isExpanded: true, // Ensure scenario is expanded when expanding a level
+        expandedLevels: {
+          ...prev[scenarioId]?.expandedLevels,
+          [levelKey]: true,
+        },
+      },
+    }));
+  }, []);
 
   return {
     toggleScenarioExpansion,
@@ -80,5 +114,7 @@ export const useCardExpansion = () => {
     collapseAll,
     isScenarioExpanded,
     isLevelExpanded,
+    expandScenario,
+    expandLevel,
   };
 };

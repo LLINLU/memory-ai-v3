@@ -10,11 +10,11 @@ const enrichedNodes = new Set<string>();
 export interface NodeEnrichmentRequest {
   nodeId: string;
   treeId: string;
-  nodeTitle: string;
-  nodeDescription?: string;
+  enrichNode: string;
   query: string;
-  parentTitles: string[];
+  parentNodes: NodeInfo[];
   team_id?: string | null;
+  treeType: string;
 }
 
 export interface NodeEnrichmentResponse {
@@ -32,6 +32,11 @@ export interface StreamingResponse {
   error?: string;
   nodeId: string;
   timestamp: string;
+}
+
+
+export interface NodeInfo {
+  name: string; description: string; level: string;
 }
 
 export type StreamingCallback = (response: StreamingResponse) => void;
@@ -70,11 +75,11 @@ export const hasNodeEnrichedData = async (nodeId: string): Promise<boolean> => {
 
     // Check database for existing data
     const [papersResult, useCasesResult] = await Promise.all([
-      supabase.from('node_papers').select('id').eq('node_id', nodeId).limit(1),
-      supabase.from('node_use_cases').select('id').eq('node_id', nodeId).limit(1)
+      supabase.from('node_papers').select('id').eq('node_id', nodeId).limit(20),
+      supabase.from('node_use_cases').select('id').eq('node_id', nodeId).limit(20)
     ]);
 
-    const hasCompleteData = (papersResult.data && papersResult.data.length > 0) && 
+    const hasCompleteData = (papersResult.data && papersResult.data.length > 0) &&
                            (useCasesResult.data && useCasesResult.data.length > 0);
 
     if (hasCompleteData) {
@@ -128,16 +133,16 @@ export const callNodeEnrichmentStreaming = async (
 
     // Only call APIs for data that doesn't exist yet
     const promises: Promise<void>[] = [];
-    
+
     if (!papersExist) {
       console.log('[NODE_ENRICHMENT_STREAMING] Papers missing, calling papers API');
       loadingPapers.add(nodeId); // Mark papers as loading
-      
+
       // Import and trigger papers start event for sidebar
       import('@/hooks/useEnrichedData').then(({ triggerPapersStart }) => {
         triggerPapersStart(nodeId);
       });
-      
+
       promises.push(callPapersEnrichment(params, callback));
     } else {
       console.log('[NODE_ENRICHMENT_STREAMING] Papers already exist, skipping papers API');
@@ -146,12 +151,12 @@ export const callNodeEnrichmentStreaming = async (
     if (!useCasesExist) {
       console.log('[NODE_ENRICHMENT_STREAMING] Use cases missing, calling use cases API');
       loadingUseCases.add(nodeId); // Mark use cases as loading
-      
+
       // Import and trigger use cases start event for sidebar
       import('@/hooks/useEnrichedData').then(({ triggerUseCasesStart }) => {
         triggerUseCasesStart(nodeId);
       });
-      
+
       promises.push(callUseCasesEnrichment(params, callback));
     } else {
       console.log('[NODE_ENRICHMENT_STREAMING] Use cases already exist, skipping use cases API');
@@ -173,7 +178,7 @@ export const callNodeEnrichmentStreaming = async (
     await Promise.allSettled(promises);
 
     console.log('[NODE_ENRICHMENT_STREAMING] All missing data processed');
-    
+
     // Add a small delay to ensure all callbacks have been processed
     setTimeout(() => {
       console.log('[NODE_ENRICHMENT_STREAMING] Triggering final completion callback');
@@ -213,7 +218,7 @@ const checkPapersExist = async (nodeId: string): Promise<boolean> => {
       return false;
     }
 
-    return (count ?? 0) > 0;
+    return (count ?? 0) > 10;
   } catch (error) {
     console.error('[CHECK_PAPERS] Error:', error);
     return false;
@@ -245,12 +250,12 @@ const callPapersEnrichment = async (
   params: NodeEnrichmentRequest,
   callback: StreamingCallback
 ): Promise<void> => {
-  const { nodeId } = params;
-  
+  const { nodeId, enrichNode } = params;
+
   console.log('[PAPERS_ENRICHMENT] Queueing papers enrichment for:', nodeId);
-  
+
   // Use the queue system instead of direct API call
-  enqueueEnrichment(nodeId, 'papers', params, (response) => {
+  enqueueEnrichment(nodeId, enrichNode, 'papers', params, (response) => {
     console.log('[PAPERS_ENRICHMENT] Queue response:', {
       nodeId,
       type: response.type,
@@ -270,16 +275,16 @@ const callPapersEnrichment = async (
       console.log('[PAPERS_ENRICHMENT] Papers enrichment completed, triggering callback');
       callback({
         type: 'papers',
-        data: { 
+        data: {
           count: response.data?.count || 0,
           saved: response.data?.saved || false,
-          response: response.data 
+          response: response.data
         },
         nodeId,
         timestamp: new Date().toISOString()
       });
     }
-    
+
     // Always remove papers loading state when done
     loadingPapers.delete(nodeId);
   });
@@ -290,12 +295,12 @@ const callUseCasesEnrichment = async (
   params: NodeEnrichmentRequest,
   callback: StreamingCallback
 ): Promise<void> => {
-  const { nodeId } = params;
-  
+  const { nodeId, enrichNode } = params;
+
   console.log('[USECASES_ENRICHMENT] Queueing use cases enrichment for:', nodeId);
-  
+
   // Use the queue system instead of direct API call
-  enqueueEnrichment(nodeId, 'useCases', params, (response) => {
+  enqueueEnrichment(nodeId, enrichNode, 'useCases', params, (response) => {
     console.log('[USECASES_ENRICHMENT] Queue response:', {
       nodeId,
       type: response.type,
@@ -315,101 +320,24 @@ const callUseCasesEnrichment = async (
       console.log('[USECASES_ENRICHMENT] Use cases enrichment completed, triggering callback');
       callback({
         type: 'useCases',
-        data: { 
+        data: {
           count: response.data?.count || 0,
           saved: response.data?.saved || false,
-          response: response.data 
+          response: response.data
         },
         nodeId,
         timestamp: new Date().toISOString()
       });
     }
-    
+
     // Always remove use cases loading state when done
     loadingUseCases.delete(nodeId);
   });
 };
 
 /**
- * Call the node enrichment edge function when a node is clicked (traditional approach)
- */
-export const callNodeEnrichment = async (
-  params: NodeEnrichmentRequest
-): Promise<NodeEnrichmentResponse> => {
-  const { nodeId } = params;
-
-  // Check if already loading or already has data
-  if (loadingNodes.has(nodeId)) {
-    console.log('[NODE_ENRICHMENT] Node already being processed:', nodeId);
-    return {
-      success: false,
-      message: 'Node enrichment already in progress'
-    };
-  }
-
-  // Check if node already has enriched data
-  const hasExistingData = await hasNodeEnrichedData(nodeId);
-  if (hasExistingData) {
-    console.log('[NODE_ENRICHMENT] Node already has enriched data:', nodeId);
-    return {
-      success: true,
-      message: 'Node already has enriched data'
-    };
-  }
-
-  // Mark as loading
-  loadingNodes.add(nodeId);
-
-  try {
-    console.log('[NODE_ENRICHMENT] Calling enrichment API with params:', {
-      nodeId: params.nodeId,
-      treeId: params.treeId,
-      team_id: params.team_id,
-      nodeTitle: params.nodeTitle,
-      parentTitlesCount: params.parentTitles.length,
-      query: params.query
-    });
-
-    const { data, error } = await supabase.functions.invoke('node-enrichment', {
-      body: params
-    });
-
-    if (error) {
-      console.error('[NODE_ENRICHMENT] Edge function error:', error);
-      throw new Error(`Edge Function error: ${error.message || 'Unknown error'}`);
-    }
-
-    if (!data) {
-      throw new Error('No data returned from Edge Function');
-    }
-
-    console.log('[NODE_ENRICHMENT] Enrichment API response:', {
-      success: data.success,
-      hasEnrichedData: !!data.enrichedData,
-      papersCount: data.enrichedData?.papers?.length || 0,
-      useCasesCount: data.enrichedData?.useCases?.length || 0
-    });
-
-    // Mark as enriched if successful
-    if (data.success) {
-      enrichedNodes.add(nodeId);
-    }
-
-    return data as NodeEnrichmentResponse;
-  } catch (error) {
-    console.error('[NODE_ENRICHMENT] Error calling enrichment API:', error);
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : 'Unknown error occurred'
-    };
-  } finally {
-    // Always remove from loading set
-    loadingNodes.delete(nodeId);
-  }
-};
-
-/**
- * Build parent titles array - simplified to return empty array for now
+ * Build parent titles array based on the selected path and tree data
+ * Maximum of 4 parent nodes are included (levels below level5 are excluded as per requirements)
  */
 export const buildParentTitles = (
   level: string,
@@ -417,8 +345,188 @@ export const buildParentTitles = (
   selectedPath: any,
   treeData: any
 ): string[] => {
-  console.log('[PARENT_TITLES] Simplified - returning empty array for now');
-  return [];
+  try {
+    const parentTitles: string[] = [];
+    const levels = ['level1', 'level2', 'level3', 'level4', 'level5', 'level6', 'level7', 'level8', 'level9', 'level10'];
+    const targetLevelIndex = levels.indexOf(level);
+
+    console.log('[PARENT_TITLES] Building parent titles for:', {
+      level,
+      nodeId,
+      targetLevelIndex,
+      selectedPath
+    });
+
+    // Build parent hierarchy up to the target level (excluding the current node)
+    for (let i = 0; i < targetLevelIndex && i < 4; i++) { // Max 4 parents as per requirements
+      const currentLevel = levels[i];
+      const parentNodeId = selectedPath[currentLevel];
+
+      if (!parentNodeId) {
+        console.log(`[PARENT_TITLES] No parent node for ${currentLevel}, stopping`);
+        break;
+      }
+
+      // Get the parent node title
+      const parentTitle = getNodeTitle(currentLevel, parentNodeId, treeData);
+      if (parentTitle) {
+        parentTitles.push(parentTitle);
+        console.log(`[PARENT_TITLES] Added parent ${i + 1}: ${parentTitle} (from ${currentLevel})`);
+      } else {
+        console.warn(`[PARENT_TITLES] Could not find title for ${currentLevel}: ${parentNodeId}`);
+      }
+    }
+
+    console.log('[PARENT_TITLES] Final parent titles:', parentTitles);
+    return parentTitles;
+  } catch (error) {
+    console.error('[PARENT_TITLES] Error building parent titles:', error);
+    return [];
+  }
+};
+
+
+export const buildParentInfo = (
+  treeMode: string,
+  level: string,
+  nodeId: string,
+  selectedPath: any,
+  treeData: any
+): NodeInfo[] => {
+
+  try {
+    const parentNodes: NodeInfo[] = [];
+    const levels = ['level1', 'level2', 'level3', 'level4', 'level5', 'level6', 'level7', 'level8', 'level9', 'level10'];
+    const targetLevelIndex = levels.indexOf(level);
+
+    console.log('[PARENT_TITLES] Building parent titles for:', {
+      level,
+      nodeId,
+      targetLevelIndex,
+      selectedPath
+    });
+    console.log("[PARENT_SELECTED_PATH]", selectedPath);
+    // Build parent hierarchy up to the target level (excluding the current node)
+    for (let i = 0; i < targetLevelIndex && i < 4; i++) { // Max 4 parents as per requirements
+      const currentLevel = levels[i];
+      const parentNodeId = selectedPath[currentLevel];
+
+      if (!parentNodeId) {
+        console.log(`[PARENT_TITLES] No parent node for ${currentLevel}, stopping`);
+        break;
+      }
+
+      // Get the parent node title
+      const parentNode = getNodeInfo(treeMode, currentLevel, parentNodeId, treeData);
+      if (parentNode) {
+        parentNodes.push(parentNode);
+        console.log(`[PARENT_TITLES] Added parent ${i + 1}: ${parentNodes} (from ${currentLevel})`);
+      } else {
+        console.warn(`[PARENT_TITLES] Could not find title for ${currentLevel}: ${parentNodeId}`);
+      }
+    }
+
+    console.log('[PARENT_TITLES] Final parent titles:', parentNodes);
+    return parentNodes;
+  } catch (error) {
+    console.error('[PARENT_TITLES] Error building parent titles:', error);
+    return [];
+  }
+};
+
+/**
+ * Helper function to get node title from tree data
+ */
+const getNodeTitle = (level: string, nodeId: string, treeData: any): string => {
+  try {
+    if (level === 'level1') {
+      // Level 1 nodes are in treeData.level1Items array
+      const node = treeData?.level1Items?.find((item: any) => item.id === nodeId);
+      return node?.name || '';
+    } else {
+      // Level 2+ nodes are in treeData.levelXItems[parentId] arrays
+      const levelKey = `${level}Items`;
+
+      // Search through all parent groups for this level
+      if (treeData?.[levelKey]) {
+        for (const [parentId, items] of Object.entries(treeData[levelKey])) {
+          if (Array.isArray(items)) {
+            const foundNode = items.find((item: any) => item.id === nodeId);
+            if (foundNode) {
+              return foundNode.name || '';
+            }
+          }
+        }
+      }
+    }
+
+    return '';
+  } catch (error) {
+    console.error(`[GET_NODE_TITLE] Error getting title for ${level}:${nodeId}:`, error);
+    return '';
+  }
+};
+
+const getNodeInfo = (treeMode:string, level: string, nodeId: string, treeData: any): NodeInfo | null  => {
+  const labels = treeMode === "FAST" ?
+    {
+      "level1": 'How1',
+      "level2": 'How2',
+      "level3": 'How3',
+      "level4": 'How4',
+      "level5": 'How5',
+      "level6": 'How6',
+      "level7": 'How7',
+      "level8": 'How8',
+      "level9": 'How9',
+      "level10": 'How10',
+    }
+  : treeMode === "TED" ?
+    {
+      "level1": 'シナリオ',
+      "level2": '目的',
+      "level3": '機能',
+      "level4": '手段',
+      "level5": '手段2',
+      "level6": '手段3',
+      "level7": '手段4',
+      "level8": '手段5',
+      "level9": '手段6',
+      "level10":'手段7',
+
+    }
+     : []
+
+  try {
+    if (level === 'level1') {
+      // Level 1 nodes are in treeData.level1Items array
+      const node = treeData?.level1Items?.find((item: any) => item.id === nodeId);
+      if (node) {
+        return {name: node.name, description: node.description, level: labels[level]}
+      }
+      return null
+    } else {
+      // Level 2+ nodes are in treeData.levelXItems[parentId] arrays
+      const levelKey = `${level}Items`;
+
+      // Search through all parent groups for this level
+      if (treeData?.[levelKey]) {
+        for (const items of Object.values(treeData[levelKey])) {
+          if (Array.isArray(items)) {
+            const foundNode = items.find((item: any) => item.id === nodeId);
+            if (foundNode) {
+              return {name: foundNode.name, description: foundNode.description, level: labels[level]}
+            }
+          }
+        }
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.error(`[GET_NODE_TITLE] Error getting title for ${level}:${nodeId}:`, error);
+    return null;
+  }
 };
 
 /**
@@ -433,36 +541,36 @@ export const getNodeDetails = (
   try {
     let nodeTitle = '';
     let nodeDescription = '';
-    
+
     console.log('[NODE_ENRICHMENT] Getting node details for:', {
       level,
       nodeId,
       selectedPath,
       treeDataKeys: Object.keys(treeData || {})
     });
-    
+
     if (level === 'level1') {
       // Level 1 nodes are in treeData.level1Items array
       const node = treeData?.level1Items?.find((item: any) => item.id === nodeId);
       nodeTitle = node?.name || '';
       nodeDescription = node?.description || '';
-      console.log('[NODE_ENRICHMENT] Found level1 node:', { 
+      console.log('[NODE_ENRICHMENT] Found level1 node:', {
         level1ItemsCount: treeData?.level1Items?.length || 0,
         searchingForId: nodeId,
-        node, 
-        nodeTitle, 
-        nodeDescription 
+        node,
+        nodeTitle,
+        nodeDescription
       });
     } else {
       // Level 2+ nodes are in treeData.levelXItems[parentId] arrays
       const levels = ['level1', 'level2', 'level3', 'level4', 'level5', 'level6', 'level7', 'level8', 'level9', 'level10'];
       const targetLevelIndex = levels.indexOf(level);
-      
+
       if (targetLevelIndex > 0) {
         const parentLevel = levels[targetLevelIndex - 1];
         const parentNodeId = selectedPath[parentLevel];
         const levelKey = `${level}Items`;
-        
+
         console.log('[NODE_ENRICHMENT] Looking for node in:', {
           parentLevel,
           parentNodeId,
@@ -471,20 +579,20 @@ export const getNodeDetails = (
           hasParentData: !!treeData?.[levelKey]?.[parentNodeId],
           allParentKeys: treeData?.[levelKey] ? Object.keys(treeData[levelKey]) : []
         });
-        
+
         // Look in the parent's children array
         const parentItems = treeData?.[levelKey]?.[parentNodeId] || [];
         const node = parentItems.find((item: any) => item.id === nodeId);
         nodeTitle = node?.name || '';
         nodeDescription = node?.description || '';
-        
-        console.log('[NODE_ENRICHMENT] Found node in parent children:', { 
+
+        console.log('[NODE_ENRICHMENT] Found node in parent children:', {
           parentItems: parentItems.length,
           parentItemIds: parentItems.map((item: any) => ({ id: item.id, name: item.name })),
           searchingForId: nodeId,
-          node, 
-          nodeTitle, 
-          nodeDescription 
+          node,
+          nodeTitle,
+          nodeDescription
         });
 
         // If not found in expected parent, let's search all parents for this level
@@ -506,17 +614,17 @@ export const getNodeDetails = (
             }
           }
         }
-        
+
         // If still not found, fall back to comprehensive search
         if (!nodeTitle && !nodeDescription) {
           console.log('[NODE_ENRICHMENT] Comprehensive search for node:', nodeId);
-          
+
           // Search through all levels to find this node
           const allLevelKeys = ['level1Items', 'level2Items', 'level3Items', 'level4Items', 'level5Items', 'level6Items', 'level7Items', 'level8Items', 'level9Items', 'level10Items'];
-          
+
           for (const levelKey of allLevelKeys) {
             if (!treeData?.[levelKey]) continue;
-            
+
             if (levelKey === 'level1Items') {
               // Level 1 is an array
               const foundNode = treeData[levelKey].find((item: any) => item.id === nodeId);
@@ -557,5 +665,90 @@ export const getNodeDetails = (
   } catch (error) {
     console.error('[NODE_ENRICHMENT] Error getting node details:', error);
     return { title: '', description: '' };
+  }
+};
+
+/**
+ * Create a properly formatted NodeEnrichmentRequest for the new API structure
+ */
+export const createEnrichmentRequest = (
+  nodeId: string,
+  treeId: string,
+  level: string,
+  selectedPath: any,
+  treeData: any,
+  query: string,
+  treeType: string,
+  team_id?: string | null
+): NodeEnrichmentRequest => {
+  try {
+    // Get the node details (title will be used as enrichNode)
+    const { title: enrichNode } = getNodeDetails(level, nodeId, selectedPath, treeData);
+
+    // Build parent titles array
+    const parentNodes = buildParentTitles(level, nodeId, selectedPath, treeData);
+
+    console.log('[CREATE_ENRICHMENT_REQUEST] Created request:', {
+      nodeId,
+      treeId,
+      enrichNode,
+      parentNodes,
+      query,
+      treeType,
+      team_id
+    });
+
+    return {
+      nodeId,
+      treeId,
+      enrichNode,
+      query,
+      parentNodes,
+      treeType,
+      team_id
+    };
+  } catch (error) {
+    console.error('[CREATE_ENRICHMENT_REQUEST] Error creating request:', error);
+    throw error;
+  }
+};
+
+/**
+ * Enrich a node with the new API structure - main entry point for UI
+ */
+export const enrichNodeWithNewStructure = async (
+  nodeId: string,
+  treeId: string,
+  level: string,
+  selectedPath: any,
+  treeData: any,
+  query: string,
+  treeType: string,
+  callback: StreamingCallback,
+  team_id?: string | null
+): Promise<void> => {
+  try {
+    // Create the properly formatted request
+    const enrichmentRequest = createEnrichmentRequest(
+      nodeId,
+      treeId,
+      level,
+      selectedPath,
+      treeData,
+      query,
+      treeType,
+      team_id
+    );
+
+    // Always use the new queue-based streaming approach
+    await callNodeEnrichmentStreaming(enrichmentRequest, callback);
+  } catch (error) {
+    console.error('[ENRICH_NODE_NEW_STRUCTURE] Error:', error);
+    callback({
+      type: 'error',
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+      nodeId,
+      timestamp: new Date().toISOString()
+    });
   }
 };

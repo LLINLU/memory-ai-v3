@@ -28,7 +28,11 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
-          <BrowserRouter>
+          <BrowserRouter
+            future={{
+              v7_relativeSplatPath: true,
+            }}
+          >
             <AuthProvider>
               <Routes>
                 <Route path="/login" element={<Login />} />

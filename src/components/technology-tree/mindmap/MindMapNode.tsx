@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { MindMapNode } from "@/utils/mindMapDataTransform";
 import {
   Tooltip,
@@ -11,11 +11,15 @@ import { MessageSquare, CirclePlus, Copy, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { NodeLoadingIndicator } from "../level-selection/node-components/NodeLoadingIndicator";
 import { NodeEnrichmentIndicator } from "../level-selection/node-components/NodeEnrichmentIndicator";
-import { isNodeLoading, isPapersLoading, isUseCasesLoading } from "@/services/nodeEnrichmentService";
+import {
+  isNodeLoading,
+  isPapersLoading,
+  isUseCasesLoading,
+} from "@/services/nodeEnrichmentService";
 
 interface MindMapNodeProps {
   node: MindMapNode;
-  layoutDirection: 'horizontal' | 'vertical';
+  layoutDirection: "horizontal" | "vertical";
   onClick: (nodeId: string, level: number) => void;
   onEdit?: (
     level: string,
@@ -39,10 +43,10 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
   const { toast } = useToast();
 
   // Layout-specific dimensions
-  const getNodeWidth = () => layoutDirection === 'horizontal' ? 280 : 120;
+  const getNodeWidth = () => (layoutDirection === "horizontal" ? 280 : 120);
   const getNodeHeight = () => {
     const isRoot = node.level === 0;
-    if (layoutDirection === 'horizontal') {
+    if (layoutDirection === "horizontal") {
       return isRoot ? 70 : 60;
     } else {
       return isRoot ? 110 : 100;
@@ -112,19 +116,19 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
   };
   // Special styling for root node
   const isRoot = node.level === 0;
-  const rootCursor = isRoot ? "cursor-default" : "cursor-pointer";  // Check if this node is being generated (children_count = 0 for TED scenario nodes only)
+  const rootCursor = isRoot ? "cursor-default" : "cursor-pointer"; // Check if this node is being generated (children_count = 0 for TED scenario nodes only)
   // Only Level 1 nodes (scenarios) should show generating status when children_count = 0
   // Level 4+ nodes naturally have children_count = 0 as leaf nodes
   const isGenerating =
-    typeof node.children_count === "number" && 
-    node.children_count === 0 && 
+    typeof node.children_count === "number" &&
+    node.children_count === 0 &&
     node.level === 1; // Only show generating for Level 1 (scenario) nodes
 
   // Check if this node is being enriched (論文・事例検索中)
   const isEnriching = isNodeLoading(node.id);
   const loadingPapers = isPapersLoading(node.id);
   const loadingUseCases = isUseCasesLoading(node.id);
-  
+
   // Show enrichment indicator if either papers or use cases are loading
   const showEnrichmentIndicator = loadingPapers || loadingUseCases;
 
@@ -138,7 +142,9 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
         height: getNodeHeight(),
       }}
       onClick={handleClick}
-    >      <div
+    >
+      {" "}
+      <div
         className={`w-full h-full rounded-lg border-2 p-2 flex ${
           isGenerating || showEnrichmentIndicator ? "flex-col" : "items-center"
         } justify-center ${getNodeStyling()}`}
@@ -157,15 +163,17 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
           <div className="mt-1">
             <NodeLoadingIndicator size="sm" />
           </div>
-        )}        {showEnrichmentIndicator && (
+        )}{" "}
+        {
           <div className="mt-1">
-            <NodeEnrichmentIndicator 
-              size="sm" 
+            <NodeEnrichmentIndicator
+              nodeId={node.id}
+              size="sm"
               loadingPapers={loadingPapers}
               loadingUseCases={loadingUseCases}
             />
           </div>
-        )}
+        }
       </div>
     </div>
   );
