@@ -7,7 +7,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, CirclePlus, Copy, Loader2 } from "lucide-react";
+import { MessageSquare, CirclePlus, Copy, Loader2, Plus, Minus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { NodeLoadingIndicator } from "../level-selection/node-components/NodeLoadingIndicator";
 import { NodeEnrichmentIndicator } from "../level-selection/node-components/NodeEnrichmentIndicator";
@@ -29,6 +29,7 @@ interface MindMapNodeProps {
   onDelete?: (level: string, nodeId: string) => void;
   onAiAssist?: (nodeId: string, level: number) => void;
   onAddNode?: (nodeId: string, level: number) => void;
+  onToggleExpand?: (nodeId: string, isExpanded: boolean) => void;
 }
 
 export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
@@ -39,8 +40,10 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
   onDelete,
   onAiAssist,
   onAddNode,
+  onToggleExpand,
 }) => {
   const { toast } = useToast();
+  const [isHovered, setIsHovered] = useState(false);
 
   // Layout-specific dimensions
   const getNodeWidth = () => (layoutDirection === "horizontal" ? 280 : 120);
@@ -109,11 +112,18 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
 
   const handleAddNode = (e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log("Add Node clicked for node:", node.id, "level:", node.level);
     if (onAddNode) {
       onAddNode(node.id, node.level);
     }
   };
+
+  const handleToggleExpand = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onToggleExpand) {
+      onToggleExpand(node.id, !node.isExpanded);
+    }
+  };
+
   // Special styling for root node
   const isRoot = node.level === 0;
   const rootCursor = isRoot ? "cursor-default" : "cursor-pointer"; // Check if this node is being generated (children_count = 0 for TED scenario nodes only)
@@ -142,13 +152,40 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
         height: getNodeHeight(),
       }}
       onClick={handleClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {" "}
       <div
         className={`w-full h-full rounded-lg border-2 p-2 flex ${
           isGenerating || showEnrichmentIndicator ? "flex-col" : "items-center"
-        } justify-center ${getNodeStyling()}`}
+        } justify-center relative ${getNodeStyling()}`}
       >
+        {node.hasChildrenInOriginalData && (!node.isExpanded || isHovered) && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleToggleExpand}
+            className={`absolute ${
+              layoutDirection === 'horizontal' 
+                ? 'right-[-16px] top-1/2 transform -translate-y-1/2' // 水平レイアウト：右側中央
+                : 'left-1/2 bottom-[-16px] transform -translate-x-1/2' // 垂直レイアウト：下側中央
+            } h-8 w-8 p-0 rounded-full border-2 shadow-md transition-all duration-200 z-10 ${
+              node.isSelected 
+                ? "bg-white text-[#2563eb] border-[#2563eb] hover:bg-gray-50" 
+                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400"
+            }`}
+            title={node.isExpanded ? "Collapse children" : "Expand children"}
+          >
+            {node.isExpanded ? (
+              <Minus className="h-4 w-4" />
+            ) : (
+              <span className="text-xs font-medium">
+                {node.totalChildrenCount || 0}
+              </span>
+            )}
+          </Button>
+        )}
+
         <div
           className={`${
             isRoot ? "text-base" : "text-sm"
@@ -158,22 +195,22 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
           title={node.name}
         >
           {node.name}
-        </div>{" "}
+        </div>
+        
         {isGenerating && (
           <div className="mt-1">
             <NodeLoadingIndicator size="sm" />
           </div>
-        )}{" "}
-        {
-          <div className="mt-1">
-            <NodeEnrichmentIndicator
-              nodeId={node.id}
-              size="sm"
-              loadingPapers={loadingPapers}
-              loadingUseCases={loadingUseCases}
-            />
-          </div>
-        }
+        )}
+        
+        <div className="mt-1">
+          <NodeEnrichmentIndicator
+            nodeId={node.id}
+            size="sm"
+            loadingPapers={loadingPapers}
+            loadingUseCases={loadingUseCases}
+          />
+        </div>
       </div>
     </div>
   );

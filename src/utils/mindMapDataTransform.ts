@@ -1,4 +1,3 @@
-
 import { TreeNode } from "@/types/tree";
 import * as d3 from "d3";
 
@@ -13,7 +12,11 @@ export interface MindMapNode {
   parentId?: string;
   isSelected?: boolean;
   isCustom?: boolean;
-  children_count?: number; // Number of children nodes, 0 indicates generation in progress
+  children_count?: number; 
+  isExpanded?: boolean; 
+  hasChildren?: boolean; 
+  hasChildrenInOriginalData?: boolean; 
+  totalChildrenCount?: number;
 }
 
 export interface MindMapConnection {
@@ -34,12 +37,34 @@ const ROOT_NODE_HEIGHT = 70; // Reduced from 120 to 70
 // Margin constants for better spacing
 const MARGIN_TOP = 200; // Increased from 50 to 200 to position root node lower
 const MARGIN_LEFT = 50; // Reduced from 300 to 50 to move root node to the LEFT side of canvas
-const MARGIN_RIGHT = 100;
-const MARGIN_BOTTOM = 50;
 
-// Helper function to find the last selected node ID and level
-const findLastSelectedNode = (selectedPath: any) => {
-  // Check from highest level down to find the last non-empty selection
+//仮で現在の型に合わせる（後で修正）
+interface SelectedPath {
+  level1?: string;
+  level2?: string;
+  level3?: string;
+  level4?: string;
+  level5?: string;
+  level6?: string;
+  level7?: string;
+  level8?: string;
+  level9?: string;
+  level10?: string;
+}
+
+interface HierarchicalNode {
+  id: string;
+  name: string;
+  description: string;
+  level: number;
+  levelName: string;
+  isSelected: boolean;
+  isCustom: boolean;
+  children_count?: number;
+  children: HierarchicalNode[];
+}
+
+const findLastSelectedNode = (selectedPath: SelectedPath) => {
   if (selectedPath.level10) return { id: selectedPath.level10, level: 10 };
   if (selectedPath.level9) return { id: selectedPath.level9, level: 9 };
   if (selectedPath.level8) return { id: selectedPath.level8, level: 8 };
@@ -53,8 +78,33 @@ const findLastSelectedNode = (selectedPath: any) => {
   return null;
 };
 
-// Helper function to build hierarchical data structure from flat level data
-const buildHierarchy = (
+// ノードが展開されているかどうかを確認
+const isNodeExpanded = (nodeId: string, expandedNodes?: Set<string>): boolean => {
+  return !expandedNodes || expandedNodes.size === 0 || expandedNodes.has(nodeId);
+};
+
+// ノードデータを作成
+const createHierarchicalNode = (
+  item: TreeNode,
+  level: number,
+  levelName: string,
+  lastSelectedNode: { id: string; level: number } | null
+): HierarchicalNode => {
+  return {
+    id: item.id,
+    name: item.name,
+    description: item.description || "",
+    level,
+    levelName,
+    isSelected: lastSelectedNode?.id === item.id && lastSelectedNode?.level === level,
+    isCustom: item.isCustom || false,
+    children_count: item.children_count,
+    children: [],
+  };
+};
+
+// ノードデータを階層化する
+const buildHierarchyWithExpandState = (
   level1Items: TreeNode[],
   level2Items: Record<string, TreeNode[]>,
   level3Items: Record<string, TreeNode[]>,
@@ -66,148 +116,167 @@ const buildHierarchy = (
   level9Items: Record<string, TreeNode[]>,
   level10Items: Record<string, TreeNode[]>,
   levelNames: Record<string, string>,
-  selectedPath: any,
-  query: string
-) => {
-  // Find the single node that should be selected
-  const lastSelectedNode = findLastSelectedNode(selectedPath);
-  //console.log("MindMap Selection: Last selected node:", lastSelectedNode);
+  selectedPath: SelectedPath,
+  query: string,
+  expandedNodes?: Set<string>
+): HierarchicalNode => {
+  // レベルごとのノードデータを作成
+  const allLevelItems = [
+    level1Items,
+    level2Items,
+    level3Items,
+    level4Items,
+    level5Items,
+    level6Items,
+    level7Items,
+    level8Items,
+    level9Items,
+    level10Items,
+  ];
 
-  const hierarchy: any = {
+  const lastSelectedNode = findLastSelectedNode(selectedPath);
+
+  // ルートノードを作成
+  const hierarchy: HierarchicalNode = {
     id: "root",
     name: query || "Research Query",
     description: "Your research query",
     level: 0,
     levelName: "Query",
-    isSelected: false, // Root is never selected
+    isSelected: false,
     isCustom: false,
     children: [],
   };
-  // Add level 1 items as direct children of root
-  level1Items.forEach((item) => {
-    const level1Node = {
-      id: item.id,
-      name: item.name,
-      description: item.description || "",
-      level: 1,
-      levelName: levelNames.level1 || "Level 1",
-      isSelected:
-        lastSelectedNode?.id === item.id && lastSelectedNode?.level === 1,
-      isCustom: item.isCustom || false,
-      children_count: item.children_count,
-      children: [],
-    };
 
-    // Add level 2 items for this level 1 item
-    const level2Children = level2Items[item.id] || [];
-    level2Children.forEach((level2Item) => {
-      const level2Node = {
-        id: level2Item.id,
-        name: level2Item.name,
-        description: level2Item.description || "",
-        level: 2,
-        levelName: levelNames.level2 || "Level 2",
-        isSelected:
-          lastSelectedNode?.id === level2Item.id &&
-          lastSelectedNode?.level === 2,
-        isCustom: level2Item.isCustom || false,
-        children_count: level2Item.children_count,
-        children: [],
-      };
+  // ノードデータを階層化する
+  const buildLevelRecursively = (
+    parentNode: HierarchicalNode,
+    parentId: string,
+    currentLevel: number
+  ): void => {
+    // 最大レベルを超えたら終了
+    if (currentLevel > 10) return;
 
-      // Add level 3 items for this level 2 item
-      const level3Children = level3Items[level2Item.id] || [];
-      level3Children.forEach((level3Item) => {
-        const level3Node = {
-          id: level3Item.id,
-          name: level3Item.name,
-          description: level3Item.description || "",
-          level: 3,
-          levelName: levelNames.level3 || "Level 3",
-          isSelected:
-            lastSelectedNode?.id === level3Item.id &&
-            lastSelectedNode?.level === 3,
-          isCustom: level3Item.isCustom || false,
-          children_count: level3Item.children_count,
-          children: [],
-        };
+    // 現在のレベルのノードデータを取得
+    const currentLevelData = allLevelItems[currentLevel - 1];
+    let itemsForParent: TreeNode[] = [];
 
-        // Add level 4+ items recursively
-        addChildrenRecursively(
-          level3Node,
-          level3Item.id,
-          4,
-          [
-            level4Items,
-            level5Items,
-            level6Items,
-            level7Items,
-            level8Items,
-            level9Items,
-            level10Items,
-          ],
-          levelNames,
-          lastSelectedNode
-        );
+          if (currentLevel === 1) {
+        if (isNodeExpanded("root", expandedNodes)) {
+          itemsForParent = currentLevelData as TreeNode[];
+        } else {
+          itemsForParent = []; // rootがcollapseされている場合は子ノードを表示しない
+        }
+    } else {
+      // level 2+のノードデータは親ノードのIDで取得
+      const levelItemsRecord = currentLevelData as Record<string, TreeNode[]>;
+      itemsForParent = levelItemsRecord[parentId] || [];
+    }
 
-        level2Node.children.push(level3Node);
-      });
+    // 現在のレベルのノードデータを処理
+    itemsForParent.forEach((item) => {
+      const levelName = levelNames[`level${currentLevel}`] || `Level ${currentLevel}`;
+      const childNode = createHierarchicalNode(item, currentLevel, levelName, lastSelectedNode);
 
-      level1Node.children.push(level2Node);
+      // そのノードが展開されている場合のみ子ノードを追加
+      if (isNodeExpanded(item.id, expandedNodes)) {
+        buildLevelRecursively(childNode, item.id, currentLevel + 1);
+      }
+
+      parentNode.children.push(childNode);
     });
+  };
 
-    hierarchy.children.push(level1Node);
-  });
+  // level 1からノードデータを階層化
+  buildLevelRecursively(hierarchy, "root", 1);
 
   return hierarchy;
 };
 
-// Helper function to recursively add children for levels 4-10
-const addChildrenRecursively = (
-  parentNode: any,
-  parentId: string,
-  currentLevel: number,
-  levelItemsArray: Record<string, TreeNode[]>[],
-  levelNames: Record<string, string>,
-  lastSelectedNode: { id: string; level: number } | null
-) => {
-  if (currentLevel > 10 || currentLevel - 4 >= levelItemsArray.length) return;
-  const currentLevelItems = levelItemsArray[currentLevel - 4][parentId] || [];
-  currentLevelItems.forEach((item) => {
-    const childNode = {
-      id: item.id,
-      name: item.name,
-      description: item.description || "",
-      level: currentLevel,
-      levelName: levelNames[`level${currentLevel}`] || `Level ${currentLevel}`,
-      isSelected:
-        lastSelectedNode?.id === item.id &&
-        lastSelectedNode?.level === currentLevel,
-      isCustom: item.isCustom || false,
-      children_count: item.children_count,
-      children: [],
-    };
 
-    // Recursively add children for the next level
-    addChildrenRecursively(
-      childNode,
-      item.id,
-      currentLevel + 1,
-      levelItemsArray,
-      levelNames,
-      lastSelectedNode
-    );
-    parentNode.children.push(childNode);
-  });
+
+// 元データで子ノードがあるかどうかを確認する
+const hasChildrenInOriginalHierarchy = (nodeId: string, originalHierarchy: HierarchicalNode): boolean => {
+  const findNodeAndCheckChildren = (node: HierarchicalNode): boolean | undefined => {
+    if (node.id === nodeId) {
+      return node.children && node.children.length > 0;
+    }
+    
+    for (const child of node.children || []) {
+      const result = findNodeAndCheckChildren(child);
+      if (result !== undefined) {
+        return result;
+      }
+    }
+    
+    return undefined;
+  };
+  
+  const result = findNodeAndCheckChildren(originalHierarchy);
+  return result === true;
+};
+
+// 元データでの総子ノード数をカウントする
+const countTotalChildrenInOriginalHierarchy = (nodeId: string, originalHierarchy: HierarchicalNode): number => {
+  const findNodeAndCountChildren = (node: HierarchicalNode): number | undefined => {
+    if (node.id === nodeId) {
+      const countDescendants = (n: HierarchicalNode): number => {
+        let count = n.children ? n.children.length : 0;
+        if (n.children) {
+          for (const child of n.children) {
+            count += countDescendants(child);
+          }
+        }
+        return count;
+      };
+      return countDescendants(node);
+    }
+    
+    for (const child of node.children || []) {
+      const result = findNodeAndCountChildren(child);
+      if (result !== undefined) {
+        return result;
+      }
+    }
+    
+    return undefined;
+  };
+  
+  const result = findNodeAndCountChildren(originalHierarchy);
+  return result || 0;
 };
 
 // Helper function to create D3 nodes from hierarchical data
-const createD3Nodes = (hierarchicalData: any, layoutDirection: 'horizontal' | 'vertical' = 'horizontal'): MindMapNode[] => {
-  if (!hierarchicalData.children || hierarchicalData.children.length === 0) {
+const createD3Nodes = (hierarchicalData: HierarchicalNode, layoutDirection: 'horizontal' | 'vertical' = 'horizontal', originalHierarchy?: HierarchicalNode, expandedNodes?: Set<string>): MindMapNode[] => {
+  const root = d3.hierarchy(hierarchicalData);
+
+  // 初期化時（expandedNodesがundefined）は空配列を返し、全てのノードをexpandする
+  if (!expandedNodes && (!hierarchicalData.children || hierarchicalData.children.length === 0)) {
     return [];
   }
 
-  const root = d3.hierarchy(hierarchicalData);
+  // rootノードがcollapseされている場合でも、rootノード自体は表示する
+  if (!hierarchicalData.children || hierarchicalData.children.length === 0) {
+    // rootノードのみを返す
+    return [{
+      id: hierarchicalData.id,
+      name: hierarchicalData.name,
+      description: hierarchicalData.description,
+      level: hierarchicalData.level,
+      levelName: hierarchicalData.levelName,
+      x: MARGIN_LEFT,
+      y: MARGIN_TOP,
+      parentId: undefined,
+      isSelected: hierarchicalData.isSelected,
+      isCustom: hierarchicalData.isCustom,
+      children_count: hierarchicalData.children_count,
+      hasChildren: false,
+      hasChildrenInOriginalData: originalHierarchy ? hasChildrenInOriginalHierarchy(hierarchicalData.id, originalHierarchy) : false,
+      isExpanded: !expandedNodes || expandedNodes.size === 0 || expandedNodes.has(hierarchicalData.id),
+      totalChildrenCount: originalHierarchy ? countTotalChildrenInOriginalHierarchy(hierarchicalData.id, originalHierarchy) : 0,
+    }];
+  }
+  
 
   if (layoutDirection === 'horizontal') {
     // KEEP EXACTLY AS IS - don't change anything for horizontal layout
@@ -251,15 +320,22 @@ const createD3Nodes = (hierarchicalData: any, layoutDirection: 'horizontal' | 'v
       isSelected: node.data.isSelected,
       isCustom: node.data.isCustom,
       children_count: node.data.children_count,
+      hasChildren: node.children && node.children.length > 0, // 子ノードがあるかどうか
+      hasChildrenInOriginalData: originalHierarchy ? hasChildrenInOriginalHierarchy(node.data.id, originalHierarchy) : (node.children && node.children.length > 0),
+      isExpanded: !expandedNodes || expandedNodes.size === 0 || expandedNodes.has(node.data.id),
+      totalChildrenCount: originalHierarchy ? countTotalChildrenInOriginalHierarchy(node.data.id, originalHierarchy) : 0,
     }));
   } else {
     // IMPROVED vertical layout - increased spacing to prevent overlaps
     const treeLayout = d3
       .tree()
-      .nodeSize([100, 200]) // Increased from [80, 150] to [100, 200] for more horizontal space
+      .nodeSize([150, 200])
       .separation((a, b) => {
-        // Improved separation to prevent overlapping
-        return a.parent === b.parent ? 1.0 : 1.2; // Increased from 0.6:0.8 to 1.0:1.2
+        if (a.parent === b.parent) {
+          return 1.5;
+        } else {
+          return 2.0;
+        }
       });
 
     treeLayout(root);
@@ -277,12 +353,16 @@ const createD3Nodes = (hierarchicalData: any, layoutDirection: 'horizontal' | 'v
       isSelected: node.data.isSelected,
       isCustom: node.data.isCustom,
       children_count: node.data.children_count,
+      hasChildren: node.children && node.children.length > 0, // 子ノードがあるかどうか
+      hasChildrenInOriginalData: originalHierarchy ? hasChildrenInOriginalHierarchy(node.data.id, originalHierarchy) : (node.children && node.children.length > 0), // 元データで子ノードがあるかどうか
+      isExpanded: !expandedNodes || expandedNodes.size === 0 || expandedNodes.has(node.data.id), // 実際の展開状態
+      totalChildrenCount: originalHierarchy ? countTotalChildrenInOriginalHierarchy(node.data.id, originalHierarchy) : 0, // 元データでの総子ノード数
     }));
   }
 };
 
 // Helper function to create connections from D3 hierarchy
-const createD3Connections = (hierarchicalData: any, layoutDirection: 'horizontal' | 'vertical' = 'horizontal'): MindMapConnection[] => {
+const createD3Connections = (hierarchicalData: HierarchicalNode, layoutDirection: 'horizontal' | 'vertical' = 'horizontal'): MindMapConnection[] => {
   if (!hierarchicalData.children || hierarchicalData.children.length === 0) {
     return [];
   }
@@ -349,10 +429,13 @@ const createD3Connections = (hierarchicalData: any, layoutDirection: 'horizontal
     // IMPROVED vertical connection logic with better spacing
     const treeLayout = d3
       .tree()
-      .nodeSize([100, 200]) // Updated to match node layout spacing
+      .nodeSize([150, 200])
       .separation((a, b) => {
-        // Improved separation matching node layout
-        return a.parent === b.parent ? 1.0 : 1.2;
+        if (a.parent === b.parent) {
+          return 1.5;
+        } else {
+          return 2.0;
+        }
       });
 
     treeLayout(root);
@@ -401,12 +484,12 @@ export const transformToMindMapData = (
   level9Items: Record<string, TreeNode[]>,
   level10Items: Record<string, TreeNode[]>,
   levelNames: Record<string, string>,
-  selectedPath: any,
+  selectedPath: SelectedPath,
   query: string = "Research Query",
-  layoutDirection: 'horizontal' | 'vertical' = 'horizontal'  // Add layout direction parameter
+  layoutDirection: 'horizontal' | 'vertical' = 'horizontal',
+  expandedNodes?: Set<string> 
 ) => {
-  // Build hierarchical data structure with proper root
-  const hierarchicalData = buildHierarchy(
+  const originalHierarchicalData = buildHierarchyWithExpandState(
     level1Items,
     level2Items,
     level3Items,
@@ -419,20 +502,35 @@ export const transformToMindMapData = (
     level10Items,
     levelNames,
     selectedPath,
-    query
+    query,
+    undefined // 展開状態を取得しない（展開状態はexpandedNodesで取得する）
+  );
+
+  // Build filtered hierarchical data structure with expand state
+  // デフォルトで全展開：expandedNodesがundefinedまたは空の場合はundefinedを渡す
+  const effectiveExpandedNodes = (!expandedNodes || expandedNodes.size === 0) ? undefined : expandedNodes;
+  
+  const hierarchicalData = buildHierarchyWithExpandState(
+    level1Items,
+    level2Items,
+    level3Items,
+    level4Items,
+    level5Items,
+    level6Items,
+    level7Items,
+    level8Items,
+    level9Items,
+    level10Items,
+    levelNames,
+    selectedPath,
+    query,
+    effectiveExpandedNodes
   );
 
   // Create nodes and connections using D3 tree layout with layout direction
-  const nodes = createD3Nodes(hierarchicalData, layoutDirection);
+  const nodes = createD3Nodes(hierarchicalData, layoutDirection, originalHierarchicalData, effectiveExpandedNodes);
   const connections = createD3Connections(hierarchicalData, layoutDirection);
 
-  // console.log("Level breakdown:", {
-  //   root: nodes.filter((n) => n.level === 0).length,
-  //   level1: nodes.filter((n) => n.level === 1).length,
-  //   level2: nodes.filter((n) => n.level === 2).length,
-  //   level3: nodes.filter((n) => n.level === 3).length,
-  //   level4: nodes.filter((n) => n.level === 4).length,
-  // });
 
   return { nodes, connections };
 };

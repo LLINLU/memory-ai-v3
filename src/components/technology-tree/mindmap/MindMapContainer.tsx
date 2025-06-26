@@ -1,25 +1,39 @@
-
 import React, { useMemo, useState, useEffect, useRef } from "react";
-import { transformToMindMapData } from "@/utils/mindMapDataTransform";
+import { transformToMindMapData, MindMapNode, MindMapConnection } from "@/utils/mindMapDataTransform";
 import { MindMapNodeComponent } from "./MindMapNode";
 import { MindMapConnections } from "./MindMapConnections";
 import { MindMapControls } from "./MindMapControls";
 import { MindMapLegend } from "./MindMapLegend";
 import { usePanZoom } from "@/hooks/tree/usePanZoom";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { TreeNode } from "@/types/tree";
+
+//仮で現在の型に合わせる（後で修正）
+interface SelectedPath {
+  level1?: string;
+  level2?: string;
+  level3?: string;
+  level4?: string;
+  level5?: string;
+  level6?: string;
+  level7?: string;
+  level8?: string;
+  level9?: string;
+  level10?: string;
+}
 
 interface MindMapContainerProps {
-  selectedPath: any;
-  level1Items: any[];
-  level2Items: Record<string, any[]>;
-  level3Items: Record<string, any[]>;
-  level4Items: Record<string, any[]>;
-  level5Items: Record<string, any[]>;
-  level6Items: Record<string, any[]>;
-  level7Items: Record<string, any[]>;
-  level8Items: Record<string, any[]>;
-  level9Items: Record<string, any[]>;
-  level10Items: Record<string, any[]>;
+  selectedPath: SelectedPath;
+  level1Items: TreeNode[];
+  level2Items: Record<string, TreeNode[]>;
+  level3Items: Record<string, TreeNode[]>;
+  level4Items: Record<string, TreeNode[]>;
+  level5Items: Record<string, TreeNode[]>;
+  level6Items: Record<string, TreeNode[]>;
+  level7Items: Record<string, TreeNode[]>;
+  level8Items: Record<string, TreeNode[]>;
+  level9Items: Record<string, TreeNode[]>;
+  level10Items: Record<string, TreeNode[]>;
   levelNames: Record<string, string>;
   query?: string;
   onNodeClick: (level: string, nodeId: string) => void;
@@ -51,22 +65,13 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   justSwitchedView,
   onViewSwitchHandled,
 }) => {
-  // Add layout state - default to horizontal to preserve current behavior
   const [layoutDirection, setLayoutDirection] = useState<'horizontal' | 'vertical'>('horizontal');
+  const [selectedNodeForHighlight, setSelectedNodeForHighlight] = useState<string | null>(null);
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+  const [lastQuery, setLastQuery] = useState<string>('');
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Add document-level wheel event debugging
-  useEffect(() => {
-    const handleDocumentWheel = (e: WheelEvent) => {
-      console.log('🟡 Document wheel event - should NOT fire when scrolling mindmap');
-      console.log('Target:', e.target);
-      console.log('Target className:', (e.target as HTMLElement)?.className);
-      console.log('Event timestamp:', Date.now());
-    };
-    
-    document.addEventListener('wheel', handleDocumentWheel);
-    return () => document.removeEventListener('wheel', handleDocumentWheel);
-  }, []);
 
   const { nodes, connections } = useMemo(() => {
     return transformToMindMapData(
@@ -83,7 +88,8 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
       levelNames,
       selectedPath,
       query || "Research Query",
-      layoutDirection  // Pass layout direction to transform function
+      layoutDirection,
+      expandedNodes
     );
   }, [
     level1Items,
@@ -99,30 +105,28 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     levelNames,
     selectedPath,
     query,
-    layoutDirection,  // Add to dependency array
+    layoutDirection,
+    expandedNodes,
   ]);
 
   const handleNodeClick = (nodeId: string, level: number) => {
-    // Don't allow clicking on the root node (level 0)
     if (level === 0) {
       console.log('MindMap: Root node clicked, ignoring');
       return;
     }
     
+    setSelectedNodeForHighlight(nodeId);
     onNodeClick(`level${level}`, nodeId);
   };
 
   const handleAiAssist = (nodeId: string, level: number) => {
     console.log('MindMap: AI Assist requested for node:', nodeId, 'level:', level);
-    // Placeholder for AI assistance functionality
   };
 
   const handleAddNode = (nodeId: string, level: number) => {
     console.log('MindMap: Add Node requested for parent:', nodeId, 'level:', level);
-    // Placeholder for add node functionality
   };
 
-  // Calculate container dimensions based on layout direction and node dimensions
   const getNodeWidth = () => layoutDirection === 'horizontal' ? 280 : 120;
   const getNodeHeight = () => layoutDirection === 'horizontal' ? 60 : 100;
   
@@ -146,14 +150,6 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
 
   // Replace the conflicting wheel handlers with comprehensive debug version
   const handleContainerWheel = (e: React.WheelEvent) => {
-    console.log('🔴 Mindmap onWheelCapture triggered');
-    console.log('Target:', e.target);
-    console.log('Target className:', (e.target as HTMLElement)?.className);
-    console.log('CurrentTarget:', e.currentTarget);
-    console.log('CurrentTarget className:', (e.currentTarget as HTMLElement)?.className);
-    console.log('Event phase:', e.eventPhase);
-    console.log('Event bubbles:', e.bubbles);
-    console.log('Event timestamp:', Date.now());
     
     // Try all possible ways to stop event propagation
     e.stopPropagation();
@@ -230,6 +226,44 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     }, 100); // Small delay to ensure layout change has completed
   };
 
+  // 展開状態を切り替える
+  const handleToggleExpand = (nodeId: string, isExpanded: boolean) => {
+    setExpandedNodes(prev => {
+      const newSet = new Set(prev);
+      if (isExpanded) {
+        newSet.add(nodeId);
+      } else {
+        newSet.delete(nodeId);
+      }
+      return newSet;
+    });
+  };
+
+  useEffect(() => {
+    const currentQuery = query || "Research Query";
+    
+    // 初回またはクエリが変更された場合のみ全展開にリセット
+    if ((!isInitialized || currentQuery !== lastQuery) && nodes.length > 0) {
+      const allNodeIds = nodes.map(node => node.id);
+      setExpandedNodes(prev => {
+        const newSet = new Set(prev);
+        allNodeIds.forEach(nodeId => newSet.add(nodeId)); // ユーザーが選択したノードの展開状態を保持
+        return newSet;
+      });
+      setLastQuery(currentQuery);
+      setIsInitialized(true);
+    }
+  }, [query, nodes, lastQuery, isInitialized]);
+
+  // ノードデータに展開状態を適用
+  const nodesWithExpandState = useMemo(() => {
+    return nodes.map(node => ({
+      ...node,
+      // ノードが展開されているかどうかを確認
+      isExpanded: expandedNodes.has(node.id)
+    }));
+  }, [nodes, expandedNodes]);
+
   return (
     <TooltipProvider delayDuration={300} skipDelayDuration={100}>
       <div 
@@ -261,9 +295,13 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
               transform: getTransform(),
             }}
           >
-            <MindMapConnections connections={connections} layoutDirection={layoutDirection} />
+            <MindMapConnections 
+              connections={connections} 
+              layoutDirection={layoutDirection} 
+              selectedNodeId={selectedNodeForHighlight}
+            />
             
-            {nodes.map((node) => (
+            {nodesWithExpandState.map((node) => (
               <MindMapNodeComponent
                 key={node.id}
                 node={node}
@@ -273,10 +311,11 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
                 onDelete={onDeleteNode}
                 onAiAssist={handleAiAssist}
                 onAddNode={handleAddNode}
+                onToggleExpand={handleToggleExpand}
               />
             ))}
             
-            {nodes.length === 0 && (
+            {nodesWithExpandState.length === 0 && (
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-500">
                 <p className="text-lg">No data available for mindmap view</p>
                 <p className="text-sm mt-2">Please ensure your tree has been generated</p>
