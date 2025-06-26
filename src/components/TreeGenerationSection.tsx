@@ -160,7 +160,7 @@ export const TreeGenerationSection = () => {
                         disabled={isGenerating}
                       >
                         <Lightbulb className={`h-3 w-3 mr-1 ${selectedMode === "FAST" ? "stroke-[2.5px]" : ""}`} />
-                        技術からはじめる
+                        技術を深ぼる
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
