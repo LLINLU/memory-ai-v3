@@ -88,7 +88,7 @@ export const MindMapConnections: React.FC<MindMapConnectionsProps> = ({
       // 選択されたノードから子孫へのエッジ
       (connection.sourceId === selectedNodeId && descendants.has(connection.targetId)) ||
       // 先祖から選択されたノードへのエッジ
-      (ancestors.has(connection.sourceId) && connection.targetId === selectedNodeId) ||
+      (ancestors.has(connection.sourceId) && (ancestors.has(connection.targetId) || connection.targetId === selectedNodeId)) ||
       // 選択されたノードの子孫間のエッジ
       (descendants.has(connection.sourceId) && descendants.has(connection.targetId))
     );
