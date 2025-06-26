@@ -1,4 +1,3 @@
-
 import { ArrowUp, Target, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,8 +44,8 @@ export const TreeGenerationSection = () => {
   
   const getPlaceholderText = () => {
     return selectedMode === "TED" 
-      ? "社会課題やニーズを出発点に、技術の可能性を探る"
-      : "技術テーマを掘り下げて、実現方法を探る";
+      ? "社会課題や気になるテーマを技術テーマに分解する"
+      : "技術を分解して要素技術を整理する";
   };
 
   const handleSubmit = async (e?: FormEvent) => {
