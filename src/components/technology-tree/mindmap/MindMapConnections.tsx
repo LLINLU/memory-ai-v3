@@ -67,7 +67,7 @@ export const MindMapConnections: React.FC<MindMapConnectionsProps> = ({
           const parentId = connection.sourceId;
           if (!ancestors.has(parentId)) {
             ancestors.add(parentId);
-            queue.push(parentId); // 祖父母以降も探すためにキューに追加
+            queue.push(parentId);
           }
         }
       });
@@ -84,10 +84,6 @@ export const MindMapConnections: React.FC<MindMapConnectionsProps> = ({
     const descendants = findAllDescendants(selectedNodeId, connections);
     const ancestors = findAllAncestors(selectedNodeId, connections);
     
-    // 以下の場合にハイライト：
-    // 1. 選択されたノードが親で、子または子孫が対象
-    // 2. 選択されたノードが子で、親または先祖が対象
-    // 3. 選択されたノードの子孫間のエッジ（子→孫、孫→ひ孫など）
     return (
       // 選択されたノードから子孫へのエッジ
       (connection.sourceId === selectedNodeId && descendants.has(connection.targetId)) ||

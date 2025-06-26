@@ -37,10 +37,8 @@ const ROOT_NODE_HEIGHT = 70; // Reduced from 120 to 70
 // Margin constants for better spacing
 const MARGIN_TOP = 200; // Increased from 50 to 200 to position root node lower
 const MARGIN_LEFT = 50; // Reduced from 300 to 50 to move root node to the LEFT side of canvas
-const MARGIN_RIGHT = 100;
-const MARGIN_BOTTOM = 50;
 
-// Define proper types for selectedPath
+//仮で現在の型に合わせる（後で修正）
 interface SelectedPath {
   level1?: string;
   level2?: string;
@@ -54,7 +52,6 @@ interface SelectedPath {
   level10?: string;
 }
 
-// Define type for hierarchical node data
 interface HierarchicalNode {
   id: string;
   name: string;
@@ -67,9 +64,7 @@ interface HierarchicalNode {
   children: HierarchicalNode[];
 }
 
-// Helper function to find the last selected node ID and level
 const findLastSelectedNode = (selectedPath: SelectedPath) => {
-  // Check from highest level down to find the last non-empty selection
   if (selectedPath.level10) return { id: selectedPath.level10, level: 10 };
   if (selectedPath.level9) return { id: selectedPath.level9, level: 9 };
   if (selectedPath.level8) return { id: selectedPath.level8, level: 8 };
@@ -149,10 +144,10 @@ const buildHierarchyWithExpandState = (
           children: [],
         };
 
+        // level 2の展開状態を確認
         const isLevel2Expanded = !expandedNodes || expandedNodes.size === 0 || expandedNodes.has(level2Item.id);
         
         if (isLevel2Expanded) {
-          // Add level 3 items for this level 2 item
           const level3Children = level3Items[level2Item.id] || [];
           level3Children.forEach((level3Item) => {
             const level3Node = {
@@ -201,6 +196,7 @@ const buildHierarchyWithExpandState = (
   return hierarchy;
 };
 
+// 子ノードを再帰的に追加する
 const addChildrenRecursivelyWithExpandState = (
   parentNode: HierarchicalNode,
   parentId: string,
@@ -244,6 +240,7 @@ const addChildrenRecursivelyWithExpandState = (
   });
 };
 
+// 元データで子ノードがあるかどうかを確認する
 const hasChildrenInOriginalHierarchy = (nodeId: string, originalHierarchy: HierarchicalNode): boolean => {
   const findNodeAndCheckChildren = (node: HierarchicalNode): boolean | undefined => {
     if (node.id === nodeId) {
@@ -264,6 +261,7 @@ const hasChildrenInOriginalHierarchy = (nodeId: string, originalHierarchy: Hiera
   return result === true;
 };
 
+// 元データでの総子ノード数をカウントする
 const countTotalChildrenInOriginalHierarchy = (nodeId: string, originalHierarchy: HierarchicalNode): number => {
   const findNodeAndCountChildren = (node: HierarchicalNode): number | undefined => {
     if (node.id === nodeId) {
@@ -526,7 +524,7 @@ export const transformToMindMapData = (
     levelNames,
     selectedPath,
     query,
-    undefined // Pass undefined to get complete hierarchy
+    undefined // 展開状態を取得しない（展開状態はexpandedNodesで取得する）
   );
 
   // Build filtered hierarchical data structure with expand state

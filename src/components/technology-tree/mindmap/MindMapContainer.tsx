@@ -8,7 +8,7 @@ import { usePanZoom } from "@/hooks/tree/usePanZoom";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { TreeNode } from "@/types/tree";
 
-// Define proper types for selectedPath matching the type used in mindMapDataTransform
+//仮で現在の型に合わせる（後で修正）
 interface SelectedPath {
   level1?: string;
   level2?: string;
@@ -68,6 +68,9 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   const [layoutDirection, setLayoutDirection] = useState<'horizontal' | 'vertical'>('horizontal');
   const [selectedNodeForHighlight, setSelectedNodeForHighlight] = useState<string | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+  const [lastQuery, setLastQuery] = useState<string>('');
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { nodes, connections } = useMemo(() => {
@@ -85,8 +88,8 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
       levelNames,
       selectedPath,
       query || "Research Query",
-      layoutDirection,  // Pass layout direction to transform function
-      expandedNodes  // Pass expanded nodes for dynamic layout calculation
+      layoutDirection,
+      expandedNodes
     );
   }, [
     level1Items,
@@ -102,35 +105,28 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     levelNames,
     selectedPath,
     query,
-    layoutDirection,  // Add to dependency array
-    expandedNodes,  // Add expandedNodes to trigger re-layout when expanded state changes
+    layoutDirection,
+    expandedNodes,
   ]);
 
   const handleNodeClick = (nodeId: string, level: number) => {
-    // Don't allow clicking on the root node (level 0)
     if (level === 0) {
       console.log('MindMap: Root node clicked, ignoring');
       return;
     }
     
-    // 選択されたノードのIDを設定（エッジハイライト用）
     setSelectedNodeForHighlight(nodeId);
-    
-    // 既存のクリック処理
     onNodeClick(`level${level}`, nodeId);
   };
 
   const handleAiAssist = (nodeId: string, level: number) => {
     console.log('MindMap: AI Assist requested for node:', nodeId, 'level:', level);
-    // Placeholder for AI assistance functionality
   };
 
   const handleAddNode = (nodeId: string, level: number) => {
     console.log('MindMap: Add Node requested for parent:', nodeId, 'level:', level);
-    // Placeholder for add node functionality
   };
 
-  // Calculate container dimensions based on layout direction and node dimensions
   const getNodeWidth = () => layoutDirection === 'horizontal' ? 280 : 120;
   const getNodeHeight = () => layoutDirection === 'horizontal' ? 60 : 100;
   
@@ -154,14 +150,6 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
 
   // Replace the conflicting wheel handlers with comprehensive debug version
   const handleContainerWheel = (e: React.WheelEvent) => {
-    console.log('🔴 Mindmap onWheelCapture triggered');
-    console.log('Target:', e.target);
-    console.log('Target className:', (e.target as HTMLElement)?.className);
-    console.log('CurrentTarget:', e.currentTarget);
-    console.log('CurrentTarget className:', (e.currentTarget as HTMLElement)?.className);
-    console.log('Event phase:', e.eventPhase);
-    console.log('Event bubbles:', e.bubbles);
-    console.log('Event timestamp:', Date.now());
     
     // Try all possible ways to stop event propagation
     e.stopPropagation();
@@ -238,10 +226,8 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     }, 100); // Small delay to ensure layout change has completed
   };
 
-  // 新しく追加：expand/collapse処理
+  // 展開状態を切り替える
   const handleToggleExpand = (nodeId: string, isExpanded: boolean) => {
-    console.log('MindMap: Toggle expand for node:', nodeId, 'to expanded:', isExpanded);
-    
     setExpandedNodes(prev => {
       const newSet = new Set(prev);
       if (isExpanded) {
@@ -253,10 +239,6 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     });
   };
 
-  // クエリが変更された場合に展開状態をリセット
-  const [lastQuery, setLastQuery] = useState<string>('');
-  const [isInitialized, setIsInitialized] = useState<boolean>(false);
-  
   useEffect(() => {
     const currentQuery = query || "Research Query";
     
@@ -269,7 +251,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     }
   }, [query, nodes, lastQuery, isInitialized]);
 
-  // ノードデータに展開状態を適用 - 新しい動的レイアウトですでに展開状態が反映されているので簡略化
+  // ノードデータに展開状態を適用
   const nodesWithExpandState = useMemo(() => {
     return nodes.map(node => ({
       ...node,
