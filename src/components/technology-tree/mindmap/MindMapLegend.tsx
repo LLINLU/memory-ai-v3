@@ -72,7 +72,7 @@ const MindMapLegendComponent: React.FC<MindMapLegendProps> = ({
                 bg
               } = getLevelColor(level);
               return <div key={level} className="flex items-center gap-2 text-sm">
-                    <div className={`w-3 h-3 rounded-full ${bg} border border-gray-400 flex-shrink-0`} />
+                    <div className={`w-3 h-3 rounded-full ${bg} flex-shrink-0`} />
                     <span className="font-normal text-sm text-gray-500">
                       レベル{level}: {label}
                     </span>
