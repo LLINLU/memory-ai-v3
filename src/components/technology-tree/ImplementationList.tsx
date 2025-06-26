@@ -18,7 +18,7 @@ export const ImplementationList = ({
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     );
-  }  // Use real data if available and a node is selected
+  } // Use real data if available and a node is selected
   if (selectedNodeId && useCases.length > 0) {
     return (
       <div className="space-y-4">
@@ -30,11 +30,12 @@ export const ImplementationList = ({
             company={useCase.company}
             releases={useCase.press_releases.length}
             badgeColor="bg-[#E8F1FF]"
-            badgeTextColor="text-[#0EA5E9]"            pressReleases={useCase.press_releases.map((url, index) => {
+            badgeTextColor="text-[#0EA5E9]"
+            pressReleases={useCase.press_releases.map((url, index) => {
               // Try to extract a meaningful title from the URL or use a default
               try {
                 const urlObj = new URL(url);
-                const title = `${urlObj.hostname} - プレスリリース ${index + 1}`;
+                const title = `${urlObj.hostname}`;
                 return {
                   title: title,
                   url: url,

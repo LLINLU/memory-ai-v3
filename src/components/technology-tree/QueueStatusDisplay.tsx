@@ -10,13 +10,13 @@ interface QueueStatusDisplayProps {
   onNodeSelect?: (nodeId: string) => void;
 }
 
-export const QueueStatusDisplay: React.FC<QueueStatusDisplayProps> = ({ 
-  onNodeSelect 
+export const QueueStatusDisplay: React.FC<QueueStatusDisplayProps> = ({
+  onNodeSelect,
 }) => {
   const [status, setStatus] = useState(getQueueStatus());
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(Date.now());
-  const [activeTab, setActiveTab] = useState<"summary" | "queue">("queue");
+  const [activeTab, setActiveTab] = useState<"summary" | "queue">("summary");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -75,7 +75,7 @@ export const QueueStatusDisplay: React.FC<QueueStatusDisplayProps> = ({
         section === "done"
           ? 100
           : Math.min(100, Math.floor((item.elapsedSeconds / maxTime) * 100));
-      
+
       const handleItemClick = () => {
         if (onNodeSelect && item.nodeId) {
           onNodeSelect(item.nodeId);
@@ -86,12 +86,16 @@ export const QueueStatusDisplay: React.FC<QueueStatusDisplayProps> = ({
         <div
           key={index}
           className={`border-b pb-2 pt-1 flex items-center justify-between gap-2 rounded-sm px-2 ${
-            onNodeSelect && item.nodeId 
-              ? "cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-all duration-200 active:bg-blue-100" 
+            onNodeSelect && item.nodeId
+              ? "cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-all duration-200 active:bg-blue-100"
               : "bg-white"
           }`}
           onClick={handleItemClick}
-          title={onNodeSelect && item.nodeId ? `クリックして「${item.name}」ノードに移動` : ""}
+          title={
+            onNodeSelect && item.nodeId
+              ? `クリックして「${item.name}」ノードに移動`
+              : ""
+          }
         >
           <div className="flex flex-col flex-1">
             <div className="flex items-center gap-1">

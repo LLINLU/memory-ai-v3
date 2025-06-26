@@ -4,6 +4,7 @@ import { ChatConversation } from "./ChatConversation";
 import { ChatInput } from "./ChatInput";
 import { EnrichedDataDisplay } from "./EnrichedDataDisplay";
 import { NodeSuggestion } from "@/types/chat";
+import { NodeInfo } from "@/services/nodeEnrichmentService.ts";
 
 interface SidebarContentProps {
   sidebarTab: string;
@@ -30,7 +31,7 @@ interface SidebarContentProps {
     level9?: string;
     level10?: string;
   };
-  parentTitles?: string[];
+  parentNodes?: NodeInfo[];
 }
 
 export const SidebarContent = ({
@@ -47,7 +48,7 @@ export const SidebarContent = ({
   selectedNodeDescription,
   selectedNodeId,
   selectedPath,
-  parentTitles,
+  parentNodes,
 }: SidebarContentProps) => {
   if (sidebarTab === "chat") {
     return (
@@ -73,7 +74,7 @@ export const SidebarContent = ({
         selectedNodeTitle={selectedNodeTitle}
         selectedNodeDescription={selectedNodeDescription}
         selectedNodeId={selectedNodeId}
-        parentTitles={parentTitles}
+        parentNodes={parentNodes}
       />
     </div>
   );

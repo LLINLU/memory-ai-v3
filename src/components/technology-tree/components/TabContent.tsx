@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { PaperList } from "../PaperList";
 import { ImplementationList } from "../ImplementationList";
@@ -29,7 +28,9 @@ export const TabContent: React.FC<TabContentProps> = ({
   const [currentSort, setCurrentSort] = useState("citations");
 
   // Get real enrichment data for the selected node
-  const { papers, useCases, loadingPapers, loadingUseCases } = useEnrichedData(selectedNodeId || null);
+  const { papers, useCases, loadingPapers, loadingUseCases } = useEnrichedData(
+    selectedNodeId || null
+  );
 
   const handleFilterChange = (filter: string) => {
     setCurrentFilter(filter);
@@ -87,19 +88,18 @@ export const TabContent: React.FC<TabContentProps> = ({
             loadingPapers={loadingPapers}
             loadingUseCases={loadingUseCases}
           />
-          <FilterSort
-            className="justify-end"
-            onFilterChange={handleFilterChange}
-            onSortChange={handleSortChange}
-          />
+          {activeTab === "papers" && (
+            <FilterSort
+              className="justify-end"
+              onFilterChange={handleFilterChange}
+              onSortChange={handleSortChange}
+            />
+          )}
         </div>
         <div id="google_translate_element"></div>
       </div>
-      
-      <div 
-        className="flex-1 overflow-y-auto px-4 pb-4" 
-        data-papers-scroll
-      >
+
+      <div className="flex-1 overflow-y-auto px-4 pb-4" data-papers-scroll>
         <div className="translate">
           {activeTab === "papers" ? (
             <PaperList

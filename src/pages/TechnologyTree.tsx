@@ -26,7 +26,7 @@ import { enrichmentEventBus } from "@/hooks/useEnrichedData";
 import { useLevel1EnrichmentPolling } from "@/hooks/useLevel1EnrichmentPolling";
 import {
   enrichNodeWithNewStructure,
-  buildParentTitles,
+  buildParentInfo,
   getNodeDetails,
   isNodeLoading,
   hasNodeEnrichedData,
@@ -196,7 +196,8 @@ const TechnologyTree = () => {
             </>
           )}
         </div>
-      </div>    );
+      </div>
+    );
   }
   // Initialize user details
   const { userDetails } = useUserDetail();
@@ -294,7 +295,11 @@ const TechnologyTree = () => {
       const query = searchTheme;
 
       // Determine tree type for enrichment
-      const treeType = (databaseTreeData?.mode || locationState?.treeData?.mode || "TED").toLowerCase();
+      const treeType = (
+        databaseTreeData?.mode ||
+        locationState?.treeData?.mode ||
+        "TED"
+      ).toLowerCase();
 
       // Call the new enrichment API with proper structure
       try {
@@ -959,34 +964,52 @@ const TechnologyTree = () => {
     level10Items
   );
 
+  const treeMode =
+    databaseTreeData?.mode || locationState?.treeData?.mode || "TED";
+
   // Helper function to determine current level from selectedPath
-  const getCurrentLevel = (selectedPath: any, nodeId: string): string | null => {
+  const getCurrentLevel = (
+    selectedPath: any,
+    nodeId: string
+  ): string | null => {
     if (!selectedPath || !nodeId) return null;
-    
-    const levels = ['level1', 'level2', 'level3', 'level4', 'level5', 'level6', 'level7', 'level8', 'level9', 'level10'];
-    
+
+    const levels = [
+      "level1",
+      "level2",
+      "level3",
+      "level4",
+      "level5",
+      "level6",
+      "level7",
+      "level8",
+      "level9",
+      "level10",
+    ];
+
     // Find the level where the nodeId matches
     for (const level of levels) {
       if (selectedPath[level] === nodeId) {
         return level;
       }
     }
-    
+
     return null;
   };
 
   // Calculate parent titles for the selected node
-  const parentTitles = useMemo(() => {
+  const parentNodes = useMemo(() => {
     if (!selectedNodeInfo.nodeId || !selectedPath || !databaseTreeData) {
       return [];
     }
-    
+
     const currentLevel = getCurrentLevel(selectedPath, selectedNodeInfo.nodeId);
     if (!currentLevel) {
       return [];
     }
-    
-    return buildParentTitles(
+
+    return buildParentInfo(
+      treeMode,
       currentLevel,
       selectedNodeInfo.nodeId,
       selectedPath,
@@ -1003,8 +1026,7 @@ const TechnologyTree = () => {
   useLevel1EnrichmentPolling(enrichmentTreeId, level1NodeIds);
 
   // Dynamic level names based on tree mode
-  const treeMode =
-    databaseTreeData?.mode || locationState?.treeData?.mode || "TED";
+
   const levelNames =
     treeMode === "FAST"
       ? {
@@ -1084,7 +1106,7 @@ const TechnologyTree = () => {
       selectedNodeDescription={selectedNodeInfo.description}
       selectedNodeId={selectedNodeInfo.nodeId}
       selectedPath={selectedPath}
-      parentTitles={parentTitles}
+      parentNodes={parentNodes}
     />
   ); // Polling effect for TED v2 scenario completion with progressive display
   useEffect(() => {
@@ -1251,7 +1273,8 @@ const TechnologyTree = () => {
                 />
               </div>
             </div>
-          </TechTreeLayout>          <ChatBox
+          </TechTreeLayout>{" "}
+          <ChatBox
             messages={chatMessages}
             inputValue={inputValue}
             onInputChange={handleInputChange}
