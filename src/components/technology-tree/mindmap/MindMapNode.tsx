@@ -160,7 +160,7 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
           isGenerating || showEnrichmentIndicator ? "flex-col" : "items-center"
         } justify-center relative ${getNodeStyling()}`}
       >
-        {node.hasChildrenInOriginalData && isHovered && (
+        {node.hasChildrenInOriginalData && (!node.isExpanded || isHovered) && (
           <Button
             variant="ghost"
             size="sm"
@@ -179,7 +179,9 @@ export const MindMapNodeComponent: React.FC<MindMapNodeProps> = ({
             {node.isExpanded ? (
               <Minus className="h-4 w-4" />
             ) : (
-              <Plus className="h-4 w-4" />
+              <span className="text-xs font-medium">
+                {node.totalChildrenCount || 0}
+              </span>
             )}
           </Button>
         )}

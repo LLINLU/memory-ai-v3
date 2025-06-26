@@ -16,6 +16,7 @@ export interface MindMapNode {
   isExpanded?: boolean; 
   hasChildren?: boolean; 
   hasChildrenInOriginalData?: boolean; 
+  totalChildrenCount?: number;
 }
 
 export interface MindMapConnection {
@@ -263,8 +264,37 @@ const hasChildrenInOriginalHierarchy = (nodeId: string, originalHierarchy: Hiera
   return result === true;
 };
 
+const countTotalChildrenInOriginalHierarchy = (nodeId: string, originalHierarchy: HierarchicalNode): number => {
+  const findNodeAndCountChildren = (node: HierarchicalNode): number | undefined => {
+    if (node.id === nodeId) {
+      const countDescendants = (n: HierarchicalNode): number => {
+        let count = n.children ? n.children.length : 0;
+        if (n.children) {
+          for (const child of n.children) {
+            count += countDescendants(child);
+          }
+        }
+        return count;
+      };
+      return countDescendants(node);
+    }
+    
+    for (const child of node.children || []) {
+      const result = findNodeAndCountChildren(child);
+      if (result !== undefined) {
+        return result;
+      }
+    }
+    
+    return undefined;
+  };
+  
+  const result = findNodeAndCountChildren(originalHierarchy);
+  return result || 0;
+};
+
 // Helper function to create D3 nodes from hierarchical data
-const createD3Nodes = (hierarchicalData: HierarchicalNode, layoutDirection: 'horizontal' | 'vertical' = 'horizontal', originalHierarchy?: HierarchicalNode): MindMapNode[] => {
+const createD3Nodes = (hierarchicalData: HierarchicalNode, layoutDirection: 'horizontal' | 'vertical' = 'horizontal', originalHierarchy?: HierarchicalNode, expandedNodes?: Set<string>): MindMapNode[] => {
   if (!hierarchicalData.children || hierarchicalData.children.length === 0) {
     return [];
   }
@@ -314,8 +344,9 @@ const createD3Nodes = (hierarchicalData: HierarchicalNode, layoutDirection: 'hor
       isCustom: node.data.isCustom,
       children_count: node.data.children_count,
       hasChildren: node.children && node.children.length > 0, // 子ノードがあるかどうか
-      hasChildrenInOriginalData: originalHierarchy ? hasChildrenInOriginalHierarchy(node.data.id, originalHierarchy) : (node.children && node.children.length > 0), // 元データで子ノードがあるかどうか
-      isExpanded: true, // デフォルトで全て展開状態
+      hasChildrenInOriginalData: originalHierarchy ? hasChildrenInOriginalHierarchy(node.data.id, originalHierarchy) : (node.children && node.children.length > 0),
+      isExpanded: !expandedNodes || expandedNodes.size === 0 || expandedNodes.has(node.data.id),
+      totalChildrenCount: originalHierarchy ? countTotalChildrenInOriginalHierarchy(node.data.id, originalHierarchy) : 0,
     }));
   } else {
     // IMPROVED vertical layout - increased spacing to prevent overlaps
@@ -347,7 +378,8 @@ const createD3Nodes = (hierarchicalData: HierarchicalNode, layoutDirection: 'hor
       children_count: node.data.children_count,
       hasChildren: node.children && node.children.length > 0, // 子ノードがあるかどうか
       hasChildrenInOriginalData: originalHierarchy ? hasChildrenInOriginalHierarchy(node.data.id, originalHierarchy) : (node.children && node.children.length > 0), // 元データで子ノードがあるかどうか
-      isExpanded: true, // デフォルトで全て展開状態
+      isExpanded: !expandedNodes || expandedNodes.size === 0 || expandedNodes.has(node.data.id), // 実際の展開状態
+      totalChildrenCount: originalHierarchy ? countTotalChildrenInOriginalHierarchy(node.data.id, originalHierarchy) : 0, // 元データでの総子ノード数
     }));
   }
 };
@@ -516,7 +548,7 @@ export const transformToMindMapData = (
   );
 
   // Create nodes and connections using D3 tree layout with layout direction
-  const nodes = createD3Nodes(hierarchicalData, layoutDirection, originalHierarchicalData);
+  const nodes = createD3Nodes(hierarchicalData, layoutDirection, originalHierarchicalData, expandedNodes);
   const connections = createD3Connections(hierarchicalData, layoutDirection);
 
 
