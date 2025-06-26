@@ -16,7 +16,7 @@ export const QueueStatusDisplay: React.FC<QueueStatusDisplayProps> = ({
   const [status, setStatus] = useState(getQueueStatus());
   const [isVisible, setIsVisible] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(Date.now());
-  const [activeTab, setActiveTab] = useState<"summary" | "queue">("summary");
+  const [activeTab, setActiveTab] = useState<"summary" | "queue">("queue");
 
   useEffect(() => {
     const interval = setInterval(() => {
