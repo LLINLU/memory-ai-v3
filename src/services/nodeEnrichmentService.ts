@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { enqueueEnrichment } from "./enrichmentQueue";
 
@@ -685,8 +686,8 @@ export const createEnrichmentRequest = (
     // Get the node details (title will be used as enrichNode)
     const { title: enrichNode } = getNodeDetails(level, nodeId, selectedPath, treeData);
 
-    // Build parent titles array
-    const parentNodes = buildParentTitles(level, nodeId, selectedPath, treeData);
+    // Build parent info array - use buildParentInfo instead of buildParentTitles
+    const parentNodes = buildParentInfo(treeData?.mode || "TED", level, nodeId, selectedPath, treeData);
 
     console.log('[CREATE_ENRICHMENT_REQUEST] Created request:', {
       nodeId,
