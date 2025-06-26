@@ -78,7 +78,32 @@ const findLastSelectedNode = (selectedPath: SelectedPath) => {
   return null;
 };
 
-// Helper function to build hierarchical data structure from flat level data with expand state
+// ノードが展開されているかどうかを確認
+const isNodeExpanded = (nodeId: string, expandedNodes?: Set<string>): boolean => {
+  return !expandedNodes || expandedNodes.size === 0 || expandedNodes.has(nodeId);
+};
+
+// ノードデータを作成
+const createHierarchicalNode = (
+  item: TreeNode,
+  level: number,
+  levelName: string,
+  lastSelectedNode: { id: string; level: number } | null
+): HierarchicalNode => {
+  return {
+    id: item.id,
+    name: item.name,
+    description: item.description || "",
+    level,
+    levelName,
+    isSelected: lastSelectedNode?.id === item.id && lastSelectedNode?.level === level,
+    isCustom: item.isCustom || false,
+    children_count: item.children_count,
+    children: [],
+  };
+};
+
+// ノードデータを階層化する
 const buildHierarchyWithExpandState = (
   level1Items: TreeNode[],
   level2Items: Record<string, TreeNode[]>,
@@ -95,150 +120,78 @@ const buildHierarchyWithExpandState = (
   query: string,
   expandedNodes?: Set<string>
 ): HierarchicalNode => {
-  // Find the single node that should be selected
+  // レベルごとのノードデータを作成
+  const allLevelItems = [
+    level1Items,
+    level2Items,
+    level3Items,
+    level4Items,
+    level5Items,
+    level6Items,
+    level7Items,
+    level8Items,
+    level9Items,
+    level10Items,
+  ];
+
   const lastSelectedNode = findLastSelectedNode(selectedPath);
 
+  // ルートノードを作成
   const hierarchy: HierarchicalNode = {
     id: "root",
     name: query || "Research Query",
     description: "Your research query",
     level: 0,
     levelName: "Query",
-    isSelected: false, // Root is never selected
+    isSelected: false,
     isCustom: false,
     children: [],
   };
 
-  // Add level 1 items as direct children of root
-  level1Items.forEach((item) => {
-    const level1Node = {
-      id: item.id,
-      name: item.name,
-      description: item.description || "",
-      level: 1,
-      levelName: levelNames.level1 || "Level 1",
-      isSelected:
-        lastSelectedNode?.id === item.id && lastSelectedNode?.level === 1,
-      isCustom: item.isCustom || false,
-      children_count: item.children_count,
-      children: [],
-    };
+  // ノードデータを階層化する
+  const buildLevelRecursively = (
+    parentNode: HierarchicalNode,
+    parentId: string,
+    currentLevel: number
+  ): void => {
+    // 最大レベルを超えたら終了
+    if (currentLevel > 10) return;
 
-    const isLevel1Expanded = !expandedNodes || expandedNodes.size === 0 || expandedNodes.has(item.id);
-    
-    if (isLevel1Expanded) {
-      // Add level 2 items for this level 1 item
-      const level2Children = level2Items[item.id] || [];
-      level2Children.forEach((level2Item) => {
-        const level2Node = {
-          id: level2Item.id,
-          name: level2Item.name,
-          description: level2Item.description || "",
-          level: 2,
-          levelName: levelNames.level2 || "Level 2",
-          isSelected:
-            lastSelectedNode?.id === level2Item.id &&
-            lastSelectedNode?.level === 2,
-          isCustom: level2Item.isCustom || false,
-          children_count: level2Item.children_count,
-          children: [],
-        };
+    // 親ノードが展開されているかどうかを確認
+    if (!isNodeExpanded(parentId, expandedNodes)) return;
 
-        // level 2の展開状態を確認
-        const isLevel2Expanded = !expandedNodes || expandedNodes.size === 0 || expandedNodes.has(level2Item.id);
-        
-        if (isLevel2Expanded) {
-          const level3Children = level3Items[level2Item.id] || [];
-          level3Children.forEach((level3Item) => {
-            const level3Node = {
-              id: level3Item.id,
-              name: level3Item.name,
-              description: level3Item.description || "",
-              level: 3,
-              levelName: levelNames.level3 || "Level 3",
-              isSelected:
-                lastSelectedNode?.id === level3Item.id &&
-                lastSelectedNode?.level === 3,
-              isCustom: level3Item.isCustom || false,
-              children_count: level3Item.children_count,
-              children: [],
-            };
+    // 現在のレベルのノードデータを取得
+    const currentLevelData = allLevelItems[currentLevel - 1];
+    let itemsForParent: TreeNode[] = [];
 
-            addChildrenRecursivelyWithExpandState(
-              level3Node,
-              level3Item.id,
-              4,
-              [
-                level4Items,
-                level5Items,
-                level6Items,
-                level7Items,
-                level8Items,
-                level9Items,
-                level10Items,
-              ],
-              levelNames,
-              lastSelectedNode,
-              expandedNodes
-            );
-
-            level2Node.children.push(level3Node);
-          });
-        }
-
-        level1Node.children.push(level2Node);
-      });
+    if (currentLevel === 1) {
+      // level 1のノードデータは直接取得
+      itemsForParent = currentLevelData as TreeNode[];
+    } else {
+      // level 2+のノードデータは親ノードのIDで取得
+      const levelItemsRecord = currentLevelData as Record<string, TreeNode[]>;
+      itemsForParent = levelItemsRecord[parentId] || [];
     }
 
-    hierarchy.children.push(level1Node);
-  });
+    // 現在のレベルのノードデータを処理
+    itemsForParent.forEach((item) => {
+      const levelName = levelNames[`level${currentLevel}`] || `Level ${currentLevel}`;
+      const childNode = createHierarchicalNode(item, currentLevel, levelName, lastSelectedNode);
+
+      // 子ノードを再帰的に追加
+      buildLevelRecursively(childNode, item.id, currentLevel + 1);
+
+      parentNode.children.push(childNode);
+    });
+  };
+
+  // level 1からノードデータを階層化
+  buildLevelRecursively(hierarchy, "root", 1);
 
   return hierarchy;
 };
 
-// 子ノードを再帰的に追加する
-const addChildrenRecursivelyWithExpandState = (
-  parentNode: HierarchicalNode,
-  parentId: string,
-  currentLevel: number,
-  levelItemsArray: Record<string, TreeNode[]>[],
-  levelNames: Record<string, string>,
-  lastSelectedNode: { id: string; level: number } | null,
-  expandedNodes?: Set<string>
-) => {
-  if (currentLevel > 10 || currentLevel - 4 >= levelItemsArray.length) return;
-  
-  const isParentExpanded = !expandedNodes || expandedNodes.size === 0 || expandedNodes.has(parentId);
-  if (!isParentExpanded) return;
-  
-  const currentLevelItems = levelItemsArray[currentLevel - 4][parentId] || [];
-  currentLevelItems.forEach((item) => {
-    const childNode = {
-      id: item.id,
-      name: item.name,
-      description: item.description || "",
-      level: currentLevel,
-      levelName: levelNames[`level${currentLevel}`] || `Level ${currentLevel}`,
-      isSelected:
-        lastSelectedNode?.id === item.id &&
-        lastSelectedNode?.level === currentLevel,
-      isCustom: item.isCustom || false,
-      children_count: item.children_count,
-      children: [],
-    };
 
-    addChildrenRecursivelyWithExpandState(
-      childNode,
-      item.id,
-      currentLevel + 1,
-      levelItemsArray,
-      levelNames,
-      lastSelectedNode,
-      expandedNodes
-    );
-    parentNode.children.push(childNode);
-  });
-};
 
 // 元データで子ノードがあるかどうかを確認する
 const hasChildrenInOriginalHierarchy = (nodeId: string, originalHierarchy: HierarchicalNode): boolean => {

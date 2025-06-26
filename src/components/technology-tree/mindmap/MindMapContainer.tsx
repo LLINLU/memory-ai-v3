@@ -255,6 +255,7 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
   const nodesWithExpandState = useMemo(() => {
     return nodes.map(node => ({
       ...node,
+      // ノードが展開されているかどうかを確認
       isExpanded: expandedNodes.has(node.id)
     }));
   }, [nodes, expandedNodes]);
