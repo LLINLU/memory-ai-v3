@@ -79,6 +79,9 @@ interface MainContentProps {
   // View mode props - passed from parent
   viewMode: "treemap" | "mindmap";
   onToggleView: () => void;
+  // View switching props for mindmap
+  justSwitchedView?: boolean;
+  onViewSwitchHandled?: () => void;
 }
 
 export const MainContent = ({
@@ -115,6 +118,8 @@ export const MainContent = ({
   containerRef,
   viewMode,
   onToggleView,
+  justSwitchedView,
+  onViewSwitchHandled,
 }: MainContentProps) => {
   const isTreemapView = viewMode === "treemap";
   const isMindmapView = viewMode === "mindmap";
@@ -293,6 +298,8 @@ export const MainContent = ({
             onEditNode={onEditNode}
             onDeleteNode={onDeleteNode}
             treeMode={treeMode}
+            justSwitchedView={justSwitchedView}
+            onViewSwitchHandled={onViewSwitchHandled}
           />
         </div>
       )}
