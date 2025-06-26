@@ -245,7 +245,11 @@ export const MindMapContainer: React.FC<MindMapContainerProps> = ({
     // 初回またはクエリが変更された場合のみ全展開にリセット
     if ((!isInitialized || currentQuery !== lastQuery) && nodes.length > 0) {
       const allNodeIds = nodes.map(node => node.id);
-      setExpandedNodes(new Set(allNodeIds));
+      setExpandedNodes(prev => {
+        const newSet = new Set(prev);
+        allNodeIds.forEach(nodeId => newSet.add(nodeId)); // ユーザーが選択したノードの展開状態を保持
+        return newSet;
+      });
       setLastQuery(currentQuery);
       setIsInitialized(true);
     }

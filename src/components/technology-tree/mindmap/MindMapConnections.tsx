@@ -76,13 +76,13 @@ export const MindMapConnections: React.FC<MindMapConnectionsProps> = ({
     return ancestors;
   };
 
+  // 選択されたノードの子孫と先祖を事前に計算してキャッシュ
+  const descendants = selectedNodeId ? findAllDescendants(selectedNodeId, connections) : new Set<string>();
+  const ancestors = selectedNodeId ? findAllAncestors(selectedNodeId, connections) : new Set<string>();
+
   // 選択されたノードに関連する全てのエッジかどうかを判定する関数
   const isHighlightedEdge = (connection: MindMapConnection): boolean => {
     if (!selectedNodeId) return false;
-    
-    // 選択されたノードの全ての子孫と先祖を取得
-    const descendants = findAllDescendants(selectedNodeId, connections);
-    const ancestors = findAllAncestors(selectedNodeId, connections);
     
     return (
       // 選択されたノードから子孫へのエッジ
