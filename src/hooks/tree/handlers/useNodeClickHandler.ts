@@ -111,16 +111,8 @@ export const useNodeClickHandler = (
         return clearPathFromLevel(prev, level);
       }
 
-      // MINDMAP MODE: Set only the selected level without auto-selection
-      if (disableAutoSelection) {
-        console.log("Mindmap mode: Setting selected node for", level, nodeId);
-        const newPath = { ...prev };
-        newPath[level] = nodeId;
-        return newPath;
-      }
-
-      // TREEMAP MODE: Auto-selection enabled
-      console.log("Treemap mode: Auto-selection enabled for", level, nodeId);
+      // Always use auto-selection logic for both treemap and mindmap
+      console.log("Unified path selection: Auto-selection enabled for", level, nodeId);
       const newPath = { ...prev };
 
       // Clear current and all subsequent levels
