@@ -1,3 +1,4 @@
+
 import React from "react";
 import { MindMapConnection } from "@/utils/mindMapDataTransform";
 
@@ -107,7 +108,7 @@ export const MindMapConnections: React.FC<MindMapConnectionsProps> = ({
         <path
           key={connection.id}
           d={createCurvedPath(connection)}
-          stroke={isHighlightedEdge(connection) ? "#ef4444" : "#64748b"}
+          stroke={isHighlightedEdge(connection) ? "#2563EB" : "#64748b"}
           strokeWidth={isHighlightedEdge(connection) ? "3" : "2"}
           fill="none"
           opacity={isHighlightedEdge(connection) ? "0.9" : "0.6"}
