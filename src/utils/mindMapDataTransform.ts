@@ -157,9 +157,6 @@ const buildHierarchyWithExpandState = (
     // 最大レベルを超えたら終了
     if (currentLevel > 10) return;
 
-    // 親ノードが展開されているかどうかを確認
-    if (!isNodeExpanded(parentId, expandedNodes)) return;
-
     // 現在のレベルのノードデータを取得
     const currentLevelData = allLevelItems[currentLevel - 1];
     let itemsForParent: TreeNode[] = [];
@@ -178,8 +175,10 @@ const buildHierarchyWithExpandState = (
       const levelName = levelNames[`level${currentLevel}`] || `Level ${currentLevel}`;
       const childNode = createHierarchicalNode(item, currentLevel, levelName, lastSelectedNode);
 
-      // 子ノードを再帰的に追加
-      buildLevelRecursively(childNode, item.id, currentLevel + 1);
+      // そのノードが展開されている場合のみ子ノードを追加
+      if (isNodeExpanded(item.id, expandedNodes)) {
+        buildLevelRecursively(childNode, item.id, currentLevel + 1);
+      }
 
       parentNode.children.push(childNode);
     });
