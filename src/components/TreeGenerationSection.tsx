@@ -44,8 +44,8 @@ export const TreeGenerationSection = () => {
   
   const getPlaceholderText = () => {
     return selectedMode === "TED" 
-      ? "社会課題やニーズを出発点に、技術の可能性を探る"
-      : "技術テーマを掘り下げて、実現方法を探る";
+      ? "社会課題や気になるテーマを技術テーマに分解する"
+      : "技術を分解して要素技術を整理する";
   };
 
   const handleSubmit = async (e?: FormEvent) => {
@@ -140,7 +140,7 @@ export const TreeGenerationSection = () => {
                         disabled={isGenerating}
                       >
                         <Target className={`h-3 w-3 mr-1 ${selectedMode === "TED" ? "stroke-[2.5px]" : ""}`} />
-                        ニーズからはじめる
+                        テーマを整理する
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -160,7 +160,7 @@ export const TreeGenerationSection = () => {
                         disabled={isGenerating}
                       >
                         <Lightbulb className={`h-3 w-3 mr-1 ${selectedMode === "FAST" ? "stroke-[2.5px]" : ""}`} />
-                        技術からはじめる
+                        技術を深ぼる
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -186,21 +186,6 @@ export const TreeGenerationSection = () => {
               </div>
             </div>
           </div>
-          
-          {/* Progress indicator */}
-          {isGenerating && (
-            <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <div className="flex items-center space-x-3">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-                <span className="text-blue-700 font-medium">
-                  {selectedMode === "TED" ? "TED手法" : "FAST手法"}を使用してツリーを生成しています...
-                </span>
-              </div>
-              <p className="text-sm text-blue-600 mt-2">
-                高品質な技術ツリーを生成しています...
-              </p>
-            </div>
-          )}
         </div>
         
         <div className="flex flex-col">

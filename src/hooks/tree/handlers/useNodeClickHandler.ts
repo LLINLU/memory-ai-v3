@@ -1,6 +1,6 @@
 import { PathLevel } from "@/types/tree";
 import { PathState } from "../state/usePathState";
-import { clearPathFromLevel, autoSelectChildren } from "../utils/pathUtils";
+import { clearPathFromLevel, autoSelectChildren, findCompletePath } from "../utils/pathUtils";
 import { callNodeEnrichmentStreaming, buildParentTitles, getNodeDetails, isNodeLoading, hasNodeEnrichedData, StreamingResponse, enrichNodeWithNewStructure } from "@/services/nodeEnrichmentService";
 import { triggerEnrichmentRefresh, triggerEnrichmentStart } from "@/hooks/useEnrichedData";
 import { useUserDetail } from "@/hooks/useUserDetail";
@@ -20,7 +20,12 @@ export const useNodeClickHandler = (
     treeId?: string;
     query?: string;
   } | null;  const handleNodeClick = async (level: PathLevel, nodeId: string) => {
-    console.log("Node clicked:", { level, nodeId, disableAutoSelection });
+    console.log("[NODE_CLICK_HANDLER] Node clicked:", { 
+      level, 
+      nodeId, 
+      disableAutoSelection,
+      viewMode: disableAutoSelection ? 'mindmap' : 'treemap'
+    });
     setHasUserMadeSelection(true);
 
     // Track the user's actual click for sidebar display
@@ -111,16 +116,19 @@ export const useNodeClickHandler = (
         return clearPathFromLevel(prev, level);
       }
 
-      // MINDMAP MODE: Set only the selected level without auto-selection
+      // MINDMAP MODE: Use findCompletePath to establish correct hierarchy
       if (disableAutoSelection) {
-        console.log("Mindmap mode: Setting selected node for", level, nodeId);
-        const newPath = { ...prev };
-        newPath[level] = nodeId;
-        return newPath;
+        console.log("[MINDMAP_PATH] Finding complete path for node:", { level, nodeId });
+        console.log("[MINDMAP_PATH] Previous path:", prev);
+        console.log("[MINDMAP_PATH] Tree data available:", !!treeData);
+        
+        const completePath = findCompletePath(level, nodeId, treeData, initialPath);
+        console.log("[MINDMAP_PATH] Complete path found:", completePath);
+        return completePath;
       }
 
       // TREEMAP MODE: Auto-selection enabled
-      console.log("Treemap mode: Auto-selection enabled for", level, nodeId);
+      console.log("[TREEMAP_PATH] Auto-selection enabled for", level, nodeId);
       const newPath = { ...prev };
 
       // Clear current and all subsequent levels

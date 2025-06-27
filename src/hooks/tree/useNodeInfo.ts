@@ -45,8 +45,8 @@ export const useNodeInfo = (
       return { title: "", description: "", nodeId: "" };
     }
 
-    // console.log("useNodeInfo: selectedPath =", selectedPath);
-    // console.log("useNodeInfo: userClickedNode =", userClickedNode);
+    // console.log("[NODE_INFO] selectedPath =", selectedPath);
+    // console.log("[NODE_INFO] userClickedNode =", userClickedNode);
     let title = "";
     let description = "";
     let nodeId = ""; // If we have a user clicked node, use that instead of the deepest auto-selected node
@@ -122,7 +122,7 @@ export const useNodeInfo = (
         // );
         return { title, description, nodeId };
       } else {
-        console.log(`useNodeInfo: Could not find node for level: ${targetLevel}, parentId: ${parentId}, targetId: ${targetId}`);
+        // console.log(`[NODE_INFO] Could not find node for level: ${targetLevel}, parentId: ${parentId}, targetId: ${targetId}`);
         
         // Comprehensive search through all possible parents for this level
         if (targetLevel === 2 && level2Items) {
