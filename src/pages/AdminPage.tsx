@@ -275,7 +275,7 @@ const AdminPage = () => {
             </TabsTrigger>
             <TabsTrigger value="load-test" className="flex items-center gap-2">
               <TestTube className="h-4 w-4" />
-              負荷テスト
+              負荷テスト (WIP)
             </TabsTrigger>
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />

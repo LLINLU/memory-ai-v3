@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,7 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Loader2, Play, Trash2 } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Loader2, Play, Trash2, AlertTriangle } from 'lucide-react';
 
 interface LoadTestResult {
   id: string;
@@ -51,6 +52,19 @@ export const LoadTestTab: React.FC<LoadTestTabProps> = ({
   clearTestResults,
   formatDuration
 }) => {
+  const [showWarningDialog, setShowWarningDialog] = useState(false);
+
+  const totalTreesToGenerate = testConfig.concurrentUsers * testConfig.requestsPerUser;
+
+  const handleStartTest = () => {
+    setShowWarningDialog(true);
+  };
+
+  const confirmStartTest = () => {
+    setShowWarningDialog(false);
+    startLoadTest();
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -113,6 +127,20 @@ export const LoadTestTab: React.FC<LoadTestTabProps> = ({
               />
             </div>
 
+            {/* 予想されるツリー生成数の表示 */}
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+              <div className="flex items-center gap-2 text-amber-800">
+                <AlertTriangle className="h-4 w-4" />
+                <span className="font-medium">予想生成ツリー数</span>
+              </div>
+              <p className="text-sm text-amber-700 mt-1">
+                このテストにより約 <span className="font-bold">{totalTreesToGenerate}</span> 個のツリーが生成されます
+              </p>
+              <p className="text-xs text-amber-600 mt-1">
+                ({testConfig.concurrentUsers} ユーザー × {testConfig.requestsPerUser} リクエスト/ユーザー)
+              </p>
+            </div>
+
             {isRunningTest && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
@@ -125,7 +153,7 @@ export const LoadTestTab: React.FC<LoadTestTabProps> = ({
 
             <div className="flex gap-2">
               <Button 
-                onClick={startLoadTest} 
+                onClick={handleStartTest} 
                 disabled={isRunningTest}
                 className="flex-1"
               >
@@ -217,6 +245,35 @@ export const LoadTestTab: React.FC<LoadTestTabProps> = ({
           </CardContent>
         </Card>
       </div>
+
+      <AlertDialog open={showWarningDialog} onOpenChange={setShowWarningDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              負荷テスト実行確認
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              このテストを実行すると、約 <span className="font-bold text-lg">{totalTreesToGenerate}</span> 個のツリーが生成されます。
+              <br />
+              <br />
+              <div className="bg-gray-50 p-3 rounded-lg text-sm">
+                <div>• 同時ユーザー数: {testConfig.concurrentUsers}</div>
+                <div>• ユーザーあたりリクエスト数: {testConfig.requestsPerUser}</div>
+                <div>• 総リクエスト数: {totalTreesToGenerate}</div>
+              </div>
+              <br />
+              大量のデータが生成される可能性があります。本当に実行しますか？
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>キャンセル</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmStartTest}>
+              実行する
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }; 
