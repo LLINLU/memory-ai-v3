@@ -9,6 +9,7 @@ import { Activity, TestTube, Loader2, Users } from 'lucide-react';
 import { SystemOverviewTab } from '@/components/admin/SystemOverviewTab';
 import { LoadTestTab } from '@/components/admin/LoadTestTab';
 import { UserManagementTab } from '@/components/admin/UserManagementTab';
+import { useSystemMonitoring } from '@/hooks/useSystemMonitoring';
 
 interface LoadTestResult {
   id: string;
@@ -24,14 +25,6 @@ interface LoadTestResult {
   minResponseTime: number;
 }
 
-interface SystemStats {
-  totalTrees: number;
-  totalNodes: number;
-  totalPapers: number;
-  totalUseCases: number;
-  activeUsers: number;
-}
-
 const AdminPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -39,10 +32,12 @@ const AdminPage = () => {
   
   const [hasAccess, setHasAccess] = useState(false);
   const [adminCheckLoading, setAdminCheckLoading] = useState(true);
-  const [systemStats, setSystemStats] = useState<SystemStats | null>(null);
   const [loadTests, setLoadTests] = useState<LoadTestResult[]>([]);
   const [isRunningTest, setIsRunningTest] = useState(false);
   const [testProgress, setTestProgress] = useState(0);
+  
+  // システム監視データを取得
+  const { teamStats, isLoading: monitoringLoading, error: monitoringError, refreshStats } = useSystemMonitoring();
   
   // URLクエリパラメータからタブを取得、デフォルトは'overview'
   const currentTab = searchParams.get('tab') || 'overview';
@@ -104,34 +99,6 @@ const AdminPage = () => {
       }, 3000);
     }
   }, [hasAccess, adminCheckLoading, navigate]);
-
-  // システム統計取得
-  useEffect(() => {
-    if (hasAccess) {
-      fetchSystemStats();
-    }
-  }, [hasAccess]);
-
-  const fetchSystemStats = async () => {
-    try {
-      const [treesResult, nodesResult, papersResult, useCasesResult] = await Promise.all([
-        supabase.from('technology_trees').select('id', { count: 'exact' }),
-        supabase.from('tree_nodes').select('id', { count: 'exact' }),
-        supabase.from('node_papers').select('id', { count: 'exact' }),
-        supabase.from('node_use_cases').select('id', { count: 'exact' })
-      ]);
-
-      setSystemStats({
-        totalTrees: treesResult.count || 0,
-        totalNodes: nodesResult.count || 0,
-        totalPapers: papersResult.count || 0,
-        totalUseCases: useCasesResult.count || 0,
-        activeUsers: 0 // この値は実際のアクティブユーザー追跡システムから取得
-      });
-    } catch (error) {
-      console.error('システム統計の取得に失敗しました:', error);
-    }
-  };
 
   const startLoadTest = async () => {
     if (!testConfig.testName.trim()) {
@@ -285,7 +252,12 @@ const AdminPage = () => {
 
           {/* システム監視タブ */}
           <TabsContent value="overview" className="space-y-6">
-            <SystemOverviewTab systemStats={systemStats} />
+            <SystemOverviewTab 
+              teamStats={teamStats}
+              isLoading={monitoringLoading}
+              error={monitoringError}
+              onRefresh={refreshStats}
+            />
           </TabsContent>
 
           {/* 負荷テストタブ */}
