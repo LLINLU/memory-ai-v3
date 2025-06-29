@@ -1,22 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '@/components/AuthProvider';
-import { supabase } from '@/integrations/supabase/client';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Activity, TestTube, Loader2, Users } from 'lucide-react';
-import { SystemOverviewTab } from '@/components/admin/SystemOverviewTab';
-import { LoadTestTab } from '@/components/admin/LoadTestTab';
-import { UserManagementTab } from '@/components/admin/UserManagementTab';
-import { useSystemMonitoring } from '@/hooks/useSystemMonitoring';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useAuth } from "@/components/AuthProvider";
+import { supabase } from "@/integrations/supabase/client";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Activity, TestTube, Loader2, Users } from "lucide-react";
+import { SystemOverviewTab } from "@/components/admin/SystemOverviewTab";
+import { LoadTestTab } from "@/components/admin/LoadTestTab";
+import { UserManagementTab } from "@/components/admin/UserManagementTab";
+import { useSystemMonitoring } from "@/hooks/useSystemMonitoring";
+import { Button } from "@/components/ui/button";
 
 interface LoadTestResult {
   id: string;
   testName: string;
   startTime: Date;
   endTime?: Date;
-  status: 'running' | 'completed' | 'failed';
+  status: "running" | "completed" | "failed";
   requests: number;
   successCount: number;
   errorCount: number;
@@ -29,34 +30,43 @@ const AdminPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   const [hasAccess, setHasAccess] = useState(false);
   const [adminCheckLoading, setAdminCheckLoading] = useState(true);
   const [loadTests, setLoadTests] = useState<LoadTestResult[]>([]);
   const [isRunningTest, setIsRunningTest] = useState(false);
   const [testProgress, setTestProgress] = useState(0);
-  
+
   // システム監視データを取得
-  const { teamStats, isLoading: monitoringLoading, error: monitoringError, refreshStats } = useSystemMonitoring();
-  
+  const {
+    teamStats,
+    isLoading: monitoringLoading,
+    error: monitoringError,
+    refreshStats,
+  } = useSystemMonitoring();
+
   // URLクエリパラメータからタブを取得、デフォルトは'overview'
-  const currentTab = searchParams.get('tab') || 'overview';
-  
+  const currentTab = searchParams.get("tab") || "overview";
+
   // タブ変更ハンドラー
   const handleTabChange = (value: string) => {
     setSearchParams({ tab: value });
   };
-  
+
   // テスト設定
   const [testConfig, setTestConfig] = useState({
-    testName: '',
-    endpoint: 'generate-tree-fast-v3',
+    testName: "",
+    endpoint: "generate-tree-fast-v3",
     concurrentUsers: 10,
     requestsPerUser: 5,
-    payload: JSON.stringify({
-      searchTheme: "負荷テスト用クエリ",
-      team_id: user?.id
-    }, null, 2)
+    payload: JSON.stringify(
+      {
+        searchTheme: "負荷テスト用クエリ",
+        team_id: user?.id,
+      },
+      null,
+      2
+    ),
   });
 
   // 管理者権限チェック
@@ -68,18 +78,18 @@ const AdminPage = () => {
     }
 
     try {
-      const { data, error } = await supabase.functions.invoke('is-app-admin', {
-        body: { userId: user.id }
+      const { data, error } = await supabase.functions.invoke("is-app-admin", {
+        body: { userId: user.id },
       });
 
       if (error) {
-        console.error('Admin check error:', error);
+        console.error("Admin check error:", error);
         setHasAccess(false);
       } else {
         setHasAccess(data?.isAdmin || false);
       }
     } catch (error) {
-      console.error('Error checking admin status:', error);
+      console.error("Error checking admin status:", error);
       setHasAccess(false);
     } finally {
       setAdminCheckLoading(false);
@@ -95,14 +105,14 @@ const AdminPage = () => {
   useEffect(() => {
     if (!adminCheckLoading && !hasAccess) {
       setTimeout(() => {
-        navigate('/');
+        navigate("/");
       }, 3000);
     }
   }, [hasAccess, adminCheckLoading, navigate]);
 
   const startLoadTest = async () => {
     if (!testConfig.testName.trim()) {
-      alert('テスト名を入力してください');
+      alert("テスト名を入力してください");
       return;
     }
 
@@ -113,78 +123,92 @@ const AdminPage = () => {
       id: crypto.randomUUID(),
       testName: testConfig.testName,
       startTime: new Date(),
-      status: 'running',
+      status: "running",
       requests: testConfig.concurrentUsers * testConfig.requestsPerUser,
       successCount: 0,
       errorCount: 0,
       averageResponseTime: 0,
       maxResponseTime: 0,
-      minResponseTime: Infinity
+      minResponseTime: Infinity,
     };
 
-    setLoadTests(prev => [testResult, ...prev]);
+    setLoadTests((prev) => [testResult, ...prev]);
 
     try {
       // 実際の負荷テスト実行
-      const totalRequests = testConfig.concurrentUsers * testConfig.requestsPerUser;
+      const totalRequests =
+        testConfig.concurrentUsers * testConfig.requestsPerUser;
       const batchSize = Math.max(1, Math.floor(testConfig.concurrentUsers / 2));
-      
+
       for (let i = 0; i < totalRequests; i += batchSize) {
         const batch = Math.min(batchSize, totalRequests - i);
-        const promises = Array.from({ length: batch }, () => 
+        const promises = Array.from({ length: batch }, () =>
           simulateRequest(testConfig.endpoint, JSON.parse(testConfig.payload))
         );
-        
+
         const results = await Promise.allSettled(promises);
-        
+
         results.forEach((result) => {
-          if (result.status === 'fulfilled') {
+          if (result.status === "fulfilled") {
             testResult.successCount++;
             const responseTime = result.value.responseTime;
-            testResult.averageResponseTime = (testResult.averageResponseTime * (testResult.successCount - 1) + responseTime) / testResult.successCount;
-            testResult.maxResponseTime = Math.max(testResult.maxResponseTime, responseTime);
-            testResult.minResponseTime = Math.min(testResult.minResponseTime, responseTime);
+            testResult.averageResponseTime =
+              (testResult.averageResponseTime * (testResult.successCount - 1) +
+                responseTime) /
+              testResult.successCount;
+            testResult.maxResponseTime = Math.max(
+              testResult.maxResponseTime,
+              responseTime
+            );
+            testResult.minResponseTime = Math.min(
+              testResult.minResponseTime,
+              responseTime
+            );
           } else {
             testResult.errorCount++;
           }
         });
-        
+
         setTestProgress(Math.round(((i + batch) / totalRequests) * 100));
-        
+
         // 次のバッチまで少し待機
         if (i + batch < totalRequests) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       }
 
-      testResult.status = 'completed';
+      testResult.status = "completed";
       testResult.endTime = new Date();
-      
     } catch (error) {
-      testResult.status = 'failed';
+      testResult.status = "failed";
       testResult.endTime = new Date();
     } finally {
       setIsRunningTest(false);
       setTestProgress(0);
-      setLoadTests(prev => prev.map(t => t.id === testResult.id ? testResult : t));
+      setLoadTests((prev) =>
+        prev.map((t) => (t.id === testResult.id ? testResult : t))
+      );
     }
   };
 
-  const simulateRequest = async (endpoint: string, payload: Record<string, unknown>): Promise<{ responseTime: number }> => {
+  const simulateRequest = async (
+    endpoint: string,
+    payload: Record<string, unknown>
+  ): Promise<{ responseTime: number }> => {
     const startTime = Date.now();
-    
+
     try {
       // 実際のSupabase Functionを呼び出し
       const response = await supabase.functions.invoke(endpoint, {
-        body: payload
+        body: payload,
       });
-      
+
       const responseTime = Date.now() - startTime;
-      
+
       if (response.error) {
         throw new Error(response.error.message);
       }
-      
+
       return { responseTime };
     } catch (error) {
       const responseTime = Date.now() - startTime;
@@ -197,7 +221,9 @@ const AdminPage = () => {
   };
 
   const formatDuration = (start: Date, end?: Date) => {
-    const duration = end ? end.getTime() - start.getTime() : Date.now() - start.getTime();
+    const duration = end
+      ? end.getTime() - start.getTime()
+      : Date.now() - start.getTime();
     return `${Math.round(duration / 1000)}秒`;
   };
 
@@ -224,17 +250,22 @@ const AdminPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex gap-2 items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">管理者ダッシュボード</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              管理者ダッシュボード
+            </h1>
             <p className="text-gray-600">システム管理・監視・テストツール</p>
+            <Button onClick={() => navigate("/")}>ホームページに戻る</Button>
           </div>
-          <Badge variant="secondary">
-            管理者
-          </Badge>
+          <Badge variant="secondary">管理者</Badge>
         </div>
 
-        <Tabs value={currentTab} onValueChange={handleTabChange} className="w-full">
+        <Tabs
+          value={currentTab}
+          onValueChange={handleTabChange}
+          className="w-full"
+        >
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <Activity className="h-4 w-4" />
@@ -252,7 +283,7 @@ const AdminPage = () => {
 
           {/* システム監視タブ */}
           <TabsContent value="overview" className="space-y-6">
-            <SystemOverviewTab 
+            <SystemOverviewTab
               teamStats={teamStats}
               isLoading={monitoringLoading}
               error={monitoringError}
@@ -284,4 +315,4 @@ const AdminPage = () => {
   );
 };
 
-export default AdminPage; 
+export default AdminPage;
