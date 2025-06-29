@@ -37,6 +37,7 @@ import {
   triggerEnrichmentStart,
 } from "@/hooks/useEnrichedData";
 import { useUserDetail } from "@/hooks/useUserDetail";
+import { generateTreeWithContext } from "@/services/treeGenerationService";
 
 const TechnologyTree = () => {
   const location = useLocation();
@@ -1207,6 +1208,54 @@ const TechnologyTree = () => {
     };
   }, [pollingTreeId, checkScenarioCompletion, loadTreeFromDatabase]);
 
+  // Handle adding new scenario with context
+  const handleAddScenario = async (context: string) => {
+    try {
+      const searchTheme = currentQuery || locationState?.query;
+      if (!searchTheme) {
+        throw new Error("検索テーマが見つかりません");
+      }
+
+      const currentTreeId = locationState?.treeId;
+      if (!currentTreeId) {
+        throw new Error("現在のツリーIDが見つかりません");
+      }
+
+      console.log("[ADD_SCENARIO] Adding scenarios to existing tree with context:", {
+        searchTheme,
+        context,
+        treeMode,
+        currentTreeId,
+      });
+
+      const teamId = userDetails?.team_id;
+
+      const result = await generateTreeWithContext({
+        searchTheme,
+        context,
+        treeMode: treeMode as "TED" | "FAST",
+        teamId,
+        treeId: currentTreeId,
+      });
+
+      if (!result.success) {
+        throw new Error(result.error || "シナリオの追加に失敗しました");
+      }
+
+      console.log("[ADD_SCENARIO] Scenario addition started:", result);
+
+      // Start polling for updates to the current tree (no navigation needed)
+      setPollingTreeId(currentTreeId);
+      
+      // Reset tree data to show loading state while new scenarios are generated
+      setDatabaseTreeData(null);
+      setHasLoadedDatabase(false);
+    } catch (error) {
+      console.error("[ADD_SCENARIO] Error:", error);
+      throw error;
+    }
+  };
+
   return (
     <SidebarProvider defaultOpen={false}>
       <div
@@ -1270,6 +1319,7 @@ const TechnologyTree = () => {
                   triggerScrollUpdate={triggerScrollUpdate}
                   viewMode={viewMode}
                   onToggleView={toggleView}
+                  onAddScenario={handleAddScenario}
                 />
               </div>
             </div>
