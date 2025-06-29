@@ -2,10 +2,6 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
-// =============================================================================
-// PRODUCTION API FUNCTIONS
-// =============================================================================
-
 // ---------------------------------------------------------------------------
 // Production use cases API call (with new structure)
 // ---------------------------------------------------------------------------
@@ -33,6 +29,35 @@ async function callUseCasesAPI(request: UseCasesApiRequest): Promise<any> {
   return response;
 }
 
+
+// ---------------------------------------------------------------------------
+// Production tree_papers API call
+// ---------------------------------------------------------------------------
+async function callTreePapersAPI(
+  scenarioTree: ScenarioTreeInput,
+  query: string
+): Promise<EnrichedScenarioResponse> {
+  // Transform the data to match the API's expected snake_case format
+  const apiPayload = transformToSnakeCase(scenarioTree, query);
+
+  const res = await fetch("https://search-api.memoryai.jp/tree_papers", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: makeBasicAuthHeader(),
+    },
+    body: JSON.stringify(apiPayload),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`tree_papers API ${res.status}: ${text}`);
+  }
+
+  const response = await res.json();
+  // Transform the response back to camelCase if needed
+  return transformToCamelCase(response);
+}
 // =============================================================================
 // TYPE DEFINITIONS (Inlined from api-specifications/python-api-types.ts)
 // =============================================================================
@@ -119,6 +144,7 @@ interface Step2Params {
   team_id: string | null;
   supabaseClient: any;
   openaiApiKey: string;
+  context?: string;
 }
 
 async function processStep2Internal(params: Step2Params): Promise<any> {
@@ -131,6 +157,7 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
     team_id,
     supabaseClient: sb,
     openaiApiKey,
+    context,
   } = params;
 
   console.log(
@@ -158,7 +185,8 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
           content: makeStepTwoPrompt(
             searchTheme,
             scenarioName,
-            scenarioDescription
+            scenarioDescription,
+            context
           ),
         },
       ],
@@ -448,34 +476,6 @@ function makeBasicAuthHeader(): string {
   return "Basic " + btoa(`${user}:${pass}`);
 }
 
-// ---------------------------------------------------------------------------
-// Production tree_papers API call
-// ---------------------------------------------------------------------------
-async function callTreePapersAPI(
-  scenarioTree: ScenarioTreeInput,
-  query: string
-): Promise<EnrichedScenarioResponse> {
-  // Transform the data to match the API's expected snake_case format
-  const apiPayload = transformToSnakeCase(scenarioTree, query);
-
-  const res = await fetch("https://search-api.memoryai.jp/tree_papers", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: makeBasicAuthHeader(),
-    },
-    body: JSON.stringify(apiPayload),
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`tree_papers API ${res.status}: ${text}`);
-  }
-
-  const response = await res.json();
-  // Transform the response back to camelCase if needed
-  return transformToCamelCase(response);
-}
 
 // Helper function to prepare use cases API request
 function prepareUseCasesApiRequest(
@@ -677,59 +677,6 @@ function detectAxis(level: number): string {
   }
 }
 
-/**
- * Start Use Cases enrichment asynchronously without blocking tree generation
- * This allows papers to be saved immediately while use cases are processed in background
- */
-async function startUseCasesEnrichmentAsync(
-  scenarioTreeInput: ScenarioTreeInput,
-  treeId: string,
-  supabaseClient: any,
-  teamId: string | null
-): Promise<void> {
-  try {
-    console.log(
-      `[ASYNC USECASES] Starting background use cases enrichment for scenario: ${scenarioTreeInput.scenarioNode.title}`
-    );
-
-    // Prepare use cases API request with same input as papers API
-    const useCasesRequest = prepareUseCasesApiRequest(
-      scenarioTreeInput.treeId,
-      scenarioTreeInput.scenarioNode.title, // Use scenario title as query
-      scenarioTreeInput.scenarioNode
-    );    let useCasesResponse;
-    try {
-      // Try production use cases API first
-      useCasesResponse = await callUseCasesAPI(useCasesRequest);
-      console.log(
-        `[ASYNC USECASES] Production API succeeded for scenario: ${scenarioTreeInput.scenarioNode.title}`
-      );
-    } catch (apiErr) {
-      console.error(
-        "[ASYNC USECASES] Production API failed:",
-        apiErr.message
-      );
-      throw new Error(`Use Cases API failed: ${apiErr.message}`);
-    }
-
-    // Save use cases data for all nodes in the scenario tree
-    await saveUseCasesRecursively(
-      useCasesResponse.scenarioNode || useCasesResponse.scenario_node,
-      treeId,
-      supabaseClient,
-      teamId
-    );
-
-    console.log(
-      `[ASYNC USECASES] Successfully completed background use cases enrichment for scenario: ${scenarioTreeInput.scenarioNode.title}`
-    );
-  } catch (error) {
-    console.error(
-      `[ASYNC USECASES] Error in background use cases enrichment:`,
-      error
-    );
-  }
-}
 
 /**
  * Recursively save use cases for all nodes in the tree
@@ -784,9 +731,9 @@ async function saveUseCasesRecursively(
 }
 
 // ----- Step 1: Generate Root + Scenarios only -----
-const makeStepOnePrompt = (theme: string) => `
+const makeStepOnePrompt = (theme: string, context?: string) => `
 <SEARCH_THEME> = ${theme}
-<CONTEXT> = None
+<CONTEXT> = ${context || 'None'}
 
 あなたは <SEARCH_THEME> の専門家です。
 **第1段階**: ルート（検索テーマ）と第1階層（シナリオ）のみを生成してください。
@@ -795,10 +742,12 @@ const makeStepOnePrompt = (theme: string) => `
 【内部思考（ユーザー非公開）】
 
 0-A　<SEARCH_THEME> を 5 語以内で要約し核心概念を抽出。
-0-B　概念から **活用シナリオ** を重複なく列挙。
+0-B　<CONTEXT> が提供されている場合は、そのコンテキストを考慮して活用シナリオを生成。
+0-C　概念から **活用シナリオ** を重複なく列挙。
 　　 ★最初は多めに洗い出し（7 件以上可）、重複・冗長を削りつつ 3〜7 件に整える。
-0-C　各シナリオの概要説明を簡潔に記述（詳細は第2段階で展開）。
-0-D　シナリオ間でMECE（重複なし・漏れなし）を確認し調整。
+　　 ★<CONTEXT>が提供されている場合は、そのコンテキストに関連性の高いシナリオを優先的に生成。
+0-D　各シナリオの概要説明を簡潔に記述（詳細は第2段階で展開）。
+0-E　シナリオ間でMECE（重複なし・漏れなし）を確認し調整。
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【出力仕様】
@@ -831,12 +780,13 @@ const makeStepOnePrompt = (theme: string) => `
 const makeStepTwoPrompt = (
   theme: string,
   scenarioName: string,
-  scenarioDescription: string
+  scenarioDescription: string,
+  context?: string
 ) => `
 <SEARCH_THEME> = ${theme}
 <SCENARIO> = ${scenarioName}
 <SCENARIO_DESCRIPTION> = ${scenarioDescription}
-<CONTEXT> = None
+<CONTEXT> = ${context || 'None'}
 
 あなたは <SEARCH_THEME> の専門家です。
 **第2段階**: 特定のシナリオ「${scenarioName}」の詳細なサブツリーを生成してください。
@@ -845,12 +795,13 @@ const makeStepTwoPrompt = (
 【内部思考（ユーザー非公開）】
 
 0-A　<SCENARIO> を達成するための目的を MECE に分割。
-0-B　各目的ごとに必要な機能を列挙（≥3 件、個数非固定）。
-0-C　機能ごとに **中核技術 1 件** を決定し、
+0-B　<CONTEXT> が提供されている場合は、そのコンテキストに関連性の高い目的や機能を優先的に生成。
+0-C　各目的ごとに必要な機能を列挙（≥3 件、個数非固定）。
+0-D　機能ごとに **中核技術 1 件** を決定し、
 　　　必要な **補完技術 1 件以上・可変** を漏れなく列挙。
-0-D　各技術を「さらに要素技術へ分解できるか？」と自問し、
+0-E　各技術を「さらに要素技術へ分解できるか？」と自問し、
 　　　可能な限り掘り下げ（第 5 階層以降）。
-0-E　全階層を再点検し MECE と "非固定数" を確認し調整。
+0-F　全階層を再点検し MECE と "非固定数" を確認し調整。
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【出力仕様】
@@ -908,7 +859,7 @@ serve(async (req) => {
       hasTeamId: !!requestBody.team_id,
     });
 
-    const { searchTheme, team_id } = requestBody;
+    const { searchTheme, team_id, context, treeId } = requestBody;
 
     if (!searchTheme)
       return new Response(
@@ -944,7 +895,7 @@ serve(async (req) => {
             content:
               "You are a structured, concise assistant specialized in technology tree generation.",
           },
-          { role: "user", content: makeStepOnePrompt(searchTheme) },
+          { role: "user", content: makeStepOnePrompt(searchTheme, context) },
         ],
       }),
     });
@@ -979,47 +930,102 @@ serve(async (req) => {
     const dynamicLayerConfig = ["Scenario", "Purpose", "Function", "Measure"];
 
     /*──────── Supabase Step 1 ────────*/
-    // 1️⃣ technology_trees - Save root metadata
-    const { data: tt, error: ttErr } = await sb
-      .from("technology_trees")
-      .insert({
+    let tt: { id: string };
+    let rootNodeId: string;
+
+    if (treeId) {
+      // If treeId is provided, we're adding scenarios to an existing tree
+      console.log(`[MAIN] Adding scenarios to existing tree: ${treeId}`);
+      
+      // Get existing tree data
+      const { data: existingTree, error: getTreeErr } = await sb
+        .from("technology_trees")
+        .select("id")
+        .eq("id", treeId)
+        .single();
+      
+      if (getTreeErr || !existingTree) {
+        throw new Error(`Tree with ID ${treeId} not found`);
+      }
+      
+      tt = existingTree;
+
+      // Get existing root node
+      const { data: existingRoot, error: getRootErr } = await sb
+        .from("tree_nodes")
+        .select("id")
+        .eq("tree_id", treeId)
+        .eq("level", 0)
+        .single();
+      
+      if (getRootErr || !existingRoot) {
+        throw new Error(`Root node for tree ${treeId} not found`);
+      }
+      
+      rootNodeId = existingRoot.id;
+    } else {
+      // Create new tree as before
+      console.log(`[MAIN] Creating new tree for search theme: ${searchTheme}`);
+      
+      // 1️⃣ technology_trees - Save root metadata
+      const { data: newTree, error: ttErr } = await sb
+        .from("technology_trees")
+        .insert({
+          name: treeRoot.name,
+          description: treeRoot.description ?? "",
+          search_theme: searchTheme,
+          reasoning:
+            parsedResponse.reasoning ?? `Generated TED tree for: ${searchTheme}`,
+          layer_config: dynamicLayerConfig,
+          scenario_inputs: parsedResponse.scenario_inputs ?? {
+            what: null,
+            who: null,
+            where: null,
+            when: null,
+          },
+          mode: "TED", // TED mode indicator
+          team_id: team_id || null,
+        })
+        .select("id")
+        .single();
+      if (ttErr) throw new Error(`DB error (tree): ${ttErr.message}`);
+      
+      tt = newTree;
+
+      // 2️⃣ Insert root node at level 0
+      rootNodeId = crypto.randomUUID();
+      const { error: rootError } = await sb.from("tree_nodes").insert({
+        id: rootNodeId,
+        tree_id: tt.id,
+        parent_id: null,
         name: treeRoot.name,
         description: treeRoot.description ?? "",
-        search_theme: searchTheme,
-        reasoning:
-          parsedResponse.reasoning ?? `Generated TED tree for: ${searchTheme}`,
-        layer_config: dynamicLayerConfig,
-        scenario_inputs: parsedResponse.scenario_inputs ?? {
-          what: null,
-          who: null,
-          where: null,
-          when: null,
-        },
-        mode: "TED", // TED mode indicator
+        axis: "Root" as any,
+        level: 0,
+        node_order: 0,
+        children_count: treeRoot.children?.length || 0,
         team_id: team_id || null,
-      })
-      .select("id")
-      .single();
-    if (ttErr) throw new Error(`DB error (tree): ${ttErr.message}`);
-
-    // 2️⃣ Insert root node at level 0
-    const rootNodeId = crypto.randomUUID();
-    const { error: rootError } = await sb.from("tree_nodes").insert({
-      id: rootNodeId,
-      tree_id: tt.id,
-      parent_id: null,
-      name: treeRoot.name,
-      description: treeRoot.description ?? "",
-      axis: "Root" as any,
-      level: 0,
-      node_order: 0,
-      children_count: treeRoot.children?.length || 0,
-      team_id: team_id || null,
-    });
-    if (rootError)
-      throw new Error(`DB error (root node): ${rootError.message}`);
+      });
+      if (rootError)
+        throw new Error(`DB error (root node): ${rootError.message}`);
+    }
 
     // 3️⃣ Insert scenario nodes (level 1) with children_count = 0 (indicating pending generation)
+    // For existing trees, we need to get the current highest node_order for scenarios
+    let startNodeOrder = 0;
+    if (treeId) {
+      const { data: existingScenarios, error: getScenarioErr } = await sb
+        .from("tree_nodes")
+        .select("node_order")
+        .eq("tree_id", treeId)
+        .eq("level", 1)
+        .order("node_order", { ascending: false })
+        .limit(1);
+      
+      if (!getScenarioErr && existingScenarios && existingScenarios.length > 0) {
+        startNodeOrder = existingScenarios[0].node_order + 1;
+      }
+    }
     const children = treeRoot.children || [];
     const scenarioPromises = children.map(async (scenario, idx) => {
       const scenarioId = crypto.randomUUID();
@@ -1031,7 +1037,7 @@ serve(async (req) => {
         description: scenario.description ?? "",
         axis: "Scenario" as any,
         level: 1,
-        node_order: idx,
+        node_order: startNodeOrder + idx,
         children_count: 0, // Important: Set to 0 to indicate subtree not generated yet
         team_id: team_id || null,
       });
@@ -1043,6 +1049,27 @@ serve(async (req) => {
       };
     });
     const scenarios = await Promise.all(scenarioPromises);
+
+    // Update root node's children_count if adding to existing tree
+    if (treeId) {
+      const { data: currentRoot, error: getCurrentRootErr } = await sb
+        .from("tree_nodes")
+        .select("children_count")
+        .eq("id", rootNodeId)
+        .single();
+      
+      if (!getCurrentRootErr && currentRoot) {
+        const newChildrenCount = currentRoot.children_count + scenarios.length;
+        const { error: updateRootErr } = await sb
+          .from("tree_nodes")
+          .update({ children_count: newChildrenCount })
+          .eq("id", rootNodeId);
+        
+        if (updateRootErr) {
+          console.error(`[STEP 1] Failed to update root children_count:`, updateRootErr);
+        }
+      }
+    }
 
     console.log(
       `[STEP 1] Created ${scenarios.length} scenarios, starting Step 2 generation`
@@ -1187,6 +1214,7 @@ serve(async (req) => {
           team_id,
           supabaseClient: sb,
           openaiApiKey: OPENAI_API_KEY,
+          context,
         });
 
         console.log(
@@ -1256,12 +1284,15 @@ serve(async (req) => {
     backgroundProcessor(); // Fire and forget
 
     // Return immediately so scenarios appear in UI with generating indicators
+    const message = treeId 
+      ? `Added ${scenarios.length} new scenarios to existing tree. Use cases enrichment started, subtrees generating in background.`
+      : "Tree generation started. Scenarios created, use cases enrichment started, subtrees generating in background.";
+    
     return new Response(
       JSON.stringify({
         success: true,
         treeId: tt.id,
-        message:
-          "Tree generation started. Scenarios created, use cases enrichment started, subtrees generating in background.",
+        message,
         scenarios: scenarios.map((s) => ({ id: s.id, name: s.name })),
         status: "generating", // Indicates background processing is active
       }),

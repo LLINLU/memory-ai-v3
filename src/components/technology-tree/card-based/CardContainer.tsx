@@ -16,6 +16,7 @@ import {
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import { DraggableCard } from './DraggableCard';
+import { AddScenarioModal } from './AddScenarioModal';
 
 interface LevelItem {
   id: string;
@@ -80,6 +81,10 @@ interface CardContainerProps {
   level2LayoutPreferences: Record<string, "vertical" | "horizontal">;
   onToggleLevel2Layout: (scenarioId: string) => void;
   getLevel2Layout: (scenarioId: string) => "vertical" | "horizontal";
+  // Add scenario props
+  searchTheme?: string;
+  treeMode?: "TED" | "FAST";
+  onAddScenario?: (context: string) => Promise<void>;
 }
 
 export const CardContainer: React.FC<CardContainerProps> = ({
@@ -103,6 +108,9 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   level2LayoutPreferences,
   onToggleLevel2Layout,
   getLevel2Layout,
+  searchTheme,
+  treeMode = "TED",
+  onAddScenario,
 }) => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -147,6 +155,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   };
 
   // Enable drag-and-drop for single-row, two-per-row, and three-per-row layouts
+  // Only allow dragging of actual scenario cards, not the add button
   const isDraggable = (cardLayout === "single-row" || cardLayout === "two-per-row" || cardLayout === "three-per-row") && level1Items.length > 1;
 
   // Use horizontal strategy for single-row, rectangular strategy for grid layouts
@@ -155,7 +164,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   };
 
   const renderCards = () => {
-    return level1Items.map((scenario) => {
+    const scenarioCards = level1Items.map((scenario) => {
       const scenarioLevel2Items = level2Items[scenario.id] || [];
       const isExpanded = isScenarioExpanded(scenario.id);
       
@@ -183,6 +192,23 @@ export const CardContainer: React.FC<CardContainerProps> = ({
         </div>
       );
     });
+
+    // Add the AddScenarioModal button if we have the required props
+    if (searchTheme && onAddScenario) {
+      const addScenarioButton = (
+        <div key="add-scenario" className={getCardClasses()}>
+          <AddScenarioModal
+            searchTheme={searchTheme}
+            treeMode={treeMode}
+            onAddScenario={onAddScenario}
+          />
+        </div>
+      );
+      
+      return [...scenarioCards, addScenarioButton];
+    }
+    
+    return scenarioCards;
   };
 
   const getContainerClasses = () => {

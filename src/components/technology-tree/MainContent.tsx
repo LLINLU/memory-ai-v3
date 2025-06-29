@@ -79,6 +79,8 @@ interface MainContentProps {
   // View mode props - passed from parent
   viewMode: "treemap" | "mindmap";
   onToggleView: () => void;
+  // Add scenario props
+  onAddScenario?: (context: string) => Promise<void>;
 }
 
 export const MainContent = ({
@@ -115,6 +117,7 @@ export const MainContent = ({
   containerRef,
   viewMode,
   onToggleView,
+  onAddScenario,
 }: MainContentProps) => {
   const isTreemapView = viewMode === "treemap";
   const isMindmapView = viewMode === "mindmap";
@@ -271,6 +274,9 @@ export const MainContent = ({
             onNodeClick={onNodeClick}
             onEditNode={onEditNode}
             onDeleteNode={onDeleteNode}
+            searchTheme={query}
+            treeMode={treeMode as "TED" | "FAST"}
+            onAddScenario={onAddScenario}
           />
         </div>
       ) : (

@@ -64,6 +64,8 @@ interface TechTreeMainContentProps {
   // View mode props
   viewMode: "treemap" | "mindmap";
   onToggleView: () => void;
+  // Add scenario props
+  onAddScenario?: (context: string) => Promise<void>;
 }
 
 export const TechTreeMainContent = ({
@@ -101,6 +103,7 @@ export const TechTreeMainContent = ({
   triggerScrollUpdate,
   viewMode,
   onToggleView,
+  onAddScenario,
 }: TechTreeMainContentProps) => {
   // Note: triggerScrollUpdate is now handled by TechnologyTree.tsx to avoid duplicates
 
@@ -139,6 +142,7 @@ export const TechTreeMainContent = ({
       containerRef={containerRef}
       viewMode={viewMode}
       onToggleView={onToggleView}
+      onAddScenario={onAddScenario}
     />
   );
 };

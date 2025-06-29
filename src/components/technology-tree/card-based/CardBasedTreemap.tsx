@@ -57,6 +57,10 @@ interface CardBasedTreemapProps {
     }
   ) => void;
   onDeleteNode?: (level: string, nodeId: string) => void;
+  // Add scenario props
+  searchTheme?: string;
+  treeMode?: "TED" | "FAST";
+  onAddScenario?: (context: string) => Promise<void>;
 }
 
 type CardLayoutMode =
@@ -86,6 +90,9 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
   onNodeClick,
   onEditNode,
   onDeleteNode,
+  searchTheme,
+  treeMode,
+  onAddScenario,
 }) => {
   const [cardLayout, setCardLayout] = useState<CardLayoutMode>("three-per-row");
   
@@ -285,6 +292,9 @@ export const CardBasedTreemap: React.FC<CardBasedTreemapProps> = ({
             level2LayoutPreferences={level2LayoutPreferences}
             onToggleLevel2Layout={toggleLevel2Layout}
             getLevel2Layout={getLevel2Layout}
+            searchTheme={searchTheme}
+            treeMode={treeMode}
+            onAddScenario={onAddScenario}
           />
         </div>
       </div>

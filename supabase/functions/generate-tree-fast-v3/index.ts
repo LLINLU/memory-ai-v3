@@ -79,46 +79,6 @@ interface UseCase {
 // =============================================================================
 
 // Basic-Auth helper (prod tree_papers)
-async function callPythonPapersAPI(
-  scenarioTree: ScenarioTreeInput
-): Promise<any> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
-  console.log(`[MOCK PAPERS API] Scenario: ${scenarioTree.scenarioNode.title}`);
-
-  // Generate papers-only enriched data for the entire subtree
-  const enrichedNode = enrichNodeWithPapers(scenarioTree.scenarioNode);
-
-  return {
-    treeId: scenarioTree.treeId,
-    scenarioNode: enrichedNode,
-  };
-}
-
-async function callPythonUseCasesAPI(
-  scenarioTree: ScenarioTreeInput
-): Promise<any> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1200));
-
-  console.log(
-    `[MOCK USECASES API] Scenario: ${scenarioTree.scenarioNode.title}`
-  );
-
-  // Generate use cases-only enriched data for the entire subtree
-  const enrichedNode = enrichNodeWithUseCases(scenarioTree.scenarioNode);
-
-  return {
-    treeId: scenarioTree.treeId,
-    scenarioNode: enrichedNode,  };
-}
-
-// =============================================================================
-// PRODUCTION API FUNCTIONS
-// =============================================================================
-
-// Basic-Auth helper (prod tree_papers)
 function makeBasicAuthHeader(): string {
   const user = Deno.env.get("SEARCH_API_USER") ?? "admin";
   const pass = Deno.env.get("SEARCH_API_PASS") ?? "adminpassword";
@@ -380,6 +340,7 @@ interface Step2Params {
   team_id: string | null;
   supabaseClient: any;
   openaiApiKey: string;
+  context?: string;
 }
 
 async function processStep2Internal(params: Step2Params): Promise<any> {
@@ -392,6 +353,7 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
     team_id,
     supabaseClient: sb,
     openaiApiKey,
+    context,
   } = params;
 
   console.log(
@@ -419,7 +381,8 @@ async function processStep2Internal(params: Step2Params): Promise<any> {
           content: makeStepTwoPrompt(
             searchTheme,
             implementationName,
-            implementationDescription
+            implementationDescription,
+            context
           ),
         },
       ],
@@ -823,9 +786,9 @@ function validateRegion(region: string): "domestic" | "international" {
 // =============================================================================
 
 // Step 1: Generate Root + How1 only (FAST approach)
-const makeStepOnePrompt = (theme: string) => `
+const makeStepOnePrompt = (theme: string, context?: string) => `
 <TECHNOLOGY_SEED> = ${theme}
-<CONTEXT> = None
+<CONTEXT> = ${context || 'None'}
 
 あなたは <TECHNOLOGY_SEED> の技術専門家です。
 **第1段階**: 技術ルート（Technology）と第1階層（How1 - 実装方式）のみを生成してください。
@@ -834,11 +797,13 @@ const makeStepOnePrompt = (theme: string) => `
 【内部思考（ユーザー非公開）】
 
 0-A　<TECHNOLOGY_SEED> の技術的本質を 5 語以内で要約し、核心技術要素を抽出。
-0-B　技術シーズを **どのように実装するか** の方式を重複なく列挙。
+0-B　<CONTEXT> が提供されている場合は、そのコンテキストに関連性の高い実装方式を優先的に生成。
+0-C　技術シーズを **どのように実装するか** の方式を重複なく列挙。
 　　 ★技術起点で考える：この技術をどう実現するか？どう実装するか？
 　　 ★最初は多めに洗い出し（7 件以上可）、重複・冗長を削りつつ 3〜7 件に整える。
-0-C　各実装方式の概要説明を簡潔に記述（詳細は第2段階で展開）。
-0-D　実装方式間でMECE（重複なし・漏れなし）を確認し調整。
+　　 ★<CONTEXT>が提供されている場合は、そのコンテキストに関連性の高い実装方式を優先的に生成。
+0-D　各実装方式の概要説明を簡潔に記述（詳細は第2段階で展開）。
+0-E　実装方式間でMECE（重複なし・漏れなし）を確認し調整。
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【出力仕様】
@@ -872,12 +837,13 @@ const makeStepOnePrompt = (theme: string) => `
 const makeStepTwoPrompt = (
   theme: string,
   implementationName: string,
-  implementationDescription: string
+  implementationDescription: string,
+  context?: string
 ) => `
 <TECHNOLOGY_SEED> = ${theme}
 <IMPLEMENTATION_METHOD> = ${implementationName}
 <IMPLEMENTATION_DESCRIPTION> = ${implementationDescription}
-<CONTEXT> = None
+<CONTEXT> = ${context || 'None'}
 
 あなたは <TECHNOLOGY_SEED> の技術専門家です。
 **第2段階**: 特定の実装方式「${implementationName}」の詳細なサブツリーを生成してください。
@@ -886,12 +852,13 @@ const makeStepTwoPrompt = (
 【内部思考（ユーザー非公開）】
 
 0-A　<IMPLEMENTATION_METHOD> を実現するための技術手法を MECE に分割。
-0-B　各技術手法ごとに必要な要素技術を列挙（≥3 件、個数非固定）。
-0-C　要素技術ごとに **コア技術 1 件** を決定し、
+0-B　<CONTEXT> が提供されている場合は、そのコンテキストに関連性の高い技術手法や要素技術を優先的に生成。
+0-C　各技術手法ごとに必要な要素技術を列挙（≥3 件、個数非固定）。
+0-D　要素技術ごとに **コア技術 1 件** を決定し、
 　　　必要な **サポート技術 1 件以上・可変** を漏れなく列挙。
-0-D　各技術を「さらに要素技術へ分解できるか？」と自問し、
+0-E　各技術を「さらに要素技術へ分解できるか？」と自問し、
 　　　可能な限り掘り下げ（第 5 階層以降）。
-0-E　全階層を再点検し MECE と "非固定数" を確認し調整。
+0-F　全階層を再点検し MECE と "非固定数" を確認し調整。
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【出力仕様】
@@ -954,7 +921,7 @@ serve(async (req) => {
       hasTeamId: !!requestBody.team_id,
     });
 
-    const { searchTheme, team_id } = requestBody;
+    const { searchTheme, team_id, context, treeId } = requestBody;
 
     if (!searchTheme)
       return new Response(
@@ -990,7 +957,7 @@ serve(async (req) => {
             content:
               "You are a structured, concise assistant specialized in FAST technology tree generation.",
           },
-          { role: "user", content: makeStepOnePrompt(searchTheme) },
+          { role: "user", content: makeStepOnePrompt(searchTheme, context) },
         ],
       }),
     });
@@ -1025,47 +992,103 @@ serve(async (req) => {
     const dynamicLayerConfig = ["Technology", "How1", "How2", "How3", "How4"];
 
     /*──────── Supabase Step 1 ────────*/
-    // 1️⃣ technology_trees - Save root metadata
-    const { data: tt, error: ttErr } = await sb
-      .from("technology_trees")
-      .insert({
+    let tt: { id: string };
+    let rootNodeId: string;
+
+    if (treeId) {
+      // If treeId is provided, we're adding implementations to an existing tree
+      console.log(`[MAIN] Adding implementations to existing tree: ${treeId}`);
+      
+      // Get existing tree data
+      const { data: existingTree, error: getTreeErr } = await sb
+        .from("technology_trees")
+        .select("id")
+        .eq("id", treeId)
+        .single();
+      
+      if (getTreeErr || !existingTree) {
+        throw new Error(`Tree with ID ${treeId} not found`);
+      }
+      
+      tt = existingTree;
+
+      // Get existing root node
+      const { data: existingRoot, error: getRootErr } = await sb
+        .from("tree_nodes")
+        .select("id")
+        .eq("tree_id", treeId)
+        .eq("level", 0)
+        .single();
+      
+      if (getRootErr || !existingRoot) {
+        throw new Error(`Root node for tree ${treeId} not found`);
+      }
+      
+      rootNodeId = existingRoot.id;
+    } else {
+      // Create new tree as before
+      console.log(`[MAIN] Creating new FAST tree for search theme: ${searchTheme}`);
+      
+      // 1️⃣ technology_trees - Save root metadata
+      const { data: newTree, error: ttErr } = await sb
+        .from("technology_trees")
+        .insert({
+          name: treeRoot.name,
+          description: treeRoot.description ?? "",
+          search_theme: searchTheme,
+          reasoning:
+            parsedResponse.reasoning ?? `Generated FAST tree for: ${searchTheme}`,
+          layer_config: dynamicLayerConfig,
+          scenario_inputs: parsedResponse.scenario_inputs ?? {
+            what: null,
+            who: null,
+            where: null,
+            when: null,
+          },
+          mode: "FAST", // FAST mode indicator
+          team_id: team_id || null,
+        })
+        .select("id")
+        .single();
+      if (ttErr) throw new Error(`DB error (tree): ${ttErr.message}`);
+      
+      tt = newTree;
+
+      // 2️⃣ Insert root node at level 0 (Technology level)
+      rootNodeId = crypto.randomUUID();
+      const { error: rootError } = await sb.from("tree_nodes").insert({
+        id: rootNodeId,
+        tree_id: tt.id,
+        parent_id: null,
         name: treeRoot.name,
         description: treeRoot.description ?? "",
-        search_theme: searchTheme,
-        reasoning:
-          parsedResponse.reasoning ?? `Generated FAST tree for: ${searchTheme}`,
-        layer_config: dynamicLayerConfig,
-        scenario_inputs: parsedResponse.scenario_inputs ?? {
-          what: null,
-          who: null,
-          where: null,
-          when: null,
-        },
-        mode: "FAST", // FAST mode indicator
+        axis: "Technology" as any,
+        level: 0,
+        node_order: 0,
+        children_count: treeRoot.children?.length || 0,
         team_id: team_id || null,
-      })
-      .select("id")
-      .single();
-    if (ttErr) throw new Error(`DB error (tree): ${ttErr.message}`);
-
-    // 2️⃣ Insert root node at level 0 (Technology level)
-    const rootNodeId = crypto.randomUUID();
-    const { error: rootError } = await sb.from("tree_nodes").insert({
-      id: rootNodeId,
-      tree_id: tt.id,
-      parent_id: null,
-      name: treeRoot.name,
-      description: treeRoot.description ?? "",
-      axis: "Technology" as any,
-      level: 0,
-      node_order: 0,
-      children_count: treeRoot.children?.length || 0,
-      team_id: team_id || null,
-    });
-    if (rootError)
-      throw new Error(`DB error (root node): ${rootError.message}`);
+      });
+      if (rootError)
+        throw new Error(`DB error (root node): ${rootError.message}`);
+    }
 
     // 3️⃣ Insert implementation nodes (level 1 = How1) with children_count = 0 (indicating pending generation)
+    // For existing trees, we need to get the current highest node_order for implementations
+    let startNodeOrder = 0;
+    if (treeId) {
+      const { data: existingImplementations, error: getImplErr } = await sb
+        .from("tree_nodes")
+        .select("node_order")
+        .eq("tree_id", treeId)
+        .eq("level", 1)
+        .order("node_order", { ascending: false })
+        .limit(1);
+      
+      if (!getImplErr && existingImplementations && existingImplementations.length > 0) {
+        startNodeOrder = existingImplementations[0].node_order + 1;
+      }
+    }
+
     const children = treeRoot.children || [];
     const implementationPromises = children.map(async (implementation, idx) => {
       const implementationId = crypto.randomUUID();
@@ -1077,7 +1100,7 @@ serve(async (req) => {
         description: implementation.description ?? "",
         axis: "How1" as any,
         level: 1,
-        node_order: idx,
+        node_order: startNodeOrder + idx,
         children_count: 0, // Important: Set to 0 to indicate subtree not generated yet
         team_id: team_id || null,
       });
@@ -1090,6 +1113,27 @@ serve(async (req) => {
       };
     });
     const implementations = await Promise.all(implementationPromises);
+
+    // Update root node's children_count if adding to existing tree
+    if (treeId) {
+      const { data: currentRoot, error: getCurrentRootErr } = await sb
+        .from("tree_nodes")
+        .select("children_count")
+        .eq("id", rootNodeId)
+        .single();
+      
+      if (!getCurrentRootErr && currentRoot) {
+        const newChildrenCount = currentRoot.children_count + implementations.length;
+        const { error: updateRootErr } = await sb
+          .from("tree_nodes")
+          .update({ children_count: newChildrenCount })
+          .eq("id", rootNodeId);
+        
+        if (updateRootErr) {
+          console.error(`[STEP 1] Failed to update root children_count:`, updateRootErr);
+        }
+      }
+    }
 
     console.log(
       `[STEP 1] Created ${implementations.length} implementations, starting enrichment and Step 2 generation`
@@ -1241,6 +1285,7 @@ serve(async (req) => {
           team_id,
           supabaseClient: sb,
           openaiApiKey: OPENAI_API_KEY,
+          context,
         });
 
         console.log(
@@ -1308,12 +1353,15 @@ serve(async (req) => {
     backgroundProcessor(); // Fire and forget
 
     // Return immediately so implementations appear in UI with generating indicators
+    const message = treeId 
+      ? `Added ${implementations.length} new implementations to existing tree. Use cases enrichment started, subtrees generating in background.`
+      : "FAST tree generation started (V3). Implementations created, use cases enrichment started, subtrees generating in background.";
+    
     return new Response(
       JSON.stringify({
         success: true,
         treeId: tt.id,
-        message:
-          "FAST tree generation started (V3). Implementations created, use cases enrichment started, subtrees generating in background.",
+        message,
         implementations: implementations.map((i) => ({
           id: i.id,
           name: i.name,
