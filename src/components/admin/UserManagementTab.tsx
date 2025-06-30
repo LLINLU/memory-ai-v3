@@ -59,7 +59,7 @@ export const UserManagementTab: React.FC<UserManagementTabProps> = ({ className 
     if (open) {
       // ダイアログが開かれた時に自動でパスワードを生成
       const password = generatePassword();
-      setNewUser({ ...newUser, password });
+      setNewUser({ username: '', email: '', teamId: '', role: 'member', password });
       setGeneratedPassword(password);
     } else {
       // ダイアログが閉じられた時にフォームをリセット
@@ -156,7 +156,9 @@ export const UserManagementTab: React.FC<UserManagementTabProps> = ({ className 
 
   // 新しいユーザープロファイルを作成
   const handleCreateUser = async () => {
-    const success = await createUser(newUser);
+    // 確実にroleをmemberに設定
+    const userToCreate = { ...newUser, role: 'member' as const };
+    const success = await createUser(userToCreate);
     if (success) {
       setNewUser({ username: '', email: '', teamId: '', role: 'member', password: '' });
       setGeneratedPassword('');
@@ -177,6 +179,21 @@ export const UserManagementTab: React.FC<UserManagementTabProps> = ({ className 
   // パスワードリセット
   const handleResetPassword = async (userId: string, username: string) => {
     await resetPassword(userId, username);
+  };
+
+  // メールアドレス自動生成機能
+  const generateEmailFromUsername = (username: string) => {
+    if (!username.trim()) return '';
+    return `${username.trim()}@memoryai.jp`;
+  };
+
+  // ユーザー名が変更されたときにメールアドレスも自動更新
+  const handleUsernameChange = (username: string) => {
+    setNewUser({ 
+      ...newUser, 
+      username,
+      email: username.trim() ? generateEmailFromUsername(username) : ''
+    });
   };
 
   if (loading) {
@@ -233,7 +250,7 @@ export const UserManagementTab: React.FC<UserManagementTabProps> = ({ className 
                             <Input
                               id="username"
                               value={newUser.username}
-                              onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+                              onChange={(e) => handleUsernameChange(e.target.value)}
                               placeholder="ユーザー名を入力"
                               className="mt-1"
                             />
@@ -247,16 +264,19 @@ export const UserManagementTab: React.FC<UserManagementTabProps> = ({ className 
                               type="email"
                               value={newUser.email}
                               onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                              placeholder="example@company.com"
+                              placeholder="example@memoryai.jp"
                               className="mt-1"
                             />
+                            <p className="text-xs text-gray-500 mt-1">
+                              ユーザー名を入力すると @memoryai.jp ドメインで自動生成されます
+                            </p>
                           </div>
                         </div>
                       </div>
 
                       {/* 権限設定セクション */}
                       <div className="space-y-4">
-                        <h4 className="text-sm font-medium text-gray-900">権限設定</h4>
+                        <h4 className="text-sm font-medium text-gray-900">チーム設定</h4>
                         <div className="grid grid-cols-2 gap-3">
                           <div>
                             <Label htmlFor="team" className="text-sm font-medium">
@@ -279,15 +299,11 @@ export const UserManagementTab: React.FC<UserManagementTabProps> = ({ className 
                             <Label htmlFor="role" className="text-sm font-medium">
                               役割
                             </Label>
-                            <Select value={newUser.role} onValueChange={(value) => setNewUser({ ...newUser, role: value })}>
-                              <SelectTrigger className="mt-1">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="member">メンバー</SelectItem>
-                                <SelectItem value="admin">管理者</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            <div className="mt-1">
+                              <div className="flex items-center p-3 border rounded-md bg-gray-50">
+                                <Badge variant="secondary" className="mr-2">メンバー</Badge>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
