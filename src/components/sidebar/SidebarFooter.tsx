@@ -1,8 +1,9 @@
-import React, { useMemo } from "react";
+import React, { useState, useMemo } from "react";
+import { useAuth } from "@/components/AuthProvider";
 import { Settings, LogOut, UserRound } from "lucide-react";
 import { useSidebar } from "@/hooks/use-sidebar";
-import { useAuth } from "@/components/AuthProvider";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,13 +21,18 @@ import { useUserDetail } from "@/hooks/useUserDetail";
 
 export function SidebarFooter() {
   const { state } = useSidebar();
+  const navigate = useNavigate();
+
   const { user, signOut } = useAuth();
   const { userDetails } = useUserDetail();
-  const isExpanded = state === 'expanded';
+  const isExpanded = state === "expanded";
 
   const handleSignOut = async () => {
     await signOut();
   };
+
+  const [hasAccess, setHasAccess] = useState(false);
+  const [adminCheckLoading, setAdminCheckLoading] = useState(true);
 
   const displayName = useMemo(() => {
     return userDetails?.username || "ユーザー";
@@ -41,8 +47,14 @@ export function SidebarFooter() {
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton
-            tooltip="設定"
+            tooltip="管理者画面"
+            onClick={() => navigate("/admin")}
           >
+            {isExpanded && <span>管理者画面</span>}
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton tooltip="設定">
             <Settings />
             {isExpanded && <span>設定</span>}
           </SidebarMenuButton>
@@ -72,7 +84,10 @@ export function SidebarFooter() {
                 {displayName}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
+              <DropdownMenuItem
+                onClick={handleSignOut}
+                className="text-red-600"
+              >
                 <LogOut className="mr-2 h-4 w-4" />
                 ログアウト
               </DropdownMenuItem>
