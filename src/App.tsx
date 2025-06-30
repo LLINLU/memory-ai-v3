@@ -12,6 +12,7 @@ import TechnologyTree from "./pages/TechnologyTree";
 import ResearchContext from "./pages/ResearchContext";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import AdminPage from "./pages/AdminPage";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -54,6 +55,11 @@ const App = () => {
                 <Route path="/technology-tree" element={
                   <PrivateRoute>
                     <TechnologyTree />
+                  </PrivateRoute>
+                } />
+                <Route path="/admin" element={
+                  <PrivateRoute>
+                    <AdminPage />
                   </PrivateRoute>
                 } />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
